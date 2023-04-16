@@ -45,50 +45,50 @@ import { safeMutation } from "~/lib/safe-mutation";
 
 // This is used to validate input from client.
 const inputValidator = z.object({
-	username: z.string().min(3).max(10),
-	password: z.string().min(8).max(100),
+  username: z.string().min(3).max(10),
+  password: z.string().min(8).max(100),
 });
 
 // This is used to create an ouput validator.
 // `successData` and `clientErrorData` are required keys.
 const outputValidator = createMutationOutputValidator({
-	successData: z.object({ ok: z.literal(true) }),
-	clientErrorData: z.object({
-		reason: z.enum(["incorrect_credentials", "user_suspended"]),
-	}),
+  successData: z.object({ ok: z.literal(true) }),
+  clientErrorData: z.object({
+    reason: z.enum(["incorrect_credentials", "user_suspended"]),
+  }),
 });
 
 // This is how a safe mutation is created.
 // Since we provided Zod input and output validators to the function, we're sure that data that comes in and out of this is type safe and validated.
 // The second argument of this function is an async function that receives parsed input, and defines what happens on the server when the mutation is called from the client. In short, this is your backend code. It never runs on the client.
 export const loginUser = safeMutation(
-	{ inputValidator, outputValidator },
-	async ({ username, password }) => { // typesafe input
-		if (username === "johndoe") {
-			return {
-				type: "clientError",
-				data: {
-					reason: "user_suspended",
-				},
-			};
-		}
+  { inputValidator, outputValidator },
+  async ({ username, password }) => { // typesafe input
+    if (username === "johndoe") {
+      return {
+        type: "clientError",
+        data: {
+          reason: "user_suspended",
+        },
+      };
+    }
 
-		if (username === "user" && password === "password") {
-			return {
-				type: "success",
-				data: {
-					ok: true,
-				},
-			};
-		}
+    if (username === "user" && password === "password") {
+      return {
+        type: "success",
+        data: {
+          ok: true,
+        },
+      };
+    }
 
-		return {
-			type: "clientError",
-			data: {
-				reason: "incorrect_credentials",
-			},
-		};
-	}
+    return {
+      type: "clientError",
+      data: {
+        reason: "incorrect_credentials",
+      },
+    };
+  }
 );
 ```
 
@@ -108,11 +108,11 @@ import { useState } from "react";
 import { loginUser } from "./login-mutation";
 
 type Props = {
-	loginUser: typeof loginUser; // you just need `typeof` here to get typesafety!
+  loginUser: typeof loginUser; // you just need `typeof` here to get typesafety!
 };
 
 const LoginForm = ({ loginUser }: Props) => {
-	return (
+  return (
     <form
       onSubmit={async (e) => {
         e.preventDefault();
@@ -153,9 +153,9 @@ import LoginForm from "./login-form";
 import { loginUser } from "./login-mutation";
 
 const Home = () => {
-	return (
+  return (
     <LoginForm loginUser={loginUser} />
-	);
+  );
 }
 
 export default Home;
@@ -173,8 +173,9 @@ Here's an explanation:
 
 ```json
 {
- "inputValidationErrorFields": {
-  "fieldName": ["issue"],
+  "inputValidationErrorFields": {
+    "fieldName": ["issue"],
+  }
 }
 ```
 
@@ -192,9 +193,9 @@ First, you **must** create a declaration file (where you want in your project, b
 import "next-safe-mutation";
 
 declare module "next-safe-mutation" {
-	interface AuthData {
-		userId: string;
-	}
+  interface AuthData {
+    userId: string;
+  }
 }
 ```
 
@@ -205,7 +206,7 @@ Then, when creating the safe mutation client, you **must** provide an `async fun
 // src/app/lib/safe-mutation.ts
 
 const { safeMutation } = createSafeMutationClient({
-	getAuthData: async () => {
+  getAuthData: async () => {
     const session = true;
 
     if (!session) {
