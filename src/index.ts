@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-export type UndefinedKeys<T extends object> = {
+type UndefinedKeys<T extends object> = {
 	[key in keyof T]: undefined;
 };
 
@@ -34,9 +34,8 @@ type ClientMutation<
 	inputValidationErrorFields?: Partial<Record<keyof z.infer<IV>, string[]>>;
 }>;
 
-export interface AuthData {
-	userId: bigint;
-}
+// eslint-disable-next-line
+export interface AuthData {}
 
 // We need to overload the `safeMutation` function, because some mutations
 // need authentication, and others don't, so you can pass the `withAuth: true` property
@@ -120,7 +119,6 @@ export const createSafeMutationClient = (createOpts?: CreateSafeMutationClientAr
 					}
 
 					const authData = await createOpts.getAuthData();
-					// @ts-expect-error
 					serverRes = await mutationDefinitionFunc(parsedInput.data, authData);
 				} else {
 					// @ts-expect-error
