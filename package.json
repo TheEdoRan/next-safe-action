@@ -1,0 +1,116 @@
+{
+	"name": "next-safe-mutation",
+	"version": "0.0.0-development",
+	"private": false,
+	"description": "A typesafe mutation implementation for Next.js with RSC.",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist/**",
+		"package.json"
+	],
+	"scripts": {
+		"prepare": "is-ci || husky install",
+		"lint": "tsc && eslint --ext ts .",
+		"build": "tsup ./src/index.ts --format cjs,esm --dts",
+		"semantic-release": "semantic-release --branches main"
+	},
+	"keywords": [
+		"next",
+		"nextjs",
+		"react",
+		"rsc",
+		"react server components",
+		"mutation"
+	],
+	"author": "Edoardo Ranghieri",
+	"license": "MIT",
+	"engines": {
+		"node": ">=16"
+	},
+	"devDependencies": {
+		"husky": "^8.0.3",
+		"is-ci": "^3.0.1",
+		"@commitlint/cli": "^17.6.1",
+		"@commitlint/config-conventional": "^17.6.1",
+		"cz-conventional-changelog": "^3.3.0",
+		"@types/node": "^18.15.11",
+		"@typescript-eslint/eslint-plugin": "^5.58.0",
+		"@typescript-eslint/parser": "^5.58.0",
+		"eslint": "^8.38.0",
+		"eslint-config-prettier": "^8.8.0",
+		"prettier": "^2.8.7",
+		"tsup": "^6.7.0",
+		"typescript": "^5.0.4",
+		"semantic-release": "^21.0.1"
+	},
+	"peerDependencies": {
+		"next": ">= 13.3.0",
+		"zod": ">= 3.0.0"
+	},
+	"config": {
+		"commitizen": {
+			"path": "./node_modules/cz-conventional-changelog"
+		}
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/TheEdoRan/next-safe-mutation.git"
+	},
+	"release": {
+		"branches": [
+			"main"
+		],
+		"plugins": [
+			[
+				"@semantic-release/commit-analyzer",
+				{
+					"preset": "angular",
+					"releaseRules": [
+						{
+							"breaking": true,
+							"release": "major"
+						},
+						{
+							"revert": true,
+							"release": "patch"
+						},
+						{
+							"type": "feat",
+							"release": "minor"
+						},
+						{
+							"type": "chore",
+							"release": "patch"
+						},
+						{
+							"type": "fix",
+							"release": "patch"
+						},
+						{
+							"type": "perf",
+							"release": "patch"
+						},
+						{
+							"type": "docs",
+							"scope": "readme",
+							"release": "patch"
+						},
+						{
+							"type": "refactor",
+							"release": "patch"
+						},
+						{
+							"scope": "no-release",
+							"release": false
+						}
+					]
+				}
+			],
+			"@semantic-release/release-notes-generator",
+			"@semantic-release/npm",
+			"@semantic-release/github"
+		]
+	}
+}
