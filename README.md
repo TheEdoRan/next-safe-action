@@ -16,7 +16,7 @@ npm i next-safe-mutation zod
 
 ## Project configuration
 
-### Code blocks below are taken from [this example repository](https://github.com/TheEdoRan/next-safe-mutation). Check it out to see a basic implementation of this library and to experiment a bit with it.
+### Code blocks below are taken from [this example repository](https://github.com/TheEdoRan/next-safe-mutation-example). Check it out to see a basic implementation of this library and to experiment a bit with it.
 
 ---
 
@@ -245,6 +245,8 @@ As you just saw, you can provide a `getAuthData` function to `createSafeMutation
 You can also provide a custom logger function for server errors. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable:
 
 ```typescript
+// src/app/lib/safe-mutation.ts
+
 import { createSafeMutationClient } from "next-safe-mutation";
 
 const { safeMutation } = createSafeMutationClient({
