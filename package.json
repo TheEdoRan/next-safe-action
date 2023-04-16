@@ -13,7 +13,7 @@
 	"scripts": {
 		"prepare": "is-ci || husky install",
 		"lint": "tsc && eslint --ext ts .",
-		"build": "tsup ./src/index.ts --format cjs,esm --dts",
+		"build": "tsup ./src/index.ts --format cjs,esm --dts; node fix-use-server.js",
 		"semantic-release": "semantic-release --branches main"
 	},
 	"keywords": [

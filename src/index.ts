@@ -1,5 +1,3 @@
-"use server";
-
 import { z } from "zod";
 
 type UndefinedKeys<T extends object> = {
