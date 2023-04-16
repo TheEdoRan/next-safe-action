@@ -200,7 +200,7 @@ declare module "next-safe-mutation" {
 ```
 
 
-Then, when creating the safe mutation client, you **must** provide an `async function` called `getAuthData` as an option. The return type of this function depends on the interface you just declared. For example, this functions must return an object with an `userId` key of type `string`. If you find out that the user is not authenticated, you can safely throw an error here. It will be caught, and a response with `{ serverError: true }` is returned to the client.
+Then, when creating the safe mutation client, you **must** provide an `async function` called `getAuthData` as an option. The return type of this function depends on the interface you just declared. For example, this function must return an object with an `userId` key of type `string`. If you find out that the user is not authenticated, you can safely throw an error here. It will be caught, and a response with `{ serverError: true }` is returned to the client.
 
 ```typescript
 // src/app/lib/safe-mutation.ts
@@ -264,4 +264,4 @@ export { safeMutation };
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/TheEdoRan/seuid/blob/main/LICENSE).
+This project is licensed under the [MIT License](https://github.com/TheEdoRan/next-safe-mutation/blob/main/LICENSE).
