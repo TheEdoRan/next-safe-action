@@ -13,10 +13,10 @@ export const createMutationOutputValidator = <
 	ClientErrorData extends z.AnyZodObject
 >({
 	successData,
-	clientError: clientErrorData,
+	clientErrorData,
 }: {
 	successData: SuccessData;
-	clientError: ClientErrorData;
+	clientErrorData: ClientErrorData;
 }) =>
 	z
 		.object({ type: z.literal("success"), data: successData })
