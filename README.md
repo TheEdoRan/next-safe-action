@@ -63,7 +63,8 @@ const outputValidator = createMutationOutputValidator({
 // that data that comes in and out of this is type safe and validated.
 // The second argument of this function is an async function that receives
 // parsed input, and defines what happens on the server when the mutation is
-// called from the client. In short, this is your backend code. It never runs on the client.
+// called from the client.
+// In short, this is your backend code. It never runs on the client.
 export const loginUser = safeMutation(
   { inputValidator, outputValidator },
   async ({ username, password }) => { // typesafe input
