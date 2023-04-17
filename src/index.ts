@@ -37,9 +37,9 @@ export interface AuthData {}
 
 // We need to overload the `safeMutation` function, because some mutations
 // need authentication, and others don't, so you can pass the `withAuth: true` property
-// in the `opts` arg, to get back both `parsedInput` and `userId` in the server
+// in the `opts` arg, to get back both `parsedInput` and `authArgs` in the server
 // mutation function definition.
-// `userId` comes from the previously defined `getAuthUserId` function.
+// `authArgs` comes from the previously defined `getAuthUserId` function.
 type SafeMutationOverload = {
 	<
 		const IV extends z.ZodTypeAny,
@@ -76,8 +76,8 @@ type CreateSafeMutationClientArgs = {
 
 // This is the safe mutation initializer.
 export const createSafeMutationClient = (createOpts?: CreateSafeMutationClientArgs) => {
-	// If log function is not provided, default to `console.error` logging error
-	// messsage.
+	// If log function is not provided, default to `console.error` for logging
+	// server error messages.
 	const serverErrorLogFunction =
 		createOpts?.serverErrorLogFunction ||
 		((e) => {
@@ -86,10 +86,10 @@ export const createSafeMutationClient = (createOpts?: CreateSafeMutationClientAr
 			console.log("Mutation error:", errMessage);
 		});
 
-	// Safe mutation is the server function that creates a new mutation.
+	// `safeMutation` is the server function that creates a new mutation.
 	// It expects input and output validators, an optional `withAuth` property, and
-	// a definition function, so the mutation knows what to do when called by
-	// the client.
+	// a definition function, so the mutation knows what to do on the server when
+	// called by the client.
 	// It returns a function callable by the client.
 	const safeMutation: SafeMutationOverload = (opts, mutationDefinitionFunc) => {
 		// This is the function called by client. If `input` fails the `inputValidator`
