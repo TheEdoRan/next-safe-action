@@ -16,7 +16,7 @@ npm i next-safe-mutation zod
 
 ## Project configuration
 
-### Code blocks below are taken from [this example repository](https://github.com/TheEdoRan/next-safe-mutation-example). Check it out to see a basic implementation of this library and to experiment a bit with it.
+### Code blocks below are based on [this example repository](https://github.com/TheEdoRan/next-safe-mutation-example). Check it out to see a basic implementation of this library and to experiment a bit with it.
 
 ---
 
