@@ -5,7 +5,9 @@ type UndefinedKeys<T extends object> = {
 };
 
 // This utility creates an output validator that has
-// { type: "success", data: successData } or { type: "clientError", data: clientErrorData }
+// { type: "success", data: successData }
+// or
+// { type: "clientError", data: clientErrorData }
 export const createMutationOutputValidator = <
 	SuccessData extends z.AnyZodObject,
 	ClientErrorData extends z.AnyZodObject
