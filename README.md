@@ -59,8 +59,11 @@ const outputValidator = createMutationOutputValidator({
 });
 
 // This is how a safe mutation is created.
-// Since we provided Zod input and output validators to the function, we're sure that data that comes in and out of this is type safe and validated.
-// The second argument of this function is an async function that receives parsed input, and defines what happens on the server when the mutation is called from the client. In short, this is your backend code. It never runs on the client.
+// Since we provided Zod input and output validators to the function, we're sure
+// that data that comes in and out of this is type safe and validated.
+// The second argument of this function is an async function that receives
+// parsed input, and defines what happens on the server when the mutation is
+// called from the client. In short, this is your backend code. It never runs on the client.
 export const loginUser = safeMutation(
   { inputValidator, outputValidator },
   async ({ username, password }) => { // typesafe input
@@ -226,7 +229,9 @@ Then, you can provide a `withAuth: true` option to the safe mutation you're crea
 // src/app/withauth/edituser-mutation.ts
 
 // [1] For protected mutations, you need to provide `withAuth: true` here.
-// [2] Then, you'll have access to the auth object, in this case it's just `{ userId }`, which comes from the `AuthData` interface declared in `next-safe-mutation.d.ts` file.
+// [2] Then, you'll have access to the auth object, in this case it's just
+// `{ userId }`, which comes from the `AuthData` interface declared in
+// `next-safe-mutation.d.ts` file.
 export const editUser = safeMutation(
   { inputValidator, outputValidator, withAuth: true }, // [1]
   async (parsedInput, { userId }) => {  // [2]
@@ -250,7 +255,8 @@ You can also provide a custom logger function for server errors. By default, the
 import { createSafeMutationClient } from "next-safe-mutation";
 
 const { safeMutation } = createSafeMutationClient({
-  // You can also provide an empty function here (if you don't want server error logging), or a Promise. Return type is `void`.
+  // You can also provide an empty function here (if you don't want server error
+  // logging), or a Promise. Return type is `void`.
   serverErrorLogFunction: (e) => {
     console.error("CUSTOM ERROR LOG FUNCTION:", e);
   },
