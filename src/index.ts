@@ -7,20 +7,20 @@ type UndefinedKeys<T extends object> = {
 // This utility creates an output validator that has
 // { type: "success", data: successData }
 // or
-// { type: "clientError", data: clientErrorData }
+// { type: "error", data: errorData }
 export const createMutationOutputValidator = <
 	SuccessData extends z.AnyZodObject,
-	ClientErrorData extends z.AnyZodObject
+	ErrorData extends z.AnyZodObject
 >({
 	successData,
-	clientErrorData,
+	errorData,
 }: {
 	successData: SuccessData;
-	clientErrorData: ClientErrorData;
+	errorData: ErrorData;
 }) =>
 	z
 		.object({ type: z.literal("success"), data: successData })
-		.or(z.object({ type: z.literal("clientError"), data: clientErrorData }));
+		.or(z.object({ type: z.literal("error"), data: errorData }));
 
 // The type for client mutation, which is called by components.
 // You pass the input data here, and it's all typesafe.
@@ -29,7 +29,7 @@ type ClientMutation<
 	OV extends ReturnType<typeof createMutationOutputValidator>
 > = (input: z.infer<IV>) => Promise<{
 	success?: Extract<z.infer<OV>, { type: "success" }>["data"];
-	clientError?: Extract<z.infer<OV>, { type: "clientError" }>["data"];
+	error?: Extract<z.infer<OV>, { type: "error" }>["data"];
 	serverError?: true;
 	inputValidationErrorFields?: Partial<Record<keyof z.infer<IV>, string[]>>;
 }>;

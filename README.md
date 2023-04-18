@@ -50,10 +50,10 @@ const inputValidator = z.object({
 });
 
 // This is used to create an ouput validator.
-// `successData` and `clientErrorData` are required keys.
+// `successData` and `errorData` are required keys.
 const outputValidator = createMutationOutputValidator({
   successData: z.object({ ok: z.literal(true) }),
-  clientErrorData: z.object({
+  errorData: z.object({
     reason: z.enum(["incorrect_credentials", "user_suspended"]),
   }),
 });
@@ -70,7 +70,7 @@ export const loginUser = safeMutation(
   async ({ username, password }) => { // typesafe input
     if (username === "johndoe") {
       return {
-        type: "clientError",
+        type: "error",
         data: {
           reason: "user_suspended",
         },
@@ -87,7 +87,7 @@ export const loginUser = safeMutation(
     }
 
     return {
-      type: "clientError",
+      type: "error",
       data: {
         reason: "incorrect_credentials",
       },
@@ -171,7 +171,7 @@ As you can see from the image, on the client you get back a typesafe response ob
 
 Here's an explanation:
 
-- `success` or `clientError`: if mutation runs without issues, you get what you returned in the server mutation body, with a type of output validator's `successData` or `clientErrorData` key (see second code block).
+- `success` or `error`: if mutation runs without issues, you get what you returned in the server mutation body, with a type of output validator's `successData` or `errorData` key (see second code block).
 
 - `inputValidationErrorFields`: if an invalid input object (parsed by Zod via `inputValidator`) is passed from the client when calling the mutation, invalid fields will populate this key, in the form of:
 
