@@ -159,28 +159,13 @@ Here's an explanation:
 }
 ```
 
-- `serverError`: if an unexpected error occurs in the server mutation body, it will be caught, and the client will only get back a `{ serverError: true }` response. By default, the server error will be logged via `console.error`, but this is configurable.
+- `serverError`: if an unexpected error occurs in the server mutation body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but this is configurable.
 
 ## Authenticated mutation
 
 The library also supports creating protected mutations, that will return a `serverError` back if user is not authenticated. You need to make some changes to the above code to be able to use them.
 
-First, you **must** create a declaration file (where you want in your project, but make sure that TypeScript is picking it up correctly), and define your custom `AuthData` interface into it:
-
-```typescript
-// next-safe-mutation.d.ts
-
-import "next-safe-mutation";
-
-declare module "next-safe-mutation" {
-  interface AuthData {
-    userId: string;
-  }
-}
-```
-
-
-Then, when creating the safe mutation client, you **must** provide an `async function` called `getAuthData` as an option. The return type of this function depends on the interface you just declared. For example, this function must return an object with an `userId` key of type `string`. If you find out that the user is not authenticated, you can safely throw an error here. It will be caught, and a response with `{ serverError: true }` is returned to the client.
+First, when creating the safe mutation client, you **must** provide an `async function` called `getAuthData` as an option. You can return anything you want from here. If you find out that the user is not authenticated, you can safely throw an error in this function. It will be caught, and the client will receive a `serverError` response.
 
 ```typescript
 // src/app/lib/safe-mutation.ts
@@ -207,8 +192,8 @@ Then, you can provide a `withAuth: true` option to the safe mutation you're crea
 
 // [1] For protected mutations, you need to provide `withAuth: true` here.
 // [2] Then, you'll have access to the auth object, in this case it's just
-// `{ userId }`, which comes from the `AuthData` interface declared in
-// `next-safe-mutation.d.ts` file.
+// `{ userId }`, which comes from the return type of the `getAuthData` function
+// declared in the previous step.
 export const editUser = safeMutation(
   { inputValidator, outputValidator, withAuth: true }, // [1]
   async (parsedInput, { userId }) => {  // [2]
@@ -218,7 +203,7 @@ export const editUser = safeMutation(
 );
 ```
 
-If you set `withAuth` to `true` in the safe mutation you're creating, but you forgot to define a `getAuthData` function when creating the client (above step), an error will be thrown when calling the mutation from client, that results in a `{ serverError: true }` response for the client.
+If you set `withAuth` to `true` in the safe mutation you're creating, but you forgot to define a `getAuthData` function when creating the client (above step), an error will be thrown when calling the mutation from client, that results in a `serverError` response for the client.
 
 ## `createSafeMutationClient` options
 
@@ -241,9 +226,6 @@ const { safeMutation } = createSafeMutationClient({
 
 export { safeMutation };
 ```
-
-## TODO
-- [ ] Testing
 
 ## License
 
