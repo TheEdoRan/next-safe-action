@@ -149,11 +149,11 @@ Here's an explanation:
 
 - `success` or `error`: if mutation runs without issues, you get what you returned in the server mutation body, with a type of output validator's `successData` or `errorData` key (see second code block).
 
-- `inputValidationErrorFields`: if an invalid input object (parsed by Zod via `inputValidator`) is passed from the client when calling the mutation, invalid fields will populate this key, in the form of:
+- `inputValidationError`: if an invalid input object (parsed by Zod via `inputValidator`) is passed from the client when calling the mutation, invalid fields will populate this key, in the form of:
 
 ```json
 {
-  "inputValidationErrorFields": {
+  "inputValidationError": {
     "fieldName": ["issue"],
   }
 }

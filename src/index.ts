@@ -27,7 +27,7 @@ type ClientMutation<
 	success?: Extract<z.infer<OV>, { type: "success" }>["data"];
 	error?: Extract<z.infer<OV>, { type: "error" }>["data"];
 	serverError?: true;
-	inputValidationErrorFields?: Partial<Record<keyof z.infer<IV>, string[]>>;
+	inputValidationError?: Partial<Record<keyof z.infer<IV>, string[]>>;
 }>;
 
 // We need to overload the `safeMutation` function, because some mutations
@@ -83,7 +83,7 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 	// It returns a function callable by the client.
 	const safeMutation: SafeMutationOverload<AuthData> = (opts, mutationDefinitionFunc) => {
 		// This is the function called by client. If `input` fails the `inputValidator`
-		// parsing, the function will return an `inputValidationErrorFields` object,
+		// parsing, the function will return an `inputValidationError` object,
 		// containing all the invalid fields provided.
 		return async (input) => {
 			const parsedInput = opts.inputValidator.safeParse(input);
@@ -94,7 +94,7 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 				>;
 
 				return {
-					inputValidationErrorFields: fieldErrors,
+					inputValidationError: fieldErrors,
 				};
 			}
 
