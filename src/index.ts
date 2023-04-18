@@ -133,5 +133,5 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 		};
 	};
 
-	return { safeMutation };
+	return safeMutation;
 };

@@ -27,7 +27,7 @@ First of all, you need to create the safe mutation client:
 
 import { createSafeMutationClient } from "next-safe-mutation";
 
-const { safeMutation } = createSafeMutationClient();
+const safeMutation = createSafeMutationClient();
 
 export { safeMutation };
 ```
@@ -170,7 +170,7 @@ First, when creating the safe mutation client, you **must** provide an `async fu
 ```typescript
 // src/app/lib/safe-mutation.ts
 
-const { safeMutation } = createSafeMutationClient({
+const safeMutation = createSafeMutationClient({
   getAuthData: async () => {
     const session = true;
 
@@ -183,6 +183,8 @@ const { safeMutation } = createSafeMutationClient({
     };
   },
 });
+
+export { safeMutation };
 ```
 
 Then, you can provide a `withAuth: true` option to the safe mutation you're creating:
@@ -216,7 +218,7 @@ You can also provide a custom logger function for server errors. By default, the
 
 import { createSafeMutationClient } from "next-safe-mutation";
 
-const { safeMutation } = createSafeMutationClient({
+const safeMutation = createSafeMutationClient({
   // You can also provide an empty function here (if you don't want server error
   // logging), or a Promise. Return type is `void`.
   serverErrorLogFunction: (e) => {
