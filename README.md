@@ -98,10 +98,7 @@ export const loginUser = safeMutation(
 
 ---
 
-The `safeMutation` function returns a new function (in this case `loginUser`), that is used in Client Components. Here's how it works.
-
-
-First, create a Client Component, and receive the mutation function as a prop:
+The `safeMutation` function returns a new function (in this case `loginUser`), that is used in Client Components:
 
 ```tsx
 // src/app/login-form.tsx
@@ -111,11 +108,7 @@ First, create a Client Component, and receive the mutation function as a prop:
 import { useState } from "react";
 import { loginUser } from "./login-mutation";
 
-type Props = {
-  loginUser: typeof loginUser; // you just need `typeof` here to get typesafety!
-};
-
-const LoginForm = ({ loginUser }: Props) => {
+const LoginForm = () => {
   return (
     <form
       onSubmit={async (e) => {
@@ -146,23 +139,6 @@ const LoginForm = ({ loginUser }: Props) => {
 };
 
 export default LoginForm;
-```
-
-Then, pass the typesafe mutation from a Server Component as prop:
-
-```tsx
-// src/app/page.tsx
-
-import LoginForm from "./login-form";
-import { loginUser } from "./login-mutation";
-
-const Home = () => {
-  return (
-    <LoginForm loginUser={loginUser} />
-  );
-}
-
-export default Home;
 ```
 
 As you can see from the image, on the client you get back a typesafe response object, with four optional keys:
