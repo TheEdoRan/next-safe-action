@@ -168,7 +168,7 @@ The library also supports creating protected mutations, that will return a `serv
 First, when creating the safe mutation client, you **must** provide an `async function` called `getAuthData` as an option. You can return anything you want from here. If you find out that the user is not authenticated, you can safely throw an error in this function. It will be caught, and the client will receive a `serverError` response.
 
 ```typescript
-// src/app/lib/safe-mutation.ts
+// src/lib/safe-mutation.ts
 
 const safeMutation = createSafeMutationClient({
   getAuthData: async () => {
@@ -214,7 +214,7 @@ As you just saw, you can provide a `getAuthData` function to `createSafeMutation
 You can also provide a custom logger function for server errors. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable:
 
 ```typescript
-// src/app/lib/safe-mutation.ts
+// src/lib/safe-mutation.ts
 
 import { createSafeMutationClient } from "next-safe-mutation";
 
