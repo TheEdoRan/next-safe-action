@@ -11,13 +11,12 @@
 		"package.json"
 	],
 	"exports": {
-		".": "./dist/index.mjs",
-		"./hook": "./dist/hook.mjs"
+		"./*": "./dist/*"
 	},
 	"typesVersions": {
 		"*": {
-			"hook": [
-				"dist/hook.d.ts"
+			"*": [
+				"dist/"
 			]
 		}
 	},
@@ -132,6 +131,7 @@
 			"src/hook.ts"
 		],
 		"format": [
+			"cjs",
 			"esm"
 		],
 		"clean": true,
