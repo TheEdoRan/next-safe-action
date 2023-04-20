@@ -16,7 +16,6 @@ export const useMutation = <
 	>(null);
 
 	const mutate = useCallback(async (input: z.infer<IV>) => {
-		setRes(null);
 		setIsMutating(true);
 
 		try {
