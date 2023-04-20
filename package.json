@@ -11,13 +11,15 @@
 		"package.json"
 	],
 	"exports": {
-		"./*": "./dist/*"
-	},
-	"typesVersions": {
-		"*": {
-			"*": [
-				"dist/*"
-			]
+		".": {
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./hook": {
+			"import": "./dist/hook.mjs",
+			"require": "./dist/hook.js",
+			"types": "./dist/hook.d.ts"
 		}
 	},
 	"scripts": {
