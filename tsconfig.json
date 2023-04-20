@@ -25,5 +25,5 @@
 		"noEmit": true
 	},
 	"exclude": ["node_modules"],
-	"include": ["./src/**/*.ts"]
+	"include": ["tsup.config.ts", "./src/**/*.ts"]
 }

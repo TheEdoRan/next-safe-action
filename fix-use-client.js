@@ -1,5 +1,5 @@
-// This is needed because Next.js files with server functions must have
-// the "use server" directive at the start of file.
+// This is needed because Next.js files with client functions must have
+// the "use client" directive at the start of file.
 
 const { readFileSync, writeFileSync } = require("fs");
 const { join } = require("path");
@@ -13,7 +13,7 @@ const main = () => {
 		console.log("Fixed", path);
 	};
 
-	fixFile(join(__dirname, "dist", "hook.mjs"));
+	fixFile(join(__dirname, "dist", "hook", "index.mjs"));
 };
 
 main();

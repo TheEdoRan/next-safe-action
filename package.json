@@ -17,15 +17,25 @@
 			"types": "./dist/index.d.ts"
 		},
 		"./hook": {
-			"import": "./dist/hook.mjs",
-			"require": "./dist/hook.js",
-			"types": "./dist/hook.d.ts"
+			"import": "./dist/hook/index.mjs",
+			"require": "./dist/hook/index.js",
+			"types": "./dist/hook/index.d.ts"
+		}
+	},
+	"typesVersions": {
+		"*": {
+			".": [
+				"dist/index.d.ts"
+			],
+			"hook": [
+				"dist/hook/index.d.ts"
+			]
 		}
 	},
 	"scripts": {
 		"prepare": "is-ci || husky install",
 		"lint": "tsc && eslint --ext ts .",
-		"build": "tsup; node fix-use-client",
+		"build": "tsup",
 		"semantic-release": "semantic-release --branches main"
 	},
 	"keywords": [

@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import type { z } from "zod";
-import type { createMutationOutputValidator } from ".";
-import type { ClientMutation } from "./types";
+import type { createMutationOutputValidator } from "..";
+import type { ClientMutation } from "../types";
 
 export const useMutation = <
 	IV extends z.ZodTypeAny,
