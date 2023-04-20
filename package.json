@@ -13,12 +13,10 @@
 	"exports": {
 		".": {
 			"import": "./dist/index.mjs",
-			"require": "./dist/index.js",
 			"types": "./dist/index.d.ts"
 		},
 		"./hook": {
 			"import": "./dist/hook/index.mjs",
-			"require": "./dist/hook/index.js",
 			"types": "./dist/hook/index.d.ts"
 		}
 	},
@@ -136,19 +134,5 @@
 			"@semantic-release/npm",
 			"@semantic-release/github"
 		]
-	},
-	"tsup": {
-		"entry": [
-			"src/index.ts",
-			"src/hook.ts"
-		],
-		"format": [
-			"cjs",
-			"esm"
-		],
-		"clean": true,
-		"splitting": false,
-		"sourcemap": true,
-		"dts": true
 	}
 }
