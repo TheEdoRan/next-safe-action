@@ -96,9 +96,13 @@ export const loginUser = safeMutation(
 );
 ```
 
+`safeMutation` returns a new function (in this case `loginUser`), that is used in Client Components.
+
 ---
 
-The `safeMutation` function returns a new function (in this case `loginUser`), that is used in Client Components:
+There are two ways to call safe mutations from the client:
+
+## 1. The direct way
 
 ```tsx
 // src/app/login-form.tsx
@@ -160,6 +164,70 @@ Here's an explanation:
 ```
 
 - `serverError`: if an unexpected error occurs in the server mutation body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but this is configurable.
+
+## 2. The hook way
+
+Another way to mutate data from client is by using the `useMutation` hook. This is useful when you need global access to the mutation state in the Client Component.
+
+Here's how it works:
+
+```tsx
+// src/app/hook/deleteuser-form.tsx
+
+"use client";
+
+import { useMutation } from "next-safe-mutation/hook";
+import { deleteUser } from "./deleteuser-mutation";
+
+const DeleteUserForm = () => {
+  // Safe mutation (`deleteUser`) passed to `useMutation` hook.
+  const myDelete = useMutation(deleteUser);
+
+  return (
+    <>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          const input = Object.fromEntries(formData) as {
+            userId: string;
+          };
+
+          // Mutation call.
+          myDelete.mutate(input);
+        }}>
+        <input type="text" name="userId" id="userId" placeholder="User ID" />
+        <button type="submit">Delete user</button>
+      </form>
+      <div id="response-container">
+        <div>Mutation response:</div>
+        <pre className="response">
+          {
+            myDelete.res // if got back a response,
+              ? JSON.stringify(myDelete.res, null, 1)
+              : myDelete.isMutating // if currently mutating
+              ? "currently mutating..."
+              : "fill in form and click on the delete user button" // if mutation never ran
+          }
+        </pre>
+      </div>
+    </>
+  );
+};
+
+export default DeleteUserForm;
+```
+
+The `useMutation` hook returns an object with three keys:
+
+- `mutate`: a caller for the safe mutation you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe mutation the non-hooky way.
+- `isMutating`: a `boolean` that is true while the `mutate` function is mutating data.
+- `res`: when `mutate` finished mutating data, the response object. Otherwise it is `null`. It has the same four optional keys as the one above (`success`, `error`, `inputValidationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
+
+Image example:
+
+![Hook typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-mutation/main/assets/hook-typesafe-client-response.png)
+
 
 ## Authenticated mutation
 
