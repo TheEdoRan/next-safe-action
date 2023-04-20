@@ -5,11 +5,9 @@ import type { ClientMutation } from "../types";
 
 export const useMutation = <
 	IV extends z.ZodTypeAny,
-	OV extends ReturnType<typeof createMutationOutputValidator>,
-	K extends string
+	OV extends ReturnType<typeof createMutationOutputValidator>
 >(
-	mutationFunction: ClientMutation<IV, OV>,
-	key: K
+	mutationFunction: ClientMutation<IV, OV>
 ) => {
 	const mutation = useRef(mutationFunction);
 	const [isMutating, setIsMutating] = useState(false);
@@ -32,19 +30,9 @@ export const useMutation = <
 		setIsMutating(false);
 	}, []);
 
-	type Ret = {
-		[key in K]: {
-			mutate: typeof mutate;
-			isMutating: typeof isMutating;
-			res: typeof res;
-		};
-	};
-
 	return {
-		[key]: {
-			mutate,
-			isMutating,
-			res,
-		},
-	} as Ret;
+		mutate,
+		isMutating,
+		res,
+	};
 };
