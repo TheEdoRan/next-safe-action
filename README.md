@@ -50,7 +50,7 @@ const inputValidator = z.object({
 });
 
 // This is used to create an ouput validator.
-// `successData` and `errorData` are required keys.
+// `successData` is required and `errorData` is optional.
 const outputValidator = createMutationOutputValidator({
   successData: z.object({ ok: z.literal(true) }),
   errorData: z.object({
@@ -194,7 +194,7 @@ const DeleteUserForm = () => {
           };
 
           // Mutation call.
-          myDelete.mutate(input);
+          await myDelete.mutate(input);
         }}>
         <input type="text" name="userId" id="userId" placeholder="User ID" />
         <button type="submit">Delete user</button>
