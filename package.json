@@ -10,6 +10,17 @@
 		"dist/**",
 		"package.json"
 	],
+	"exports": {
+		".": "./dist/index.mjs",
+		"./hook": "./dist/hook.mjs"
+	},
+	"typesVersions": {
+		"*": {
+			"hook": [
+				"dist/hook.d.ts"
+			]
+		}
+	},
 	"scripts": {
 		"prepare": "is-ci || husky install",
 		"lint": "tsc && eslint --ext ts .",
