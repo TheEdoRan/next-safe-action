@@ -1,12 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import type { z } from "zod";
-import type { createMutationOutputValidator } from "..";
 import type { ClientMutation } from "../types";
 
-export const useMutation = <
-	IV extends z.ZodTypeAny,
-	OV extends ReturnType<typeof createMutationOutputValidator>
->(
+export const useMutation = <const IV extends z.ZodTypeAny, const OV extends z.ZodTypeAny>(
 	mutationFunction: ClientMutation<IV, OV>
 ) => {
 	const mutation = useRef(mutationFunction);
