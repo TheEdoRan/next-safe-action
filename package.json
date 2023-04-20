@@ -13,7 +13,7 @@
 	"scripts": {
 		"prepare": "is-ci || husky install",
 		"lint": "tsc && eslint --ext ts .",
-		"build": "tsup ./src/index.ts --format cjs,esm --dts; node fix-use-server.js",
+		"build": "tsup; node fix-use-client",
 		"semantic-release": "semantic-release --branches main"
 	},
 	"keywords": [
@@ -30,23 +30,25 @@
 		"node": ">=16"
 	},
 	"devDependencies": {
-		"husky": "^8.0.3",
-		"is-ci": "^3.0.1",
 		"@commitlint/cli": "^17.6.1",
 		"@commitlint/config-conventional": "^17.6.1",
-		"cz-conventional-changelog": "^3.3.0",
 		"@types/node": "^18.15.11",
+		"@types/react": "^18.0.37",
 		"@typescript-eslint/eslint-plugin": "^5.58.0",
 		"@typescript-eslint/parser": "^5.58.0",
+		"cz-conventional-changelog": "^3.3.0",
 		"eslint": "^8.38.0",
 		"eslint-config-prettier": "^8.8.0",
+		"husky": "^8.0.3",
+		"is-ci": "^3.0.1",
 		"prettier": "^2.8.7",
+		"semantic-release": "^21.0.1",
 		"tsup": "^6.7.0",
-		"typescript": "^5.0.4",
-		"semantic-release": "^21.0.1"
+		"typescript": "^5.0.4"
 	},
 	"peerDependencies": {
 		"next": ">= 13.3.0",
+		"react": ">= 18",
 		"zod": ">= 3.0.0"
 	},
 	"config": {
@@ -112,5 +114,18 @@
 			"@semantic-release/npm",
 			"@semantic-release/github"
 		]
+	},
+	"tsup": {
+		"entry": [
+			"src/index.ts",
+			"src/hook.ts"
+		],
+		"format": [
+			"esm"
+		],
+		"clean": true,
+		"splitting": false,
+		"sourcemap": true,
+		"dts": true
 	}
 }
