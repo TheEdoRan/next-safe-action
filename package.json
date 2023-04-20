@@ -16,7 +16,7 @@
 	"typesVersions": {
 		"*": {
 			"*": [
-				"dist/"
+				"dist/*"
 			]
 		}
 	},
