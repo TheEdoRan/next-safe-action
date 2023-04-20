@@ -200,14 +200,13 @@ const DeleteUserForm = () => {
         <button type="submit">Delete user</button>
       </form>
       <div id="response-container">
+        <pre>Is mutating: {JSON.stringify(myDelete.isMutating)}</pre>
         <div>Mutation response:</div>
         <pre className="response">
           {
             myDelete.res // if got back a response,
-              ? JSON.stringify(myDelete.res, null, 1)
-              : myDelete.isMutating // if currently mutating
-              ? "currently mutating..."
-              : "fill in form and click on the delete user button" // if mutation never ran
+            ? JSON.stringify(myDelete.res, null, 1)
+            : "fill in form and click on the delete user button" // if mutation never ran
           }
         </pre>
       </div>
