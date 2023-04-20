@@ -1,23 +1,44 @@
 import { z } from "zod";
 import type { SafeMutationOverload } from "./types";
 
+const successOutput = <SuccessData extends z.AnyZodObject>(successData: SuccessData) => {
+	return z.object({ type: z.literal("success"), data: successData });
+};
+
+const successOrErrorOutput = <SuccessData extends z.AnyZodObject, ErrorData extends z.AnyZodObject>(
+	successData: SuccessData,
+	errorData: ErrorData
+) => {
+	return successOutput(successData).or(z.object({ type: z.literal("error"), data: errorData }));
+};
+
+export function createMutationOutputValidator<SuccessData extends z.AnyZodObject>(data: {
+	successData: SuccessData;
+	errorData?: undefined;
+}): ReturnType<typeof successOutput<SuccessData>>;
+
+export function createMutationOutputValidator<
+	SuccessData extends z.AnyZodObject,
+	ErrorData extends z.AnyZodObject
+>(data: {
+	successData: SuccessData;
+	errorData: ErrorData;
+}): ReturnType<typeof successOrErrorOutput<SuccessData, ErrorData>>;
+
 // This utility creates an output validator that has
 // { type: "success", data: successData }
 // or
-// { type: "error", data: errorData }
-export const createMutationOutputValidator = <
+// { type: "error", data: errorData } (if `errorData` is provided, otherwise undefined).
+export function createMutationOutputValidator<
 	SuccessData extends z.AnyZodObject,
 	ErrorData extends z.AnyZodObject
->({
-	successData,
-	errorData,
-}: {
-	successData: SuccessData;
-	errorData: ErrorData;
-}) =>
-	z
-		.object({ type: z.literal("success"), data: successData })
-		.or(z.object({ type: z.literal("error"), data: errorData }));
+>(data: { successData: SuccessData; errorData?: ErrorData | undefined }) {
+	if (typeof data.errorData !== "undefined") {
+		return successOrErrorOutput(data.successData, data.errorData);
+	}
+
+	return successOutput(data.successData);
+}
 
 // This is the safe mutation initializer.
 export const createSafeMutationClient = <AuthData extends object>(createOpts?: {

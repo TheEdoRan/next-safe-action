@@ -1,12 +1,10 @@
 import type { z } from "zod";
-import type { createMutationOutputValidator } from ".";
 
 // The type for client mutation, which is called by components.
 // You pass the input data here, and it's all typesafe.
-export type ClientMutation<
-	IV extends z.ZodTypeAny,
-	OV extends ReturnType<typeof createMutationOutputValidator>
-> = (input: z.infer<IV>) => Promise<{
+export type ClientMutation<IV extends z.ZodTypeAny, OV extends z.ZodTypeAny> = (
+	input: z.infer<IV>
+) => Promise<{
 	success?: Extract<z.infer<OV>, { type: "success" }>["data"];
 	error?: Extract<z.infer<OV>, { type: "error" }>["data"];
 	serverError?: true;
@@ -19,10 +17,7 @@ export type ClientMutation<
 // mutation function definition.
 // `authArgs` comes from the previously defined `getAuthUserId` function.
 export type SafeMutationOverload<AuthData extends object> = {
-	<
-		const IV extends z.ZodTypeAny,
-		const OV extends ReturnType<typeof createMutationOutputValidator>
-	>(
+	<const IV extends z.ZodTypeAny, const OV extends z.ZodTypeAny>(
 		opts: {
 			inputValidator: IV;
 			outputValidator: OV;
@@ -31,10 +26,7 @@ export type SafeMutationOverload<AuthData extends object> = {
 		mutationDefinitionFunc: (parsedInput: z.infer<IV>, authArgs: undefined) => Promise<z.infer<OV>>
 	): ClientMutation<IV, OV>;
 
-	<
-		const IV extends z.ZodTypeAny,
-		const OV extends ReturnType<typeof createMutationOutputValidator>
-	>(
+	<const IV extends z.ZodTypeAny, const OV extends z.ZodTypeAny>(
 		opts: {
 			inputValidator: IV;
 			outputValidator: OV;
