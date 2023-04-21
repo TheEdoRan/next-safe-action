@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from "react";
 import type { z } from "zod";
-import type { ClientMutation } from "../types";
+import type { ClientMutation, MutationOutput } from "../types";
 
-export const useMutation = <const IV extends z.ZodTypeAny, const OV extends z.ZodTypeAny>(
-	mutationFunction: ClientMutation<IV, OV>
+export const useMutation = <const IV extends z.ZodTypeAny, const MO extends MutationOutput<{}, {}>>(
+	mutationFunction: ClientMutation<IV, MO>
 ) => {
 	const mutation = useRef(mutationFunction);
 	const [isMutating, setIsMutating] = useState(false);
