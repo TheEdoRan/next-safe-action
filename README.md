@@ -58,7 +58,7 @@ const input = z.object({
 export const loginUser = safeMutation({ input }, async ({ username, password }) => {
     if (username === "johndoe") {
       return {
-        type: "error",
+        type: "fail",
         data: {
           reason: "user_suspended",
         },
@@ -75,7 +75,7 @@ export const loginUser = safeMutation({ input }, async ({ username, password }) 
     }
 
     return {
-      type: "error",
+      type: "fail",
       data: {
         reason: "incorrect_credentials",
       },
