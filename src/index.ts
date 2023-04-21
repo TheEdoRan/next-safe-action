@@ -1,44 +1,5 @@
-import { z } from "zod";
+import type { z } from "zod";
 import type { SafeMutationOverload } from "./types";
-
-const successOutput = <SuccessData extends z.AnyZodObject>(successData: SuccessData) => {
-	return z.object({ type: z.literal("success"), data: successData });
-};
-
-const successOrErrorOutput = <SuccessData extends z.AnyZodObject, ErrorData extends z.AnyZodObject>(
-	successData: SuccessData,
-	errorData: ErrorData
-) => {
-	return successOutput(successData).or(z.object({ type: z.literal("error"), data: errorData }));
-};
-
-export function createMutationOutputValidator<SuccessData extends z.AnyZodObject>(data: {
-	successData: SuccessData;
-	errorData?: undefined;
-}): ReturnType<typeof successOutput<SuccessData>>;
-
-export function createMutationOutputValidator<
-	SuccessData extends z.AnyZodObject,
-	ErrorData extends z.AnyZodObject
->(data: {
-	successData: SuccessData;
-	errorData: ErrorData;
-}): ReturnType<typeof successOrErrorOutput<SuccessData, ErrorData>>;
-
-// This utility creates an output validator that has
-// { type: "success", data: successData }
-// or
-// { type: "error", data: errorData } (if `errorData` is provided, otherwise undefined).
-export function createMutationOutputValidator<
-	SuccessData extends z.AnyZodObject,
-	ErrorData extends z.AnyZodObject
->(data: { successData: SuccessData; errorData?: ErrorData | undefined }) {
-	if (typeof data.errorData !== "undefined") {
-		return successOrErrorOutput(data.successData, data.errorData);
-	}
-
-	return successOutput(data.successData);
-}
 
 // This is the safe mutation initializer.
 export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
@@ -65,11 +26,11 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 		// parsing, the function will return an `inputValidationError` object,
 		// containing all the invalid fields provided.
 		return async (input) => {
-			const parsedInput = opts.inputValidator.safeParse(input);
+			const parsedInput = opts.input.safeParse(input);
 
 			if (!parsedInput.success) {
 				const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
-					Record<keyof z.infer<(typeof opts)["inputValidator"]>, string[]>
+					Record<keyof z.infer<(typeof opts)["input"]>, string[]>
 				>;
 
 				return {
@@ -78,7 +39,7 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 			}
 
 			try {
-				let serverRes: z.infer<(typeof opts)["outputValidator"]>;
+				let serverRes;
 
 				if (opts.withAuth) {
 					if (!createOpts?.getAuthData) {
@@ -92,12 +53,6 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 				} else {
 					// @ts-expect-error
 					serverRes = await mutationDefinitionFunc(parsedInput.data);
-				}
-
-				const parsedOutput = opts.outputValidator.safeParse(serverRes);
-
-				if (!parsedOutput.success) {
-					throw new Error("output parsing risulted in invalid object");
 				}
 
 				return {
