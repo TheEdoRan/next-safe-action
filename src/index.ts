@@ -1,5 +1,7 @@
 import type { z } from "zod";
-import type { SafeMutationOverload } from "./types";
+import type { MutationOutput, SafeMutationOverload } from "./types";
+
+export type { MutationOutput };
 
 // This is the safe mutation initializer.
 export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
@@ -17,14 +19,14 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 		});
 
 	// `safeMutation` is the server function that creates a new mutation.
-	// It expects input and output validators, an optional `withAuth` property, and
-	// a definition function, so the mutation knows what to do on the server when
+	// It expects an input validator, a optional `withAuth` property, and a
+	// definition function, so the mutation knows what to do on the server when
 	// called by the client.
 	// It returns a function callable by the client.
 	const safeMutation: SafeMutationOverload<AuthData> = (opts, mutationDefinitionFunc) => {
-		// This is the function called by client. If `input` fails the `inputValidator`
-		// parsing, the function will return an `inputValidationError` object,
-		// containing all the invalid fields provided.
+		// This is the function called by client. If `input` fails the validator
+		// parsing, the function will return a `validationError` object, containing
+		// all the invalid fields provided.
 		return async (input) => {
 			const parsedInput = opts.input.safeParse(input);
 
@@ -34,7 +36,7 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 				>;
 
 				return {
-					inputValidationError: fieldErrors,
+					validationError: fieldErrors,
 				};
 			}
 

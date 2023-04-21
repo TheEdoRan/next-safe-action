@@ -7,7 +7,7 @@ type NoUndefinedKeys<T> = T extends undefined
 	: { [K in keyof T as T[K] extends undefined ? never : K]: T[K] };
 
 // What a mutation definition function must return.
-type MutationOutput<SuccessData extends object, FailData extends object> =
+export type MutationOutput<SuccessData extends object, FailData extends object> =
 	| {
 			type: "success";
 			data: SuccessData;
@@ -22,7 +22,7 @@ export type ClientMutation<IV extends z.ZodTypeAny, MO extends MutationOutput<{}
 	success?: Merge<NoUndefinedKeys<Extract<MO, { type: "success" }>["data"]>>;
 	fail?: Merge<NoUndefinedKeys<Extract<MO, { type: "fail" }>["data"]>>;
 	serverError?: true;
-	inputValidationError?: Partial<Record<keyof z.infer<IV>, string[]>>;
+	validationError?: Partial<Record<keyof z.infer<IV>, string[]>>;
 }>;
 
 // We need to overload the `safeMutation` function, because some mutations
