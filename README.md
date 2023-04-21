@@ -37,37 +37,25 @@ Then, create a file for a mutation:
 ```typescript
 // src/app/login-mutation.ts
 
-"use server"; // don't forget to add this directive
+"use server"; // don't forget to add this
 
-import { createMutationOutputValidator } from "next-safe-mutation";
 import { z } from "zod";
 import { safeMutation } from "~/lib/safe-mutation";
 
 // This is used to validate input from client.
-const inputValidator = z.object({
+const input = z.object({
   username: z.string().min(3).max(10),
   password: z.string().min(8).max(100),
 });
 
-// This is used to create an ouput validator.
-// `successData` is required and `errorData` is optional.
-const outputValidator = createMutationOutputValidator({
-  successData: z.object({ ok: z.literal(true) }),
-  errorData: z.object({
-    reason: z.enum(["incorrect_credentials", "user_suspended"]),
-  }),
-});
-
 // This is how a safe mutation is created.
-// Since we provided Zod input and output validators to the function, we're sure
-// that data that comes in and out of this is type safe and validated.
+// Since we provided a Zod input validator to the function, we're sure
+// that data that comes in is type safe and validated.
 // The second argument of this function is an async function that receives
 // parsed input, and defines what happens on the server when the mutation is
 // called from the client.
 // In short, this is your backend code. It never runs on the client.
-export const loginUser = safeMutation(
-  { inputValidator, outputValidator },
-  async ({ username, password }) => { // typesafe input
+export const loginUser = safeMutation({ input }, async ({ username, password }) => {
     if (username === "johndoe") {
       return {
         type: "error",
@@ -151,13 +139,13 @@ As you can see from the image, on the client you get back a typesafe response ob
 
 Here's an explanation:
 
-- `success` or `error`: if mutation runs without issues, you get what you returned in the server mutation body, with a type of output validator's `successData` or `errorData` key (see second code block).
+- `success` or `fail`: if mutation runs without issues, you get what you returned in the server mutation body.
 
-- `inputValidationError`: if an invalid input object (parsed by Zod via `inputValidator`) is passed from the client when calling the mutation, invalid fields will populate this key, in the form of:
+- `validationError`: if an invalid input object (parsed by Zod via input validator) is passed from the client when calling the mutation, invalid fields will populate this key, in the form of:
 
 ```json
 {
-  "inputValidationError": {
+  "validationError": {
     "fieldName": ["issue"],
   }
 }
@@ -174,7 +162,7 @@ Here's how it works:
 ```tsx
 // src/app/hook/deleteuser-form.tsx
 
-"use client";
+"use client"; // this is a client component
 
 import { useMutation } from "next-safe-mutation/hook";
 import { deleteUser } from "./deleteuser-mutation";
@@ -221,7 +209,7 @@ The `useMutation` hook returns an object with three keys:
 
 - `mutate`: a caller for the safe mutation you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe mutation the non-hooky way.
 - `isMutating`: a `boolean` that is true while the `mutate` function is mutating data.
-- `res`: when `mutate` finished mutating data, the response object. Otherwise it is `null`. It has the same four optional keys as the one above (`success`, `error`, `inputValidationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
+- `res`: when `mutate` finished mutating data, the response object. Otherwise it is `null`. It has the same four optional keys as the one above (`success`, `fail`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
 
 Image example:
 
@@ -263,9 +251,8 @@ Then, you can provide a `withAuth: true` option to the safe mutation you're crea
 // [2] Then, you'll have access to the auth object, in this case it's just
 // `{ userId }`, which comes from the return type of the `getAuthData` function
 // declared in the previous step.
-export const editUser = safeMutation(
-  { inputValidator, outputValidator, withAuth: true }, // [1]
-  async (parsedInput, { userId }) => {  // [2]
+export const editUser = safeMutation({ input, withAuth: true }, // [1]
+  async (parsedInput, { userId }) => { // [2]
     console.log(userId); // will output: "coolest_user_id",
     ...
   }

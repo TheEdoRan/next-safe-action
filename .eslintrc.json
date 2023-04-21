@@ -13,6 +13,8 @@
 		"@typescript-eslint/no-inferrable-types": "off",
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"@typescript-eslint/no-floating-promises": "warn",
-		"@typescript-eslint/ban-ts-comment": "off"
+		"@typescript-eslint/ban-ts-comment": "off",
+		"@typescript-eslint/ban-types": "off",
+		"no-mixed-spaces-and-tabs": "off"
 	}
 }
