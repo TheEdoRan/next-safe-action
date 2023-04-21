@@ -1,6 +1,6 @@
 # [next-safe-mutation](https://github.com/TheEdoRan/next-safe-mutation)
 
-> `next-safe-mutation` is a library that uses the latest and greatest Next.js, React and TypeScript features to generate typesafe mutations in Server and Client Components. 
+> `next-safe-mutation` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features to let you define typesafe mutations on the server and call them from Client Components. 
 
 ### Note: server/client mutations are implemented but undocumented at this time in Next.js. They are available since `13.3.0` release.
 
@@ -151,7 +151,7 @@ Here's an explanation:
 }
 ```
 
-- `serverError`: if an unexpected error occurs in the server mutation body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but this is configurable.
+- `serverError`: if an unexpected error occurs in the server mutation body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](https://github.com/TheEdoRan/next-safe-mutation#createsafemutationclient-options).
 
 ## 2. The hook way
 
