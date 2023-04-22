@@ -84,7 +84,21 @@ export const loginUser = safeMutation({ input }, async ({ username, password }) 
 );
 ```
 
-`safeMutation` returns a new function (in this case `loginUser`), that is used in Client Components.
+`safeMutation` returns a new function (in this case `loginUser`). We need to do provide the mutation to a Client Component as a prop, otherwise Server Component functions (e.g. `cookies()` or `headers()`) wouldn't work in the mutation body (defined above).
+
+```tsx
+// src/app/page.tsx
+
+import LoginForm from "./login-form";
+import { loginUser } from "./login-mutation";
+
+export default function Home() {
+  return (
+    {/* here we pass the safe mutation as `login` */}
+    <LoginForm login={loginUser} />
+  );
+}
+```
 
 ---
 
@@ -98,9 +112,13 @@ There are two ways to call safe mutations from the client:
 "use client"; // this is a client component
 
 import { useState } from "react";
-import { loginUser } from "./login-mutation";
+import type { loginUser } from "./login-mutation";
 
-const LoginForm = () => {
+type Props = {
+  login: typeof loginUser; // infer typings with `typeof`
+}
+
+const LoginForm = ({ login }: Props) => {
   return (
     <form
       onSubmit={async (e) => {
@@ -110,7 +128,7 @@ const LoginForm = () => {
           username: string;
           password: string;
         };
-        const res = await loginUser(input); // this is the typesafe mutation called from client!
+        const res = await login(input); // this is the typesafe mutation called from client!
         console.log(res);
       }}>
       <input
@@ -165,11 +183,15 @@ Here's how it works:
 "use client"; // this is a client component
 
 import { useMutation } from "next-safe-mutation/hook";
-import { deleteUser } from "./deleteuser-mutation";
+import type { deleteUser } from "./deleteuser-mutation";
 
-const DeleteUserForm = () => {
-  // Safe mutation (`deleteUser`) passed to `useMutation` hook.
-  const myDelete = useMutation(deleteUser);
+type Props = {
+  remove: typeof deleteUser;
+}
+
+const DeleteUserForm = ({ remove }: Props) => {
+  // Safe mutation (`remove` which is `deleteUser`) passed to `useMutation` hook.
+  const myDelete = useMutation(remove);
 
   return (
     <>
