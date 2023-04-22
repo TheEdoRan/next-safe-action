@@ -218,7 +218,7 @@ Image example:
 
 ## Authenticated mutation
 
-The library also supports creating protected mutations, that will return a `serverError` back if user is not authenticated. You need to make some changes to the above code to be able to use them.
+The library also supports creating protected mutations, that will return a `serverError` back if user is not authenticated. You need to make some changes to the above code in order to use them.
 
 First, when creating the safe mutation client, you **must** provide an `async function` called `getAuthData` as an option. You can return anything you want from here. If you find out that the user is not authenticated, you can safely throw an error in this function. It will be caught, and the client will receive a `serverError` response.
 
