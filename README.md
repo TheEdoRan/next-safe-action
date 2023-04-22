@@ -84,7 +84,7 @@ export const loginUser = safeMutation({ input }, async ({ username, password }) 
 );
 ```
 
-`safeMutation` returns a new function (in this case `loginUser`). We need to do provide the mutation to a Client Component as a prop, otherwise Server Component functions (e.g. `cookies()` or `headers()`) wouldn't work in the mutation body (defined above).
+`safeMutation` returns a new function (in this case `loginUser`). We must provide the mutation to a Client Component as a prop, otherwise Server Component functions (e.g. `cookies()` or `headers()`) wouldn't work in the mutation body (defined above).
 
 ```tsx
 // src/app/page.tsx
