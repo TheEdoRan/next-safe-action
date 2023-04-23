@@ -225,7 +225,7 @@ export default DeleteUserForm;
 The `useAction` hook returns an object with three keys:
 
 - `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe action the non-hooky way.
-- `isExecuting`: a `boolean` that is true while the `action` function is mutating data.
+- `isExecuting`: a `boolean` that is true while the `execute` function is mutating data.
 - `res`: when `execute` finished mutating data, the response object. Otherwise it is `null`. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
 
 Image example:
