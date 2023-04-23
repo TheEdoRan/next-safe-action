@@ -1,8 +1,8 @@
 {
-	"name": "next-safe-mutation",
+	"name": "next-safe-action",
 	"version": "0.0.0-development",
 	"private": false,
-	"description": "A typesafe mutation implementation for Next.js with RSC.",
+	"description": "A typesafe server actions implementation for Next.js with RSC.",
 	"main": "index.js",
 	"module": "index.mjs",
 	"types": "index.d.ts",
@@ -18,7 +18,12 @@
 		"react",
 		"rsc",
 		"react server components",
-		"mutation"
+		"mutation",
+		"action",
+		"actions",
+		"react actions",
+		"next actions",
+		"server actions"
 	],
 	"author": "Edoardo Ranghieri",
 	"license": "MIT",
@@ -54,7 +59,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/TheEdoRan/next-safe-mutation.git"
+		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"release": {
 		"branches": [

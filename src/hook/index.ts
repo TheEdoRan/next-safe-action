@@ -1,33 +1,33 @@
 import { useCallback, useRef, useState } from "react";
 import type { z } from "zod";
-import type { ClientMutation } from "../types";
+import type { ClientAction } from "../types";
 
-export const useMutation = <const IV extends z.ZodTypeAny, const MO>(
-	mutationFunction: ClientMutation<IV, MO>
+export const useAction = <const IV extends z.ZodTypeAny, const AO>(
+	clientAction: ClientAction<IV, AO>
 ) => {
-	const mutation = useRef(mutationFunction);
-	const [isMutating, setIsMutating] = useState(false);
+	const executor = useRef(clientAction);
+	const [isExecuting, setIsExecuting] = useState(false);
 	const [res, setRes] = useState<
-		(Awaited<ReturnType<typeof mutationFunction>> & { fetchError?: any }) | null
+		(Awaited<ReturnType<typeof clientAction>> & { fetchError?: any }) | null
 	>(null);
 
-	const mutate = useCallback(async (input: z.infer<IV>) => {
-		setIsMutating(true);
+	const execute = useCallback(async (input: z.infer<IV>) => {
+		setIsExecuting(true);
 
 		try {
-			const r = await mutation.current(input);
+			const r = await executor.current(input);
 			setRes(r);
 		} catch (e) {
 			// If fetch fails.
 			setRes({ fetchError: e });
 		}
 
-		setIsMutating(false);
+		setIsExecuting(false);
 	}, []);
 
 	return {
-		mutate,
-		isMutating,
+		execute,
+		isExecuting,
 		res,
 	};
 };

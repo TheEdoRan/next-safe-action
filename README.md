@@ -1,8 +1,8 @@
-# [next-safe-mutation](https://github.com/TheEdoRan/next-safe-mutation)
+# [next-safe-action](https://github.com/TheEdoRan/next-safe-action)
 
-> `next-safe-mutation` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features to let you define typesafe mutations on the server and call them from Client Components. 
+> `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features to let you define typesafe actions on the server and call them from Client Components. 
 
-### Note: server/client mutations are implemented but undocumented at this time in Next.js. They are available since `13.3.0` release.
+### Note: server actions are implemented but undocumented at this time in Next.js. They are available since `13.3.0` release.
 
 ## Requirements
 
@@ -11,36 +11,36 @@ Next.js >= 13.3.0 and >= TypeScript 5.0.
 ## Installation
 
 ```sh
-npm i next-safe-mutation zod
+npm i next-safe-action zod
 ```
 
 ## Project configuration
 
-### Code blocks below are based on [this example repository](https://github.com/TheEdoRan/next-safe-mutation-example). Check it out to see a basic implementation of this library and to experiment a bit with it.
+### Code blocks below are based on [this example repository](https://github.com/TheEdoRan/next-safe-action-example). Check it out to see a basic implementation of this library and to experiment a bit with it.
 
 ---
 
-First of all, you need to create the safe mutation client:
+First of all, you need to create the safe action client:
 
 ```typescript
-// src/lib/safe-mutation.ts
+// src/lib/safe-action.ts
 
-import { createSafeMutationClient } from "next-safe-mutation";
+import { createSafeActionClient } from "next-safe-action";
 
-const safeMutation = createSafeMutationClient();
+const action = createSafeActionClient();
 
-export { safeMutation };
+export { action };
 ```
 
-Then, create a file for a mutation:
+Then, create a file for an action:
 
 ```typescript
-// src/app/login-mutation.ts
+// src/app/login-action.ts
 
 "use server"; // don't forget to add this
 
 import { z } from "zod";
-import { safeMutation } from "~/lib/safe-mutation";
+import { action } from "~/lib/safe-action";
 
 // This is used to validate input from client.
 const input = z.object({
@@ -48,14 +48,14 @@ const input = z.object({
   password: z.string().min(8).max(100),
 });
 
-// This is how a safe mutation is created.
+// This is how a safe action is created.
 // Since we provided a Zod input validator to the function, we're sure
 // that data that comes in is type safe and validated.
 // The second argument of this function is an async function that receives
-// parsed input, and defines what happens on the server when the mutation is
+// parsed input, and defines what happens on the server when the action is
 // called from the client.
 // In short, this is your backend code. It never runs on the client.
-export const loginUser = safeMutation({ input }, async ({ username, password }) => {
+export const loginUser = action({ input }, async ({ username, password }) => {
     if (username === "johndoe") {
       return {
         error: {
@@ -79,17 +79,17 @@ export const loginUser = safeMutation({ input }, async ({ username, password }) 
 );
 ```
 
-`safeMutation` returns a new function (in this case `loginUser`). We must provide the mutation to a Client Component as a prop, otherwise Server Component functions (e.g. `cookies()` or `headers()`) wouldn't work in the mutation body (defined above).
+`action` returns a new function (in this case `loginUser`). To make it actually work, we must pass the action to a Client Component as a prop, otherwise Server Component functions (e.g. `cookies()` or `headers()`) wouldn't work in the server action body (defined above).
 
 ```tsx
 // src/app/page.tsx
 
 import LoginForm from "./login-form";
-import { loginUser } from "./login-mutation";
+import { loginUser } from "./login-action";
 
 export default function Home() {
   return (
-    {/* here we pass the safe mutation as `login` */}
+    {/* here we pass the safe action as `login` */}
     <LoginForm login={loginUser} />
   );
 }
@@ -97,7 +97,7 @@ export default function Home() {
 
 ---
 
-There are two ways to call safe mutations from the client:
+There are two ways to call safe actions from the client:
 
 ## 1. The direct way
 
@@ -107,7 +107,7 @@ There are two ways to call safe mutations from the client:
 "use client"; // this is a client component
 
 import { useState } from "react";
-import type { loginUser } from "./login-mutation";
+import type { loginUser } from "./login-action";
 
 type Props = {
   login: typeof loginUser; // infer typings with `typeof`
@@ -123,7 +123,7 @@ const LoginForm = ({ login }: Props) => {
           username: string;
           password: string;
         };
-        const res = await login(input); // this is the typesafe mutation called from client!
+        const res = await login(input); // this is the typesafe action called from client!
         console.log(res);
       }}>
       <input
@@ -148,13 +148,13 @@ export default LoginForm;
 
 As you can see from the image, on the client you get back a typesafe response object, with three optional keys:
 
-![Typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-mutation/main/assets/typesafe-client-response.png)
+![Typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-action/main/assets/typesafe-client-response.png)
 
 Here's an explanation:
 
-- `data`: if mutation runs without issues, you get what you returned in the server mutation body.
+- `data`: if action runs without issues, you get what you returned in the server action body.
 
-- `validationError`: if an invalid input object (parsed by Zod via input validator) is passed from the client when calling the mutation, invalid fields will populate this key, in the form of:
+- `validationError`: if an invalid input object (parsed by Zod via input validator) is passed from the client when calling the action, invalid fields will populate this key, in the form of:
 
 ```json
 {
@@ -164,11 +164,11 @@ Here's an explanation:
 }
 ```
 
-- `serverError`: if an unexpected error occurs in the server mutation body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](https://github.com/TheEdoRan/next-safe-mutation#createsafemutationclient-options).
+- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](https://github.com/TheEdoRan/next-safe-action#createsafeactionclient-options).
 
 ## 2. The hook way
 
-Another way to mutate data from client is by using the `useMutation` hook. This is useful when you need global access to the mutation state in the Client Component.
+Another way to mutate data from client is by using the `useAction` hook. This is useful when you need global access to the action state in the Client Component.
 
 Here's how it works:
 
@@ -177,16 +177,16 @@ Here's how it works:
 
 "use client"; // this is a client component
 
-import { useMutation } from "next-safe-mutation/hook";
-import type { deleteUser } from "./deleteuser-mutation";
+import { useAction } from "next-safe-action/hook";
+import type { deleteUser } from "./deleteuser-action";
 
 type Props = {
   remove: typeof deleteUser;
 }
 
 const DeleteUserForm = ({ remove }: Props) => {
-  // Safe mutation (`remove` which is `deleteUser`) passed to `useMutation` hook.
-  const myDelete = useMutation(remove);
+  // Safe action (`remove` which is `deleteUser`) passed to `useAction` hook.
+  const myDelete = useAction(remove);
 
   return (
     <>
@@ -198,20 +198,20 @@ const DeleteUserForm = ({ remove }: Props) => {
             userId: string;
           };
 
-          // Mutation call.
-          await myDelete.mutate(input);
+          // Action call.
+          await myDelete.execute(input);
         }}>
         <input type="text" name="userId" id="userId" placeholder="User ID" />
         <button type="submit">Delete user</button>
       </form>
       <div id="response-container">
-        <pre>Is mutating: {JSON.stringify(myDelete.isMutating)}</pre>
-        <div>Mutation response:</div>
+        <pre>Is executing: {JSON.stringify(myDelete.isExecuting)}</pre>
+        <div>Action response:</div>
         <pre className="response">
           {
             myDelete.res // if got back a response,
             ? JSON.stringify(myDelete.res, null, 1)
-            : "fill in form and click on the delete user button" // if mutation never ran
+            : "fill in form and click on the delete user button" // if action never ran
           }
         </pre>
       </div>
@@ -222,27 +222,29 @@ const DeleteUserForm = ({ remove }: Props) => {
 export default DeleteUserForm;
 ```
 
-The `useMutation` hook returns an object with three keys:
+The `useAction` hook returns an object with three keys:
 
-- `mutate`: a caller for the safe mutation you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe mutation the non-hooky way.
-- `isMutating`: a `boolean` that is true while the `mutate` function is mutating data.
-- `res`: when `mutate` finished mutating data, the response object. Otherwise it is `null`. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
+- `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe action the non-hooky way.
+- `isExecuting`: a `boolean` that is true while the `action` function is mutating data.
+- `res`: when `execute` finished mutating data, the response object. Otherwise it is `null`. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
 
 Image example:
 
-![Hook typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-mutation/main/assets/hook-typesafe-client-response.png)
+![Hook typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-action/main/assets/hook-typesafe-client-response.png)
 
 
-## Authenticated mutation
+## Authenticated action
 
-The library also supports creating protected mutations, that will return a `serverError` back if user is not authenticated. You need to make some changes to the above code in order to use them.
+The library also supports creating protected actions, that will return a `serverError` back if user is not authenticated. You need to make some changes to the above code in order to use them.
 
-First, when creating the safe mutation client, you **must** provide an `async function` called `getAuthData` as an option. You can return anything you want from here. If you find out that the user is not authenticated, you can safely throw an error in this function. It will be caught, and the client will receive a `serverError` response.
+First, when creating the safe action client, you **must** provide an `async function` called `getAuthData` as an option. You can return anything you want from here. If you find out that the user is not authenticated, you can safely throw an error in this function. It will be caught, and the client will receive a `serverError` response.
 
 ```typescript
-// src/lib/safe-mutation.ts
+// src/lib/safe-action.ts
 
-const safeMutation = createSafeMutationClient({
+import { createSafeActionClient } from "next-safe-action";
+
+const action = createSafeActionClient({
   getAuthData: async () => {
     const session = true;
 
@@ -256,19 +258,19 @@ const safeMutation = createSafeMutationClient({
   },
 });
 
-export { safeMutation };
+export { action };
 ```
 
-Then, you can provide a `withAuth: true` option to the safe mutation you're creating:
+Then, you can provide a `withAuth: true` option to the safe action you're creating:
 
 ```typescript
-// src/app/withauth/edituser-mutation.ts
+// src/app/withauth/edituser-action.ts
 
-// [1] For protected mutations, you need to provide `withAuth: true` here.
+// [1] For protected actions, you need to provide `withAuth: true` here.
 // [2] Then, you'll have access to the auth object, in this case it's just
 // `{ userId }`, which comes from the return type of the `getAuthData` function
 // declared in the previous step.
-export const editUser = safeMutation({ input, withAuth: true }, // [1]
+export const editUser = action({ input, withAuth: true }, // [1]
   async (parsedInput, { userId }) => { // [2]
     console.log(userId); // will output: "coolest_user_id",
     ...
@@ -276,20 +278,20 @@ export const editUser = safeMutation({ input, withAuth: true }, // [1]
 );
 ```
 
-If you set `withAuth` to `true` in the safe mutation you're creating, but you forgot to define a `getAuthData` function when creating the client (above step), an error will be thrown when calling the mutation from client, that results in a `serverError` response for the client.
+If you set `withAuth` to `true` in the safe action you're creating, but you forgot to define a `getAuthData` function when creating the client (above step), an error will be thrown when calling the action from client, that results in a `serverError` response for the client.
 
-## `createSafeMutationClient` options
+## `createSafeActionClient` options
 
-As you just saw, you can provide a `getAuthData` function to `createSafeMutationClient` function.
+As you just saw, you can provide a `getAuthData` function to `createSafeActionClient` function.
 
 You can also provide a custom logger function for server errors. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable:
 
 ```typescript
-// src/lib/safe-mutation.ts
+// src/lib/safe-action.ts
 
-import { createSafeMutationClient } from "next-safe-mutation";
+import { createSafeActionClient } from "next-safe-action";
 
-const safeMutation = createSafeMutationClient({
+const action = createSafeActionClient({
   // You can also provide an empty function here (if you don't want server error
   // logging), or a Promise. Return type is `void`.
   serverErrorLogFunction: (e) => {
@@ -297,9 +299,9 @@ const safeMutation = createSafeMutationClient({
   },
 });
 
-export { safeMutation };
+export { action };
 ```
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/TheEdoRan/next-safe-mutation/blob/main/LICENSE).
+This project is licensed under the [MIT License](https://github.com/TheEdoRan/next-safe-action/blob/main/LICENSE).

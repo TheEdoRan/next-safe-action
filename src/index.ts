@@ -1,8 +1,8 @@
 import type { z } from "zod";
-import type { SafeMutationOverload } from "./types";
+import type { SafeActionOverload } from "./types";
 
-// This is the safe mutation initializer.
-export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
+// This is the safe action initializer.
+export const createSafeActionClient = <AuthData extends object>(createOpts?: {
 	serverErrorLogFunction?: (e: any) => void | Promise<void>;
 	getAuthData?: () => Promise<AuthData>;
 }) => {
@@ -13,15 +13,15 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 		((e) => {
 			const errMessage = "message" in e && typeof e.message === "string" ? e.message : e;
 
-			console.log("Mutation error:", errMessage);
+			console.log("Action error:", errMessage);
 		});
 
-	// `safeMutation` is the server function that creates a new mutation.
+	// `safeAction` is the server function that creates a new action.
 	// It expects an input validator, a optional `withAuth` property, and a
-	// definition function, so the mutation knows what to do on the server when
+	// definition function, so the action knows what to do on the server when
 	// called by the client.
 	// It returns a function callable by the client.
-	const safeMutation: SafeMutationOverload<AuthData> = (opts, mutationDefinitionFunc) => {
+	const safeAction: SafeActionOverload<AuthData> = (opts, actionDefinition) => {
 		// This is the function called by client. If `input` fails the validator
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
@@ -43,16 +43,16 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 
 				if (opts.withAuth) {
 					if (!createOpts?.getAuthData) {
-						throw new Error("`getAuthData` function not provided to `createSafeMutationClient`");
+						throw new Error("`getAuthData` function not provided to `createSafeActionClient`");
 					}
 
 					const authData = await createOpts.getAuthData();
 
 					// @ts-expect-error
-					serverRes = await mutationDefinitionFunc(parsedInput.data, authData);
+					serverRes = await actionDefinition(parsedInput.data, authData);
 				} else {
 					// @ts-expect-error
-					serverRes = await mutationDefinitionFunc(parsedInput.data);
+					serverRes = await actionDefinition(parsedInput.data);
 				}
 
 				return { data: serverRes };
@@ -65,5 +65,5 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 		};
 	};
 
-	return safeMutation;
+	return safeAction;
 };
