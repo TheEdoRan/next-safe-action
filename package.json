@@ -3,37 +3,13 @@
 	"version": "0.0.0-development",
 	"private": false,
 	"description": "A typesafe mutation implementation for Next.js with RSC.",
-	"main": "dist/index.js",
-	"module": "dist/index.mjs",
-	"types": "dist/index.d.ts",
-	"files": [
-		"dist/**",
-		"package.json"
-	],
-	"exports": {
-		".": {
-			"import": "./dist/index.mjs",
-			"types": "./dist/index.d.ts"
-		},
-		"./hook": {
-			"import": "./dist/hook/index.mjs",
-			"types": "./dist/hook/index.d.ts"
-		}
-	},
-	"typesVersions": {
-		"*": {
-			".": [
-				"dist/index.d.ts"
-			],
-			"hook": [
-				"dist/hook/index.d.ts"
-			]
-		}
-	},
+	"main": "index.js",
+	"module": "index.mjs",
+	"types": "index.d.ts",
 	"scripts": {
 		"prepare": "is-ci || husky install",
 		"lint": "tsc && eslint --ext ts .",
-		"build": "tsup",
+		"build": "tsup; node copy-package-files",
 		"semantic-release": "semantic-release --branches main"
 	},
 	"keywords": [
@@ -115,6 +91,10 @@
 							"release": "patch"
 						},
 						{
+							"type": "build",
+							"release": "patch"
+						},
+						{
 							"type": "docs",
 							"scope": "readme",
 							"release": "patch"
@@ -131,7 +111,12 @@
 				}
 			],
 			"@semantic-release/release-notes-generator",
-			"@semantic-release/npm",
+			[
+				"@semantic-release/npm",
+				{
+					"pkgRoot": "./dist"
+				}
+			],
 			"@semantic-release/github"
 		]
 	}
