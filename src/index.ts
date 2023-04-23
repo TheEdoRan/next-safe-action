@@ -1,7 +1,5 @@
 import type { z } from "zod";
-import type { MutationOutput, SafeMutationOverload } from "./types";
-
-export type { MutationOutput };
+import type { SafeMutationOverload } from "./types";
 
 // This is the safe mutation initializer.
 export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
@@ -57,9 +55,7 @@ export const createSafeMutationClient = <AuthData extends object>(createOpts?: {
 					serverRes = await mutationDefinitionFunc(parsedInput.data);
 				}
 
-				return {
-					[serverRes.type]: serverRes.data,
-				};
+				return { data: serverRes };
 			} catch (e: any) {
 				// eslint-disable-next-line
 				serverErrorLogFunction(e);

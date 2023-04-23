@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import type { z } from "zod";
-import type { ClientMutation, MutationOutput } from "../types";
+import type { ClientMutation } from "../types";
 
-export const useMutation = <const IV extends z.ZodTypeAny, const MO extends MutationOutput<{}, {}>>(
+export const useMutation = <const IV extends z.ZodTypeAny, const MO>(
 	mutationFunction: ClientMutation<IV, MO>
 ) => {
 	const mutation = useRef(mutationFunction);

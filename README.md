@@ -58,8 +58,7 @@ const input = z.object({
 export const loginUser = safeMutation({ input }, async ({ username, password }) => {
     if (username === "johndoe") {
       return {
-        type: "fail",
-        data: {
+        error: {
           reason: "user_suspended",
         },
       };
@@ -67,16 +66,12 @@ export const loginUser = safeMutation({ input }, async ({ username, password }) 
 
     if (username === "user" && password === "password") {
       return {
-        type: "success",
-        data: {
-          ok: true,
-        },
+        success: true,
       };
     }
 
     return {
-      type: "fail",
-      data: {
+      error: {
         reason: "incorrect_credentials",
       },
     };
@@ -151,13 +146,13 @@ const LoginForm = ({ login }: Props) => {
 export default LoginForm;
 ```
 
-As you can see from the image, on the client you get back a typesafe response object, with four optional keys:
+As you can see from the image, on the client you get back a typesafe response object, with three optional keys:
 
 ![Typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-mutation/main/assets/typesafe-client-response.png)
 
 Here's an explanation:
 
-- `success` or `fail`: if mutation runs without issues, you get what you returned in the server mutation body.
+- `data`: if mutation runs without issues, you get what you returned in the server mutation body.
 
 - `validationError`: if an invalid input object (parsed by Zod via input validator) is passed from the client when calling the mutation, invalid fields will populate this key, in the form of:
 
@@ -231,7 +226,7 @@ The `useMutation` hook returns an object with three keys:
 
 - `mutate`: a caller for the safe mutation you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe mutation the non-hooky way.
 - `isMutating`: a `boolean` that is true while the `mutate` function is mutating data.
-- `res`: when `mutate` finished mutating data, the response object. Otherwise it is `null`. It has the same four optional keys as the one above (`success`, `fail`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
+- `res`: when `mutate` finished mutating data, the response object. Otherwise it is `null`. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
 
 Image example:
 
