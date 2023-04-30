@@ -8,7 +8,7 @@
 - ✅ Pretty simple
 - ✅ End to end type safety
 - ✅ Input validation
-- ✅ Direct or hook call from client  
+- ✅ Direct or hook usage from client  
 - ✅ Authenticated actions
 
 ## Requirements
