@@ -12,7 +12,7 @@ export type ClientAction<IV extends z.ZodTypeAny, AO> = (input: z.infer<IV>) => 
 // need authentication, and others don't, so you can pass the `withAuth: true` property
 // in the `opts` arg, to get back both `parsedInput` and `authArgs` in the server
 // action function definition.
-// `authArgs` comes from the previously defined `getAuthUserId` function.
+// `authArgs` comes from the previously defined `getAuthData` function.
 export type SafeActionOverload<AuthData extends object> = {
 	<const IV extends z.ZodTypeAny, const AO>(
 		opts: {
