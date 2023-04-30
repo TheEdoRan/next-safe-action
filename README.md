@@ -4,6 +4,13 @@
 
 ### Note: server actions are implemented but undocumented at this time in Next.js. They are available since `13.3.0` release.
 
+## Features
+- ✅ Pretty simple
+- ✅ End to end type safety
+- ✅ Input validation
+- ✅ Direct or hook call from client  
+- ✅ Authenticated actions
+
 ## Requirements
 
 Next.js >= 13.3.0 and >= TypeScript 5.0.
