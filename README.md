@@ -21,11 +21,13 @@ Next.js >= 13.3.0 and >= TypeScript 5.0.
 npm i next-safe-action zod
 ```
 
-## Project configuration
+## Code example ⬇️
 
-### Code blocks below are based on [this example repository](https://github.com/TheEdoRan/next-safe-action-example). Check it out to see a basic implementation of this library and to experiment a bit with it.
+### Check out [this example repository](https://github.com/TheEdoRan/next-safe-action-example) to see a basic implementation of this library and to experiment a bit with it.
 
 ---
+
+## Project configuration
 
 First of all, you need to create the safe action client:
 
@@ -91,13 +93,13 @@ export const loginUser = action({ input }, async ({ username, password }) => {
 ```tsx
 // src/app/page.tsx
 
-import LoginForm from "./login-form";
+import Login from "./login";
 import { loginUser } from "./login-action";
 
 export default function Home() {
   return (
-    {/* here we pass the safe action as `login` */}
-    <LoginForm login={loginUser} />
+    {/* here we pass the safe action to the Client Component */}
+    <Login loginUser={loginUser} />
   );
 }
 ```
@@ -109,55 +111,33 @@ There are two ways to call safe actions from the client:
 ## 1. The direct way
 
 ```tsx
-// src/app/login-form.tsx
+"use client"; // this is a Client Component
 
-"use client"; // this is a client component
-
-import { useState } from "react";
 import type { loginUser } from "./login-action";
 
 type Props = {
-  login: typeof loginUser; // infer typings with `typeof`
+  loginUser: typeof loginUser; // infer typings with `typeof`
 }
 
-const LoginForm = ({ login }: Props) => {
+export default function Login({ loginUser }: Props) {
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const input = Object.fromEntries(formData) as {
-          username: string;
-          password: string;
-        };
-        const res = await login(input); // this is the typesafe action called from client!
-        console.log(res);
-      }}>
-      <input
-        type="text"
-        name="username"
-        id="username"
-        placeholder="Username"
-      />
-      <input
-        type="password"
-        name="password"
-        id="password"
-        placeholder="Password"
-      />
-      <button type="submit">Log in</button>
-    </form>
-  );
-};
+    <button
+      onClick={async () => {
+        // Typesafe action called from client.
+        const res = await loginUser({ username: "user", password: "password" });
 
-export default LoginForm;
+        // Res keys.
+        const { data, validationError, serverError } = res;
+      }}>
+      Log in
+    </button>
+  );
+}
 ```
 
 As you can see from the image, on the client you get back a typesafe response object, with three optional keys:
 
-![Typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-action/main/assets/typesafe-client-response.png)
-
-Here's an explanation:
+On the client you get back a typesafe response object, with three optional keys:
 
 - `data`: if action runs without issues, you get what you returned in the server action body.
 
@@ -171,7 +151,7 @@ Here's an explanation:
 }
 ```
 
-- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](https://github.com/TheEdoRan/next-safe-action#createsafeactionclient-options).
+- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](https://github.com/TheEdoRan/next-safe-action#custom-server-error-logging).
 
 ## 2. The hook way
 
@@ -180,53 +160,33 @@ Another way to mutate data from client is by using the `useAction` hook. This is
 Here's how it works:
 
 ```tsx
-// src/app/hook/deleteuser-form.tsx
-
-"use client"; // this is a client component
+"use client"; // this is a Client Component
 
 import { useAction } from "next-safe-action/hook";
-import type { deleteUser } from "./deleteuser-action";
+import { loginUser } from "./login-action";
 
 type Props = {
-  remove: typeof deleteUser;
-}
+  loginUser: typeof loginUser;
+};
 
-const DeleteUserForm = ({ remove }: Props) => {
-  // Safe action (`remove` which is `deleteUser`) passed to `useAction` hook.
-  const myDelete = useAction(remove);
+export default function Login({ loginUser }: Props) {
+  // Safe action (`loginUser`) passed to `useAction` hook.
+  const { execute, isExecuting, res } = useAction(loginUser);
 
   return (
     <>
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          const formData = new FormData(e.currentTarget);
-          const input = Object.fromEntries(formData) as {
-            userId: string;
-          };
-
-          // Action call.
-          await myDelete.execute(input);
+      <button
+        onClick={async () => {
+          // Typesafe action called from client.
+          await execute({ username: "user", password: "password" });
         }}>
-        <input type="text" name="userId" id="userId" placeholder="User ID" />
-        <button type="submit">Delete user</button>
-      </form>
-      <div id="response-container">
-        <pre>Is executing: {JSON.stringify(myDelete.isExecuting)}</pre>
-        <div>Action response:</div>
-        <pre className="response">
-          {
-            myDelete.res // if got back a response,
-            ? JSON.stringify(myDelete.res, null, 1)
-            : "fill in form and click on the delete user button" // if action never ran
-          }
-        </pre>
-      </div>
+        Log in
+      </button>
+      <p>Is executing: {JSON.stringify(isExecuting)}</p>
+      <p>Res: {JSON.stringify(res)}</p>
     </>
   );
-};
-
-export default DeleteUserForm;
+}
 ```
 
 The `useAction` hook returns an object with three keys:
@@ -252,6 +212,8 @@ First, when creating the safe action client, you **must** provide an `async func
 import { createSafeActionClient } from "next-safe-action";
 
 const action = createSafeActionClient({
+  // You can use `cookies()` or `headers()` here, or utilities like
+  // `getServerSession()` from NextAuth here.
   getAuthData: async () => {
     const session = true;
 
@@ -271,7 +233,12 @@ export { action };
 Then, you can provide a `withAuth: true` option to the safe action you're creating:
 
 ```typescript
-// src/app/withauth/edituser-action.ts
+"use server"; // don't forget to add this
+
+import { z } from "zod";
+import { action } from "~/lib/safe-action";
+
+...
 
 // [1] For protected actions, you need to provide `withAuth: true` here.
 // [2] Then, you'll have access to the auth object, in this case it's just
@@ -287,7 +254,7 @@ export const editUser = action({ input, withAuth: true }, // [1]
 
 If you set `withAuth` to `true` in the safe action you're creating, but you forgot to define a `getAuthData` function when creating the client (above step), an error will be thrown when calling the action from client, that results in a `serverError` response for the client.
 
-## `createSafeActionClient` options
+## Custom server error logging
 
 As you just saw, you can provide a `getAuthData` function to `createSafeActionClient` function.
 
@@ -308,6 +275,10 @@ const action = createSafeActionClient({
 
 export { action };
 ```
+
+## Alternatives
+
+- [Zact](https://github.com/pingdotgg/zact) by [Ping](https://github.com/pingdotgg)
 
 ## License
 
