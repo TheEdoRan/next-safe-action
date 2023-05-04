@@ -27,7 +27,21 @@ npm i next-safe-action zod
 
 ## Project configuration
 
-First of all, you need to create the safe action client:
+In `next.config.js`:
+
+```ts
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    appDir: true,
+    serverActions: true, // add this
+  },
+};
+
+module.exports = nextConfig;
+```
+
+Then, you need to create the safe action client:
 
 ```typescript
 // src/lib/safe-action.ts
@@ -37,7 +51,7 @@ import { createSafeActionClient } from "next-safe-action";
 export const action = createSafeActionClient();
 ```
 
-Then, create a file for an action:
+Now create a file for an action:
 
 ```typescript
 // src/app/login-action.ts
