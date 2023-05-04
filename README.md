@@ -2,8 +2,6 @@
 
 > `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features to let you define typesafe actions on the server and call them from Client Components. 
 
-### Note: server actions are implemented but undocumented at this time in Next.js. They are available since `13.3.0` release.
-
 ## Features
 - ✅ Pretty simple
 - ✅ End to end type safety
@@ -36,9 +34,7 @@ First of all, you need to create the safe action client:
 
 import { createSafeActionClient } from "next-safe-action";
 
-const action = createSafeActionClient();
-
-export { action };
+export const action = createSafeActionClient();
 ```
 
 Then, create a file for an action:
@@ -209,7 +205,7 @@ First, when creating the safe action client, you **must** provide an `async func
 
 import { createSafeActionClient } from "next-safe-action";
 
-const action = createSafeActionClient({
+export const action = createSafeActionClient({
   // Here you can use functions such as `cookies()` or `headers()`
   // from next/headers, or utilities like `getServerSession()` from NextAuth.
   getAuthData: async () => {
@@ -224,8 +220,6 @@ const action = createSafeActionClient({
     };
   },
 });
-
-export { action };
 ```
 
 Then, you can provide a `withAuth: true` option to the safe action you're creating:
@@ -263,15 +257,13 @@ You can also provide a custom logger function for server errors. By default, the
 
 import { createSafeActionClient } from "next-safe-action";
 
-const action = createSafeActionClient({
+export const action = createSafeActionClient({
   // You can also provide an empty function here (if you don't want server error
   // logging), or a Promise. Return type is `void`.
   serverErrorLogFunction: (e) => {
     console.error("CUSTOM ERROR LOG FUNCTION:", e);
   },
 });
-
-export { action };
 ```
 
 ## Alternatives
