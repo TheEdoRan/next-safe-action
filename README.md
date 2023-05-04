@@ -135,8 +135,6 @@ export default function Login({ loginUser }: Props) {
 }
 ```
 
-As you can see from the image, on the client you get back a typesafe response object, with three optional keys:
-
 On the client you get back a typesafe response object, with three optional keys:
 
 - `data`: if action runs without issues, you get what you returned in the server action body.
