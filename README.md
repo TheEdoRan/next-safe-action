@@ -212,8 +212,8 @@ First, when creating the safe action client, you **must** provide an `async func
 import { createSafeActionClient } from "next-safe-action";
 
 const action = createSafeActionClient({
-  // You can use `cookies()` or `headers()` here, or utilities like
-  // `getServerSession()` from NextAuth here.
+  // Here you can use functions such as `cookies()` or `headers()`
+  // from next/headers, or utilities like `getServerSession()` from NextAuth.
   getAuthData: async () => {
     const session = true;
 
