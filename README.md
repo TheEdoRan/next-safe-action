@@ -27,13 +27,12 @@ npm i next-safe-action zod
 
 ## Project configuration
 
-In `next.config.js`:
+In `next.config.js` (since Next.js 13.4.0):
 
 ```ts
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true,
     serverActions: true, // add this
   },
 };
