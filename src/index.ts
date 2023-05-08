@@ -30,7 +30,7 @@ export const createSafeActionClient = <AuthData extends object>(createOpts?: {
 
 			if (!parsedInput.success) {
 				const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
-					Record<keyof z.infer<(typeof opts)["input"]>, string[]>
+					Record<keyof z.input<(typeof opts)["input"]>, string[]>
 				>;
 
 				return {

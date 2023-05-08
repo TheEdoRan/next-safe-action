@@ -2,10 +2,10 @@ import type { z } from "zod";
 
 // The type for client action, which is called by components.
 // You pass the input data here, and it's all typesafe.
-export type ClientAction<IV extends z.ZodTypeAny, AO> = (input: z.infer<IV>) => Promise<{
+export type ClientAction<IV extends z.ZodTypeAny, AO> = (input: z.input<IV>) => Promise<{
 	data?: AO;
 	serverError?: true;
-	validationError?: Partial<Record<keyof z.infer<IV>, string[]>>;
+	validationError?: Partial<Record<keyof z.input<IV>, string[]>>;
 }>;
 
 // We need to overload the `safeAction` function, because some actions
@@ -19,7 +19,7 @@ export type SafeActionOverload<AuthData extends object> = {
 			input: IV;
 			withAuth?: false;
 		},
-		actionDefinition: (parsedInput: z.infer<IV>, authArgs: undefined) => Promise<AO>
+		actionDefinition: (parsedInput: z.input<IV>, authArgs: undefined) => Promise<AO>
 	): ClientAction<IV, AO>;
 
 	<const IV extends z.ZodTypeAny, const AO>(
@@ -27,6 +27,6 @@ export type SafeActionOverload<AuthData extends object> = {
 			input: IV;
 			withAuth: true;
 		},
-		actionDefinition: (parsedInput: z.infer<IV>, authArgs: AuthData) => Promise<AO>
+		actionDefinition: (parsedInput: z.input<IV>, authArgs: AuthData) => Promise<AO>
 	): ClientAction<IV, AO>;
 };

@@ -11,7 +11,7 @@ export const useAction = <const IV extends z.ZodTypeAny, const AO>(
 		(Awaited<ReturnType<typeof clientAction>> & { fetchError?: any }) | null
 	>(null);
 
-	const execute = useCallback(async (input: z.infer<IV>) => {
+	const execute = useCallback(async (input: z.input<IV>) => {
 		setIsExecuting(true);
 
 		try {
