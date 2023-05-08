@@ -164,6 +164,8 @@ On the client you get back a typesafe response object, with three optional keys:
 
 Another way to mutate data from client is by using the `useAction` hook. This is useful when you need global access to the action state in the Client Component.
 
+`useAction` uses React's `useTransition` hook behind the scenes to manage the mutation.
+
 Here's how it works:
 
 ```tsx
