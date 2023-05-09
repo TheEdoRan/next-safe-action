@@ -1,7 +1,7 @@
 import { experimental_useOptimistic, useCallback, useRef, useState, useTransition } from "react";
 import {} from "react/experimental";
 import type { z } from "zod";
-import type { ClientAction } from "../types";
+import type { ClientAction } from "./types";
 
 export const useAction = <const IV extends z.ZodTypeAny, const AO>(
 	clientAction: ClientAction<IV, AO>
