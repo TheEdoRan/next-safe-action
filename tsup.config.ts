@@ -7,5 +7,4 @@ export default defineConfig({
 	splitting: false,
 	sourcemap: true,
 	dts: true,
-	onSuccess: "node fix-use-client",
 });
