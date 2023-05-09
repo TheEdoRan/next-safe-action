@@ -26,36 +26,31 @@ export const createSafeActionClient = <AuthData extends object>(createOpts?: {
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
 		return async (input) => {
-			const parsedInput = opts.input.safeParse(input);
-
-			if (!parsedInput.success) {
-				const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
-					Record<keyof z.input<(typeof opts)["input"]>, string[]>
-				>;
-
-				return {
-					validationError: fieldErrors,
-				};
-			}
-
 			try {
-				let serverRes;
+				let authData: Awaited<AuthData> | undefined = undefined;
 
 				if (opts.withAuth) {
 					if (!createOpts?.getAuthData) {
 						throw new Error("`getAuthData` function not provided to `createSafeActionClient`");
 					}
 
-					const authData = await createOpts.getAuthData();
-
-					// @ts-expect-error
-					serverRes = await actionDefinition(parsedInput.data, authData);
-				} else {
-					// @ts-expect-error
-					serverRes = await actionDefinition(parsedInput.data);
+					authData = await createOpts.getAuthData();
 				}
 
-				return { data: serverRes };
+				const parsedInput = opts.input.safeParse(input);
+
+				if (!parsedInput.success) {
+					const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
+						Record<keyof z.input<(typeof opts)["input"]>, string[]>
+					>;
+
+					return {
+						validationError: fieldErrors,
+					};
+				}
+
+				// @ts-expect-error
+				return { data: await actionDefinition(parsedInput.data, authData) };
 			} catch (e: any) {
 				// eslint-disable-next-line
 				serverErrorLogFunction(e);
