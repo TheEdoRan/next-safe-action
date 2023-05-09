@@ -267,7 +267,10 @@ type Props = {
 export default function AddLikes({ likesCount, addLikes }: Props) {
   // Safe action (`addLikes`) and current server state passed to
   // `useOptimisticAction` hook.
-  const { execute, isExecuting, res, optimisticState } = useAction(addLikes, { likesCount });
+  const { execute, isExecuting, res, optimisticState } = useOptimisticAction(
+    addLikes,
+    { likesCount }
+  );
 
   return (
     <>
@@ -284,13 +287,17 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
         }}>
         Add likes
       </button>
-      <p>Optimistic state: {JSON.stringify(optimisticState)}</p>
+      <p>Optimistic state: {JSON.stringify(optimisticState)}</p> {/* [1] */}
       <p>Is executing: {JSON.stringify(isExecuting)}</p>
       <p>Res: {JSON.stringify(res)}</p>
     </>
   );
 }
 ```
+
+As you can see, `useOptimisticAction` has the same three keys as the normal `useAction` hook (`execute`, `isExecuting`, `res`).
+
+[1]: It returns one additional key though: `optimisticState` is an object with a type of the second argument passed to `useOptimisticAction` hook. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
 
 
 ## Authenticated action
