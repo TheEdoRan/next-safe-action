@@ -7,6 +7,7 @@
 - ✅ End to end type safety
 - ✅ Input validation
 - ✅ Direct or hook usage from client  
+- ✅ Optimistic updates
 - ✅ Authenticated actions
 
 ## Requirements
