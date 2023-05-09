@@ -37,7 +37,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const AO, Sta
 	const [optState, syncState] = experimental_useOptimistic<
 		State & { isExecuting: boolean },
 		Partial<State>
-	>({ ...currentState, isExecuting: true }, (state, newState) => ({
+	>({ ...currentState, isExecuting: false }, (state, newState) => ({
 		...state,
 		...(newState ?? {}),
 		isExecuting: true,
