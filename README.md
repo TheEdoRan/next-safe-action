@@ -185,9 +185,9 @@ export default function Login({ loginUser }: Props) {
   return (
     <>
       <button
-        onClick={async () => {
+        onClick={() => {
           // Typesafe action called from client.
-          await execute({ username: "user", password: "password" });
+          execute({ username: "user", password: "password" });
         }}>
         Log in
       </button>
@@ -207,6 +207,90 @@ The `useAction` hook returns an object with three keys:
 Image example:
 
 ![Hook typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-action/main/assets/hook-typesafe-client-response.png)
+
+
+## Optimistic update ✨ (experimental)
+
+If you need optimistic UI in your Client Component, the lib also exports a hook called `useOptimisticAction`, that under the hood uses React's `experimental_useOptimistic` hook.
+
+**Note: this React hook is not stable, use it at your own risk!**
+
+
+Here's how it works:
+
+First, define your server action as usual:
+
+```ts
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { action } from "~/lib/safe-action";
+import { incrementLikes } from "./db";
+
+const inputValidator = z.object({
+  incrementBy: z.number(),
+});
+
+export const addLikes = action(
+  { input: inputValidator },
+  async ({ incrementBy }) => {
+    // Add delay to simulate db call.
+    await new Promise((res) => setTimeout(res, 2000));
+
+    const newLikes = incrementLikes(incrementBy);
+
+    // This Next.js function revalidates the provided path.
+    // More info here: https://nextjs.org/docs/app/api-reference/functions/revalidatePath
+    revalidatePath("/optimistic-hook");
+
+    return {
+      newLikes,
+    };
+  }
+);
+```
+
+Then, you can pass state as prop from a Server Component to a Client Component (in this case `likesCount`), and use the hook in it.
+
+```tsx
+"use client"; // this is a Client Component
+
+import { useOptimisticAction } from "next-safe-action/hook";
+import { addLikes } from "./addlikes-action";
+
+type Props = {
+  likesCount: number; // this comes from server
+  addLikes: typeof addLikes;
+};
+
+export default function AddLikes({ likesCount, addLikes }: Props) {
+  // Safe action (`addLikes`) and current server state passed to
+  // `useOptimisticAction` hook.
+  const { execute, isExecuting, res, optimisticState } = useAction(addLikes, { likesCount });
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          const randomIncrement = Math.round(Math.random() * 100);
+
+          // Action call. Here we pass action input and expected (optimistic)
+          // server state.
+          execute(
+            { incrementBy: 42 },
+            { likesCount: likesCount + randomIncrement }
+          );
+        }}>
+        Add likes
+      </button>
+      <p>Optimistic state: {JSON.stringify(optimisticState)}</p>
+      <p>Is executing: {JSON.stringify(isExecuting)}</p>
+      <p>Res: {JSON.stringify(res)}</p>
+    </>
+  );
+}
+```
 
 
 ## Authenticated action
