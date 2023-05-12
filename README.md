@@ -12,7 +12,7 @@
 
 ## Requirements
 
-Next.js >= 13.3.0 and >= TypeScript 5.0.
+Next.js >= 13.4.2 and >= TypeScript 5.0.
 
 ## Installation
 
