@@ -98,7 +98,21 @@ export const loginUser = action({ input }, async ({ username, password }) => {
 );
 ```
 
-`action` returns a new function (in this case `loginUser`) that can be directly imported in Client Components.
+`action` returns a new function (in this case `loginUser`). At this time, to make it actually work, we must pass the action to a Client Component as a prop, otherwise calling actions from hooks wouldn't work.
+
+```tsx
+// src/app/page.tsx
+
+import Login from "./login";
+import { loginUser } from "./login-action";
+
+export default function Home() {
+  return (
+    {/* here we pass the safe action to the Client Component */}
+    <Login loginUser={loginUser} />
+  );
+}
+```
 
 ---
 
@@ -109,9 +123,13 @@ There are two ways to call safe actions from the client:
 ```tsx
 "use client"; // this is a Client Component
 
-import { loginUser } from "./login-action";
+import type { loginUser } from "./login-action";
 
-export default function Login() {
+type Props = {
+  loginUser: typeof loginUser; // infer typings with `typeof`
+}
+
+export default function Login({ loginUser }: Props) {
   return (
     <button
       onClick={async () => {
@@ -157,7 +175,11 @@ Here's how it works:
 import { useAction } from "next-safe-action/hook";
 import { loginUser } from "./login-action";
 
-export default function Login() {
+type Props = {
+  loginUser: typeof loginUser;
+};
+
+export default function Login({ loginUser }: Props) {
   // Safe action (`loginUser`) passed to `useAction` hook.
   const { execute, isExecuting, res } = useAction(loginUser);
 
@@ -238,8 +260,12 @@ Then, you can pass state as prop from a Server Component to a Client Component (
 import { useOptimisticAction } from "next-safe-action/hook";
 import { addLikes } from "./addlikes-action";
 
-// `likesCount` comes from server.
-export default function AddLikes({ likesCount }: { likesCount: number }) {
+type Props = {
+  likesCount: number; // this comes from server
+  addLikes: typeof addLikes;
+};
+
+export default function AddLikes({ likesCount, addLikes }: Props) {
   // Safe action (`addLikes`) and current server state passed to
   // `useOptimisticAction` hook.
   const { execute, isExecuting, res, optimisticState } = useOptimisticAction(
@@ -274,6 +300,7 @@ As you can see, `useOptimisticAction` has the same three keys as the normal `use
 
 [1]: It returns one additional key though: `optimisticState` is an object with a type of the second argument passed to `useOptimisticAction` hook. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
 
+---
 
 ## Authenticated action
 
