@@ -217,9 +217,7 @@ If you need optimistic UI in your Client Component, the lib also exports a hook 
 **Note: this React hook is not stable, use it at your own risk!**
 
 
-Here's how it works:
-
-First, define your server action as usual:
+Here's how it works. First, define your server action as usual:
 
 ```ts
 "use server";
