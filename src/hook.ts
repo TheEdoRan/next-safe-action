@@ -10,7 +10,7 @@ import {} from "react/experimental";
 import type { z } from "zod";
 import type { ClientAction, HookCallbacks, HookRes } from "./types";
 
-const getResStatus = <IV extends z.ZodTypeAny, AO>(res: HookRes<IV, AO>) => {
+const getActionStatus = <IV extends z.ZodTypeAny, AO>(res: HookRes<IV, AO>) => {
 	const hasSucceded = typeof res.data !== "undefined";
 	const hasErrored =
 		typeof res.validationError !== "undefined" ||
@@ -53,7 +53,7 @@ export const useAction = <const IV extends z.ZodTypeAny, const AO>(
 	const executor = useRef(clientAction);
 	const [res, setRes] = useState<HookRes<IV, AO>>({});
 
-	const { hasExecuted, hasSucceded, hasErrored } = getResStatus<IV, AO>(res);
+	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, AO>(res);
 
 	const execute = useCallback(async (input: z.input<IV>) => {
 		startTransition(() => {
@@ -102,7 +102,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const AO, Sta
 		{}
 	);
 
-	const { hasExecuted, hasSucceded, hasErrored } = getResStatus<IV, AO>(res);
+	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, AO>(res);
 
 	const execute = useCallback(
 		(input: z.input<IV>, newServerState: Partial<State>) => {
