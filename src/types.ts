@@ -38,9 +38,6 @@ export type HookRes<IV extends z.ZodTypeAny, AO> = Awaited<ReturnType<ClientActi
 
 // Hook callbacks are executed when a hook succeeds or fails.
 export type HookCallbacks<IV extends z.ZodTypeAny, AO> = {
-	onSuccess?: (
-		data: Pick<HookRes<IV, AO>, "data">["data"],
-		reset: () => void
-	) => void | Promise<void>;
-	onError?: (error: Omit<HookRes<IV, AO>, "data">, reset: () => void) => void | Promise<void>;
+	onSuccess?: (data: Pick<HookRes<IV, AO>, "data">["data"], reset: () => void) => void;
+	onError?: (error: Omit<HookRes<IV, AO>, "data">, reset: () => void) => void;
 };
