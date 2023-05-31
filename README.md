@@ -180,8 +180,33 @@ type Props = {
 };
 
 export default function Login({ loginUser }: Props) {
-  // Safe action (`loginUser`) passed to `useAction` hook.
-  const { execute, isExecuting, res } = useAction(loginUser);
+  // Safe action (`loginUser`) and optional `onSuccess` and `onError` callbacks
+  // passed to `useAction` hook.
+  const {
+    execute,
+    res,
+    isExecuting,
+    hasExecuted,
+    hasSucceded,
+    hasErrored,
+    reset,
+  } = useAction(loginUser, {
+      onSuccess: (data, reset) => {
+        // Data from server action.
+        const { error, success } = data;
+
+        // Reset response object.
+        reset();
+      },
+      onError: (error, reset) => {
+        // One of these errors.
+        const { fetchError, serverError, validationError } = error; // one of these errors
+
+        // Reset response object.
+        reset();
+      },
+    }
+  );
 
   return (
     <>
@@ -192,6 +217,13 @@ export default function Login({ loginUser }: Props) {
         }}>
         Log in
       </button>
+      <button
+        onClick={() => {
+          // Reset response object programmatically.
+          reset();
+        }}>
+        Reset
+      </button>
       <p>Is executing: {JSON.stringify(isExecuting)}</p>
       <p>Res: {JSON.stringify(res)}</p>
     </>
@@ -199,16 +231,14 @@ export default function Login({ loginUser }: Props) {
 }
 ```
 
-The `useAction` hook returns an object with three keys:
+The `useAction` has one required argument (the action) and one optional argument (an object with `onSuccess` and `onError` callbacks).
+
+`onSuccess(data, reset)` and `onError(error, reset)` are executed, respectively, when the action executes successfully or fails. You can reset the response object inside these callbacks with `reset()` (second argument of the callback).
 
 - `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe action the non-hooky way.
-- `isExecuting`: a `boolean` that is true while the `execute` function is mutating data.
-- `res`: when `execute` finished mutating data, the response object. Otherwise it is `null`. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
-
-Image example:
-
-![Hook typesafe response](https://raw.githubusercontent.com/TheEdoRan/next-safe-action/main/assets/hook-typesafe-client-response.png)
-
+- `res`: when `execute` finished mutating data, the response object. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
+- Boolean action status keys: `isExecuting`, `hasExecuted`, `hasSucceded`, `hasErrored`, pretty self-explanatory.
+- `reset` function, to programatically reset the response object.
 
 ## Optimistic update ✨ (experimental)
 
@@ -264,11 +294,24 @@ type Props = {
 };
 
 export default function AddLikes({ likesCount, addLikes }: Props) {
-  // Safe action (`addLikes`) and current server state passed to
-  // `useOptimisticAction` hook.
-  const { execute, isExecuting, res, optimisticState } = useOptimisticAction(
+  // Safe action (`addLikes`), current server state, and optional
+  // `onSuccess` and `onError` callbacks passed to `useOptimisticAction` hook.
+  const {
+    execute,
+    isExecuting,
+    res,
+    hasExecuted,
+    hasSucceded,
+    hasErrored,
+    reset,
+    optimisticState,
+  } = useOptimisticAction(
     addLikes,
-    { likesCount }
+    { newLikes: 0 }, // [1]
+    {
+      onSuccess: (data, reset) => {},
+      onError: (error, reset) => {},
+    }
   );
 
   return (
@@ -286,7 +329,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
         }}>
         Add likes
       </button>
-      <p>Optimistic state: {JSON.stringify(optimisticState)}</p> {/* [1] */}
+      <p>Optimistic state: {JSON.stringify(optimisticState)}</p> {/* [2] */}
       <p>Is executing: {JSON.stringify(isExecuting)}</p>
       <p>Res: {JSON.stringify(res)}</p>
     </>
@@ -294,9 +337,9 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
 }
 ```
 
-As you can see, `useOptimisticAction` has the same three keys as the normal `useAction` hook (`execute`, `isExecuting`, `res`).
+As you can see, `useOptimisticAction` has the same required and optional callbacks arguments as `useAction`, plus one: it requires an initializer for the optimistic state [1].
 
-[1]: It returns one additional key though: `optimisticState` is an object with a type of the second argument passed to `useOptimisticAction` hook. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
+It returns the same seven keys as the normal `useAction` hook, plus one additional key [2]: `optimisticState` is an object with a type of the second argument passed to `useOptimisticAction` hook. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
 
 ---
 

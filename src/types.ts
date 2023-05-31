@@ -30,3 +30,14 @@ export type SafeActionOverload<AuthData extends object> = {
 		actionDefinition: (parsedInput: z.input<IV>, authArgs: AuthData) => Promise<AO>
 	): ClientAction<IV, AO>;
 };
+
+// This is the hook response type.
+export type HookRes<IV extends z.ZodTypeAny, AO> = Awaited<ReturnType<ClientAction<IV, AO>>> & {
+	fetchError?: unknown;
+};
+
+// Hook callbacks are executed when a hook succeeds or fails.
+export type HookCallbacks<IV extends z.ZodTypeAny, AO> = {
+	onSuccess?: (data: NonNullable<Pick<HookRes<IV, AO>, "data">["data"]>, reset: () => void) => void;
+	onError?: (error: Omit<HookRes<IV, AO>, "data">, reset: () => void) => void;
+};
