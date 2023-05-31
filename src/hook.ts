@@ -38,7 +38,7 @@ const useActionCallbacks = <const IV extends z.ZodTypeAny, const AO>(
 		const onError = onErrorRef.current;
 
 		if (onSuccess && hasSucceded) {
-			onSuccess(res.data, reset);
+			onSuccess(res.data!, reset);
 		} else if (onError && hasErrored) {
 			onError(res, reset);
 		}
