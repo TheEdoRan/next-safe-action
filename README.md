@@ -77,7 +77,7 @@ const input = z.object({
 export const loginUser = action({ input }, async ({ username, password }) => {
     if (username === "johndoe") {
       return {
-        error: {
+        failure: {
           reason: "user_suspended",
         },
       };
@@ -90,7 +90,7 @@ export const loginUser = action({ input }, async ({ username, password }) => {
     }
 
     return {
-      error: {
+      failure: {
         reason: "incorrect_credentials",
       },
     };
@@ -193,14 +193,14 @@ export default function Login({ loginUser }: Props) {
   } = useAction(loginUser, {
       onSuccess: (data, reset) => {
         // Data from server action.
-        const { error, success } = data;
+        const { failure, success } = data;
 
         // Reset response object.
         reset();
       },
       onError: (error, reset) => {
         // One of these errors.
-        const { fetchError, serverError, validationError } = error; // one of these errors
+        const { fetchError, serverError, validationError } = error;
 
         // Reset response object.
         reset();
