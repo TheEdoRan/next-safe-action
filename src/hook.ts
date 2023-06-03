@@ -98,9 +98,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const AO, Sta
 	}));
 
 	const executor = useRef(clientAction);
-	const [res, setRes] = useState<Awaited<ReturnType<typeof clientAction>> & { fetchError?: any }>(
-		{}
-	);
+	const [res, setRes] = useState<HookRes<IV, AO>>({});
 
 	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, AO>(res);
 
