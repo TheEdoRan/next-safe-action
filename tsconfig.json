@@ -7,7 +7,7 @@
 		"sourceMap": true,
 		"outDir": "./dist",
 		"moduleResolution": "node",
-		"removeComments": true,
+		"removeComments": false,
 		"strict": true,
 		"strictPropertyInitialization": false,
 		"useUnknownInCatchVariables": false,
