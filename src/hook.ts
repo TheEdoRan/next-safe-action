@@ -8,7 +8,22 @@ import {
 } from "react";
 import {} from "react/experimental";
 import type { z } from "zod";
-import type { ClientAction, HookCallbacks, HookRes } from "./types";
+import type { ClientAction } from ".";
+
+/*********************** TYPES ***********************/
+
+// This is the hook response type.
+export type HookRes<IV extends z.ZodTypeAny, AO> = Awaited<ReturnType<ClientAction<IV, AO>>> & {
+	fetchError?: unknown;
+};
+
+// Hook callbacks are executed when a hook succeeds or fails.
+export type HookCallbacks<IV extends z.ZodTypeAny, AO> = {
+	onSuccess?: (data: NonNullable<Pick<HookRes<IV, AO>, "data">["data"]>, reset: () => void) => void;
+	onError?: (error: Omit<HookRes<IV, AO>, "data">, reset: () => void) => void;
+};
+
+/*********************** FUNCTIONS ***********************/
 
 const getActionStatus = <IV extends z.ZodTypeAny, AO>(res: HookRes<IV, AO>) => {
 	const hasSucceded = typeof res.data !== "undefined";
