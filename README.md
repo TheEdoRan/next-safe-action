@@ -98,7 +98,7 @@ export const loginUser = action({ input }, async ({ username, password }) => {
 );
 ```
 
-`action` returns a new function (in this case `loginUser`). At this time, to make it actually work, we must pass the action to a Client Component as a prop, otherwise calling actions from hooks wouldn't work.
+`action` returns a new function (in this case `loginUser`). At this time, to make it actually work, we must pass the action to a Client Component as a prop, otherwise calling actions from hooks wouldn't work properly.
 
 ```tsx
 // src/app/page.tsx
@@ -307,7 +307,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
     optimisticState,
   } = useOptimisticAction(
     addLikes,
-    { newLikes: 0 }, // [1]
+    { likesCount }, // [1]
     {
       onSuccess: (data, reset) => {},
       onError: (error, reset) => {},
