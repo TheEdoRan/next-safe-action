@@ -235,6 +235,8 @@ The `useAction` has one required argument (the action) and one optional argument
 
 `onSuccess(data, reset)` and `onError(error, reset)` are executed, respectively, when the action executes successfully or fails. You can reset the response object inside these callbacks with `reset()` (second argument of the callback).
 
+It returns an object with seven keys:
+
 - `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe action the non-hooky way.
 - `res`: when `execute` finished mutating data, the response object. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
 - Boolean action status keys: `isExecuting`, `hasExecuted`, `hasSucceded`, `hasErrored`, pretty self-explanatory.
@@ -339,7 +341,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
 
 As you can see, `useOptimisticAction` has the same required and optional callbacks arguments as `useAction`, plus one: it requires an initializer for the optimistic state [1].
 
-It returns the same seven keys as the normal `useAction` hook, plus one additional key [2]: `optimisticState` is an object with a type of the second argument passed to `useOptimisticAction` hook. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
+It returns the same seven keys as the regular `useAction` hook, plus one additional key [2]: `optimisticState` is an object with a type of the second argument passed to `useOptimisticAction` hook. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
 
 ---
 
