@@ -20,7 +20,7 @@ export type HookRes<IV extends z.ZodTypeAny, AO> = Awaited<ReturnType<ClientCall
 };
 
 /**
- * `onSuccess` and `onError` callbacks for `useAction` and `useOptimisticAction` hooks.
+ * Type of hooks callbacks (`onSuccess` and `onError`).
  * These are executed when the action succeeds or fails.
  */
 export type HookCallbacks<IV extends z.ZodTypeAny, AO> = {

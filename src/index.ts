@@ -3,7 +3,7 @@ import type { z } from "zod";
 // ********************* TYPES *********************
 
 /**
- * The function called from Client Components with typesafe input data for the Server Action.
+ * Type of the function called from Client Components with typesafe input data for the Server Action.
  */
 export type ClientCaller<IV extends z.ZodTypeAny, AO> = (input: z.input<IV>) => Promise<{
 	data?: AO;
@@ -12,7 +12,7 @@ export type ClientCaller<IV extends z.ZodTypeAny, AO> = (input: z.input<IV>) => 
 }>;
 
 /**
- * Action initializer overload, because some actions need authentication and others don't.
+ * Type of action initializer. Some actions need authentication and others don't.
  * 1. If you don't need authentication, just pass `input` (Zod input validator) to `opts`.
  * You'll receive the parsed input as Server Action function definition parameter.
  * {@link https://github.com/theedoran/next-safe-action#1-the-direct-way See an example}.
@@ -43,7 +43,7 @@ export type ActionOverload<AuthData extends object> = {
 // ********************* FUNCTIONS *********************
 
 /**
- * This is the safe action initializer.
+ * Initialize a new action client.
  * @param createOpts Options for creating a new action client.
  * @returns {Function} A function that creates a new action, to be used in server files.
  *
