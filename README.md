@@ -116,9 +116,11 @@ export default function Home() {
 
 ---
 
+## Usage from components
+
 There are two ways to call safe actions from the client:
 
-## 1. The direct way
+### 1. The direct way
 
 ```tsx
 "use client"; // this is a Client Component
@@ -161,7 +163,7 @@ On the client you get back a typesafe response object, with three optional keys:
 
 - `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](https://github.com/TheEdoRan/next-safe-action#custom-server-error-logging).
 
-## 2. The hook way
+### 2. The hook way
 
 Another way to mutate data from client is by using the `useAction` hook. This is useful when you need global access to the action state in the Client Component.
 
@@ -242,7 +244,9 @@ It returns an object with seven keys:
 - Boolean action status keys: `isExecuting`, `hasExecuted`, `hasSucceded`, `hasErrored`, pretty self-explanatory.
 - `reset` function, to programatically reset the response object.
 
-## Optimistic update ✨ (experimental)
+---
+
+#### Optimistic update ✨ (experimental)
 
 If you need optimistic UI in your Client Component, the lib also exports a hook called `useOptimisticAction`, that under the hood uses React's `experimental_useOptimistic` hook.
 
