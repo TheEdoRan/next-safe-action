@@ -1,6 +1,6 @@
 # [next-safe-action](https://github.com/TheEdoRan/next-safe-action)
 
-> `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features to let you define typesafe actions on the server and call them from Client Components. 
+> `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe actions on the server and call them from Client Components. 
 
 ## Features
 - ✅ Pretty simple
@@ -329,7 +329,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
           // Action call. Here we pass action input and expected (optimistic)
           // server state.
           execute(
-            { incrementBy: 42 },
+            { incrementBy: randomIncrement },
             { likesCount: likesCount + randomIncrement }
           );
         }}>
@@ -420,6 +420,9 @@ export const action = createSafeActionClient({
   },
 });
 ```
+## Credits
+
+- [Zod](https://github.com/colinhacks/zod) - without Zod, this library wouldn't exist.
 
 ## Alternatives
 
