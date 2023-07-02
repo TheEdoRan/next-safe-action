@@ -273,20 +273,20 @@ export const addLikes = action(
     // Add delay to simulate db call.
     await new Promise((res) => setTimeout(res, 2000));
 
-    const newLikes = incrementLikes(incrementBy);
+    const likesCount = incrementLikes(incrementBy);
 
     // This Next.js function revalidates the provided path.
     // More info here: https://nextjs.org/docs/app/api-reference/functions/revalidatePath
     revalidatePath("/optimistic-hook");
 
     return {
-      newLikes,
+      likesCount,
     };
   }
 );
 ```
 
-Then, you can pass state as prop from a Server Component to a Client Component (in this case `likesCount`), and use the hook in it.
+Then, you need to pass the initial fetched data as prop (in this case `likesCount`) from Server Component to Client Component, and use the hook in it.
 
 ```tsx
 "use client"; // this is a Client Component
@@ -295,12 +295,12 @@ import { useOptimisticAction } from "next-safe-action/hook";
 import { addLikes } from "./addlikes-action";
 
 type Props = {
-  likesCount: number; // this comes from server
+  likesCount: number; // this is fetched initially from server
   addLikes: typeof addLikes;
 };
 
 export default function AddLikes({ likesCount, addLikes }: Props) {
-  // Safe action (`addLikes`), current server state, and optional
+  // Safe action (`addLikes`), initial data, and optional
   // `onSuccess` and `onError` callbacks passed to `useOptimisticAction` hook.
   const {
     execute,
@@ -310,7 +310,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
     hasSucceded,
     hasErrored,
     reset,
-    optimisticState,
+    optimisticData,
   } = useOptimisticAction(
     addLikes,
     { likesCount }, // [1]
@@ -326,8 +326,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
         onClick={() => {
           const randomIncrement = Math.round(Math.random() * 100);
 
-          // Action call. Here we pass action input and expected (optimistic)
-          // server state.
+          // Action call. Here we pass action input and expected (optimistic) data.
           execute(
             { incrementBy: randomIncrement },
             { likesCount: likesCount + randomIncrement }
@@ -335,7 +334,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
         }}>
         Add likes
       </button>
-      <p>Optimistic state: {JSON.stringify(optimisticState)}</p> {/* [2] */}
+      <p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [2] */}
       <p>Is executing: {JSON.stringify(isExecuting)}</p>
       <p>Res: {JSON.stringify(res)}</p>
     </>
@@ -343,9 +342,9 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
 }
 ```
 
-As you can see, `useOptimisticAction` has the same required and optional callbacks arguments as `useAction`, plus one: it requires an initializer for the optimistic state [1].
+As you can see, `useOptimisticAction` has the same required and optional callbacks arguments as `useAction`, plus one: it requires an initializer for the optimistic data [1].
 
-It returns the same seven keys as the regular `useAction` hook, plus one additional key [2]: `optimisticState` is an object with a type of the second argument passed to `useOptimisticAction` hook. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
+It returns the same seven keys as the regular `useAction` hook, plus one additional key [2]: `optimisticData` has the same type of the action's return object. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
 
 ---
 
