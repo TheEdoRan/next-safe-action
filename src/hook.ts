@@ -15,7 +15,7 @@ import type { ClientCaller } from ".";
 /**
  * Type of `res` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookRes<IV extends z.ZodTypeAny, AO> = Awaited<ReturnType<ClientCaller<IV, AO>>> & {
+export type HookRes<IV extends z.ZodTypeAny, Data> = Awaited<ReturnType<ClientCaller<IV, Data>>> & {
 	fetchError?: unknown;
 };
 
@@ -23,14 +23,17 @@ export type HookRes<IV extends z.ZodTypeAny, AO> = Awaited<ReturnType<ClientCall
  * Type of hooks callbacks (`onSuccess` and `onError`).
  * These are executed when the action succeeds or fails.
  */
-export type HookCallbacks<IV extends z.ZodTypeAny, AO> = {
-	onSuccess?: (data: NonNullable<Pick<HookRes<IV, AO>, "data">["data"]>, reset: () => void) => void;
-	onError?: (error: Omit<HookRes<IV, AO>, "data">, reset: () => void) => void;
+export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
+	onSuccess?: (
+		data: NonNullable<Pick<HookRes<IV, Data>, "data">["data"]>,
+		reset: () => void
+	) => void;
+	onError?: (error: Omit<HookRes<IV, Data>, "data">, reset: () => void) => void;
 };
 
 // ********************* FUNCTIONS *********************
 
-const getActionStatus = <IV extends z.ZodTypeAny, AO>(res: HookRes<IV, AO>) => {
+const getActionStatus = <const IV extends z.ZodTypeAny, const Data>(res: HookRes<IV, Data>) => {
 	const hasSucceded = typeof res.data !== "undefined";
 	const hasErrored =
 		typeof res.validationError !== "undefined" ||
@@ -42,12 +45,12 @@ const getActionStatus = <IV extends z.ZodTypeAny, AO>(res: HookRes<IV, AO>) => {
 	return { hasExecuted, hasSucceded, hasErrored };
 };
 
-const useActionCallbacks = <const IV extends z.ZodTypeAny, const AO>(
-	res: HookRes<IV, AO>,
+const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
+	res: HookRes<IV, Data>,
 	hasSucceded: boolean,
 	hasErrored: boolean,
 	reset: () => void,
-	cb?: HookCallbacks<IV, AO>
+	cb?: HookCallbacks<IV, Data>
 ) => {
 	const onSuccessRef = useRef(cb?.onSuccess);
 	const onErrorRef = useRef(cb?.onError);
@@ -72,15 +75,15 @@ const useActionCallbacks = <const IV extends z.ZodTypeAny, const AO>(
  *
  * {@link https://github.com/theedoran/next-safe-action#2-the-hook-way See an example}
  */
-export const useAction = <const IV extends z.ZodTypeAny, const AO>(
-	clientCaller: ClientCaller<IV, AO>,
-	cb?: HookCallbacks<IV, AO>
+export const useAction = <const IV extends z.ZodTypeAny, const Data>(
+	clientCaller: ClientCaller<IV, Data>,
+	cb?: HookCallbacks<IV, Data>
 ) => {
 	const [isExecuting, startTransition] = useTransition();
 	const executor = useRef(clientCaller);
-	const [res, setRes] = useState<HookRes<IV, AO>>({});
+	const [res, setRes] = useState<HookRes<IV, Data>>({});
 
-	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, AO>(res);
+	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
 
 	const execute = useCallback(async (input: z.input<IV>) => {
 		startTransition(() => {
@@ -111,37 +114,38 @@ export const useAction = <const IV extends z.ZodTypeAny, const AO>(
 };
 
 /**
- * Use the action from a Client Component via hook, with optimistic state update.
+ * Use the action from a Client Component via hook, with optimistic data update.
  *
  * **NOTE: This hook uses an experimental React feature.**
  * @param clientCaller Caller function with typesafe input data for the Server Action.
- * @param defaultOptState Default (initial) optimistic state.
+ * @param initialOptData Initial optimistic data.
  * @param cb Optional callbacks executed when the action succeeds or fails.
  *
  * {@link https://github.com/theedoran/next-safe-action#optimistic-update--experimental See an example}
  */
-export const useOptimisticAction = <const IV extends z.ZodTypeAny, const AO, State extends object>(
-	clientCaller: ClientCaller<IV, AO>,
-	defaultOptState: State,
-	cb?: HookCallbacks<IV, AO>
+export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
+	clientCaller: ClientCaller<IV, Data>,
+	initialOptData: Data,
+	cb?: HookCallbacks<IV, Data>
 ) => {
+	const [res, setRes] = useState<HookRes<IV, Data>>({});
+
 	const [optState, syncState] = experimental_useOptimistic<
-		State & { __isExecuting__: boolean },
-		Partial<State>
-	>({ ...defaultOptState, __isExecuting__: false }, (state, newState) => ({
+		Data & { __isExecuting__: boolean },
+		Partial<Data>
+	>({ ...initialOptData, ...res.data, __isExecuting__: false }, (state, newState) => ({
 		...state,
-		...(newState ?? {}),
+		...newState,
 		__isExecuting__: true,
 	}));
 
 	const executor = useRef(clientCaller);
-	const [res, setRes] = useState<HookRes<IV, AO>>({});
 
-	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, AO>(res);
+	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
 
 	const execute = useCallback(
-		(input: z.input<IV>, newServerState: Partial<State>) => {
-			syncState(newServerState);
+		(input: z.input<IV>, newOptimisticData: Partial<Data>) => {
+			syncState(newOptimisticData);
 
 			executor
 				.current(input)
@@ -159,13 +163,13 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const AO, Sta
 
 	useActionCallbacks(res, hasSucceded, hasErrored, reset, cb);
 
-	const { __isExecuting__, ...optimisticState } = optState;
+	const { __isExecuting__, ...optimisticData } = optState;
 
 	return {
 		execute,
 		isExecuting: __isExecuting__,
 		res,
-		optimisticState,
+		optimisticData: optimisticData as Data, // removes omit of `__isExecuting__` from type
 		reset,
 		hasExecuted,
 		hasSucceded,

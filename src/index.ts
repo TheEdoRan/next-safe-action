@@ -5,8 +5,8 @@ import type { z } from "zod";
 /**
  * Type of the function called from Client Components with typesafe input data for the Server Action.
  */
-export type ClientCaller<IV extends z.ZodTypeAny, AO> = (input: z.input<IV>) => Promise<{
-	data?: AO;
+export type ClientCaller<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) => Promise<{
+	data?: Data;
 	serverError?: true;
 	validationError?: Partial<Record<keyof z.input<IV>, string[]>>;
 }>;
@@ -23,21 +23,21 @@ export type ClientCaller<IV extends z.ZodTypeAny, AO> = (input: z.input<IV>) => 
  * {@link https://github.com/theedoran/next-safe-action#authenticated-action See an example}.
  */
 export type ActionOverload<AuthData extends object> = {
-	<const IV extends z.ZodTypeAny, const AO>(
+	<const IV extends z.ZodTypeAny, const Data>(
 		opts: {
 			input: IV;
 			withAuth?: false;
 		},
-		actionDefinition: (parsedInput: z.input<IV>, authData: undefined) => Promise<AO>
-	): ClientCaller<IV, AO>;
+		actionDefinition: (parsedInput: z.input<IV>, authData: undefined) => Promise<Data>
+	): ClientCaller<IV, Data>;
 
-	<const IV extends z.ZodTypeAny, const AO>(
+	<const IV extends z.ZodTypeAny, const Data>(
 		opts: {
 			input: IV;
 			withAuth: true;
 		},
-		actionDefinition: (parsedInput: z.input<IV>, authData: AuthData) => Promise<AO>
-	): ClientCaller<IV, AO>;
+		actionDefinition: (parsedInput: z.input<IV>, authData: AuthData) => Promise<Data>
+	): ClientCaller<IV, Data>;
 };
 
 // ********************* FUNCTIONS *********************
