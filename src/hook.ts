@@ -114,41 +114,38 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 };
 
 /**
- * Use the action from a Client Component via hook, with optimistic state update.
+ * Use the action from a Client Component via hook, with optimistic data update.
  *
  * **NOTE: This hook uses an experimental React feature.**
  * @param clientCaller Caller function with typesafe input data for the Server Action.
- * @param defaultOptState Default (initial) optimistic state.
+ * @param initialOptData Initial optimistic data.
  * @param cb Optional callbacks executed when the action succeeds or fails.
  *
  * {@link https://github.com/theedoran/next-safe-action#optimistic-update--experimental See an example}
  */
-export const useOptimisticAction = <
-	const IV extends z.ZodTypeAny,
-	const Data,
-	State extends object
->(
+export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 	clientCaller: ClientCaller<IV, Data>,
-	defaultOptState: State,
+	initialOptData: Data,
 	cb?: HookCallbacks<IV, Data>
 ) => {
+	const [res, setRes] = useState<HookRes<IV, Data>>({});
+
 	const [optState, syncState] = experimental_useOptimistic<
-		State & { __isExecuting__: boolean },
-		Partial<State>
-	>({ ...defaultOptState, __isExecuting__: false }, (state, newState) => ({
+		Data & { __isExecuting__: boolean },
+		Partial<Data>
+	>({ ...initialOptData, ...res.data, __isExecuting__: false }, (state, newState) => ({
 		...state,
-		...(newState ?? {}),
+		...newState,
 		__isExecuting__: true,
 	}));
 
 	const executor = useRef(clientCaller);
-	const [res, setRes] = useState<HookRes<IV, Data>>({});
 
 	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
 
 	const execute = useCallback(
-		(input: z.input<IV>, newServerState: Partial<State>) => {
-			syncState(newServerState);
+		(input: z.input<IV>, newOptimisticData: Partial<Data>) => {
+			syncState(newOptimisticData);
 
 			executor
 				.current(input)
@@ -166,13 +163,13 @@ export const useOptimisticAction = <
 
 	useActionCallbacks(res, hasSucceded, hasErrored, reset, cb);
 
-	const { __isExecuting__, ...optimisticState } = optState;
+	const { __isExecuting__, ...optimisticData } = optState;
 
 	return {
 		execute,
 		isExecuting: __isExecuting__,
 		res,
-		optimisticState,
+		optimisticData: optimisticData as Data, // removes omit of `__isExecuting__` from type
 		reset,
 		hasExecuted,
 		hasSucceded,
