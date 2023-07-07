@@ -22,7 +22,7 @@ npm i next-safe-action zod
 
 ## Code example ⬇️
 
-### Check out [this example repository](https://github.com/TheEdoRan/next-safe-action-example) to see a basic implementation of this library and to experiment a bit with it.
+### Check out [this Next.js demo](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/example-app) to see a basic implementation of this library and to experiment a bit with it.
 
 ---
 
@@ -59,7 +59,7 @@ Now create a file for an action:
 "use server"; // don't forget to add this
 
 import { z } from "zod";
-import { action } from "~/lib/safe-action";
+import { action } from "@/lib/safe-action";
 
 // This is used to validate input from client.
 const input = z.object({
@@ -161,7 +161,7 @@ On the client you get back a typesafe response object, with three optional keys:
 }
 ```
 
-- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](https://github.com/TheEdoRan/next-safe-action#custom-server-error-logging).
+- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#custom-server-error-logging).
 
 ### 2. The hook way
 
@@ -260,7 +260,7 @@ Here's how it works. First, define your server action as usual:
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { action } from "~/lib/safe-action";
+import { action } from "@/lib/safe-action";
 import { incrementLikes } from "./db";
 
 const inputValidator = z.object({
@@ -382,7 +382,7 @@ Then, you can provide a `withAuth: true` option to the safe action you're creati
 "use server"; // don't forget to add this
 
 import { z } from "zod";
-import { action } from "~/lib/safe-action";
+import { action } from "@/lib/safe-action";
 
 ...
 
