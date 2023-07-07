@@ -2,7 +2,7 @@
 
 > `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe actions on the server and call them from Client Components. 
 
-This is the old documentation, for version 2 of the library. If you want to check out the new documentation, [you can find it here](packages/next-safe-action/README.md).
+This is the old documentation, for version 2 of the library. If you want to check out the new documentation, [you can find it here](README.md).
 
 ## Features
 - ✅ Pretty simple
@@ -24,7 +24,7 @@ npm i next-safe-action zod
 
 ## Code example ⬇️
 
-### Check out [this Next.js demo](packages/example-app) to see a basic implementation of this library and to experiment a bit with it.
+### Check out [this Next.js demo](../example-app) to see a basic implementation of this library and to experiment a bit with it.
 
 ---
 
@@ -163,7 +163,7 @@ On the client you get back a typesafe response object, with three optional keys:
 }
 ```
 
-- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](packages/next-safe-action#custom-server-error-logging).
+- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](#custom-server-error-logging).
 
 ### 2. The hook way
 
