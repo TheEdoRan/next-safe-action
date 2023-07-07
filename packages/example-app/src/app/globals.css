@@ -1,0 +1,86 @@
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+}
+
+body {
+	width: 100%;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	font-size: 20px;
+	padding: 1rem 1rem;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+a {
+	display: block;
+	color: #008cff;
+	text-align: center;
+	text-decoration: none;
+	font-weight: 500;
+	margin-bottom: 1rem;
+}
+
+#github-link {
+	color: #000;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+form {
+	width: 100%;
+	max-width: 20rem;
+	margin: 1rem 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+}
+
+form input {
+	border-radius: 0.3rem;
+	border: 1px solid #cccccc;
+	padding: 0.3rem 0.5rem;
+}
+
+form button {
+	cursor: pointer;
+	padding: 0.5rem 2rem;
+	color: #fff;
+	background-color: #008cff;
+	border: none;
+	border-radius: 0.3rem;
+}
+
+form button:hover {
+	background-color: #0062d1;
+}
+
+#response-container {
+	width: 100%;
+	max-width: 20rem;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		color: #fff;
+		background-color: #000;
+	}
+
+	#github-link {
+		color: #fff;
+	}
+	form input {
+		color: white;
+		border: 1px solid #333333;
+		background-color: #1f1f1f;
+	}
+}
