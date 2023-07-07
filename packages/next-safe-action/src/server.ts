@@ -6,7 +6,7 @@ import type { ActionOverload } from "./types";
  * @param createOpts Options for creating a new action client.
  * @returns {Function} A function that creates a new action, to be used in server files.
  *
- * {@link https://github.com/theedoran/next-safe-action#project-configuration See an example}
+ * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#project-configuration See an example}
  */
 export const createSafeActionClient = <AuthData extends object>(createOpts?: {
 	serverErrorLogFunction?: (e: any) => void | Promise<void>;
