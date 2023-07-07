@@ -3,14 +3,14 @@
 import { authAction } from "@/lib/safe-action";
 import { z } from "zod";
 
-const inputValidator = z.object({
+const input = z.object({
 	fullName: z.string().min(3).max(50),
 	age: z.string().min(1).max(3),
 });
 
 export const editUser = authAction(
-	inputValidator, // auth action
-	// Here you have access to `userId`, which comes from `getAuthData`
+	input,
+	// Here you have access to `userId`, which comes from `buildContext`
 	// return object in src/lib/safe-action.ts.
 	//                          \\\\\
 	async ({ fullName, age }, { userId }) => {
