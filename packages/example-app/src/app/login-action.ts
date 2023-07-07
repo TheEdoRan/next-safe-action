@@ -9,7 +9,7 @@ const inputValidator = z.object({
 });
 
 export const loginUser = action(
-	{ input: inputValidator },
+	inputValidator,
 	async ({ username, password }) => {
 		if (username === "johndoe") {
 			return {

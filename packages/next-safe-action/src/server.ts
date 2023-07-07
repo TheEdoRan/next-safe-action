@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { ActionOverload } from "./types";
+import type { ActionDefinition, ClientCaller } from "./types";
 
 /**
  * Initialize a new action client.
@@ -8,9 +8,9 @@ import type { ActionOverload } from "./types";
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#project-configuration See an example}
  */
-export const createSafeActionClient = <AuthData extends object>(createOpts?: {
+export const createSafeActionClient = <Context extends object>(createOpts?: {
 	serverErrorLogFunction?: (e: any) => void | Promise<void>;
-	getAuthData?: () => Promise<AuthData>;
+	buildContext?: () => Promise<Context>;
 }) => {
 	// If log function is not provided, default to `console.error` for logging
 	// server error messages.
@@ -27,27 +27,20 @@ export const createSafeActionClient = <AuthData extends object>(createOpts?: {
 	// definition function, so the action knows what to do on the server when
 	// called by the client.
 	// It returns a function callable by the client.
-	const action: ActionOverload<AuthData> = (opts, actionDefinition) => {
+	const action = <const IV extends z.ZodTypeAny, const Data>(
+		inputValidator: IV,
+		actionDefinition: ActionDefinition<IV, Data, Context>
+	): ClientCaller<IV, Data> => {
 		// This is the function called by client. If `input` fails the validator
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
-		return async (input) => {
+		return async (clientInput) => {
 			try {
-				let authData: Awaited<AuthData> | undefined = undefined;
-
-				if (opts.withAuth) {
-					if (!createOpts?.getAuthData) {
-						throw new Error("`getAuthData` function not provided to `createSafeActionClient`");
-					}
-
-					authData = await createOpts.getAuthData();
-				}
-
-				const parsedInput = opts.input.safeParse(input);
+				const parsedInput = inputValidator.safeParse(clientInput);
 
 				if (!parsedInput.success) {
 					const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
-						Record<keyof z.input<(typeof opts)["input"]>, string[]>
+						Record<keyof z.input<typeof inputValidator>, string[]>
 					>;
 
 					return {
@@ -55,8 +48,9 @@ export const createSafeActionClient = <AuthData extends object>(createOpts?: {
 					};
 				}
 
-				// @ts-expect-error
-				return { data: await actionDefinition(parsedInput.data, authData) };
+				const ctx = (await createOpts?.buildContext?.()) ?? {};
+
+				return { data: await actionDefinition(parsedInput.data, ctx as Context) };
 			} catch (e: any) {
 				// eslint-disable-next-line
 				serverErrorLogFunction(e);

@@ -22,23 +22,10 @@ export type ClientCaller<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) =
  * Server Action function definition parameters.
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#authenticated-action See an example}.
  */
-export type ActionOverload<AuthData extends object> = {
-	<const IV extends z.ZodTypeAny, const Data>(
-		opts: {
-			input: IV;
-			withAuth?: false;
-		},
-		actionDefinition: (parsedInput: z.input<IV>, authData: undefined) => Promise<Data>
-	): ClientCaller<IV, Data>;
-
-	<const IV extends z.ZodTypeAny, const Data>(
-		opts: {
-			input: IV;
-			withAuth: true;
-		},
-		actionDefinition: (parsedInput: z.input<IV>, authData: AuthData) => Promise<Data>
-	): ClientCaller<IV, Data>;
-};
+export type ActionDefinition<IV extends z.ZodTypeAny, Data, Context extends object> = (
+	parsedInput: z.input<IV>,
+	ctx: Context
+) => Promise<Data>;
 
 // HOOKS
 

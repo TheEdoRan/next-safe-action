@@ -1,6 +1,6 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
+import { authAction } from "@/lib/safe-action";
 import { z } from "zod";
 
 const inputValidator = z.object({
@@ -8,8 +8,8 @@ const inputValidator = z.object({
 	age: z.string().min(1).max(3),
 });
 
-export const editUser = action(
-	{ input: inputValidator, withAuth: true }, // auth action
+export const editUser = authAction(
+	inputValidator, // auth action
 	// Here you have access to `userId`, which comes from `getAuthData`
 	// return object in src/lib/safe-action.ts.
 	//                          \\\\\

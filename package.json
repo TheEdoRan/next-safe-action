@@ -8,6 +8,7 @@
 		"dev": "turbo run dev --filter=example-app",
 		"lint": "turbo run lint",
 		"build": "turbo run build",
+		"build:lib": "turbo run build --filter=next-safe-action",
 		"deploy": "turbo run deploy"
 	},
 	"author": "Edoardo Ranghieri",
