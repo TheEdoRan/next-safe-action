@@ -12,17 +12,9 @@ export type ClientCaller<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) =
 }>;
 
 /**
- * Type of action initializer. Some actions need authentication and others don't.
- * 1. If you don't need authentication, just pass `input` (Zod input validator) to `opts`.
- * You'll receive the parsed input as Server Action function definition parameter.
- * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#1-the-direct-way See an example}.
- * 2. If you need authentication, you have to pass `withAuth: true`,
- * along with `input` (Zod input validator) when you're creating a new action.
- * In this case, you receive both the parsed input and auth data as
- * Server Action function definition parameters.
- * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#authenticated-action See an example}.
+ * Type of the function that executes server code when defining a new safe action.
  */
-export type ActionDefinition<IV extends z.ZodTypeAny, Data, Context extends object> = (
+export type ActionServerFn<IV extends z.ZodTypeAny, Data, Context extends object> = (
 	parsedInput: z.input<IV>,
 	ctx: Context
 ) => Promise<Data>;

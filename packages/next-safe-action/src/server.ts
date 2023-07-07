@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { ActionDefinition, ClientCaller } from "./types";
+import type { ActionServerFn, ClientCaller } from "./types";
 
 /**
  * Initialize a new action client.
@@ -23,13 +23,12 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 		});
 
 	// `action` is the server function that creates a new action.
-	// It expects an input validator, a optional `withAuth` property, and a
-	// definition function, so the action knows what to do on the server when
-	// called by the client.
+	// It expects an input validator and a definition function, so the action knows
+	// what to do on the server when called by the client.
 	// It returns a function callable by the client.
 	const action = <const IV extends z.ZodTypeAny, const Data>(
 		inputValidator: IV,
-		actionDefinition: ActionDefinition<IV, Data, Context>
+		serverFunction: ActionServerFn<IV, Data, Context>
 	): ClientCaller<IV, Data> => {
 		// This is the function called by client. If `input` fails the validator
 		// parsing, the function will return a `validationError` object, containing
@@ -48,9 +47,11 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 					};
 				}
 
+				// Get the context if `buildContext` is provided, otherwise use an
+				// empty object.
 				const ctx = (await createOpts?.buildContext?.()) ?? {};
 
-				return { data: await actionDefinition(parsedInput.data, ctx as Context) };
+				return { data: await serverFunction(parsedInput.data, ctx as Context) };
 			} catch (e: any) {
 				// eslint-disable-next-line
 				serverErrorLogFunction(e);
