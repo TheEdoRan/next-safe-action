@@ -423,10 +423,6 @@ export const action = createSafeActionClient({
 
 - [Zod](https://github.com/colinhacks/zod) - without Zod, this library wouldn't exist.
 
-## Alternatives
-
-- [Zact](https://github.com/pingdotgg/zact) by [Ping](https://github.com/pingdotgg)
-
 ## License
 
 This project is licensed under the [MIT License](https://github.com/TheEdoRan/next-safe-action/blob/main/LICENSE).
