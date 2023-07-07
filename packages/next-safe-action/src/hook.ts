@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	experimental_useOptimistic,
 	useCallback,
@@ -8,30 +10,9 @@ import {
 } from "react";
 import {} from "react/experimental";
 import type { z } from "zod";
-import type { ClientCaller } from ".";
+import type { ClientCaller, HookCallbacks, HookRes } from "./types";
 
-// ********************* TYPES *********************
-
-/**
- * Type of `res` object returned by `useAction` and `useOptimisticAction` hooks.
- */
-export type HookRes<IV extends z.ZodTypeAny, Data> = Awaited<ReturnType<ClientCaller<IV, Data>>> & {
-	fetchError?: unknown;
-};
-
-/**
- * Type of hooks callbacks (`onSuccess` and `onError`).
- * These are executed when the action succeeds or fails.
- */
-export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
-	onSuccess?: (
-		data: NonNullable<Pick<HookRes<IV, Data>, "data">["data"]>,
-		reset: () => void
-	) => void;
-	onError?: (error: Omit<HookRes<IV, Data>, "data">, reset: () => void) => void;
-};
-
-// ********************* FUNCTIONS *********************
+// UTILS
 
 const getActionStatus = <const IV extends z.ZodTypeAny, const Data>(res: HookRes<IV, Data>) => {
 	const hasSucceded = typeof res.data !== "undefined";
@@ -176,3 +157,5 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 		hasErrored,
 	};
 };
+
+export type { HookCallbacks, HookRes };

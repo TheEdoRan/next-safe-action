@@ -1,0 +1,69 @@
+{
+	"name": "next-safe-action",
+	"version": "0.0.0-development",
+	"private": false,
+	"description": "A typesafe server actions implementation for Next.js with RSC using Zod.",
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": "./dist/index",
+		"./hook": "./dist/hook"
+	},
+	"typesVersions": {
+		"*": {
+			".": [
+				"./dist/index"
+			],
+			"hook": [
+				"./dist/hook"
+			]
+		}
+	},
+	"scripts": {
+		"lint": "tsc && eslint --ext ts .",
+		"build": "tsup",
+		"deploy": "semantic-release"
+	},
+	"keywords": [
+		"next",
+		"nextjs",
+		"react",
+		"rsc",
+		"react server components",
+		"mutation",
+		"action",
+		"actions",
+		"react actions",
+		"next actions",
+		"server actions"
+	],
+	"author": "Edoardo Ranghieri",
+	"license": "MIT",
+	"engines": {
+		"node": ">=16"
+	},
+	"devDependencies": {
+		"@types/node": "^20.1.1",
+		"@types/react": "^18.2.6",
+		"@typescript-eslint/eslint-plugin": "^5.59.5",
+		"@typescript-eslint/parser": "^5.59.5",
+		"eslint": "^8.40.0",
+		"eslint-config-prettier": "^8.8.0",
+		"prettier": "^2.8.8",
+		"tsup": "^6.7.0",
+		"typescript": "^5.0.4"
+	},
+	"peerDependencies": {
+		"next": ">= 13.4.2",
+		"react": ">= 18.2.0",
+		"zod": ">= 3.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/TheEdoRan/next-safe-action.git"
+	}
+}
