@@ -54,7 +54,7 @@ const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
  * @param clientCaller Caller function with typesafe input data for the Server Action.
  * @param cb Optional callbacks executed when the action succeeds or fails.
  *
- * {@link https://github.com/theedoran/next-safe-action#2-the-hook-way See an example}
+ * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#2-the-hook-way See an example}
  */
 export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 	clientCaller: ClientCaller<IV, Data>,
@@ -102,7 +102,7 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
  * @param initialOptData Initial optimistic data.
  * @param cb Optional callbacks executed when the action succeeds or fails.
  *
- * {@link https://github.com/theedoran/next-safe-action#optimistic-update--experimental See an example}
+ * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#optimistic-update--experimental See an example}
  */
 export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 	clientCaller: ClientCaller<IV, Data>,
