@@ -16,7 +16,7 @@ export default function RootLayout({
 			<body>
 				<a
 					id="github-link"
-					href="https://github.com/TheEdoRan/next-safe-action-example"
+					href="https://github.com/TheEdoRan/next-safe-action"
 					target="_blank"
 					rel="noopener noreferrer">
 					<GitHubLogo width={40} height={40} />
