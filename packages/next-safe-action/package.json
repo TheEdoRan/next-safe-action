@@ -23,7 +23,7 @@
 	"scripts": {
 		"lint": "tsc && eslint --ext ts .",
 		"build": "tsup",
-		"deploy": "semantic-release --branches main"
+		"deploy": "semantic-release"
 	},
 	"keywords": [
 		"next",
