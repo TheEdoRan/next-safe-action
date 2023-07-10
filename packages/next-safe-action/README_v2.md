@@ -24,7 +24,7 @@ npm i next-safe-action zod
 
 ## Code example ⬇️
 
-### Check out [this Next.js demo](../example-app) to see a basic implementation of this library and to experiment a bit with it.
+### Check out [this Next.js demo](https://github.com/TheEdoRan/next-safe-action/tree/ee1eed1d18fe8a3f57c42ba5c06b4f09e77a29c9/packages/example-app) (for version 2) to see a basic implementation of this library and to experiment a bit with it.
 
 ---
 
