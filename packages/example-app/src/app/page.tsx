@@ -9,7 +9,7 @@ export const metadata = {
 export default function Home() {
 	return (
 		<>
-			<Link href="/withauth">Go to /withauth</Link>
+			<Link href="/with-context">Go to /with-context</Link>
 			<Link href="/hook">Go to /hook</Link>
 			<Link href="/optimistic-hook">Go to /optimistic-hook</Link>
 			<h1>Action without auth</h1>

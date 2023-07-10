@@ -2,16 +2,15 @@
 
 > `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe actions on the server and call them from Client Components. 
 
-This is the new documentation, for version 3 of the library. If you want to check out the old documentation, [you can find it here](README_v2.md).
+This is the old documentation, for version 2 of the library. If you want to check out the new documentation, [you can find it here](README.md).
 
 ## Features
 - ✅ Pretty simple
 - ✅ End to end type safety
-- ✅ Context based clients
 - ✅ Input validation
 - ✅ Direct or hook usage from client  
 - ✅ Optimistic updates
-
+- ✅ Authenticated actions
 
 ## Requirements
 
@@ -25,7 +24,7 @@ npm i next-safe-action zod
 
 ## Code example ⬇️
 
-### Check out [this Next.js demo](../example-app) to see a basic implementation of this library and to experiment a bit with it.
+### Check out [this Next.js demo](https://github.com/TheEdoRan/next-safe-action/tree/ee1eed1d18fe8a3f57c42ba5c06b4f09e77a29c9/packages/example-app) (for version 2) to see a basic implementation of this library and to experiment a bit with it.
 
 ---
 
@@ -77,7 +76,7 @@ const input = z.object({
 // parsed input, and defines what happens on the server when the action is
 // called from the client.
 // In short, this is your backend code. It never runs on the client.
-export const loginUser = action(input, async ({ username, password }) => {
+export const loginUser = action({ input }, async ({ username, password }) => {
     if (username === "johndoe") {
       return {
         failure: {
@@ -266,11 +265,13 @@ import { z } from "zod";
 import { action } from "@/lib/safe-action";
 import { incrementLikes } from "./db";
 
-const input = z.object({
+const inputValidator = z.object({
   incrementBy: z.number(),
 });
 
-export const addLikes = action(input, async ({ incrementBy }) => {
+export const addLikes = action(
+  { input: inputValidator },
+  async ({ incrementBy }) => {
     // Add delay to simulate db call.
     await new Promise((res) => setTimeout(res, 2000));
 
@@ -349,26 +350,21 @@ It returns the same seven keys as the regular `useAction` hook, plus one additio
 
 ---
 
-## Define a context object
+## Authenticated action
 
-A key feature of this library is the ability to define a context builder function when initializing a new action client. This object will then be passed as the second argument of the server action function.
+The library also supports creating protected actions, that will return a `serverError` back if user is not authenticated. You need to make some changes to the above code in order to use them.
 
-
-To build your context, first, when creating the safe action client, you have to provide an async function called `buildContext` as an option. You can return any object you want from here, and safely throw an error in this function's body. It will be caught, and the client will receive a `serverError` response.
+First, when creating the safe action client, you **must** provide an `async function` called `getAuthData` as an option. You can return anything you want from here. If you find out that the user is not authenticated, you can safely throw an error in this function. It will be caught, and the client will receive a `serverError` response.
 
 ```typescript
 // src/lib/safe-action.ts
 
 import { createSafeActionClient } from "next-safe-action";
 
-// This is the base safe action client.
-export const action = createSafeActionClient();
-
-// This is a safe action client with an auth context.
-export const authAction = createSafeActionClient({
+export const action = createSafeActionClient({
   // Here you can use functions such as `cookies()` or `headers()`
-  // from next/headers, or utilities like `getServerSession()` from NextAuth here.
-  buildContext: async () => {
+  // from next/headers, or utilities like `getServerSession()` from NextAuth.
+  getAuthData: async () => {
     const session = true;
 
     if (!session) {
@@ -382,29 +378,33 @@ export const authAction = createSafeActionClient({
 });
 ```
 
-Then, you can use the previously defined client and access the context object:
+Then, you can provide a `withAuth: true` option to the safe action you're creating:
 
 ```typescript
 "use server"; // don't forget to add this
 
 import { z } from "zod";
-import { authAction } from "@/lib/safe-action";
+import { action } from "@/lib/safe-action";
 
 ...
 
-// [1]: Here you have access to the context object, in this case it's just
-// `{ userId }`, which comes from the return type of the `buildContext` function
+// [1] For protected actions, you need to provide `withAuth: true` here.
+// [2] Then, you'll have access to the auth object, in this case it's just
+// `{ userId }`, which comes from the return type of the `getAuthData` function
 // declared in the previous step.
-export const editUser = authAction(input, async (parsedInput, { userId /* [1] */ }) => {
-  console.log(userId); // will output: "coolest_user_id",
-  ...
+export const editUser = action({ input, withAuth: true }, // [1]
+  async (parsedInput, { userId }) => { // [2]
+    console.log(userId); // will output: "coolest_user_id",
+    ...
   }
 );
 ```
 
+If you set `withAuth` to `true` in the safe action you're creating, but you forgot to define a `getAuthData` function when creating the client (above step), an error will be thrown when calling the action from client, that results in a `serverError` response for the client.
+
 ## Custom server error logging
 
-As you just saw, you can provide a `buildContext` function to `createSafeActionClient` function.
+As you just saw, you can provide a `getAuthData` function to `createSafeActionClient` function.
 
 You can also provide a custom logger function for server errors. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable:
 
