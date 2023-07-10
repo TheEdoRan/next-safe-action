@@ -20,12 +20,12 @@
 		"packages/*"
 	],
 	"devDependencies": {
-		"@commitlint/cli": "^17.6.3",
-		"@commitlint/config-conventional": "^17.6.3",
+		"@commitlint/cli": "^17.6.6",
+		"@commitlint/config-conventional": "^17.6.6",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^8.0.3",
 		"is-ci": "^3.0.1",
-		"semantic-release": "^21.0.2",
+		"semantic-release": "^21.0.7",
 		"turbo": "^1.10.7"
 	},
 	"config": {
