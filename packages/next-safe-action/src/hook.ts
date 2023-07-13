@@ -11,6 +11,7 @@ import {
 import {} from "react/experimental";
 import type { z } from "zod";
 import type { ClientCaller, HookCallbacks, HookRes } from "./types";
+import { isNextNotFoundError, isNextRedirectError } from "./utils";
 
 // UTILS
 
@@ -66,12 +67,16 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 
 	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
 
-	const execute = useCallback(async (input: z.input<IV>) => {
-		startTransition(() => {
-			executor
+	const execute = useCallback((input: z.input<IV>) => {
+		return startTransition(() => {
+			return executor
 				.current(input)
 				.then((res) => setRes(res))
 				.catch((e) => {
+					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
+						throw e;
+					}
+
 					setRes({ fetchError: e });
 				});
 		});
@@ -128,10 +133,15 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 		(input: z.input<IV>, newOptimisticData: Partial<Data>) => {
 			syncState(newOptimisticData);
 
-			executor
+			return executor
 				.current(input)
 				.then((res) => setRes(res))
 				.catch((e) => {
+					// NOTE: this doesn't work at the moment.
+					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
+						throw e;
+					}
+
 					setRes({ fetchError: e });
 				});
 		},

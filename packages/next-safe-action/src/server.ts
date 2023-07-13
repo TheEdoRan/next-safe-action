@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { ActionServerFn, ClientCaller } from "./types";
+import { isNextNotFoundError, isNextRedirectError } from "./utils";
 
 /**
  * Initialize a new action client.
@@ -53,6 +54,12 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 
 				return { data: await serverFunction(parsedInput.data, ctx as Context) };
 			} catch (e: any) {
+				// next/navigation functions work by throwing an error that will be
+				// processed internally by Next.js. So, in this case we need to rethrow it.
+				if (isNextRedirectError(e) || isNextNotFoundError(e)) {
+					throw e;
+				}
+
 				// eslint-disable-next-line
 				serverErrorLogFunction(e);
 
