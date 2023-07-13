@@ -121,6 +121,9 @@ export default function Home() {
 
 ## Usage from components
 
+> **Note**
+> If you use [`redirect()`](https://nextjs.org/docs/app/api-reference/functions/redirect) and [`notFound()`](https://nextjs.org/docs/app/api-reference/functions/not-found) functions in the Server Action's backend code, you must use the `useAction` hook too. Other ways are not currently supported by Next.js. With `redirect()`, you also get a `UND_ERR_REQ_CONTENT_LENGTH_MISMATCH` error in the server console, just ignore it for now, since the action is performed anyway.
+
 There are two ways to call safe actions from the client:
 
 ### 1. The direct way
@@ -253,8 +256,8 @@ It returns an object with seven keys:
 
 If you need optimistic UI in your Client Component, the lib also exports a hook called `useOptimisticAction`, that under the hood uses React's `experimental_useOptimistic` hook.
 
-**Note: this React hook is not stable, use it at your own risk!**
-
+> **Warning**
+> This feature is experimental, use it at your own risk.
 
 Here's how it works. First, define your server action as usual:
 
