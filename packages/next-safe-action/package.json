@@ -10,8 +10,8 @@
 		"dist"
 	],
 	"exports": {
-		".": "./dist/index",
-		"./hook": "./dist/hook"
+		".": "./dist/index.mjs",
+		"./hook": "./dist/hook.mjs"
 	},
 	"typesVersions": {
 		"*": {
