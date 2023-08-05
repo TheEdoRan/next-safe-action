@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type { ActionServerFn, ClientCaller } from "./types";
-import { isNextNotFoundError, isNextRedirectError } from "./utils";
+import { isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 /**
  * Initialize a new action client.
@@ -12,15 +12,16 @@ import { isNextNotFoundError, isNextRedirectError } from "./utils";
 export const createSafeActionClient = <Context extends object>(createOpts?: {
 	serverErrorLogFunction?: (e: any) => void | Promise<void>;
 	buildContext?: () => Promise<Context>;
+	unmaskServerError?: boolean;
 }) => {
 	// If log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const serverErrorLogFunction =
 		createOpts?.serverErrorLogFunction ||
 		((e) => {
-			const errMessage = "message" in e && typeof e.message === "string" ? e.message : e;
+			const errMessage = isError(e) ? e.message : e;
 
-			console.log("Action error:", errMessage);
+			console.error("Action error:", errMessage);
 		});
 
 	// `action` is the server function that creates a new action.
@@ -53,7 +54,7 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 				const ctx = (await createOpts?.buildContext?.()) ?? {};
 
 				return { data: await serverFunction(parsedInput.data, ctx as Context) };
-			} catch (e: any) {
+			} catch (e: unknown) {
 				// next/navigation functions work by throwing an error that will be
 				// processed internally by Next.js. So, in this case we need to rethrow it.
 				if (isNextRedirectError(e) || isNextNotFoundError(e)) {
@@ -63,7 +64,20 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 				// eslint-disable-next-line
 				serverErrorLogFunction(e);
 
-				return { serverError: true };
+				// If `unmaskServerError` is set to true, return the actual error message.
+				if (createOpts?.unmaskServerError) {
+					if (isError(e)) {
+						return { serverError: (e as Error).message };
+					} else if (typeof e === "string") {
+						return { serverError: e };
+					}
+
+					// If type of error cannot be logged, warn the user.
+					console.warn("Could not log server error:", e);
+				}
+
+				// Otherwise, mask it with a generic message.
+				return { serverError: "Something went wrong while executing the operation" };
 			}
 		};
 	};
