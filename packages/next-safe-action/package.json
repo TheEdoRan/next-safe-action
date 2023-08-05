@@ -16,10 +16,10 @@
 	"typesVersions": {
 		"*": {
 			".": [
-				"./dist/index"
+				"./dist/index.d.mts"
 			],
 			"hook": [
-				"./dist/hook"
+				"./dist/hook.d.mts"
 			]
 		}
 	},
