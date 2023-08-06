@@ -7,7 +7,7 @@ import type { z } from "zod";
  */
 export type ClientCaller<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) => Promise<{
 	data?: Data;
-	serverError?: unknown;
+	serverError?: string;
 	validationError?: Partial<Record<keyof z.input<IV>, string[]>>;
 }>;
 
