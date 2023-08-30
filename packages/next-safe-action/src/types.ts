@@ -35,7 +35,8 @@ export type HookRes<IV extends z.ZodTypeAny, Data> = Awaited<ReturnType<ClientCa
 export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
 	onSuccess?: (
 		data: NonNullable<Pick<HookRes<IV, Data>, "data">["data"]>,
-		reset: () => void
+		reset: () => void,
+		input: z.input<IV>
 	) => void;
-	onError?: (error: Omit<HookRes<IV, Data>, "data">, reset: () => void) => void;
+	onError?: (error: Omit<HookRes<IV, Data>, "data">, reset: () => void, input: z.input<IV>) => void;
 };
