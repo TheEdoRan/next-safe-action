@@ -47,15 +47,15 @@
 		"node": ">=16"
 	},
 	"devDependencies": {
-		"@types/node": "^20.4.8",
-		"@types/react": "^18.2.18",
-		"@typescript-eslint/eslint-plugin": "^6.2.1",
-		"@typescript-eslint/parser": "^6.2.1",
-		"eslint": "^8.46.0",
-		"eslint-config-prettier": "^8.10.0",
-		"prettier": "^3.0.1",
+		"@types/node": "^20.5.9",
+		"@types/react": "^18.2.21",
+		"@typescript-eslint/eslint-plugin": "^6.6.0",
+		"@typescript-eslint/parser": "^6.6.0",
+		"eslint": "^8.48.0",
+		"eslint-config-prettier": "^9.0.0",
+		"prettier": "^3.0.3",
 		"tsup": "^7.2.0",
-		"typescript": "^5.1.6"
+		"typescript": "^5.2.2"
 	},
 	"peerDependencies": {
 		"next": ">= 13.4.2",
