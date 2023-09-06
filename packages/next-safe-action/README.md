@@ -290,6 +290,9 @@ export const addLikes = action(input, async ({ incrementBy }) => {
 );
 ```
 
+> **Note**
+> If you use this hook, you need to return an object from your action's backend code. Otherwise optimistic state update won't work properly.
+
 Then, you need to pass the initial fetched data as prop (in this case `likesCount`) from Server Component to Client Component, and use the hook in it.
 
 ```tsx
@@ -409,7 +412,9 @@ export const editUser = authAction(input, async (parsedInput, { userId /* [1] */
 
 As you just saw, you can provide a `buildContext` function to `createSafeActionClient` function.
 
-You can also provide a custom logger function for server errors. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable:
+You can also provide:
+1. A custom logger function for server errors. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable;
+2. A boolean key called `unmaskServerError`. When this is set to true, it will pass the actual error message to the client, instead of a generic one, when an error occurs in the server action body.
 
 ```typescript
 // src/lib/safe-action.ts
@@ -422,6 +427,7 @@ export const action = createSafeActionClient({
   serverErrorLogFunction: (e) => {
     console.error("CUSTOM ERROR LOG FUNCTION:", e);
   },
+  unmaskServerError: true, // default is false
 });
 ```
 ## Credits
