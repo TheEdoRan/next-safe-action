@@ -11,8 +11,8 @@ import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError
  */
 export const createSafeActionClient = <Context extends object>(createOpts?: {
 	buildContext?: () => Promise<Context>;
-	handleServerErrorFunction?: (e: unknown) => Promise<{ serverError: string }>;
-	serverErrorLogFunction?: (e: unknown) => MaybePromise<void>;
+	handleReturnedServerError?: (e: Error) => Promise<{ serverError: string }>;
+	serverErrorLogFunction?: (e: Error) => MaybePromise<void>;
 }) => {
 	// If log function is not provided, default to `console.error` for logging
 	// server error messages.
@@ -22,10 +22,10 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 			console.error("Action error:", (e as Error).message);
 		});
 
-	// If `handleServerErrorFunction` is provided, use it to handle server errors.
+	// If `handleReturnedServerError` is provided, use it to handle server errors.
 	// Otherwise mask the error and use a generic message.
-	const handleServerErrorFunction =
-		createOpts?.handleServerErrorFunction || (async () => ({ serverError: DEFAULT_SERVER_ERROR }));
+	const handleReturnedServerError =
+		createOpts?.handleReturnedServerError || (async () => ({ serverError: DEFAULT_SERVER_ERROR }));
 
 	// `action` is the server function that creates a new action.
 	// It expects an input validator and a definition function, so the action knows
@@ -71,9 +71,9 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 				}
 
 				// eslint-disable-next-line
-				serverErrorLogFunction(e);
+				serverErrorLogFunction(e as Error);
 
-				return await handleServerErrorFunction(e);
+				return await handleReturnedServerError(e as Error);
 			}
 		};
 	};
