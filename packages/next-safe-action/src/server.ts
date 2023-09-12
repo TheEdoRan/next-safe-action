@@ -1,6 +1,6 @@
 import type { z } from "zod";
-import type { ActionServerFn, ClientCaller } from "./types";
-import { isError, isNextNotFoundError, isNextRedirectError } from "./utils";
+import type { ActionServerFn, ClientCaller, MaybePromise } from "./types";
+import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 /**
  * Initialize a new action client.
@@ -10,19 +10,22 @@ import { isError, isNextNotFoundError, isNextRedirectError } from "./utils";
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#project-configuration See an example}
  */
 export const createSafeActionClient = <Context extends object>(createOpts?: {
-	serverErrorLogFunction?: (e: any) => void | Promise<void>;
 	buildContext?: () => Promise<Context>;
-	unmaskServerError?: boolean;
+	handleServerErrorFunction?: (e: unknown) => Promise<{ serverError: string }>;
+	serverErrorLogFunction?: (e: unknown) => MaybePromise<void>;
 }) => {
 	// If log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const serverErrorLogFunction =
 		createOpts?.serverErrorLogFunction ||
 		((e) => {
-			const errMessage = isError(e) ? e.message : e;
-
-			console.error("Action error:", errMessage);
+			console.error("Action error:", (e as Error).message);
 		});
+
+	// If `handleServerErrorFunction` is provided, use it to handle server errors.
+	// Otherwise mask the error and use a generic message.
+	const handleServerErrorFunction =
+		createOpts?.handleServerErrorFunction || (async () => ({ serverError: DEFAULT_SERVER_ERROR }));
 
 	// `action` is the server function that creates a new action.
 	// It expects an input validator and a definition function, so the action knows
@@ -61,23 +64,16 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 					throw e;
 				}
 
+				// If error cannot be handled, warn the user and return a generic message.
+				if (!isError(e)) {
+					console.warn("Could not handle server error. Not an instance of Error: ", e);
+					return { serverError: DEFAULT_SERVER_ERROR };
+				}
+
 				// eslint-disable-next-line
 				serverErrorLogFunction(e);
 
-				// If `unmaskServerError` is set to true, return the actual error message.
-				if (createOpts?.unmaskServerError) {
-					if (isError(e)) {
-						return { serverError: (e as Error).message };
-					} else if (typeof e === "string") {
-						return { serverError: e };
-					}
-
-					// If type of error cannot be logged, warn the user.
-					console.warn("Could not log server error:", e);
-				}
-
-				// Otherwise, mask it with a generic message.
-				return { serverError: "Something went wrong while executing the operation" };
+				return await handleServerErrorFunction(e);
 			}
 		};
 	};

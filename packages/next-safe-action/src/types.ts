@@ -39,3 +39,5 @@ export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
 	) => void;
 	onError?: (error: Omit<HookRes<IV, Data>, "data">, reset: () => void) => void;
 };
+
+export type MaybePromise<T> = T | Promise<T>;
