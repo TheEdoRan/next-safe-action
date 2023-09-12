@@ -412,9 +412,9 @@ export const editUser = authAction(input, async (parsedInput, { userId /* [1] */
 
 As you just saw, you can provide a `buildContext` function to `createSafeActionClient` function.
 
-You can also provide:
-1. A custom logger function for server errors. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable;
-2. A boolean key called `unmaskServerError`. When this is set to true, it will pass the actual error message to the client, instead of a generic one, when an error occurs in the server action body.
+You **can** also provide:
+1. A custom logger function for server errors, that has the error object `e` as argument. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable.
+2. A Promise called `handleServerErrorFunction`, that has the error object `e` as argument, and returns a response object with a `serverError` key. When this option is provided, the client lets you handle server errors in a custom way. So, if an error occurs on the server, instead of returning a default message to the client, the custom logic of this function will be used to build the response object.
 
 ```typescript
 // src/lib/safe-action.ts
@@ -427,7 +427,16 @@ export const action = createSafeActionClient({
   serverErrorLogFunction: (e) => {
     console.error("CUSTOM ERROR LOG FUNCTION:", e);
   },
-  unmaskServerError: true, // default is false
+  // Default is undefined. If this Promise is not provided, the client will return
+  // a default server error response when an error occurs on the server.
+  handleServerErrorFunction: async (e) => {
+    // Your custom error handling logic here.
+    // ...
+
+    return {
+      serverError: "Something went wrong",
+    }
+  }
 });
 ```
 ## Credits
