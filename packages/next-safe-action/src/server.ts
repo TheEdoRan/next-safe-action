@@ -22,7 +22,8 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 			console.error("Action error:", (e as Error).message);
 		});
 
-	// If `handleReturnedServerError` is provided, use it to handle server errors.
+	// If `handleReturnedServerError` is provided, use it to handle server error
+	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
 	const handleReturnedServerError =
 		createOpts?.handleReturnedServerError || (async () => ({ serverError: DEFAULT_SERVER_ERROR }));
