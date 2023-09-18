@@ -8,7 +8,7 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import {} from "react/experimental";
+import { } from "react/experimental";
 import type { z } from "zod";
 import type { ClientCaller, HookCallbacks, HookRes } from "./types";
 import { isNextNotFoundError, isNextRedirectError } from "./utils";
@@ -28,6 +28,7 @@ const getActionStatus = <const IV extends z.ZodTypeAny, const Data>(res: HookRes
 };
 
 const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
+	input: z.input<IV>,
 	res: HookRes<IV, Data>,
 	hasSucceded: boolean,
 	hasErrored: boolean,
@@ -43,9 +44,9 @@ const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
 		const onError = onErrorRef.current;
 
 		if (onSuccess && hasSucceded) {
-			onSuccess(res.data!, reset);
+			onSuccess(res.data!, reset, input);
 		} else if (onError && hasErrored) {
-			onError(res, reset);
+			onError(res, reset, input);
 		}
 	}, [hasErrored, hasSucceded, res, reset]);
 };
@@ -64,10 +65,13 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 	const [isExecuting, startTransition] = useTransition();
 	const executor = useRef(clientCaller);
 	const [res, setRes] = useState<HookRes<IV, Data>>({});
+	const [input, setInput] = useState<z.input<IV>>();
 
 	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
 
 	const execute = useCallback((input: z.input<IV>) => {
+		setInput(input);
+
 		return startTransition(() => {
 			return executor
 				.current(input)
@@ -86,7 +90,7 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 		setRes({});
 	}, []);
 
-	useActionCallbacks(res, hasSucceded, hasErrored, reset, cb);
+	useActionCallbacks(input, res, hasSucceded, hasErrored, reset, cb);
 
 	return {
 		execute,
@@ -115,6 +119,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 	cb?: HookCallbacks<IV, Data>
 ) => {
 	const [res, setRes] = useState<HookRes<IV, Data>>({});
+	const [input, setInput] = useState<z.input<IV>>();
 
 	const [optState, syncState] = experimental_useOptimistic<
 		Data & { __isExecuting__: boolean },
@@ -132,6 +137,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 	const execute = useCallback(
 		(input: z.input<IV>, newOptimisticData: Partial<Data>) => {
 			syncState(newOptimisticData);
+			setInput(input);
 
 			return executor
 				.current(input)
@@ -152,7 +158,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 		setRes({});
 	}, []);
 
-	useActionCallbacks(res, hasSucceded, hasErrored, reset, cb);
+	useActionCallbacks(input, res, hasSucceded, hasErrored, reset, cb);
 
 	const { __isExecuting__, ...optimisticData } = optState;
 

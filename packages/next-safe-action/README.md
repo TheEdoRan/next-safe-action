@@ -1,6 +1,6 @@
 # [next-safe-action](https://github.com/TheEdoRan/next-safe-action)
 
-> `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe actions on the server and call them from Client Components. 
+> `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe actions on the server and call them from Client Components.
 
 This is the new documentation, for version 3 of the library. If you want to check out the old documentation, [you can find it here](README_v2.md).
 
@@ -9,7 +9,7 @@ This is the new documentation, for version 3 of the library. If you want to chec
 - ✅ End to end type safety
 - ✅ Context based clients
 - ✅ Input validation
-- ✅ Direct or hook usage from client  
+- ✅ Direct or hook usage from client
 - ✅ Optimistic updates
 
 
@@ -199,19 +199,25 @@ export default function Login({ loginUser }: Props) {
     hasErrored,
     reset,
   } = useAction(loginUser, {
-      onSuccess: (data, reset) => {
+      onSuccess: (data, reset, input) => {
         // Data from server action.
         const { failure, success } = data;
 
         // Reset response object.
         reset();
+
+        // Data used to call `execute`.
+        const { username, password } = input;
       },
-      onError: (error, reset) => {
+      onError: (error, reset, input) => {
         // One of these errors.
         const { fetchError, serverError, validationError } = error;
 
         // Reset response object.
         reset();
+
+        // Data used to call `execute`.
+        const { username, password } = input;
       },
     }
   );
@@ -241,7 +247,7 @@ export default function Login({ loginUser }: Props) {
 
 The `useAction` has one required argument (the action) and one optional argument (an object with `onSuccess` and `onError` callbacks).
 
-`onSuccess(data, reset)` and `onError(error, reset)` are executed, respectively, when the action executes successfully or fails. You can reset the response object inside these callbacks with `reset()` (second argument of the callback).
+`onSuccess(data, reset, input)` and `onError(error, reset, input)` are executed, respectively, when the action executes successfully or fails. You can reset the response object inside these callbacks with `reset()` (second argument of the callback). The original payload of the action is available as the third argument of the callback (`input`): this is the same data that was passed to the `execute` function.
 
 It returns an object with seven keys:
 
@@ -322,8 +328,8 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
     addLikes,
     { likesCount }, // [1]
     {
-      onSuccess: (data, reset) => {},
-      onError: (error, reset) => {},
+      onSuccess: (data, reset, input) => {},
+      onError: (error, reset, input) => {},
     }
   );
 
