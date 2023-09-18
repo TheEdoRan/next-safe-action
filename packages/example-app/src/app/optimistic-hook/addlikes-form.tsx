@@ -23,14 +23,14 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 		addLikes,
 		{ likesCount },
 		{
-			onSuccess(data, reset) {
-				console.log("HELLO FROM ONSUCCESS", data);
+			onSuccess(data, reset, input) {
+				console.log("HELLO FROM ONSUCCESS", data, input);
 
 				// You can reset response object by calling `reset`.
 				// reset();
 			},
-			onError(error, reset) {
-				console.log("OH NO FROM ONERROR", error);
+			onError(error, reset, input) {
+				console.log("OH NO FROM ONERROR", error, input);
 
 				// You can reset response object by calling `reset`.
 				// reset();
@@ -79,7 +79,7 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 			</form>
 			<div id="response-container">
 				{/* This object will update immediately when you execute the action.
-            Real data will come back once action has finished executing. */}
+						Real data will come back once action has finished executing. */}
 				<pre>Optimistic data: {JSON.stringify(optimisticData)}</pre>{" "}
 				<pre>Is executing: {JSON.stringify(isExecuting)}</pre>
 				<div>Action response:</div>

@@ -20,14 +20,14 @@ const DeleteUserForm = ({ userId, deleteUser }: Props) => {
 		hasErrored,
 		reset,
 	} = useAction(deleteUser, {
-		onSuccess(data, reset) {
-			console.log("HELLO FROM ONSUCCESS", data);
+		onSuccess(data, reset, input) {
+			console.log("HELLO FROM ONSUCCESS", data, input);
 
 			// You can reset response object by calling `reset`.
 			// reset();
 		},
-		onError(error, reset) {
-			console.log("OH NO FROM ONERROR", error);
+		onError(error, reset, input) {
+			console.log("OH NO FROM ONERROR", error, input);
 
 			// You can reset response object by calling `reset`.
 			// reset();
