@@ -51,6 +51,11 @@
 				"name": "beta",
 				"channel": "beta",
 				"prerelease": true
+			},
+			{
+				"name": "experimental",
+				"channel": "experimental",
+				"prerelease": true
 			}
 		],
 		"plugins": [
