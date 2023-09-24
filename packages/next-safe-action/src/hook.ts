@@ -10,7 +10,7 @@ import {
 } from "react";
 import {} from "react/experimental";
 import type { z } from "zod";
-import type { ClientCaller, HookActionStatus, HookCallbacks, HookResponse } from "./types";
+import type { HookActionStatus, HookCallbacks, HookResponse, SafeAction } from "./types";
 import { isNextNotFoundError, isNextRedirectError } from "./utils";
 
 // UTILS
@@ -59,17 +59,17 @@ const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
 
 /**
  * Use the action from a Client Component via hook.
- * @param clientCaller Caller function with typesafe input data for the Server Action.
+ * @param safeAction The typesafe action.
  * @param cb Optional callbacks executed when the action succeeds or fails.
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#2-the-hook-way See an example}
  */
 export const useAction = <const IV extends z.ZodTypeAny, const Data>(
-	clientCaller: ClientCaller<IV, Data>,
+	safeAction: SafeAction<IV, Data>,
 	cb?: HookCallbacks<IV, Data>
 ) => {
 	const [isExecuting, startTransition] = useTransition();
-	const executor = useRef(clientCaller);
+	const executor = useRef(safeAction);
 	const [response, setResponse] = useState<HookResponse<IV, Data>>({});
 	const [input, setInput] = useState<z.input<IV>>();
 
@@ -110,14 +110,14 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
  * Use the action from a Client Component via hook, with optimistic data update.
  *
  * **NOTE: This hook uses an experimental React feature.**
- * @param clientCaller Caller function with typesafe input data for the Server Action.
+ * @param safeAction The typesafe action.
  * @param initialOptData Initial optimistic data.
  * @param cb Optional callbacks executed when the action succeeds or fails.
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#optimistic-update--experimental See an example}
  */
 export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
-	clientCaller: ClientCaller<IV, Data>,
+	safeAction: SafeAction<IV, Data>,
 	initialOptData: Data,
 	cb?: HookCallbacks<IV, Data>
 ) => {
@@ -133,7 +133,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 		__isExecuting__: true,
 	}));
 
-	const executor = useRef(clientCaller);
+	const executor = useRef(safeAction);
 
 	const status = getActionStatus<IV, Data>(optState.__isExecuting__, response);
 

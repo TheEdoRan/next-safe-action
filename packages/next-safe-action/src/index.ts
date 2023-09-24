@@ -1,4 +1,4 @@
 import { createSafeActionClient } from "./server";
-import type { ClientCaller, ServerCode } from "./types";
+import type { SafeAction, ServerCode } from "./types";
 
-export { createSafeActionClient, type ClientCaller, type ServerCode };
+export { createSafeActionClient, type SafeAction, type ServerCode };

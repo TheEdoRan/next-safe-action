@@ -3,9 +3,9 @@ import type { z } from "zod";
 // CLIENT
 
 /**
- * Type of the function called from Client Components with typesafe input data for the Server Action.
+ * Type of the function called from Client Components with typesafe input data.
  */
-export type ClientCaller<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) => Promise<{
+export type SafeAction<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) => Promise<{
 	data?: Data;
 	serverError?: string;
 	validationError?: Partial<Record<keyof z.input<IV>, string[]>>;
@@ -25,7 +25,7 @@ export type ServerCode<IV extends z.ZodTypeAny, Data, Context extends object> = 
  * Type of `response` object returned by `useAction` and `useOptimisticAction` hooks.
  */
 export type HookResponse<IV extends z.ZodTypeAny, Data> = Awaited<
-	ReturnType<ClientCaller<IV, Data>>
+	ReturnType<SafeAction<IV, Data>>
 > & {
 	fetchError?: unknown;
 };

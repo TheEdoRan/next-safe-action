@@ -248,7 +248,7 @@ The `useAction` has one required argument (the action) and one optional argument
 
 It returns an object with four keys:
 
-- `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe action the non-hooky way.
+- `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe actions the non-hooky way.
 - `response`: when `execute` finished mutating data, the response object. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
 - action's `status`: a string representing the current status of the action. It can be `idle`, `executing`, `hasErrored`, or `hasSucceded`.
 - `reset` function, to programatically reset the response object.

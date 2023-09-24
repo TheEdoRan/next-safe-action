@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { ClientCaller, ServerCode } from "./types";
+import type { SafeAction, ServerCode } from "./types";
 import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 /**
@@ -35,7 +35,7 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 	const actionBuilder = <const IV extends z.ZodTypeAny, const Data>(
 		inputValidator: IV,
 		serverCode: ServerCode<IV, Data, Context>
-	): ClientCaller<IV, Data> => {
+	): SafeAction<IV, Data> => {
 		// This is the function called by client. If `input` fails the validator
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
