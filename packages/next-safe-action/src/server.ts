@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { ActionServerFn, ClientCaller, MaybePromise } from "./types";
+import type { ClientCaller, MaybePromise, ServerCode } from "./types";
 import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 /**
@@ -28,13 +28,13 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 	const handleReturnedServerError =
 		createOpts?.handleReturnedServerError || (async () => ({ serverError: DEFAULT_SERVER_ERROR }));
 
-	// `action` is the server function that creates a new action.
-	// It expects an input validator and a definition function, so the action knows
-	// what to do on the server when called by the client.
+	// `actionBuilder` is the server function that creates a new action.
+	// It expects an input validator and a `serverCode` function, so the action
+	// knows what to do on the server when called by the client.
 	// It returns a function callable by the client.
-	const action = <const IV extends z.ZodTypeAny, const Data>(
+	const actionBuilder = <const IV extends z.ZodTypeAny, const Data>(
 		inputValidator: IV,
-		serverFunction: ActionServerFn<IV, Data, Context>
+		serverCode: ServerCode<IV, Data, Context>
 	): ClientCaller<IV, Data> => {
 		// This is the function called by client. If `input` fails the validator
 		// parsing, the function will return a `validationError` object, containing
@@ -57,7 +57,7 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 				// empty object.
 				const ctx = (await createOpts?.buildContext?.()) ?? {};
 
-				return { data: await serverFunction(parsedInput.data, ctx as Context) };
+				return { data: await serverCode(parsedInput.data, ctx as Context) };
 			} catch (e: unknown) {
 				// next/navigation functions work by throwing an error that will be
 				// processed internally by Next.js. So, in this case we need to rethrow it.
@@ -79,5 +79,5 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 		};
 	};
 
-	return action;
+	return actionBuilder;
 };

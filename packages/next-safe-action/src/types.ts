@@ -14,7 +14,7 @@ export type ClientCaller<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) =
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ActionServerFn<IV extends z.ZodTypeAny, Data, Context extends object> = (
+export type ServerCode<IV extends z.ZodTypeAny, Data, Context extends object> = (
 	parsedInput: z.input<IV>,
 	ctx: Context
 ) => Promise<Data>;
