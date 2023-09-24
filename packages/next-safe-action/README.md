@@ -144,7 +144,7 @@ export default function Login({ loginUser }: Props) {
         // Typesafe action called from client.
         const res = await loginUser({ username: "user", password: "password" });
 
-        // Res keys.
+        // Response keys.
         const { data, validationError, serverError } = res;
       }}>
       Log in
@@ -192,14 +192,11 @@ export default function Login({ loginUser }: Props) {
   // passed to `useAction` hook.
   const {
     execute,
-    res,
-    isExecuting,
-    hasExecuted,
-    hasSucceded,
-    hasErrored,
+    response,
+    status,
     reset,
   } = useAction(loginUser, {
-      onSuccess: (data, reset, input) => {
+      onSuccess: (data, input, reset) => {
         // Data from server action.
         const { failure, success } = data;
 
@@ -209,7 +206,7 @@ export default function Login({ loginUser }: Props) {
         // Data used to call `execute`.
         const { username, password } = input;
       },
-      onError: (error, reset, input) => {
+      onError: (error, input, reset) => {
         // One of these errors.
         const { fetchError, serverError, validationError } = error;
 
@@ -238,8 +235,8 @@ export default function Login({ loginUser }: Props) {
         }}>
         Reset
       </button>
-      <p>Is executing: {JSON.stringify(isExecuting)}</p>
-      <p>Res: {JSON.stringify(res)}</p>
+      <p>Is executing: {JSON.stringify(status === "executing")}</p>
+      <p>Res: {JSON.stringify(response)}</p>
     </>
   );
 }
@@ -247,13 +244,13 @@ export default function Login({ loginUser }: Props) {
 
 The `useAction` has one required argument (the action) and one optional argument (an object with `onSuccess` and `onError` callbacks).
 
-`onSuccess(data, reset, input)` and `onError(error, reset, input)` are executed, respectively, when the action executes successfully or fails. You can reset the response object inside these callbacks with `reset()` (second argument of the callback). The original payload of the action is available as the third argument of the callback (`input`): this is the same data that was passed to the `execute` function.
+`onSuccess(data, input, reset)` and `onError(error, input, reset)` are executed, respectively, when the action executes successfully or fails. The original payload of the action is available as the second argument of the callback (`input`): this is the same data that was passed to the `execute` function. You can also reset the response object inside these callbacks with `reset()` (third argument of the callback). 
 
-It returns an object with seven keys:
+It returns an object with four keys:
 
 - `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe action the non-hooky way.
-- `res`: when `execute` finished mutating data, the response object. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
-- Boolean action status keys: `isExecuting`, `hasExecuted`, `hasSucceded`, `hasErrored`, pretty self-explanatory.
+- `response`: when `execute` finished mutating data, the response object. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
+- action's `status`: a string representing the current status of the action. It can be `idle`, `executing`, `hasErrored`, or `hasSucceded`.
 - `reset` function, to programatically reset the response object.
 
 ---
@@ -317,19 +314,16 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
   // `onSuccess` and `onError` callbacks passed to `useOptimisticAction` hook.
   const {
     execute,
-    isExecuting,
-    res,
-    hasExecuted,
-    hasSucceded,
-    hasErrored,
+    response,
+    status,
     reset,
     optimisticData,
   } = useOptimisticAction(
     addLikes,
     { likesCount }, // [1]
     {
-      onSuccess: (data, reset, input) => {},
-      onError: (error, reset, input) => {},
+      onSuccess: (data, input, reset) => {},
+      onError: (error, input, reset) => {},
     }
   );
 
@@ -348,8 +342,8 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
         Add likes
       </button>
       <p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [2] */}
-      <p>Is executing: {JSON.stringify(isExecuting)}</p>
-      <p>Res: {JSON.stringify(res)}</p>
+      <p>Is executing: {JSON.stringify(status === "executing")}</p>
+      <p>Res: {JSON.stringify(response)}</p>
     </>
   );
 }
@@ -357,7 +351,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
 
 As you can see, `useOptimisticAction` has the same required and optional callbacks arguments as `useAction`, plus one: it requires an initializer for the optimistic data [1].
 
-It returns the same seven keys as the regular `useAction` hook, plus one additional key [2]: `optimisticData` has the same type of the action's return object. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
+It returns the same four keys as the regular `useAction` hook, plus one additional key [2]: `optimisticData` has the same type of the action's return object. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
 
 ---
 
@@ -419,8 +413,8 @@ export const editUser = authAction(input, async (parsedInput, { userId /* [1] */
 As you just saw, you can provide a `buildContext` function to `createSafeActionClient` function.
 
 You **can** also provide:
-1. A custom logger function for server errors, that has the error object `e` as argument. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable.
-2. A Promise called `handleReturnedServerError`, that has the error object `e` as argument, and returns a response object with a `serverError` key. When this option is provided, the safe action client lets you handle returned server errors in a custom way. So, if an error occurs on the server, instead of returning back a default message to the client, the custom logic of this function will be used to build the response object. Though, the original server error will still be logged and/or passed to the `serverErrorLogFunction`, if provided.
+1. A custom logger Promise for server errors, that has the error object `e` as argument. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable.
+2. A Promise called `handleReturnedServerError`, that has the error object `e` as argument, and returns a response object with a `serverError` key. When this option is provided, the safe action client lets you handle returned server errors in a custom way. So, if an error occurs on the server, instead of returning back a default message to the client, the custom logic of this function will be used to build the response object. Though, the original server error will still be logged and/or passed to the `handleServerErrorLog` Promise, if provided.
 
 ```typescript
 // src/lib/safe-action.ts
@@ -428,9 +422,9 @@ You **can** also provide:
 import { createSafeActionClient } from "next-safe-action";
 
 export const action = createSafeActionClient({
-  // You can also provide an empty function here (if you don't want server error
-  // logging), or a Promise. Return type is `void`.
-  serverErrorLogFunction: (e) => {
+  // You can also provide an empty Promise here (if you don't want to log
+  // server errors at all). Return type is `void`.
+  handleServerErrorLog: (e) => {
     console.error("CUSTOM ERROR LOG FUNCTION:", e);
   },
   // Default is undefined. If this Promise is not provided, the client will return
