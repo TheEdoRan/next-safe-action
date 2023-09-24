@@ -30,8 +30,8 @@ const getActionStatus = <const IV extends z.ZodTypeAny, const Data>(
 };
 
 const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
-	input: z.input<IV>,
 	response: HookResponse<IV, Data>,
+	input: z.input<IV>,
 	hasSucceded: boolean,
 	hasErrored: boolean,
 	reset: () => void,
@@ -46,9 +46,9 @@ const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
 		const onError = onErrorRef.current;
 
 		if (onSuccess && hasSucceded) {
-			onSuccess(response.data!, reset, input);
+			onSuccess(response.data!, input, reset);
 		} else if (onError && hasErrored) {
-			onError(response, reset, input);
+			onError(response, input, reset);
 		}
 	}, [hasErrored, hasSucceded, response, reset]);
 };
@@ -92,7 +92,7 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 		setResponse({});
 	}, []);
 
-	useActionCallbacks(input, response, hasSucceded, hasErrored, reset, cb);
+	useActionCallbacks(response, input, hasSucceded, hasErrored, reset, cb);
 
 	return {
 		execute,
@@ -160,7 +160,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 		setResponse({});
 	}, []);
 
-	useActionCallbacks(input, response, hasSucceded, hasErrored, reset, cb);
+	useActionCallbacks(response, input, hasSucceded, hasErrored, reset, cb);
 
 	const { __isExecuting__, ...optimisticData } = optState;
 

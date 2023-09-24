@@ -37,13 +37,13 @@ export type HookResponse<IV extends z.ZodTypeAny, Data> = Awaited<
 export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
 	onSuccess?: (
 		data: NonNullable<Pick<HookResponse<IV, Data>, "data">["data"]>,
-		reset: () => void,
-		input: z.input<IV>
+		input: z.input<IV>,
+		reset: () => void
 	) => void;
 	onError?: (
 		error: Omit<HookResponse<IV, Data>, "data">,
-		reset: () => void,
-		input: z.input<IV>
+		input: z.input<IV>,
+		reset: () => void
 	) => void;
 };
 
