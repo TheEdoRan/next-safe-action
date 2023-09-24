@@ -51,5 +51,3 @@ export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
  * Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
  */
 export type HookActionStatus = "idle" | "executing" | "hasSucceded" | "hasErrored";
-
-export type MaybePromise<T> = T | Promise<T>;

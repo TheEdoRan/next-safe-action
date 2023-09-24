@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { ClientCaller, MaybePromise, ServerCode } from "./types";
+import type { ClientCaller, ServerCode } from "./types";
 import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 /**
@@ -12,13 +12,13 @@ import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError
 export const createSafeActionClient = <Context extends object>(createOpts?: {
 	buildContext?: () => Promise<Context>;
 	handleReturnedServerError?: (e: Error) => Promise<{ serverError: string }>;
-	serverErrorLogFunction?: (e: Error) => MaybePromise<void>;
+	handleServerErrorLog?: (e: Error) => Promise<void>;
 }) => {
-	// If log function is not provided, default to `console.error` for logging
+	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
-	const serverErrorLogFunction =
-		createOpts?.serverErrorLogFunction ||
-		((e) => {
+	const handleServerErrorLog =
+		createOpts?.handleServerErrorLog ||
+		(async (e) => {
 			console.error("Action error:", (e as Error).message);
 		});
 
@@ -71,8 +71,7 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 					return { serverError: DEFAULT_SERVER_ERROR };
 				}
 
-				// eslint-disable-next-line
-				serverErrorLogFunction(e as Error);
+				await handleServerErrorLog(e as Error);
 
 				return await handleReturnedServerError(e as Error);
 			}
