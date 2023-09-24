@@ -10,30 +10,34 @@ import {
 } from "react";
 import {} from "react/experimental";
 import type { z } from "zod";
-import type { ClientCaller, HookCallbacks, HookResponse } from "./types";
+import type { ClientCaller, HookActionStatus, HookCallbacks, HookResponse } from "./types";
 import { isNextNotFoundError, isNextRedirectError } from "./utils";
 
 // UTILS
 
 const getActionStatus = <const IV extends z.ZodTypeAny, const Data>(
+	isExecuting: boolean,
 	response: HookResponse<IV, Data>
-) => {
-	const hasSucceded = typeof response.data !== "undefined";
-	const hasErrored =
+): HookActionStatus => {
+	if (isExecuting) {
+		return "executing";
+	} else if (typeof response.data !== "undefined") {
+		return "hasSucceded";
+	} else if (
 		typeof response.validationError !== "undefined" ||
 		typeof response.serverError !== "undefined" ||
-		typeof response.fetchError !== "undefined";
+		typeof response.fetchError !== "undefined"
+	) {
+		return "hasErrored";
+	}
 
-	const hasExecuted = hasSucceded || hasErrored;
-
-	return { hasExecuted, hasSucceded, hasErrored };
+	return "idle";
 };
 
 const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
 	response: HookResponse<IV, Data>,
 	input: z.input<IV>,
-	hasSucceded: boolean,
-	hasErrored: boolean,
+	status: HookActionStatus,
 	reset: () => void,
 	cb?: HookCallbacks<IV, Data>
 ) => {
@@ -45,12 +49,12 @@ const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
 		const onSuccess = onSuccessRef.current;
 		const onError = onErrorRef.current;
 
-		if (onSuccess && hasSucceded) {
+		if (onSuccess && status === "hasSucceded") {
 			onSuccess(response.data!, input, reset);
-		} else if (onError && hasErrored) {
+		} else if (onError && status === "hasErrored") {
 			onError(response, input, reset);
 		}
-	}, [hasErrored, hasSucceded, response, reset]);
+	}, [status, response, reset]);
 };
 
 /**
@@ -69,7 +73,7 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 	const [response, setResponse] = useState<HookResponse<IV, Data>>({});
 	const [input, setInput] = useState<z.input<IV>>();
 
-	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(response);
+	const status = getActionStatus<IV, Data>(isExecuting, response);
 
 	const execute = useCallback((input: z.input<IV>) => {
 		setInput(input);
@@ -92,16 +96,13 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 		setResponse({});
 	}, []);
 
-	useActionCallbacks(response, input, hasSucceded, hasErrored, reset, cb);
+	useActionCallbacks(response, input, status, reset, cb);
 
 	return {
 		execute,
-		isExecuting,
 		response,
 		reset,
-		hasExecuted,
-		hasSucceded,
-		hasErrored,
+		status,
 	};
 };
 
@@ -134,7 +135,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 
 	const executor = useRef(clientCaller);
 
-	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(response);
+	const status = getActionStatus<IV, Data>(optState.__isExecuting__, response);
 
 	const execute = useCallback(
 		(input: z.input<IV>, newOptimisticData: Partial<Data>) => {
@@ -160,20 +161,18 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 		setResponse({});
 	}, []);
 
-	useActionCallbacks(response, input, hasSucceded, hasErrored, reset, cb);
+	useActionCallbacks(response, input, status, reset, cb);
 
-	const { __isExecuting__, ...optimisticData } = optState;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const { __isExecuting__: _, ...optimisticData } = optState;
 
 	return {
 		execute,
-		isExecuting: __isExecuting__,
 		response,
 		optimisticData: optimisticData as Data, // removes omit of `__isExecuting__` from type
 		reset,
-		hasExecuted,
-		hasSucceded,
-		hasErrored,
+		status,
 	};
 };
 
-export type { HookCallbacks, HookResponse };
+export type { HookActionStatus, HookCallbacks, HookResponse };
