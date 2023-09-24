@@ -25,8 +25,8 @@
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^8.0.3",
 		"is-ci": "^3.0.1",
-		"semantic-release": "^21.1.1",
-		"turbo": "^1.10.13"
+		"semantic-release": "^22.0.4",
+		"turbo": "^1.10.14"
 	},
 	"config": {
 		"commitizen": {
