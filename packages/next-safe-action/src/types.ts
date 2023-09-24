@@ -22,9 +22,11 @@ export type ServerCode<IV extends z.ZodTypeAny, Data, Context extends object> = 
 // HOOKS
 
 /**
- * Type of `res` object returned by `useAction` and `useOptimisticAction` hooks.
+ * Type of `response` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookRes<IV extends z.ZodTypeAny, Data> = Awaited<ReturnType<ClientCaller<IV, Data>>> & {
+export type HookResponse<IV extends z.ZodTypeAny, Data> = Awaited<
+	ReturnType<ClientCaller<IV, Data>>
+> & {
 	fetchError?: unknown;
 };
 
@@ -34,11 +36,15 @@ export type HookRes<IV extends z.ZodTypeAny, Data> = Awaited<ReturnType<ClientCa
  */
 export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
 	onSuccess?: (
-		data: NonNullable<Pick<HookRes<IV, Data>, "data">["data"]>,
+		data: NonNullable<Pick<HookResponse<IV, Data>, "data">["data"]>,
 		reset: () => void,
 		input: z.input<IV>
 	) => void;
-	onError?: (error: Omit<HookRes<IV, Data>, "data">, reset: () => void, input: z.input<IV>) => void;
+	onError?: (
+		error: Omit<HookResponse<IV, Data>, "data">,
+		reset: () => void,
+		input: z.input<IV>
+	) => void;
 };
 
 export type MaybePromise<T> = T | Promise<T>;
