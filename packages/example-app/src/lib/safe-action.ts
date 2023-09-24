@@ -2,10 +2,10 @@ import { randomUUID } from "crypto";
 import { createSafeActionClient } from "next-safe-action";
 
 export const action = createSafeActionClient({
-	// You can provide a custom log function, otherwise the lib will use `console.error`
+	// You can provide a custom log Promise, otherwise the lib will use `console.error`
 	// as the default logging system. If you want to disable server errors logging,
-	// just pass an empty function.
-	serverErrorLogFunction: (e) => {
+	// just pass an empty Promise.
+	handleServerErrorLog: async (e) => {
 		console.error("CUSTOM ERROR LOG FUNCTION:", e);
 	},
 });

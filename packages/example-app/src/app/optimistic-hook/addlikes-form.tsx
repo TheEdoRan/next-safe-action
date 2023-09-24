@@ -10,42 +10,27 @@ type Props = {
 
 const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 	// Here we pass safe action (`addLikes`) and current server state to `useAction` hook.
-	const {
-		execute,
-		res,
-		isExecuting,
-		hasExecuted,
-		hasSucceded,
-		hasErrored,
-		reset,
-		optimisticData,
-	} = useOptimisticAction(
-		addLikes,
-		{ likesCount },
-		{
-			onSuccess(data, reset, input) {
-				console.log("HELLO FROM ONSUCCESS", data, input);
+	const { execute, response, status, reset, optimisticData } =
+		useOptimisticAction(
+			addLikes,
+			{ likesCount },
+			{
+				onSuccess(data, input, reset) {
+					console.log("HELLO FROM ONSUCCESS", data, input);
 
-				// You can reset response object by calling `reset`.
-				// reset();
-			},
-			onError(error, reset, input) {
-				console.log("OH NO FROM ONERROR", error, input);
+					// You can reset response object by calling `reset`.
+					// reset();
+				},
+				onError(error, input, reset) {
+					console.log("OH NO FROM ONERROR", error, input);
 
-				// You can reset response object by calling `reset`.
-				// reset();
-			},
-		}
-	);
+					// You can reset response object by calling `reset`.
+					// reset();
+				},
+			}
+		);
 
-	console.log(
-		"hasExecuted",
-		hasExecuted,
-		"hasSucceded",
-		hasSucceded,
-		"hasErrored",
-		hasErrored
-	);
+	console.log("status:", status);
 
 	return (
 		<>
@@ -81,12 +66,12 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 				{/* This object will update immediately when you execute the action.
 						Real data will come back once action has finished executing. */}
 				<pre>Optimistic data: {JSON.stringify(optimisticData)}</pre>{" "}
-				<pre>Is executing: {JSON.stringify(isExecuting)}</pre>
+				<pre>Is executing: {JSON.stringify(status === "executing")}</pre>
 				<div>Action response:</div>
 				<pre className="response">
 					{
-						res // if got back a response,
-							? JSON.stringify(res, null, 1)
+						response // if got back a response,
+							? JSON.stringify(response, null, 1)
 							: "fill in form and click on the add likes button" // if action never ran
 					}
 				</pre>
