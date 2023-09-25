@@ -5,17 +5,17 @@ import type { z } from "zod";
 /**
  * Type of the function called from Client Components with typesafe input data.
  */
-export type SafeAction<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) => Promise<{
+export type SafeAction<Schema extends z.ZodTypeAny, Data> = (input: z.input<Schema>) => Promise<{
 	data?: Data;
 	serverError?: string;
-	validationError?: Partial<Record<keyof z.input<IV>, string[]>>;
+	validationError?: Partial<Record<keyof z.input<Schema>, string[]>>;
 }>;
 
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCode<IV extends z.ZodTypeAny, Data, Context extends object> = (
-	parsedInput: z.input<IV>,
+export type ServerCode<Schema extends z.ZodTypeAny, Data, Context extends object> = (
+	parsedInput: z.input<Schema>,
 	ctx: Context
 ) => Promise<Data>;
 
@@ -24,8 +24,8 @@ export type ServerCode<IV extends z.ZodTypeAny, Data, Context extends object> = 
 /**
  * Type of `response` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookResponse<IV extends z.ZodTypeAny, Data> = Awaited<
-	ReturnType<SafeAction<IV, Data>>
+export type HookResponse<Schema extends z.ZodTypeAny, Data> = Awaited<
+	ReturnType<SafeAction<Schema, Data>>
 > & {
 	fetchError?: unknown;
 };
@@ -34,15 +34,15 @@ export type HookResponse<IV extends z.ZodTypeAny, Data> = Awaited<
  * Type of hooks callbacks (`onSuccess` and `onError`).
  * These are executed when the action succeeds or fails.
  */
-export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
+export type HookCallbacks<Schema extends z.ZodTypeAny, Data> = {
 	onSuccess?: (
-		data: NonNullable<Pick<HookResponse<IV, Data>, "data">["data"]>,
-		input: z.input<IV>,
+		data: NonNullable<Pick<HookResponse<Schema, Data>, "data">["data"]>,
+		input: z.input<Schema>,
 		reset: () => void
 	) => void;
 	onError?: (
-		error: Omit<HookResponse<IV, Data>, "data">,
-		input: z.input<IV>,
+		error: Omit<HookResponse<Schema, Data>, "data">,
+		input: z.input<Schema>,
 		reset: () => void
 	) => void;
 };

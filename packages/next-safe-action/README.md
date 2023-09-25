@@ -71,7 +71,7 @@ const input = z.object({
 });
 
 // This is how a safe action is created.
-// Since we provided a Zod input validator to the function, we're sure
+// Since we provided a Zod input schema to the function, we're sure
 // that data that comes in is type safe and validated.
 // The second argument of this function is an async function that receives
 // parsed input, and defines what happens on the server when the action is
@@ -157,7 +157,7 @@ On the client you get back a typesafe response object, with three optional keys:
 
 - `data`: if action runs without issues, you get what you returned in the server action body.
 
-- `validationError`: if an invalid input object (parsed by Zod via input validator) is passed from the client when calling the action, invalid fields will populate this key, in the form of:
+- `validationError`: if an invalid input object (parsed by Zod via input schema) is passed from the client when calling the action, invalid fields will populate this key, in the form of:
 
 ```json
 {

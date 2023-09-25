@@ -15,9 +15,9 @@ import { isNextNotFoundError, isNextRedirectError } from "./utils";
 
 // UTILS
 
-const getActionStatus = <const IV extends z.ZodTypeAny, const Data>(
+const getActionStatus = <const Schema extends z.ZodTypeAny, const Data>(
 	isExecuting: boolean,
-	response: HookResponse<IV, Data>
+	response: HookResponse<Schema, Data>
 ): HookActionStatus => {
 	if (isExecuting) {
 		return "executing";
@@ -34,12 +34,12 @@ const getActionStatus = <const IV extends z.ZodTypeAny, const Data>(
 	return "idle";
 };
 
-const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
-	response: HookResponse<IV, Data>,
-	input: z.input<IV>,
+const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
+	response: HookResponse<Schema, Data>,
+	input: z.input<Schema>,
 	status: HookActionStatus,
 	reset: () => void,
-	cb?: HookCallbacks<IV, Data>
+	cb?: HookCallbacks<Schema, Data>
 ) => {
 	const onSuccessRef = useRef(cb?.onSuccess);
 	const onErrorRef = useRef(cb?.onError);
@@ -64,18 +64,18 @@ const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#2-the-hook-way See an example}
  */
-export const useAction = <const IV extends z.ZodTypeAny, const Data>(
-	safeAction: SafeAction<IV, Data>,
-	cb?: HookCallbacks<IV, Data>
+export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
+	safeAction: SafeAction<Schema, Data>,
+	cb?: HookCallbacks<Schema, Data>
 ) => {
 	const [isExecuting, startTransition] = useTransition();
 	const executor = useRef(safeAction);
-	const [response, setResponse] = useState<HookResponse<IV, Data>>({});
-	const [input, setInput] = useState<z.input<IV>>();
+	const [response, setResponse] = useState<HookResponse<Schema, Data>>({});
+	const [input, setInput] = useState<z.input<Schema>>();
 
-	const status = getActionStatus<IV, Data>(isExecuting, response);
+	const status = getActionStatus<Schema, Data>(isExecuting, response);
 
-	const execute = useCallback((input: z.input<IV>) => {
+	const execute = useCallback((input: z.input<Schema>) => {
 		setInput(input);
 
 		return startTransition(() => {
@@ -116,13 +116,13 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#optimistic-update--experimental See an example}
  */
-export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
-	safeAction: SafeAction<IV, Data>,
+export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Data>(
+	safeAction: SafeAction<Schema, Data>,
 	initialOptData: Data,
-	cb?: HookCallbacks<IV, Data>
+	cb?: HookCallbacks<Schema, Data>
 ) => {
-	const [response, setResponse] = useState<HookResponse<IV, Data>>({});
-	const [input, setInput] = useState<z.input<IV>>();
+	const [response, setResponse] = useState<HookResponse<Schema, Data>>({});
+	const [input, setInput] = useState<z.input<Schema>>();
 
 	const [optState, syncState] = experimental_useOptimistic<
 		Data & { __isExecuting__: boolean },
@@ -135,10 +135,10 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 
 	const executor = useRef(safeAction);
 
-	const status = getActionStatus<IV, Data>(optState.__isExecuting__, response);
+	const status = getActionStatus<Schema, Data>(optState.__isExecuting__, response);
 
 	const execute = useCallback(
-		(input: z.input<IV>, newOptimisticData: Partial<Data>) => {
+		(input: z.input<Schema>, newOptimisticData: Partial<Data>) => {
 			syncState(newOptimisticData);
 			setInput(input);
 

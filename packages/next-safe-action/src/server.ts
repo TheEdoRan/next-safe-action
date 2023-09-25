@@ -29,23 +29,23 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 		createOpts?.handleReturnedServerError || (async () => ({ serverError: DEFAULT_SERVER_ERROR }));
 
 	// `actionBuilder` is the server function that creates a new action.
-	// It expects an input validator and a `serverCode` function, so the action
+	// It expects an input schema and a `serverCode` function, so the action
 	// knows what to do on the server when called by the client.
 	// It returns a function callable by the client.
-	const actionBuilder = <const IV extends z.ZodTypeAny, const Data>(
-		inputValidator: IV,
-		serverCode: ServerCode<IV, Data, Context>
-	): SafeAction<IV, Data> => {
-		// This is the function called by client. If `input` fails the validator
+	const actionBuilder = <const Schema extends z.ZodTypeAny, const Data>(
+		schema: Schema,
+		serverCode: ServerCode<Schema, Data, Context>
+	): SafeAction<Schema, Data> => {
+		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
 		return async (clientInput) => {
 			try {
-				const parsedInput = inputValidator.safeParse(clientInput);
+				const parsedInput = schema.safeParse(clientInput);
 
 				if (!parsedInput.success) {
 					const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
-						Record<keyof z.input<typeof inputValidator>, string[]>
+						Record<keyof z.input<typeof schema>, string[]>
 					>;
 
 					return {
