@@ -10,7 +10,7 @@ type Props = {
 
 const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 	// Here we pass safe action (`addLikes`) and current server state to `useAction` hook.
-	const { execute, response, status, reset, optimisticData } =
+	const { execute, result, status, reset, optimisticData } =
 		useOptimisticAction(
 			addLikes,
 			{ likesCount },
@@ -18,13 +18,13 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 				onSuccess(data, input, reset) {
 					console.log("HELLO FROM ONSUCCESS", data, input);
 
-					// You can reset response object by calling `reset`.
+					// You can reset result object by calling `reset`.
 					// reset();
 				},
 				onError(error, input, reset) {
 					console.log("OH NO FROM ONERROR", error, input);
 
-					// You can reset response object by calling `reset`.
+					// You can reset result object by calling `reset`.
 					// reset();
 				},
 			}
@@ -62,16 +62,16 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 					Reset
 				</button>
 			</form>
-			<div id="response-container">
+			<div id="result-container">
 				{/* This object will update immediately when you execute the action.
 						Real data will come back once action has finished executing. */}
 				<pre>Optimistic data: {JSON.stringify(optimisticData)}</pre>{" "}
 				<pre>Is executing: {JSON.stringify(status === "executing")}</pre>
-				<div>Action response:</div>
-				<pre className="response">
+				<div>Action result:</div>
+				<pre className="result">
 					{
-						response // if got back a response,
-							? JSON.stringify(response, null, 1)
+						result // if got back a result,
+							? JSON.stringify(result, null, 1)
 							: "fill in form and click on the add likes button" // if action never ran
 					}
 				</pre>

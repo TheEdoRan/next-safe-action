@@ -22,9 +22,9 @@ export type ServerCode<Schema extends z.ZodTypeAny, Data, Context extends object
 // HOOKS
 
 /**
- * Type of `response` object returned by `useAction` and `useOptimisticAction` hooks.
+ * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookResponse<Schema extends z.ZodTypeAny, Data> = Awaited<
+export type HookResult<Schema extends z.ZodTypeAny, Data> = Awaited<
 	ReturnType<SafeAction<Schema, Data>>
 > & {
 	fetchError?: unknown;
@@ -36,12 +36,12 @@ export type HookResponse<Schema extends z.ZodTypeAny, Data> = Awaited<
  */
 export type HookCallbacks<Schema extends z.ZodTypeAny, Data> = {
 	onSuccess?: (
-		data: NonNullable<Pick<HookResponse<Schema, Data>, "data">["data"]>,
+		data: NonNullable<Pick<HookResult<Schema, Data>, "data">["data"]>,
 		input: z.input<Schema>,
 		reset: () => void
 	) => void;
 	onError?: (
-		error: Omit<HookResponse<Schema, Data>, "data">,
+		error: Omit<HookResult<Schema, Data>, "data">,
 		input: z.input<Schema>,
 		reset: () => void
 	) => void;

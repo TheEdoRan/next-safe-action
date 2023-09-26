@@ -144,7 +144,7 @@ export default function Login({ loginUser }: Props) {
         // Typesafe action called from client.
         const res = await loginUser({ username: "user", password: "password" });
 
-        // Response keys.
+        // Result keys.
         const { data, validationError, serverError } = res;
       }}>
       Log in
@@ -153,7 +153,7 @@ export default function Login({ loginUser }: Props) {
 }
 ```
 
-On the client you get back a typesafe response object, with three optional keys:
+On the client you get back a typesafe result object, with three optional keys:
 
 - `data`: if action runs without issues, you get what you returned in the server action body.
 
@@ -167,7 +167,7 @@ On the client you get back a typesafe response object, with three optional keys:
 }
 ```
 
-- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` response. By default, the server error will be logged via `console.error`, but [this is configurable](#custom-server-error-logging).
+- `serverError`: if an unexpected error occurs in the server action body, it will be caught, and the client will only get back a `serverError` result. By default, the server error will be logged via `console.error`, but [this is configurable](#custom-server-error-logging).
 
 ### 2. The hook way
 
@@ -192,7 +192,7 @@ export default function Login({ loginUser }: Props) {
   // passed to `useAction` hook.
   const {
     execute,
-    response,
+    result,
     status,
     reset,
   } = useAction(loginUser, {
@@ -200,7 +200,7 @@ export default function Login({ loginUser }: Props) {
         // Data from server action.
         const { failure, success } = data;
 
-        // Reset response object.
+        // Reset result object.
         reset();
 
         // Data used to call `execute`.
@@ -210,7 +210,7 @@ export default function Login({ loginUser }: Props) {
         // One of these errors.
         const { fetchError, serverError, validationError } = error;
 
-        // Reset response object.
+        // Reset result object.
         reset();
 
         // Data used to call `execute`.
@@ -230,13 +230,13 @@ export default function Login({ loginUser }: Props) {
       </button>
       <button
         onClick={() => {
-          // Reset response object programmatically.
+          // Reset result object programmatically.
           reset();
         }}>
         Reset
       </button>
       <p>Is executing: {JSON.stringify(status === "executing")}</p>
-      <p>Res: {JSON.stringify(response)}</p>
+      <p>Res: {JSON.stringify(result)}</p>
     </>
   );
 }
@@ -244,14 +244,14 @@ export default function Login({ loginUser }: Props) {
 
 The `useAction` has one required argument (the action) and one optional argument (an object with `onSuccess` and `onError` callbacks).
 
-`onSuccess(data, input, reset)` and `onError(error, input, reset)` are executed, respectively, when the action executes successfully or fails. The original payload of the action is available as the second argument of the callback (`input`): this is the same data that was passed to the `execute` function. You can also reset the response object inside these callbacks with `reset()` (third argument of the callback). 
+`onSuccess(data, input, reset)` and `onError(error, input, reset)` are executed, respectively, when the action executes successfully or fails. The original payload of the action is available as the second argument of the callback (`input`): this is the same data that was passed to the `execute` function. You can also reset the result object inside these callbacks with `reset()` (third argument of the callback). 
 
 It returns an object with four keys:
 
 - `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe actions the non-hooky way.
-- `response`: when `execute` finished mutating data, the response object. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
+- `result`: when `execute` finished mutating data, the result object. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
 - action's `status`: a string representing the current status of the action. It can be `idle`, `executing`, `hasErrored`, or `hasSucceded`.
-- `reset` function, to programatically reset the response object.
+- `reset` function, to programatically reset the result object.
 
 ---
 
@@ -314,7 +314,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
   // `onSuccess` and `onError` callbacks passed to `useOptimisticAction` hook.
   const {
     execute,
-    response,
+    result,
     status,
     reset,
     optimisticData,
@@ -343,7 +343,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
       </button>
       <p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [2] */}
       <p>Is executing: {JSON.stringify(status === "executing")}</p>
-      <p>Res: {JSON.stringify(response)}</p>
+      <p>Res: {JSON.stringify(result)}</p>
     </>
   );
 }
@@ -360,7 +360,7 @@ It returns the same four keys as the regular `useAction` hook, plus one addition
 A key feature of this library is the ability to define a context builder function when initializing a new action client. This object will then be passed as the second argument of the server action function.
 
 
-To build your context, first, when creating the safe action client, you have to provide an async function called `buildContext` as an option. You can return any object you want from here, and safely throw an error in this function's body. It will be caught, and the client will receive a `serverError` response.
+To build your context, first, when creating the safe action client, you have to provide an async function called `buildContext` as an option. You can return any object you want from here, and safely throw an error in this function's body. It will be caught, and the client will receive a `serverError` result.
 
 ```typescript
 // src/lib/safe-action.ts
@@ -414,7 +414,7 @@ As you just saw, you can provide a `buildContext` function to `createSafeActionC
 
 You **can** also provide:
 1. A custom logger Promise for server errors, that has the error object `e` as argument. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable.
-2. A Promise called `handleReturnedServerError`, that has the error object `e` as argument, and returns a response object with a `serverError` key. When this option is provided, the safe action client lets you handle returned server errors in a custom way. So, if an error occurs on the server, instead of returning back a default message to the client, the custom logic of this function will be used to build the response object. Though, the original server error will still be logged and/or passed to the `handleServerErrorLog` Promise, if provided.
+2. A Promise called `handleReturnedServerError`, that has the error object `e` as argument, and returns a result object with a `serverError` key. When this option is provided, the safe action client lets you handle returned server errors in a custom way. So, if an error occurs on the server, instead of returning back a default message to the client, the custom logic of this function will be used to build the result object. Though, the original server error will still be logged and/or passed to the `handleServerErrorLog` Promise, if provided.
 
 ```typescript
 // src/lib/safe-action.ts
@@ -428,7 +428,7 @@ export const action = createSafeActionClient({
     console.error("CUSTOM ERROR LOG FUNCTION:", e);
   },
   // Default is undefined. If this Promise is not provided, the client will return
-  // a default server error response when an error occurs on the server.
+  // a default server error result when an error occurs on the server.
   handleReturnedServerError: async (e) => {
     // Your custom error handling logic here.
     // ...
