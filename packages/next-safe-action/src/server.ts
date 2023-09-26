@@ -41,7 +41,7 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 		// all the invalid fields provided.
 		return async (clientInput) => {
 			try {
-				const parsedInput = schema.safeParse(clientInput);
+				const parsedInput = await schema.safeParseAsync(clientInput);
 
 				if (!parsedInput.success) {
 					const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
