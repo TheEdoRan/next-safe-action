@@ -13,6 +13,7 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 	buildContext?: () => Promise<Context>;
 	handleReturnedServerError?: (e: Error) => Promise<{ serverError: string }>;
 	handleServerErrorLog?: (e: Error) => Promise<void>;
+	middleware?: (ctx: Context) => Promise<void>;
 }) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
@@ -55,9 +56,12 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 
 				// Get the context if `buildContext` is provided, otherwise use an
 				// empty object.
-				const ctx = (await createOpts?.buildContext?.()) ?? {};
+				const ctx = ((await createOpts?.buildContext?.()) ?? {}) as Context;
 
-				return { data: await serverCode(parsedInput.data, ctx as Context) };
+				// Execute middleware code, if Promise is provided.
+				await createOpts?.middleware?.(ctx);
+
+				return { data: await serverCode(parsedInput.data, ctx) };
 			} catch (e: unknown) {
 				// next/navigation functions work by throwing an error that will be
 				// processed internally by Next.js. So, in this case we need to rethrow it.
