@@ -66,11 +66,17 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
 	const executor = useRef(clientCaller);
 	const [res, setRes] = useState<HookRes<IV, Data>>({});
 	const [input, setInput] = useState<z.input<IV>>();
+	const onExecuteRef = useRef(cb?.onExecute);
 
 	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
 
 	const execute = useCallback((input: z.input<IV>) => {
 		setInput(input);
+
+		const onExecute = onExecuteRef.current;
+		if (onExecute) {
+			onExecute(input);
+		}
 
 		return startTransition(() => {
 			return executor
