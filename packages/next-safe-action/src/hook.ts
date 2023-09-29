@@ -137,6 +137,7 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 	}));
 
 	const executor = useRef(clientCaller);
+	const onExecuteRef = useRef(cb?.onExecute);
 
 	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
 
@@ -144,6 +145,11 @@ export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
 		(input: z.input<IV>, newOptimisticData: Partial<Data>) => {
 			syncState(newOptimisticData);
 			setInput(input);
+
+			const onExecute = onExecuteRef.current;
+			if (onExecute) {
+				onExecute(input);
+			}
 
 			return executor
 				.current(input)

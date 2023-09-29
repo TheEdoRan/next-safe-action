@@ -35,6 +35,9 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 				// You can reset response object by calling `reset`.
 				// reset();
 			},
+			onExecute(input) {
+				console.log("HELLO FROM ONEXECUTE", input);
+			},
 		}
 	);
 
