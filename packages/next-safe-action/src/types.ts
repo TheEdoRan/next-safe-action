@@ -35,20 +35,22 @@ export type HookResult<Schema extends z.ZodTypeAny, Data> = Awaited<
  * These are executed when the action succeeds or fails.
  */
 export type HookCallbacks<Schema extends z.ZodTypeAny, Data> = {
-	onExecute?: (input: z.input<Schema>) => void;
+	onExecute?: (input: z.input<Schema>) => MaybePromise<void>;
 	onSuccess?: (
 		data: NonNullable<Pick<HookResult<Schema, Data>, "data">["data"]>,
 		input: z.input<Schema>,
 		reset: () => void
-	) => void;
+	) => MaybePromise<void>;
 	onError?: (
 		error: Omit<HookResult<Schema, Data>, "data">,
 		input: z.input<Schema>,
 		reset: () => void
-	) => void;
+	) => MaybePromise<void>;
 };
 
 /**
  * Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
  */
 export type HookActionStatus = "idle" | "executing" | "hasSucceded" | "hasErrored";
+
+export type MaybePromise<T> = Promise<T> | T;

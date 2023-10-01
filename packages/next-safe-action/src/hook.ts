@@ -51,17 +51,21 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
 		const onSuccess = onSuccessRef.current;
 		const onError = onErrorRef.current;
 
-		switch (status) {
-			case "executing":
-				onExecute?.(input);
-				break;
-			case "hasSucceded":
-				onSuccess?.(result.data!, input, reset);
-				break;
-			case "hasErrored":
-				onError?.(result, input, reset);
-				break;
-		}
+		const executeCallbacks = async () => {
+			switch (status) {
+				case "executing":
+					await Promise.resolve(onExecute?.(input));
+					break;
+				case "hasSucceded":
+					await Promise.resolve(onSuccess?.(result.data!, input, reset));
+					break;
+				case "hasErrored":
+					await Promise.resolve(onError?.(result, input, reset));
+					break;
+			}
+		};
+
+		executeCallbacks().catch(console.error);
 	}, [status, result, reset, input]);
 };
 

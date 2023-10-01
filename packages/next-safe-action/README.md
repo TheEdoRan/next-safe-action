@@ -2,7 +2,7 @@
 
 > `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe actions on the server and call them from Client Components.
 
-This is the new documentation, for version 3 of the library. If you want to check out the old documentation, [you can find it here](README_v2.md).
+This is the documentation for version 4 of the library, the current one. If you want to check out the 2.x.x documentation, [you can find it here](README_v2.md). If you want to check out the 3.x.x documentation, [you can find it here](README_v3.md).
 
 ## Features
 - ✅ Pretty simple
