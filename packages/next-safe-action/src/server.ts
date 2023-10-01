@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { SafeAction, ServerCode } from "./types";
+import type { MaybePromise, SafeAction, ServerCode } from "./types";
 import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 /**
@@ -10,16 +10,16 @@ import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#project-configuration See an example}
  */
 export const createSafeActionClient = <Context extends object>(createOpts?: {
-	buildContext?: () => Promise<Context>;
-	handleReturnedServerError?: (e: Error) => Promise<{ serverError: string }>;
-	handleServerErrorLog?: (e: Error) => Promise<void>;
-	middleware?: (ctx: Context) => Promise<void>;
+	buildContext?: () => MaybePromise<Context>;
+	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
+	handleReturnedServerError?: (e: Error) => MaybePromise<{ serverError: string }>;
+	middleware?: (ctx: Context) => MaybePromise<void>;
 }) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
 		createOpts?.handleServerErrorLog ||
-		(async (e) => {
+		((e) => {
 			console.error("Action error:", (e as Error).message);
 		});
 
@@ -27,7 +27,7 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
 	const handleReturnedServerError =
-		createOpts?.handleReturnedServerError || (async () => ({ serverError: DEFAULT_SERVER_ERROR }));
+		createOpts?.handleReturnedServerError || (() => ({ serverError: DEFAULT_SERVER_ERROR }));
 
 	// `actionBuilder` is the server function that creates a new action.
 	// It expects an input schema and a `serverCode` function, so the action
@@ -56,10 +56,10 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 
 				// Get the context if `buildContext` is provided, otherwise use an
 				// empty object.
-				const ctx = ((await createOpts?.buildContext?.()) ?? {}) as Context;
+				const ctx = ((await Promise.resolve(createOpts?.buildContext?.())) ?? {}) as Context;
 
 				// Execute middleware code, if Promise is provided.
-				await createOpts?.middleware?.(ctx);
+				await Promise.resolve(createOpts?.middleware?.(ctx));
 
 				return { data: await serverCode(parsedInput.data, ctx) };
 			} catch (e: unknown) {
@@ -75,9 +75,9 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 					return { serverError: DEFAULT_SERVER_ERROR };
 				}
 
-				await handleServerErrorLog(e as Error);
+				await Promise.resolve(handleServerErrorLog(e as Error));
 
-				return await handleReturnedServerError(e as Error);
+				return await Promise.resolve(handleReturnedServerError(e as Error));
 			}
 		};
 	};

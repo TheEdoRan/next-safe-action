@@ -5,7 +5,7 @@ export const action = createSafeActionClient({
 	// You can provide a custom log Promise, otherwise the lib will use `console.error`
 	// as the default logging system. If you want to disable server errors logging,
 	// just pass an empty Promise.
-	handleServerErrorLog: async (e) => {
+	handleServerErrorLog: (e) => {
 		console.error("CUSTOM ERROR LOG FUNCTION:", e);
 	},
 });
@@ -13,9 +13,12 @@ export const action = createSafeActionClient({
 export const authAction = createSafeActionClient({
 	// You can provide a context builder function. In this case, context is used
 	// for (fake) auth purposes.
-	buildContext: async () => {
+	buildContext: () => {
 		return {
 			userId: randomUUID(),
 		};
+	},
+	middleware(ctx) {
+		console.log("HELLO FROM ACTION MIDDLEWARE, USER ID:", ctx.userId);
 	},
 });
