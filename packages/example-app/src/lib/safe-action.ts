@@ -17,9 +17,5 @@ export const authAction = createSafeActionClient({
 		const userId = randomUUID();
 
 		console.log("HELLO FROM ACTION MIDDLEWARE, USER ID:", userId);
-
-		return {
-			userId,
-		};
 	},
 });
