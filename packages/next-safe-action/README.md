@@ -188,7 +188,7 @@ type Props = {
 };
 
 export default function Login({ loginUser }: Props) {
-  // Safe action (`loginUser`) and optional `onSuccess` and `onError` callbacks
+  // Safe action (`loginUser`) and optional `onSuccess`, `onError` and `onExecute` callbacks
   // passed to `useAction` hook.
   const {
     execute,
@@ -219,6 +219,10 @@ export default function Login({ loginUser }: Props) {
         // Data used to call `execute`.
         const { username, password } = input;
       },
+      onExecute: (input) => {
+        // Action input.
+        const { username, password } = input;
+      },
     }
   );
 
@@ -245,9 +249,10 @@ export default function Login({ loginUser }: Props) {
 }
 ```
 
-The `useAction` has one required argument (the action) and one optional argument (an object with `onSuccess` and `onError` callbacks).
+The `useAction` has one required argument (the action) and one optional argument (an object with `onSuccess`, `onError` and `onExecute` callbacks).
 
 `onSuccess(data, reset, input)` and `onError(error, reset, input)` are executed, respectively, when the action executes successfully or fails. You can reset the response object inside these callbacks with `reset()` (second argument of the callback). The original payload of the action is available as the third argument of the callback (`input`): this is the same data that was passed to the `execute` function.
+`onExecute(input)` is executed when the action is called from the client, regardless of the result.
 
 It returns an object with seven keys:
 
@@ -330,6 +335,7 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
     {
       onSuccess: (data, reset, input) => {},
       onError: (error, reset, input) => {},
+      onExecute: (input) => {},
     }
   );
 

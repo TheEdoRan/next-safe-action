@@ -32,6 +32,9 @@ const DeleteUserForm = ({ userId, deleteUser }: Props) => {
 			// You can reset response object by calling `reset`.
 			// reset();
 		},
+		onExecute(input) {
+			console.log("HELLO FROM ONEXECUTE", input);
+		},
 	});
 
 	console.log(
