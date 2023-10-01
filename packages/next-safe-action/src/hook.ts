@@ -41,20 +41,28 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
 	reset: () => void,
 	cb?: HookCallbacks<Schema, Data>
 ) => {
+	const onExecuteRef = useRef(cb?.onExecute);
 	const onSuccessRef = useRef(cb?.onSuccess);
 	const onErrorRef = useRef(cb?.onError);
 
 	// Execute the callback on success or error, if provided.
 	useEffect(() => {
+		const onExecute = onExecuteRef.current;
 		const onSuccess = onSuccessRef.current;
 		const onError = onErrorRef.current;
 
-		if (onSuccess && status === "hasSucceded") {
-			onSuccess(result.data!, input, reset);
-		} else if (onError && status === "hasErrored") {
-			onError(result, input, reset);
+		switch (status) {
+			case "executing":
+				onExecute?.(input);
+				break;
+			case "hasSucceded":
+				onSuccess?.(result.data!, input, reset);
+				break;
+			case "hasErrored":
+				onError?.(result, input, reset);
+				break;
 		}
-	}, [status, result, reset]);
+	}, [status, result, reset, input]);
 };
 
 /**
@@ -68,14 +76,16 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
 	cb?: HookCallbacks<Schema, Data>
 ) => {
-	const [isExecuting, startTransition] = useTransition();
+	const [, startTransition] = useTransition();
 	const executor = useRef(safeAction);
 	const [result, setResult] = useState<HookResult<Schema, Data>>({});
 	const [input, setInput] = useState<z.input<Schema>>();
+	const [isExecuting, setIsExecuting] = useState(false);
 
 	const status = getActionStatus<Schema, Data>(isExecuting, result);
 
 	const execute = useCallback((input: z.input<Schema>) => {
+		setIsExecuting(true);
 		setInput(input);
 
 		return startTransition(() => {
@@ -88,6 +98,9 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 					}
 
 					setResult({ fetchError: e });
+				})
+				.finally(() => {
+					setIsExecuting(false);
 				});
 		});
 	}, []);
@@ -133,12 +146,15 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 		__isExecuting__: true,
 	}));
 
+	const [isExecuting, setIsExecuting] = useState(false);
+
 	const executor = useRef(safeAction);
 
-	const status = getActionStatus<Schema, Data>(optState.__isExecuting__, result);
+	const status = getActionStatus<Schema, Data>(isExecuting, result);
 
 	const execute = useCallback(
 		(input: z.input<Schema>, newOptimisticData: Partial<Data>) => {
+			setIsExecuting(true);
 			syncState(newOptimisticData);
 			setInput(input);
 
@@ -152,6 +168,9 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 					}
 
 					setResult({ fetchError: e });
+				})
+				.finally(() => {
+					setIsExecuting(false);
 				});
 		},
 		[syncState]
