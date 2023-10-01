@@ -325,6 +325,9 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
   } = useOptimisticAction(
     addLikes,
     { likesCount }, // [1]
+    ({ likesCount }, { incrementBy }) => ({ // [2]
+      likesCount: likesCount + incrementBy,
+    }),
     {
       onSuccess: (data, input, reset) => {},
       onError: (error, input, reset) => {},
@@ -336,17 +339,14 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
     <>
       <button
         onClick={() => {
-          const randomIncrement = Math.round(Math.random() * 100);
+          const incrementBy = Math.round(Math.random() * 100);
 
           // Action call. Here we pass action input and expected (optimistic) data.
-          execute(
-            { incrementBy: randomIncrement },
-            { likesCount: likesCount + randomIncrement }
-          );
+          execute({ incrementBy });
         }}>
         Add likes
       </button>
-      <p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [2] */}
+      <p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [3] */}
       <p>Is executing: {JSON.stringify(status === "executing")}</p>
       <p>Res: {JSON.stringify(result)}</p>
     </>
@@ -354,18 +354,20 @@ export default function AddLikes({ likesCount, addLikes }: Props) {
 }
 ```
 
-As you can see, `useOptimisticAction` has the same required and optional callbacks arguments as `useAction`, plus one: it requires an initializer for the optimistic data [1].
+As you can see, `useOptimisticAction` requires a safe action just like `useAction`, but it also requires:
 
-It returns the same four keys as the regular `useAction` hook, plus one additional key [2]: `optimisticData` has the same type of the action's return object. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
+- an initializer for optimistic data [1];
+- a `reducer` function that defines the optimistic behavior when the action is executed. [2]
+
+It returns the same four keys as the regular `useAction` hook, plus one additional key [3]: `optimisticData` has the same type of the action's return object. This object will update immediately when you `execute` the action. Real data will come back once action has finished executing.
 
 ---
 
-## Define a context object
+## Client initialization options
 
-A key feature of this library is the ability to define a context builder function when initializing a new action client. This object will then be passed as the second argument of the server action function.
+### Middleware function
 
-
-To build your context, first, when creating the safe action client, you have to provide an async function called `buildContext` as an option. You can return any object you want from here, and safely throw an error in this function's body. It will be caught, and the client will receive a `serverError` result.
+You can provide a middleware function when initializing a new action client. It will be called before the action is executed, but after input validatio from the client. You can return an object from this function, that will then be passed as the second argument of the server code function, when creating new Server Actions. You can safely throw an error in this function's body; if that happens, the client will receive a `serverError` result.
 
 ```typescript
 // src/lib/safe-action.ts
@@ -378,8 +380,8 @@ export const action = createSafeActionClient();
 // This is a safe action client with an auth context.
 export const authAction = createSafeActionClient({
   // Here you can use functions such as `cookies()` or `headers()`
-  // from next/headers, or utilities like `getServerSession()` from NextAuth here.
-  buildContext: async () => {
+  // from next/headers, or utilities like `getServerSession()` from NextAuth.
+  middleware: () => {
     const session = true;
 
     if (!session) {
@@ -404,7 +406,7 @@ import { authAction } from "@/lib/safe-action";
 ...
 
 // [1]: Here you have access to the context object, in this case it's just
-// `{ userId }`, which comes from the return type of the `buildContext` function
+// `{ userId }`, which comes from the return type of the `middleware` function
 // declared in the previous step.
 export const editUser = authAction(input, async (parsedInput, { userId /* [1] */ }) => {
   console.log(userId); // will output: "coolest_user_id",
@@ -413,13 +415,13 @@ export const editUser = authAction(input, async (parsedInput, { userId /* [1] */
 );
 ```
 
-## Custom server error handling
+### Custom server error handling
 
-As you just saw, you can provide a `buildContext` function to `createSafeActionClient` function.
+As you just saw, you can provide a `middleware` function to `createSafeActionClient` function.
 
 You **can** also provide:
-1. A custom logger Promise for server errors, that has the error object `e` as argument. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable.
-2. A Promise called `handleReturnedServerError`, that has the error object `e` as argument, and returns a result object with a `serverError` key. When this option is provided, the safe action client lets you handle returned server errors in a custom way. So, if an error occurs on the server, instead of returning back a default message to the client, the custom logic of this function will be used to build the result object. Though, the original server error will still be logged and/or passed to the `handleServerErrorLog` Promise, if provided.
+1. A custom logger function for server errors, that has the error object `e` as argument. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable.
+2. A function called `handleReturnedServerError`, that has the error object `e` as argument, and returns a result object with a `serverError` key. When this option is provided, the safe action client lets you handle returned server errors in a custom way. So, if an error occurs on the server, instead of returning back a default message to the client, the custom logic of this function will be used to build the result object. Though, the original server error will still be logged and/or passed to the `handleServerErrorLog` function, if provided.
 
 ```typescript
 // src/lib/safe-action.ts
@@ -434,7 +436,7 @@ export const action = createSafeActionClient({
   },
   // Default is undefined. If this Promise is not provided, the client will return
   // a default server error result when an error occurs on the server.
-  handleReturnedServerError: async (e) => {
+  handleReturnedServerError: (e) => {
     // Your custom error handling logic here.
     // ...
 
@@ -444,6 +446,7 @@ export const action = createSafeActionClient({
   }
 });
 ```
+
 ## Credits
 
 - [Zod](https://github.com/colinhacks/zod) - without Zod, this library wouldn't exist.
