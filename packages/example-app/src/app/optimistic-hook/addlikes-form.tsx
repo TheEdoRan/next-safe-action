@@ -4,8 +4,8 @@ import { useOptimisticAction } from "next-safe-action/hook";
 import type { addLikes } from "./addlikes-action";
 
 type Props = {
+	addLikes: typeof addLikes;
 	likesCount: number;
-	addLikes: typeof addLikes; // infer types with `typeof`
 };
 
 const AddLikesForm = ({ likesCount, addLikes }: Props) => {
@@ -14,6 +14,9 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 		useOptimisticAction(
 			addLikes,
 			{ likesCount },
+			({ likesCount }, { incrementBy }) => ({
+				likesCount: likesCount + incrementBy,
+			}),
 			{
 				onSuccess(data, input, reset) {
 					console.log("HELLO FROM ONSUCCESS", data, input);
@@ -49,10 +52,7 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 
 					// Action call. Here we pass action input and expected (optimistic)
 					// data.
-					execute(
-						{ incrementBy: intIncrementBy },
-						{ likesCount: likesCount + intIncrementBy }
-					);
+					execute({ incrementBy: intIncrementBy });
 				}}>
 				<input
 					type="text"

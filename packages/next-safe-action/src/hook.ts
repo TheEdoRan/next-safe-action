@@ -136,19 +136,16 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
 	initialOptData: Data,
+	reducer: (state: Data, action: z.input<Schema>) => Data,
 	cb?: HookCallbacks<Schema, Data>
 ) => {
 	const [result, setResult] = useState<HookResult<Schema, Data>>({});
 	const [input, setInput] = useState<z.input<Schema>>();
 
-	const [optState, syncState] = experimental_useOptimistic<
-		Data & { __isExecuting__: boolean },
-		Partial<Data>
-	>({ ...initialOptData, ...result.data, __isExecuting__: false }, (state, newState) => ({
-		...state,
-		...newState,
-		__isExecuting__: true,
-	}));
+	const [optimisticData, syncState] = experimental_useOptimistic<Data, z.input<Schema>>(
+		initialOptData,
+		reducer
+	);
 
 	const [isExecuting, setIsExecuting] = useState(false);
 
@@ -157,9 +154,9 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	const status = getActionStatus<Schema, Data>(isExecuting, result);
 
 	const execute = useCallback(
-		(input: z.input<Schema>, newOptimisticData: Partial<Data>) => {
+		(input: z.input<Schema>) => {
 			setIsExecuting(true);
-			syncState(newOptimisticData);
+			syncState(input);
 			setInput(input);
 
 			return executor
@@ -187,12 +184,11 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	useActionCallbacks(result, input, status, reset, cb);
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { __isExecuting__: _, ...optimisticData } = optState;
 
 	return {
 		execute,
 		result,
-		optimisticData: optimisticData as Data, // removes omit of `__isExecuting__` from type
+		optimisticData,
 		reset,
 		status,
 	};
