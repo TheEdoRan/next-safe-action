@@ -11,14 +11,15 @@ export const action = createSafeActionClient({
 });
 
 export const authAction = createSafeActionClient({
-	// You can provide a context builder function. In this case, context is used
+	// You can provide a middleware function. In this case, context is used
 	// for (fake) auth purposes.
-	buildContext: () => {
+	middleware() {
+		const userId = randomUUID();
+
+		console.log("HELLO FROM ACTION MIDDLEWARE, USER ID:", userId);
+
 		return {
-			userId: randomUUID(),
+			userId,
 		};
-	},
-	middleware(ctx) {
-		console.log("HELLO FROM ACTION MIDDLEWARE, USER ID:", ctx.userId);
 	},
 });

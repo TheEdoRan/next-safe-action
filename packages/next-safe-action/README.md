@@ -7,7 +7,7 @@ This is the documentation for version 4 of the library, the current one. If you 
 ## Features
 - ✅ Pretty simple
 - ✅ End to end type safety
-- ✅ Context based clients
+- ✅ Middleware functions (with context)
 - ✅ Input validation
 - ✅ Direct or hook usage from client
 - ✅ Optimistic updates
@@ -367,7 +367,7 @@ It returns the same four keys as the regular `useAction` hook, plus one addition
 
 ### Middleware function
 
-You can provide a middleware function when initializing a new action client. It will be called before the action is executed, but after input validatio from the client. You can return an object from this function, that will then be passed as the second argument of the server code function, when creating new Server Actions. You can safely throw an error in this function's body; if that happens, the client will receive a `serverError` result.
+You can provide a middleware function when initializing a new action client. It will be called before the action is executed, but after input validation from the client. You can optionally return anything you want from this function: the returned value will be passed as `context` (second argument) to the server code function, when creating new Server Actions. You can safely throw an error in this function's body; if that happens, the client will receive a `serverError` result.
 
 ```typescript
 // src/lib/safe-action.ts
@@ -395,7 +395,7 @@ export const authAction = createSafeActionClient({
 });
 ```
 
-Then, you can use the previously defined client and access the context object:
+Then, you can use the previously defined client and access `context`:
 
 ```typescript
 "use server"; // don't forget to add this
@@ -405,9 +405,8 @@ import { authAction } from "@/lib/safe-action";
 
 ...
 
-// [1]: Here you have access to the context object, in this case it's just
-// `{ userId }`, which comes from the return type of the `middleware` function
-// declared in the previous step.
+// [1]: Here you have access to the context, in this case it's just `{ userId }`,
+// which comes from the return type of the `middleware` function declared in the previous step.
 export const editUser = authAction(input, async (parsedInput, { userId /* [1] */ }) => {
   console.log(userId); // will output: "coolest_user_id",
   ...

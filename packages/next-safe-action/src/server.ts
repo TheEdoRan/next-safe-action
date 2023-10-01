@@ -9,11 +9,10 @@ import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#project-configuration See an example}
  */
-export const createSafeActionClient = <Context extends object>(createOpts?: {
-	buildContext?: () => MaybePromise<Context>;
+export const createSafeActionClient = <Context>(createOpts?: {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<{ serverError: string }>;
-	middleware?: (ctx: Context) => MaybePromise<void>;
+	middleware?: () => MaybePromise<Context>;
 }) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
@@ -54,12 +53,9 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 					};
 				}
 
-				// Get the context if `buildContext` is provided, otherwise use an
+				// Get the context if `middleware` is provided, otherwise use an
 				// empty object.
-				const ctx = ((await Promise.resolve(createOpts?.buildContext?.())) ?? {}) as Context;
-
-				// Execute middleware code, if Promise is provided.
-				await Promise.resolve(createOpts?.middleware?.(ctx));
+				const ctx = (await Promise.resolve(createOpts?.middleware?.())) as Context;
 
 				return { data: await serverCode(parsedInput.data, ctx) };
 			} catch (e: unknown) {

@@ -14,7 +14,7 @@ export type SafeAction<Schema extends z.ZodTypeAny, Data> = (input: z.input<Sche
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCode<Schema extends z.ZodTypeAny, Data, Context extends object> = (
+export type ServerCode<Schema extends z.ZodTypeAny, Data, Context> = (
 	parsedInput: z.input<Schema>,
 	ctx: Context
 ) => Promise<Data>;
