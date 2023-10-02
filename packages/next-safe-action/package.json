@@ -53,9 +53,12 @@
 		"@typescript-eslint/parser": "^6.7.3",
 		"eslint": "^8.50.0",
 		"eslint-config-prettier": "^9.0.0",
+		"next": "13.5.3",
 		"prettier": "^3.0.3",
+		"react": "18.2.0",
 		"tsup": "^7.2.0",
-		"typescript": "^5.2.2"
+		"typescript": "^5.2.2",
+		"zod": ">= 3.0.0"
 	},
 	"peerDependencies": {
 		"next": ">= 13.4.2",
