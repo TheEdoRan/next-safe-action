@@ -5,13 +5,12 @@
 	"description": "next-safe-action monorepo",
 	"scripts": {
 		"prepare": "is-ci || husky install",
-		"postinstall": "manypkg check",
 		"example": "turbo run dev --filter=example-app",
 		"web": "turbo run dev --filter=website",
 		"lint": "turbo run lint",
 		"build": "turbo run build",
 		"build:lib": "turbo run build --filter=next-safe-action",
-		"deploy": "turbo run deploy --filter=next-safe-action"
+		"deploy": "turbo run deploy"
 	},
 	"author": "Edoardo Ranghieri",
 	"license": "MIT",
