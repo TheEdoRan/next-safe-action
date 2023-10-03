@@ -36,11 +36,7 @@ export type HookResult<Schema extends z.ZodTypeAny, Data> = Awaited<
  */
 export type HookCallbacks<Schema extends z.ZodTypeAny, Data> = {
 	onExecute?: (input: z.input<Schema>) => MaybePromise<void>;
-	onSuccess?: (
-		data: NonNullable<Pick<HookResult<Schema, Data>, "data">["data"]>,
-		input: z.input<Schema>,
-		reset: () => void
-	) => MaybePromise<void>;
+	onSuccess?: (data: Data, input: z.input<Schema>, reset: () => void) => MaybePromise<void>;
 	onError?: (
 		error: Omit<HookResult<Schema, Data>, "data">,
 		input: z.input<Schema>,
