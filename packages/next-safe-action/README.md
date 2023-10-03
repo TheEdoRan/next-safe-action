@@ -254,7 +254,7 @@ It returns an object with four keys:
 
 - `execute`: a caller for the safe action you provided as argument to the hook. Here you pass your typesafe `input`, the same way you do when using safe actions the non-hooky way.
 - `result`: when `execute` finished mutating data, the result object. It has the same three optional keys as the one above (`data`, `validationError`, `serverError`), plus one: `fetchError`. This additional optional key is populated when communication with the server fails for some reason.
-- action's `status`: a string representing the current status of the action. It can be `idle`, `executing`, `hasErrored`, or `hasSucceded`.
+- action's `status`: a string representing the current status of the action. It can be `idle`, `executing`, `hasErrored`, or `hasSucceeded`.
 - `reset` function, to programatically reset the result object.
 
 ---

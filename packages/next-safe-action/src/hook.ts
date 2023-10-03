@@ -22,7 +22,7 @@ const getActionStatus = <const Schema extends z.ZodTypeAny, const Data>(
 	if (isExecuting) {
 		return "executing";
 	} else if (typeof result.data !== "undefined") {
-		return "hasSucceded";
+		return "hasSucceeded";
 	} else if (
 		typeof result.validationError !== "undefined" ||
 		typeof result.serverError !== "undefined" ||
@@ -58,7 +58,7 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
 				case "executing":
 					await Promise.resolve(onExecute?.(input));
 					break;
-				case "hasSucceded":
+				case "hasSucceeded":
 					await Promise.resolve(onSuccess?.(result.data!, input, reset));
 					await Promise.resolve(onSettled?.(result, input, reset));
 					break;
