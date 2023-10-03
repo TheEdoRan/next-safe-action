@@ -82,7 +82,7 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
  */
 export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
-	cb?: HookCallbacks<Schema, Data>
+	callbacks?: HookCallbacks<Schema, Data>
 ) => {
 	const [, startTransition] = useTransition();
 	const executor = useRef(safeAction);
@@ -117,7 +117,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 		setResult({});
 	}, []);
 
-	useActionCallbacks(result, input, status, reset, cb);
+	useActionCallbacks(result, input, status, reset, callbacks);
 
 	return {
 		execute,
@@ -141,7 +141,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	safeAction: SafeAction<Schema, Data>,
 	initialOptData: Data,
 	reducer: (state: Data, action: z.input<Schema>) => Data,
-	cb?: HookCallbacks<Schema, Data>
+	callbacks?: HookCallbacks<Schema, Data>
 ) => {
 	const [result, setResult] = useState<HookResult<Schema, Data>>({});
 	const [input, setInput] = useState<z.input<Schema>>();
@@ -185,9 +185,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 		setResult({});
 	}, []);
 
-	useActionCallbacks(result, input, status, reset, cb);
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	useActionCallbacks(result, input, status, reset, callbacks);
 
 	return {
 		execute,
