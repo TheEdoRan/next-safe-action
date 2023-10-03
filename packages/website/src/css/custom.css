@@ -36,9 +36,3 @@ body {
 .footer {
 	padding: 1rem;
 }
-
-.footer__items {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}

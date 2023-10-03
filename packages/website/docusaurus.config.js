@@ -42,7 +42,7 @@ const config = {
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
 					editUrl:
-						"https://github.com/TheEdoRan/next-safe-action/tree/main/packages/website/docs/",
+						"https://github.com/TheEdoRan/next-safe-action/tree/main/packages/website/",
 					remarkPlugins: [
 						[require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
 					],
@@ -82,16 +82,7 @@ const config = {
 			},
 			footer: {
 				style: "light",
-				copyright: `&copy; ${new Date().getFullYear()} Edoardo Ranghieri. Built with Docusaurus.`,
-				links: [
-					{
-						items: [
-							{
-								html: `<a href="https://vercel.com" target="_blank"><img src="/img/powered-by-vercel.svg" style="width: 214px; height: 44px" alt="Powered by Vercel" /></a>`,
-							},
-						],
-					},
-				],
+				copyright: `<a href="https://vercel.com" target="_blank"><img src="/img/powered-by-vercel.svg" style="width: 214px; height: 44px" alt="Powered by Vercel" /></a>`,
 			},
 			prism: {
 				theme: lightCodeTheme,

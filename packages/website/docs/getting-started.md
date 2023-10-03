@@ -53,7 +53,7 @@ import { createSafeActionClient } from "next-safe-action";
 export const action = createSafeActionClient();
 ```
 
-This is a basic client, without any options. If you want to explore the full set of options, check out the [safe action alient](/docs/safe-action-client) section.
+This is a basic client, without any options. If you want to explore the full set of options, check out the [safe action client](/docs/safe-action-client) section.
 
 ### 3. Define a new action
 
