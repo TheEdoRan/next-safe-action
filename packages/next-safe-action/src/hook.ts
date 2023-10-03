@@ -76,7 +76,7 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
 /**
  * Use the action from a Client Component via hook.
  * @param safeAction The typesafe action.
- * @param cb Optional callbacks executed when the action succeeds or fails.
+ * @param callbacks Optional callbacks executed when the action succeeds or fails.
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#2-the-hook-way See an example}
  */
@@ -132,14 +132,14 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
  *
  * **NOTE: This hook uses an experimental React feature.**
  * @param safeAction The typesafe action.
- * @param initialOptData Initial optimistic data.
- * @param cb Optional callbacks executed when the action succeeds or fails.
+ * @param initialOptimisticData Initial optimistic data.
+ * @param callbacks Optional callbacks executed when the action succeeds or fails.
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#optimistic-update--experimental See an example}
  */
 export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
-	initialOptData: Data,
+	initialOptimisticData: Data,
 	reducer: (state: Data, action: z.input<Schema>) => Data,
 	callbacks?: HookCallbacks<Schema, Data>
 ) => {
@@ -147,7 +147,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	const [input, setInput] = useState<z.input<Schema>>();
 
 	const [optimisticData, syncState] = experimental_useOptimistic<Data, z.input<Schema>>(
-		initialOptData,
+		initialOptimisticData,
 		reducer
 	);
 
