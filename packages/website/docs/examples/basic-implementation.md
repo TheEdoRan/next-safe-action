@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: Explore a basic implementation of next-safe-action.
 ---
 
 # Basic implementation

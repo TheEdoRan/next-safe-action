@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+description: Learn how to define multiple clients.
 ---
 
 # Defining multiple clients

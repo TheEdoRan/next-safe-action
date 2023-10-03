@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: Learn how to use a middleware in your client to perform custom logic before action server code is executed.
 ---
 
 # Using a middleware

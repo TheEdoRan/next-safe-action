@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+description: Learn how to execute safe actions inside Client Components.
 ---
 
 # Usage from client

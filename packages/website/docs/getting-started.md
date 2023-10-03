@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+description: Getting started with next-safe-action version 4.
 ---
 
 # Getting started

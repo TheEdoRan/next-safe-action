@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+description: Learn how to customize server error handling.
 ---
 
 # Custom server error handling

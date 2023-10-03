@@ -1,5 +1,6 @@
 ---
 sidebar_position: 7
+description: Learn how to migrate from next-safe-action version 3 to version 4.
 ---
 
 # Migration from v3 to v4

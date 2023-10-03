@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: Learn how to use the `useAction` hook.
 ---
 
 # `useAction`

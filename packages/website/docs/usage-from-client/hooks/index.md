@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+description: Hooks are the more powerful way to execute Server Actions in Client Components.
 ---
 
 # 2. Hooks

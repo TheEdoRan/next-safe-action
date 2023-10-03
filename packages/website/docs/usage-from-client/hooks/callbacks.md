@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+description: Hook callbacks are a way to perform custom logic based on the current action execution status.
 ---
 
 # Callbacks

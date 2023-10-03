@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: You can execute safe actions by directrly calling them inside Client Components.
 ---
 
 # 1. Direct execution

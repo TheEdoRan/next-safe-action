@@ -1,5 +1,6 @@
 ---
 sidebar_position: 4
+description: Action result object is the result of an action execution, returned by hooks.
 ---
 
 # Action result object
