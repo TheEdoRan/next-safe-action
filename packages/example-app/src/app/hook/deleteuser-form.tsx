@@ -24,6 +24,12 @@ const DeleteUserForm = ({ userId, deleteUser }: Props) => {
 			// You can reset result object by calling `reset`.
 			// reset();
 		},
+		onSettled(result, input, reset) {
+			console.log("HELLO FROM ONSETTLED", result, input);
+
+			// You can reset result object by calling `reset`.
+			// reset();
+		},
 		onExecute(input) {
 			console.log("HELLO FROM ONEXECUTE", input);
 		},

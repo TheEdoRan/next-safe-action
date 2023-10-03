@@ -46,6 +46,11 @@ export type HookCallbacks<Schema extends z.ZodTypeAny, Data> = {
 		input: z.input<Schema>,
 		reset: () => void
 	) => MaybePromise<void>;
+	onSettled?: (
+		result: HookResult<Schema, Data>,
+		input: z.input<Schema>,
+		reset: () => void
+	) => MaybePromise<void>;
 };
 
 /**

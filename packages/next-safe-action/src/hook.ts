@@ -44,12 +44,14 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
 	const onExecuteRef = useRef(cb?.onExecute);
 	const onSuccessRef = useRef(cb?.onSuccess);
 	const onErrorRef = useRef(cb?.onError);
+	const onSettledRef = useRef(cb?.onSettled);
 
 	// Execute the callback on success or error, if provided.
 	useEffect(() => {
 		const onExecute = onExecuteRef.current;
 		const onSuccess = onSuccessRef.current;
 		const onError = onErrorRef.current;
+		const onSettled = onSettledRef.current;
 
 		const executeCallbacks = async () => {
 			switch (status) {
@@ -58,9 +60,11 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
 					break;
 				case "hasSucceded":
 					await Promise.resolve(onSuccess?.(result.data!, input, reset));
+					await Promise.resolve(onSettled?.(result, input, reset));
 					break;
 				case "hasErrored":
 					await Promise.resolve(onError?.(result, input, reset));
+					await Promise.resolve(onSettled?.(result, input, reset));
 					break;
 			}
 		};
