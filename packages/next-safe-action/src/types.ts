@@ -31,8 +31,7 @@ export type HookResult<Schema extends z.ZodTypeAny, Data> = Awaited<
 };
 
 /**
- * Type of hooks callbacks (`onSuccess` and `onError`).
- * These are executed when the action succeeds or fails.
+ * Type of hooks callbacks. These are executed when action is in a specific state.
  */
 export type HookCallbacks<Schema extends z.ZodTypeAny, Data> = {
 	onExecute?: (input: z.input<Schema>) => MaybePromise<void>;
