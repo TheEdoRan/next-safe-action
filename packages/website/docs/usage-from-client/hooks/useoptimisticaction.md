@@ -10,7 +10,7 @@ description: Learn how to use the `useOptimisticAction` hook.
 :::
 
 :::caution warning
-This hook  uses an experimental hook from React called `experimental_useOptimistic` behind the scenes. For this reason, you might experience bugs and some breaking changes in the future.
+This hook  uses an experimental hook from React called `experimental_useOptimistic` under the hood. For this reason, you might experience bugs and some breaking changes in the future.
 :::
 
 
@@ -36,7 +36,8 @@ export const addLikes = action(schema, async ({ amount }) => {
   likes += amount;
 
   // We use this function to revalidate server state.
-  // More information about it [here](https://nextjs.org/docs/app/api-reference/functions/revalidatePath).
+  // More information about it here:
+  // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
   revalidatePath("/");
 
   return { numOfLikes: likes };

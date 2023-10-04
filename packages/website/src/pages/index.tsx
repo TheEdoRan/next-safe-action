@@ -29,8 +29,8 @@ export default function Home(): JSX.Element {
 	const { siteConfig } = useDocusaurusContext();
 	return (
 		<Layout
-			title={`Hello from ${siteConfig.title}`}
-			description="Description will go into a meta tag in <head />">
+			// title={`${siteConfig.title}`}
+			description="next-safe-action is a library for defining typesafe Server Actions for Next.js 13 using Zod.">
 			<HomepageHeader />
 		</Layout>
 	);

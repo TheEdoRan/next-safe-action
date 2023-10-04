@@ -27,7 +27,7 @@ You can continue to use version 3 of the library if you want to. There are no se
 - Reorganized callbacks arguments for `onSuccess` and `onError`: 
   - from `onSuccess(data, reset, input)` to `onSuccess(data, input, reset)`
   - from `onError(error, input, reset)` to `onError(error, input, reset)`
-- `useOptimisticAction` before just required a safe action and an initial optimistic state. Now it requires a `reducer` function too, that determines the behavior of the optimistic state update when the `execute` function is called. Also, now only one input is required by `execute`. The same input passed to the actual safe action is now also passed to the `reducer` function, as the second argument (`action`).
+- `useOptimisticAction` just required a safe action and an initial optimistic state before. Now it requires a `reducer` function too, that determines the behavior of the optimistic state update when the `execute` function is called. Also, now only one input argument is required by `execute`, instead of two. The same input passed to the actual safe action is now passed to the `reducer` function too, as the second argument (`action`). More information about this hook can be found [here](/docs/usage-from-client/hooks/useoptimisticaction).
 
 ### Types
 

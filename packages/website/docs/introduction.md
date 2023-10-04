@@ -9,7 +9,9 @@ description: next-safe-action is a library that takes full advantage of the late
 
 ## How does it work?
 
-GIF here.
+Like magic. 🪄
+
+<img src="/img/demo-hd.gif" alt="How does next-safe-action work?" />
 
 ## Features
 - ✅ Pretty simple
