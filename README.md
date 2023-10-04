@@ -16,10 +16,10 @@ Like magic. 🪄
 ## Features
 
 - ✅ Pretty simple
-- ✅ End to end type safety
+- ✅ End-to-end type safety
 - ✅ Context based clients (with middlewares)
 - ✅ Input validation using Zod
-- ✅ Direct or hook usage from client
+- ✅ Advanced server error handling
 - ✅ Optimistic updates
 
 ## Documentation
@@ -40,7 +40,7 @@ You can find a basic working implementation of the library [here](packages/examp
 
 ## Contributing
 
-If you want to contribute to next-safe-action, the best way is to fork this repository and [open a Pull Request](https://github.com/TheEdoRan/next-safe-action/pulls) when you're done implementing your feature.
+If you want to contribute to next-safe-action, the best way is to fork this repository and [open a pull request](https://github.com/TheEdoRan/next-safe-action/pulls) when you're done implementing your feature.
 
 If you found bugs or just want to ask a question, feel free to [open an issue](https://github.com/TheEdoRan/next-safe-action/issues).
 
