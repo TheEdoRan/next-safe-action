@@ -15,10 +15,10 @@ Like magic. 🪄
 
 ## Features
 - ✅ Pretty simple
-- ✅ End to end type safety
+- ✅ End-to-end type safety
 - ✅ Context based clients (with middlewares)
 - ✅ Input validation using Zod
-- ✅ Direct or hook usage from client
+- ✅ Advanced server error handling
 - ✅ Optimistic updates
 
 :::note

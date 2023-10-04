@@ -5,7 +5,7 @@ description: Learn how to contribute to next-safe-action via GitHub.
 
 # Contributing
 
-You can contribute to this project by forking the repository and opening a [Pull Request on GitHub](https://github.com/TheEdoRan/next-safe-action/pulls).
+You can contribute to this project by forking the repository and opening a [pull request on GitHub](https://github.com/TheEdoRan/next-safe-action/pulls).
 
 Have you found bugs or just want to ask a question? Please open a [GitHub issue](https://github.com/TheEdoRan/next-safe-action/issues).
 

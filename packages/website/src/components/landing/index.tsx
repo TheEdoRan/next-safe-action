@@ -1,11 +1,12 @@
 import React from "react";
-import "../../css/tailwind.css";
 import Hero from "../hero";
+import Features from "./features";
 
 export default function Landing() {
 	return (
-		<main className="tailwind">
+		<main>
 			<Hero />
+			<Features />
 		</main>
 	);
 }

@@ -7,7 +7,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "next-safe-action",
-	tagline: "Typesafe Server Actions for Next.js 13 using Zod",
+	tagline: "Typesafe Server Actions in your Next.js 13 app",
 	favicon: "img/favicon.ico",
 
 	// Set the production url of your site here
@@ -53,20 +53,6 @@ const config = {
 				},
 			}),
 		],
-	],
-
-	plugins: [
-		async function tailwindCSS(context, options) {
-			return {
-				name: "docusaurus-tailwindcss",
-				configurePostCss(postcssOptions) {
-					postcssOptions.plugins.push(require("tailwindcss"));
-					postcssOptions.plugins.push(require("postcss-nested"));
-					postcssOptions.plugins.push(require("autoprefixer"));
-					return postcssOptions;
-				},
-			};
-		},
 	],
 
 	themeConfig:

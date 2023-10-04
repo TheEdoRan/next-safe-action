@@ -26,7 +26,7 @@ npm i next-safe-action zod
 ## Usage
 
 :::note
-Turning on any `experimental` features in Next.js will switch the used React version to experimental.
+Turning on Server Actions in Next.js configuration file will switch the used React version to experimental.
 :::
 
 ### 1. Enable server actions in Next.js
