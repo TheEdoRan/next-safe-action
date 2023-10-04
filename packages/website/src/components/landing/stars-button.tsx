@@ -20,8 +20,7 @@ function useFetchStarsCount() {
 }
 
 export function StarsButton() {
-	// const { starsCount } = useFetchStarsCount();
-	const starsCount = 269;
+	const { starsCount } = useFetchStarsCount();
 
 	return (
 		<a

@@ -1,6 +1,7 @@
 import React from "react";
 import { Hero } from "../hero";
 import { Features } from "./features";
+import { GettingStarted } from "./getting-started";
 import { Testimonials } from "./testimonials";
 
 export function Landing() {
@@ -10,6 +11,8 @@ export function Landing() {
 			<Features />
 			<div className="h-px min-h-[1px] min-w-full bg-stone-200 dark:bg-stone-700"></div>
 			<Testimonials />
+			<div className="h-px min-h-[1px] min-w-full bg-stone-200 dark:bg-stone-700"></div>
+			<GettingStarted />
 		</main>
 	);
 }
