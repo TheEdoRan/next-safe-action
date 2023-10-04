@@ -7,11 +7,11 @@
 
 ## How does it work?
 
+Like magic. 🪄
+
 <div align="center">
   <img src="./assets/demo.gif"/>
 </div>
-
-GIF here.
 
 ## Features
 
