@@ -140,7 +140,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
 	initialOptimisticData: Data,
-	reducer: (state: Data, action: z.input<Schema>) => Data,
+	reducer: (state: Data, input: z.input<Schema>) => Data,
 	callbacks?: HookCallbacks<Schema, Data>
 ) => {
 	const [result, setResult] = useState<HookResult<Schema, Data>>({});
