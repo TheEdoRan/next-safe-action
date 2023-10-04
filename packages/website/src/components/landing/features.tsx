@@ -34,7 +34,7 @@ const features: { title: string; description: string }[] = [
 	},
 ];
 
-export default function Features() {
+export function Features() {
 	return (
 		<div className="px-5 md:px-10">
 			<div className="mx-auto w-full max-w-4xl">

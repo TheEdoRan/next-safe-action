@@ -1,8 +1,8 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import React from "react";
-import StarButton from "./landing/stars-button";
+import { StarsButton } from "./landing/stars-button";
 
-export default function Hero() {
+export function Hero() {
 	const { siteConfig } = useDocusaurusContext();
 
 	return (
@@ -28,7 +28,7 @@ export default function Hero() {
 										className="!no-underline hover:brightness-90 transition !text-stone-100 cursor-pointer rounded-lg mr-4 bg-stone-800 px-3 py-2 font-bold inline-flex items-center justify-center text-sm sm:text-lg md:text-xl">
 										Getting started 🎉
 									</a>
-									<StarButton width="170" height="50" />
+									<StarsButton />
 								</div>
 							</div>
 						</div>

@@ -1,7 +1,7 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import React from "react";
-import Landing from "../components/landing";
+import { Landing } from "../components/landing";
 
 export default function Home(): JSX.Element {
 	const { siteConfig } = useDocusaurusContext();

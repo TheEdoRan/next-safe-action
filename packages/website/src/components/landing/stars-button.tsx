@@ -19,13 +19,7 @@ function useFetchStarsCount() {
 	return { starsCount };
 }
 
-export default function StarsButton({
-	width,
-	height,
-}: {
-	width: string;
-	height: string;
-}) {
+export function StarsButton() {
 	// const { starsCount } = useFetchStarsCount();
 	const starsCount = 269;
 
