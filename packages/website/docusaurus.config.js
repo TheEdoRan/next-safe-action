@@ -4,6 +4,8 @@
 const lightCodeTheme = require("prism-react-renderer/themes/vsLight");
 const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
 
+const vercelBadge = `<a href="https://vercel.com" target="_blank"><img src="/img/powered-by-vercel.svg" style="width: 214px; height: 44px" alt="Powered by Vercel" /></a>`;
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "next-safe-action",
@@ -82,7 +84,7 @@ const config = {
 			},
 			footer: {
 				style: "light",
-				copyright: `<a href="https://vercel.com" target="_blank"><img src="/img/powered-by-vercel.svg" style="width: 214px; height: 44px" alt="Powered by Vercel" /></a>`,
+				copyright: `Copyleft <span class="copyleft">&copy;</span> ${new Date().getFullYear()} Edoardo Ranghieri`,
 			},
 			prism: {
 				theme: lightCodeTheme,

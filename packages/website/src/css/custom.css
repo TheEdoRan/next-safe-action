@@ -23,8 +23,9 @@ body {
 	box-shadow: 0px 1px #e7e5e4 !important;
 }
 
-.root_------node_modules-react-tweet-dist-twitter-theme-quoted-tweet-quoted-tweet-container-module {
-	display: none !important;
+.copyleft {
+	display: inline-block;
+	transform: rotate(180deg);
 }
 
 :root {
