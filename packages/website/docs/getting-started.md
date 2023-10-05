@@ -59,10 +59,10 @@ This is a basic client, without any options. If you want to explore the full set
 ### 3. Define a new action
 
 This is how a safe action is created. Providing a Zod input schema to the function, we're sure that data that comes in is type safe and validated.
-The second argument of this function is an async function that receives parsed input, and defines what happens on the server when the action is called from the client. In short, this is your server code. It never runs on the client:
+The second argument of this function is an async function that receives the parsed input, and defines what happens on the server when the action is called from client. In short, this is your server code. It never runs on the client:
 
 ```typescript title="src/app/login-action.ts"
-"use server"; // Don't forget to add this!
+"use server"; // don't forget to add this!
 
 import { z } from "zod";
 import { action } from "@/lib/safe-action";

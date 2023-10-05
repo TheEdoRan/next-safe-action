@@ -15,7 +15,7 @@ import { cookies } from "next/headers";
 import { getUserIdFromSessionId } from "./db";
 
 export const authAction = createSafeActionClient({
-  // Can also be a normal function.
+  // Can also be a non async function.
   async middleware() {
     const session = cookies().get("session")?.value;
 
@@ -36,9 +36,9 @@ export const authAction = createSafeActionClient({
 });
 ```
 
-As you can see, you can use the `cookies()` and `headers()` functions from `next/headers` to get cookie values and request headers, since the middleware is part of a Server Action execution. You can also delete/manipulate cookies in middleware, and safely throw an error, that will be caught by the client and returned to the client as a `serverError` result.
+As you can see, you can use the `cookies()` and `headers()` functions from `next/headers` to get cookie values and request headers. You can also delete/manipulate cookies in the middleware (since it is part of a Server Action execution), and safely throw an error, that will be caught by the client and returned to the client as a `serverError` result.
 
-Middleware can also be used to return a context, that will be passed as the second argument of the action server code function. This is very useful if you want, for example, find out which user executed the action. Here's an example reusing the `authAction` client from above:
+Middleware can also be used to return a context, that will be passed as the second argument of the action server code function. This is very useful if you want, for example, find out which user executed the action. Here's an example reusing the `authAction` client defined above:
 
 ```typescript title=src/app/send-message-action.ts
 import { authAction } from "@/lib/safe-action";
@@ -49,6 +49,8 @@ const schema = z.object({
   text: z.string(),
 });
 
+//                                      This comes from middleware return object (context).
+//                                                         \\
 const sendMessage = authAction(schema, async ({ text }, { userId }) => {
   // Fake db call, this function creates a new message in the database, we know
   // the user id thanks to the context injected by the middleware function.

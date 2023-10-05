@@ -14,7 +14,7 @@ Let's say, for instance, you want to change what's displayed by a component when
 
 ### Example
 
-1. Define a new action called `greetUser`, that takes a name as an argument and returns a greeting:
+1. Define a new action called `greetUser`, that takes a name as input and returns a greeting:
 
 ```typescript title=src/app/greet-action.ts
 const schema = z.object({

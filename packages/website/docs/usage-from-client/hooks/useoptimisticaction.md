@@ -6,11 +6,11 @@ description: Learn how to use the `useOptimisticAction` hook.
 # `useOptimisticAction`
 
 :::info
-`useOptimisticAction` **does not wait** for the action to finish execution before returning the result. If you need to perform normal mutations, use [`useAction`](/docs/usage-from-client/hooks/useaction) instead.
+`useOptimisticAction` **does not wait** for the action to finish execution before returning the optimistic data. It is then synced with the real result from server when the action has finished its execution. If you need to perform normal mutations, use [`useAction`](/docs/usage-from-client/hooks/useaction) instead.
 :::
 
 :::caution warning
-This hook  uses an experimental hook from React called `experimental_useOptimistic` under the hood. For this reason, you might experience bugs and some breaking changes in the future.
+This hook  uses an experimental hook from React called `experimental_useOptimistic` under the hood. For this reason, you might experience some bugs and breaking changes in the future.
 :::
 
 
@@ -18,7 +18,7 @@ Let's say, you want to update the number of likes of a post in your application,
 
 ### Example
 
-1. Define a new action called `addLikes`, that takes an amount as an argument and returns the updated number of likes:
+1. Define a new action called `addLikes`, that takes an amount as input and returns the updated number of likes:
 
 ```typescript title=src/app/add-likes-action.ts
 const schema = z.object({

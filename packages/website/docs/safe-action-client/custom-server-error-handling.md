@@ -5,9 +5,9 @@ description: Learn how to customize server error handling.
 
 # Custom server error handling
 
-### `handleReturnedServerError`
+### `handleReturnedServerError?`
 
-This function is used to customize the server error message returned to the client, if an error occurs during action's server execution. This includes errors thrown by the action server code, and errors thrown by the middleware.
+You can provide this optional function to the safe action client. It is used to customize the server error message returned to the client, if one occurs during action's server execution. This includes errors thrown by the action server code, and errors thrown by the middleware.
 
 Here's a simple example, changing the message for every error thrown on the server:
 
@@ -31,8 +31,8 @@ class MyCustomError extends Error {}
 
 export const action = createSafeActionClient({
   handleReturnedServerError(e) {
-    // In this case, we can use the 'MyCustomError` class to unmask error messages
-    // and return them to the client.
+    // In this case, we can use the 'MyCustomError` class to unmask errors
+    // and return them with their actual messages to the client.
     if (e instanceof MyCustomError) {
       return {
         serverError: e.message,
@@ -47,9 +47,9 @@ export const action = createSafeActionClient({
 });
 ```
 
-### `handleServerErrorLog`
+### `handleServerErrorLog?`
 
-This function is used to define how error should be logged when an error occurs while the server is executing an action. This includes errors thrown by the action server code, and errors thrown by the middleware. Here you get as argument the **original error**, not one with a custom message customized by `handleReturnedServerError`, if provided.
+You can provide this optional function to the safe action client. This is used to define how error should be logged when an error occurs while the server is executing an action. This includes errors thrown by the action server code, and errors thrown by the middleware. Here you get as argument the **original error**, not one with a custom message customized by `handleReturnedServerError`, if provided.
 
 Here's a simple example, logging error to the console while also reporting it to an error handling system:
 

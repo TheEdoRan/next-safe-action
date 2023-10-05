@@ -19,7 +19,7 @@ export const action = createSafeActionClient();
 
 // This client ensures that the user is authenticated before running action server code.
 export const authAction = createSafeActionClient({
-  // Can also be a normal function.
+  // Can also be a non async function.
   async middleware() {
     const session = cookies().get("session")?.value;
 
