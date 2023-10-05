@@ -1,7 +1,7 @@
 import React from "react";
-import { Hero } from "../hero";
 import { Features } from "./features";
 import { GettingStarted } from "./getting-started";
+import { Hero } from "./hero";
 import { Testimonials } from "./testimonials";
 
 export function Landing() {

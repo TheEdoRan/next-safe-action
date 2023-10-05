@@ -1,6 +1,6 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import React from "react";
-import { StarsButton } from "./landing/stars-button";
+import { StarsButton } from "./stars-button";
 
 export function Hero() {
 	const { siteConfig } = useDocusaurusContext();
