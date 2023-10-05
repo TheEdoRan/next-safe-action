@@ -146,7 +146,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	const [result, setResult] = useState<HookResult<Schema, Data>>({});
 	const [input, setInput] = useState<z.input<Schema>>();
 
-	const [optimisticData, syncState] = experimental_useOptimistic<Data, z.input<Schema>>(
+	const [optimisticData, setOptimisticState] = experimental_useOptimistic<Data, z.input<Schema>>(
 		initialOptimisticData,
 		reducer
 	);
@@ -160,7 +160,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	const execute = useCallback(
 		(input: z.input<Schema>) => {
 			setIsExecuting(true);
-			syncState(input);
+			setOptimisticState(input);
 			setInput(input);
 
 			return executor
@@ -178,7 +178,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 					setIsExecuting(false);
 				});
 		},
-		[syncState]
+		[setOptimisticState]
 	);
 
 	const reset = useCallback(() => {
