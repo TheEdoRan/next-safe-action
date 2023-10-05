@@ -62,6 +62,11 @@ const config = {
 		({
 			// Replace with your project's social card
 			image: "img/social-card.png",
+			algolia: {
+				appId: "I6TZS9IBSZ",
+				apiKey: "87b638e133658cdec7cc633e6c4986c3",
+				indexName: "next-safe-action",
+			},
 			navbar: {
 				title: "next-safe-action",
 				logo: {
