@@ -5,7 +5,8 @@
 	"description": "next-safe-action monorepo",
 	"scripts": {
 		"prepare": "is-ci || husky install",
-		"dev": "turbo run dev --filter=example-app",
+		"example": "turbo run dev --filter=example-app",
+		"web": "turbo run dev --filter=website",
 		"lint": "turbo run lint",
 		"build": "turbo run build",
 		"build:lib": "turbo run build --filter=next-safe-action",
@@ -19,15 +20,6 @@
 	"workspaces": [
 		"packages/*"
 	],
-	"devDependencies": {
-		"@commitlint/cli": "^17.7.1",
-		"@commitlint/config-conventional": "^17.7.0",
-		"cz-conventional-changelog": "^3.3.0",
-		"husky": "^8.0.3",
-		"is-ci": "^3.0.1",
-		"semantic-release": "^21.1.1",
-		"turbo": "^1.10.13"
-	},
 	"config": {
 		"commitizen": {
 			"path": "./node_modules/cz-conventional-changelog"
@@ -110,6 +102,10 @@
 							"release": false
 						},
 						{
+							"scope": "website",
+							"release": false
+						},
+						{
 							"scope": "release",
 							"release": "patch"
 						}
@@ -120,5 +116,15 @@
 			"@semantic-release/npm",
 			"@semantic-release/github"
 		]
+	},
+	"dependencies": {
+		"@commitlint/cli": "^17.7.1",
+		"@commitlint/config-conventional": "^17.7.0",
+		"@manypkg/cli": "^0.21.0",
+		"cz-conventional-changelog": "^3.3.0",
+		"husky": "^8.0.3",
+		"is-ci": "^3.0.1",
+		"semantic-release": "^22.0.5",
+		"turbo": "^1.10.14"
 	}
 }

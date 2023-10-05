@@ -7,7 +7,7 @@ module.exports = {
 		ecmaVersion: "latest",
 		sourceType: "module",
 	},
-	plugins: ["@typescript-eslint"],
+	plugins: ["@typescript-eslint", "react-hooks"],
 	extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
 	rules: {
 		"@typescript-eslint/consistent-type-imports": "error",
@@ -18,5 +18,6 @@ module.exports = {
 		"@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/ban-types": "off",
 		"no-mixed-spaces-and-tabs": "off",
+		"react-hooks/exhaustive-deps": "warn",
 	},
 };

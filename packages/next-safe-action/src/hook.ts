@@ -8,104 +8,122 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import { } from "react/experimental";
+import {} from "react/experimental";
 import type { z } from "zod";
-import type { ClientCaller, HookCallbacks, HookRes } from "./types";
+import type { HookActionStatus, HookCallbacks, HookResult, SafeAction } from "./types";
 import { isNextNotFoundError, isNextRedirectError } from "./utils";
 
 // UTILS
 
-const getActionStatus = <const IV extends z.ZodTypeAny, const Data>(res: HookRes<IV, Data>) => {
-	const hasSucceded = typeof res.data !== "undefined";
-	const hasErrored =
-		typeof res.validationError !== "undefined" ||
-		typeof res.serverError !== "undefined" ||
-		typeof res.fetchError !== "undefined";
+const getActionStatus = <const Schema extends z.ZodTypeAny, const Data>(
+	isExecuting: boolean,
+	result: HookResult<Schema, Data>
+): HookActionStatus => {
+	if (isExecuting) {
+		return "executing";
+	} else if (typeof result.data !== "undefined") {
+		return "hasSucceeded";
+	} else if (
+		typeof result.validationError !== "undefined" ||
+		typeof result.serverError !== "undefined" ||
+		typeof result.fetchError !== "undefined"
+	) {
+		return "hasErrored";
+	}
 
-	const hasExecuted = hasSucceded || hasErrored;
-
-	return { hasExecuted, hasSucceded, hasErrored };
+	return "idle";
 };
 
-const useActionCallbacks = <const IV extends z.ZodTypeAny, const Data>(
-	input: z.input<IV>,
-	res: HookRes<IV, Data>,
-	hasSucceded: boolean,
-	hasErrored: boolean,
+const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
+	result: HookResult<Schema, Data>,
+	input: z.input<Schema>,
+	status: HookActionStatus,
 	reset: () => void,
-	cb?: HookCallbacks<IV, Data>
+	cb?: HookCallbacks<Schema, Data>
 ) => {
+	const onExecuteRef = useRef(cb?.onExecute);
 	const onSuccessRef = useRef(cb?.onSuccess);
 	const onErrorRef = useRef(cb?.onError);
+	const onSettledRef = useRef(cb?.onSettled);
 
 	// Execute the callback on success or error, if provided.
 	useEffect(() => {
+		const onExecute = onExecuteRef.current;
 		const onSuccess = onSuccessRef.current;
 		const onError = onErrorRef.current;
+		const onSettled = onSettledRef.current;
 
-		if (onSuccess && hasSucceded) {
-			onSuccess(res.data!, reset, input);
-		} else if (onError && hasErrored) {
-			onError(res, reset, input);
-		}
-	}, [hasErrored, hasSucceded, res, reset]);
+		const executeCallbacks = async () => {
+			switch (status) {
+				case "executing":
+					await Promise.resolve(onExecute?.(input));
+					break;
+				case "hasSucceeded":
+					await Promise.resolve(onSuccess?.(result.data!, input, reset));
+					await Promise.resolve(onSettled?.(result, input, reset));
+					break;
+				case "hasErrored":
+					await Promise.resolve(onError?.(result, input, reset));
+					await Promise.resolve(onSettled?.(result, input, reset));
+					break;
+			}
+		};
+
+		executeCallbacks().catch(console.error);
+	}, [status, result, reset, input]);
 };
 
 /**
  * Use the action from a Client Component via hook.
- * @param clientCaller Caller function with typesafe input data for the Server Action.
- * @param cb Optional callbacks executed when the action succeeds or fails.
+ * @param safeAction The typesafe action.
+ * @param callbacks Optional callbacks executed when the action succeeds or fails.
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#2-the-hook-way See an example}
  */
-export const useAction = <const IV extends z.ZodTypeAny, const Data>(
-	clientCaller: ClientCaller<IV, Data>,
-	cb?: HookCallbacks<IV, Data>
+export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
+	safeAction: SafeAction<Schema, Data>,
+	callbacks?: HookCallbacks<Schema, Data>
 ) => {
-	const [isExecuting, startTransition] = useTransition();
-	const executor = useRef(clientCaller);
-	const [res, setRes] = useState<HookRes<IV, Data>>({});
-	const [input, setInput] = useState<z.input<IV>>();
-	const onExecuteRef = useRef(cb?.onExecute);
+	const [, startTransition] = useTransition();
+	const executor = useRef(safeAction);
+	const [result, setResult] = useState<HookResult<Schema, Data>>({});
+	const [input, setInput] = useState<z.input<Schema>>();
+	const [isExecuting, setIsExecuting] = useState(false);
 
-	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
+	const status = getActionStatus<Schema, Data>(isExecuting, result);
 
-	const execute = useCallback((input: z.input<IV>) => {
+	const execute = useCallback((input: z.input<Schema>) => {
+		setIsExecuting(true);
 		setInput(input);
-
-		const onExecute = onExecuteRef.current;
-		if (onExecute) {
-			onExecute(input);
-		}
 
 		return startTransition(() => {
 			return executor
 				.current(input)
-				.then((res) => setRes(res))
+				.then((res) => setResult(res))
 				.catch((e) => {
 					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
 						throw e;
 					}
 
-					setRes({ fetchError: e });
+					setResult({ fetchError: e });
+				})
+				.finally(() => {
+					setIsExecuting(false);
 				});
 		});
 	}, []);
 
 	const reset = useCallback(() => {
-		setRes({});
+		setResult({});
 	}, []);
 
-	useActionCallbacks(input, res, hasSucceded, hasErrored, reset, cb);
+	useActionCallbacks(result, input, status, reset, callbacks);
 
 	return {
 		execute,
-		isExecuting,
-		res,
+		result,
 		reset,
-		hasExecuted,
-		hasSucceded,
-		hasErrored,
+		status,
 	};
 };
 
@@ -113,77 +131,69 @@ export const useAction = <const IV extends z.ZodTypeAny, const Data>(
  * Use the action from a Client Component via hook, with optimistic data update.
  *
  * **NOTE: This hook uses an experimental React feature.**
- * @param clientCaller Caller function with typesafe input data for the Server Action.
- * @param initialOptData Initial optimistic data.
- * @param cb Optional callbacks executed when the action succeeds or fails.
+ * @param safeAction The typesafe action.
+ * @param initialOptimisticData Initial optimistic data.
+ * @param callbacks Optional callbacks executed when the action succeeds or fails.
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#optimistic-update--experimental See an example}
  */
-export const useOptimisticAction = <const IV extends z.ZodTypeAny, const Data>(
-	clientCaller: ClientCaller<IV, Data>,
-	initialOptData: Data,
-	cb?: HookCallbacks<IV, Data>
+export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Data>(
+	safeAction: SafeAction<Schema, Data>,
+	initialOptimisticData: Data,
+	reducer: (state: Data, input: z.input<Schema>) => Data,
+	callbacks?: HookCallbacks<Schema, Data>
 ) => {
-	const [res, setRes] = useState<HookRes<IV, Data>>({});
-	const [input, setInput] = useState<z.input<IV>>();
+	const [result, setResult] = useState<HookResult<Schema, Data>>({});
+	const [input, setInput] = useState<z.input<Schema>>();
 
-	const [optState, syncState] = experimental_useOptimistic<
-		Data & { __isExecuting__: boolean },
-		Partial<Data>
-	>({ ...initialOptData, ...res.data, __isExecuting__: false }, (state, newState) => ({
-		...state,
-		...newState,
-		__isExecuting__: true,
-	}));
+	const [optimisticData, syncState] = experimental_useOptimistic<Data, z.input<Schema>>(
+		initialOptimisticData,
+		reducer
+	);
 
-	const executor = useRef(clientCaller);
-	const onExecuteRef = useRef(cb?.onExecute);
+	const [isExecuting, setIsExecuting] = useState(false);
 
-	const { hasExecuted, hasSucceded, hasErrored } = getActionStatus<IV, Data>(res);
+	const executor = useRef(safeAction);
+
+	const status = getActionStatus<Schema, Data>(isExecuting, result);
 
 	const execute = useCallback(
-		(input: z.input<IV>, newOptimisticData: Partial<Data>) => {
-			syncState(newOptimisticData);
+		(input: z.input<Schema>) => {
+			setIsExecuting(true);
+			syncState(input);
 			setInput(input);
-
-			const onExecute = onExecuteRef.current;
-			if (onExecute) {
-				onExecute(input);
-			}
 
 			return executor
 				.current(input)
-				.then((res) => setRes(res))
+				.then((res) => setResult(res))
 				.catch((e) => {
 					// NOTE: this doesn't work at the moment.
 					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
 						throw e;
 					}
 
-					setRes({ fetchError: e });
+					setResult({ fetchError: e });
+				})
+				.finally(() => {
+					setIsExecuting(false);
 				});
 		},
 		[syncState]
 	);
 
 	const reset = useCallback(() => {
-		setRes({});
+		setResult({});
 	}, []);
 
-	useActionCallbacks(input, res, hasSucceded, hasErrored, reset, cb);
-
-	const { __isExecuting__, ...optimisticData } = optState;
+	useActionCallbacks(result, input, status, reset, callbacks);
 
 	return {
 		execute,
-		isExecuting: __isExecuting__,
-		res,
-		optimisticData: optimisticData as Data, // removes omit of `__isExecuting__` from type
+		result,
+		optimisticData,
 		reset,
-		hasExecuted,
-		hasSucceded,
-		hasErrored,
+		status,
 	};
 };
 
-export type { HookCallbacks, HookRes };
+export type { HookActionStatus, HookCallbacks, HookResult };

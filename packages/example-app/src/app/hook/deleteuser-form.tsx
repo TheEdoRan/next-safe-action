@@ -11,25 +11,23 @@ type Props = {
 const DeleteUserForm = ({ userId, deleteUser }: Props) => {
 	// Safe action (`deleteUser`) and optional `onSuccess` and `onError` callbacks
 	// passed to `useAction` hook.
-	const {
-		execute,
-		res,
-		isExecuting,
-		hasExecuted,
-		hasSucceded,
-		hasErrored,
-		reset,
-	} = useAction(deleteUser, {
-		onSuccess(data, reset, input) {
+	const { execute, result, status, reset } = useAction(deleteUser, {
+		onSuccess(data, input, reset) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
 
-			// You can reset response object by calling `reset`.
+			// You can reset result object by calling `reset`.
 			// reset();
 		},
-		onError(error, reset, input) {
+		onError(error, input, reset) {
 			console.log("OH NO FROM ONERROR", error, input);
 
-			// You can reset response object by calling `reset`.
+			// You can reset result object by calling `reset`.
+			// reset();
+		},
+		onSettled(result, input, reset) {
+			console.log("HELLO FROM ONSETTLED", result, input);
+
+			// You can reset result object by calling `reset`.
 			// reset();
 		},
 		onExecute(input) {
@@ -37,14 +35,7 @@ const DeleteUserForm = ({ userId, deleteUser }: Props) => {
 		},
 	});
 
-	console.log(
-		"hasExecuted",
-		hasExecuted,
-		"hasSucceded",
-		hasSucceded,
-		"hasErrored",
-		hasErrored
-	);
+	console.log("status:", status);
 
 	return (
 		<>
@@ -65,14 +56,14 @@ const DeleteUserForm = ({ userId, deleteUser }: Props) => {
 					Reset
 				</button>
 			</form>
-			<div id="response-container">
+			<div id="result-container">
 				<pre>Deleted user ID: {userId}</pre>
-				<pre>Is executing: {JSON.stringify(isExecuting)}</pre>
-				<div>Action response:</div>
-				<pre className="response">
+				<pre>Is executing: {JSON.stringify(status === "executing")}</pre>
+				<div>Action result:</div>
+				<pre className="result">
 					{
-						res // if got back a response,
-							? JSON.stringify(res, null, 1)
+						result // if got back a result,
+							? JSON.stringify(result, null, 1)
 							: "fill in form and click on the delete user button" // if action never ran
 					}
 				</pre>

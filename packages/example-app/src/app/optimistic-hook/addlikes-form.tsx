@@ -4,51 +4,45 @@ import { useOptimisticAction } from "next-safe-action/hook";
 import type { addLikes } from "./addlikes-action";
 
 type Props = {
+	addLikes: typeof addLikes;
 	likesCount: number;
-	addLikes: typeof addLikes; // infer types with `typeof`
 };
 
 const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 	// Here we pass safe action (`addLikes`) and current server state to `useAction` hook.
-	const {
-		execute,
-		res,
-		isExecuting,
-		hasExecuted,
-		hasSucceded,
-		hasErrored,
-		reset,
-		optimisticData,
-	} = useOptimisticAction(
-		addLikes,
-		{ likesCount },
-		{
-			onSuccess(data, reset, input) {
-				console.log("HELLO FROM ONSUCCESS", data, input);
+	const { execute, result, status, reset, optimisticData } =
+		useOptimisticAction(
+			addLikes,
+			{ likesCount },
+			({ likesCount }, { incrementBy }) => ({
+				likesCount: likesCount + incrementBy,
+			}),
+			{
+				onSuccess(data, input, reset) {
+					console.log("HELLO FROM ONSUCCESS", data, input);
 
-				// You can reset response object by calling `reset`.
-				// reset();
-			},
-			onError(error, reset, input) {
-				console.log("OH NO FROM ONERROR", error, input);
+					// You can reset result object by calling `reset`.
+					// reset();
+				},
+				onError(error, input, reset) {
+					console.log("OH NO FROM ONERROR", error, input);
 
-				// You can reset response object by calling `reset`.
-				// reset();
-			},
-			onExecute(input) {
-				console.log("HELLO FROM ONEXECUTE", input);
-			},
-		}
-	);
+					// You can reset result object by calling `reset`.
+					// reset();
+				},
+				onSettled(result, input, reset) {
+					console.log("HELLO FROM ONSETTLED", result, input);
 
-	console.log(
-		"hasExecuted",
-		hasExecuted,
-		"hasSucceded",
-		hasSucceded,
-		"hasErrored",
-		hasErrored
-	);
+					// You can reset result object by calling `reset`.
+					// reset();
+				},
+				onExecute(input) {
+					console.log("HELLO FROM ONEXECUTE", input);
+				},
+			}
+		);
+
+	console.log("status:", status);
 
 	return (
 		<>
@@ -64,10 +58,7 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 
 					// Action call. Here we pass action input and expected (optimistic)
 					// data.
-					execute(
-						{ incrementBy: intIncrementBy },
-						{ likesCount: likesCount + intIncrementBy }
-					);
+					execute({ incrementBy: intIncrementBy });
 				}}>
 				<input
 					type="text"
@@ -80,16 +71,16 @@ const AddLikesForm = ({ likesCount, addLikes }: Props) => {
 					Reset
 				</button>
 			</form>
-			<div id="response-container">
+			<div id="result-container">
 				{/* This object will update immediately when you execute the action.
 						Real data will come back once action has finished executing. */}
 				<pre>Optimistic data: {JSON.stringify(optimisticData)}</pre>{" "}
-				<pre>Is executing: {JSON.stringify(isExecuting)}</pre>
-				<div>Action response:</div>
-				<pre className="response">
+				<pre>Is executing: {JSON.stringify(status === "executing")}</pre>
+				<div>Action result:</div>
+				<pre className="result">
 					{
-						res // if got back a response,
-							? JSON.stringify(res, null, 1)
+						result // if got back a result,
+							? JSON.stringify(result, null, 1)
 							: "fill in form and click on the add likes button" // if action never ran
 					}
 				</pre>

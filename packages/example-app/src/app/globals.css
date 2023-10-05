@@ -64,7 +64,7 @@ form button:hover {
 	background-color: #0062d1;
 }
 
-#response-container {
+#result-container {
 	width: 100%;
 	max-width: 20rem;
 }

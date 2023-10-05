@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { ActionServerFn, ClientCaller, MaybePromise } from "./types";
+import type { MaybePromise, SafeAction, ServerCode } from "./types";
 import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 /**
@@ -9,15 +9,15 @@ import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError
  *
  * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#project-configuration See an example}
  */
-export const createSafeActionClient = <Context extends object>(createOpts?: {
-	buildContext?: () => Promise<Context>;
-	handleReturnedServerError?: (e: Error) => Promise<{ serverError: string }>;
-	serverErrorLogFunction?: (e: Error) => MaybePromise<void>;
+export const createSafeActionClient = <Context>(createOpts?: {
+	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
+	handleReturnedServerError?: (e: Error) => MaybePromise<{ serverError: string }>;
+	middleware?: () => MaybePromise<Context>;
 }) => {
-	// If log function is not provided, default to `console.error` for logging
+	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
-	const serverErrorLogFunction =
-		createOpts?.serverErrorLogFunction ||
+	const handleServerErrorLog =
+		createOpts?.handleServerErrorLog ||
 		((e) => {
 			console.error("Action error:", (e as Error).message);
 		});
@@ -26,26 +26,26 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
 	const handleReturnedServerError =
-		createOpts?.handleReturnedServerError || (async () => ({ serverError: DEFAULT_SERVER_ERROR }));
+		createOpts?.handleReturnedServerError || (() => ({ serverError: DEFAULT_SERVER_ERROR }));
 
-	// `action` is the server function that creates a new action.
-	// It expects an input validator and a definition function, so the action knows
-	// what to do on the server when called by the client.
+	// `actionBuilder` is the server function that creates a new action.
+	// It expects an input schema and a `serverCode` function, so the action
+	// knows what to do on the server when called by the client.
 	// It returns a function callable by the client.
-	const action = <const IV extends z.ZodTypeAny, const Data>(
-		inputValidator: IV,
-		serverFunction: ActionServerFn<IV, Data, Context>
-	): ClientCaller<IV, Data> => {
-		// This is the function called by client. If `input` fails the validator
+	const actionBuilder = <const Schema extends z.ZodTypeAny, const Data>(
+		schema: Schema,
+		serverCode: ServerCode<Schema, Data, Context>
+	): SafeAction<Schema, Data> => {
+		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
 		return async (clientInput) => {
 			try {
-				const parsedInput = inputValidator.safeParse(clientInput);
+				const parsedInput = await schema.safeParseAsync(clientInput);
 
 				if (!parsedInput.success) {
 					const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
-						Record<keyof z.input<typeof inputValidator>, string[]>
+						Record<keyof z.input<typeof schema>, string[]>
 					>;
 
 					return {
@@ -53,11 +53,11 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 					};
 				}
 
-				// Get the context if `buildContext` is provided, otherwise use an
+				// Get the context if `middleware` is provided, otherwise use an
 				// empty object.
-				const ctx = (await createOpts?.buildContext?.()) ?? {};
+				const ctx = (await Promise.resolve(createOpts?.middleware?.())) as Context;
 
-				return { data: await serverFunction(parsedInput.data, ctx as Context) };
+				return { data: await serverCode(parsedInput.data, ctx) };
 			} catch (e: unknown) {
 				// next/navigation functions work by throwing an error that will be
 				// processed internally by Next.js. So, in this case we need to rethrow it.
@@ -71,13 +71,12 @@ export const createSafeActionClient = <Context extends object>(createOpts?: {
 					return { serverError: DEFAULT_SERVER_ERROR };
 				}
 
-				// eslint-disable-next-line
-				serverErrorLogFunction(e as Error);
+				await Promise.resolve(handleServerErrorLog(e as Error));
 
-				return await handleReturnedServerError(e as Error);
+				return await Promise.resolve(handleReturnedServerError(e as Error));
 			}
 		};
 	};
 
-	return action;
+	return actionBuilder;
 };

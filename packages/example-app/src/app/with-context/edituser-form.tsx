@@ -8,7 +8,7 @@ type Props = {
 };
 
 const EditUserForm = ({ edit }: Props) => {
-	const [response, setResponse] = useState(
+	const [result, setResult] = useState(
 		"fill in form and click on the update profile button"
 	);
 
@@ -23,7 +23,7 @@ const EditUserForm = ({ edit }: Props) => {
 						age: string;
 					};
 					const res = await edit(input); // this is the typesafe action called from client
-					setResponse(JSON.stringify(res, null, 1));
+					setResult(JSON.stringify(res, null, 1));
 				}}>
 				<input
 					type="text"
@@ -34,9 +34,9 @@ const EditUserForm = ({ edit }: Props) => {
 				<input type="text" name="age" id="age" placeholder="Age" />
 				<button type="submit">Update profile</button>
 			</form>
-			<div id="response-container">
-				<div>Action response:</div>
-				<pre className="response">{response}</pre>
+			<div id="result-container">
+				<div>Action result:</div>
+				<pre className="result">{result}</pre>
 			</div>
 		</>
 	);

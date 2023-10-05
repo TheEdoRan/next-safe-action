@@ -8,7 +8,7 @@ type Props = {
 };
 
 const LoginForm = ({ login }: Props) => {
-	const [response, setResponse] = useState(
+	const [result, setResult] = useState(
 		"fill in form and click on the log in button"
 	);
 
@@ -23,7 +23,7 @@ const LoginForm = ({ login }: Props) => {
 						password: string;
 					};
 					const res = await login(input); // this is the typesafe action called from client
-					setResponse(JSON.stringify(res, null, 1));
+					setResult(JSON.stringify(res, null, 1));
 				}}>
 				<input
 					type="text"
@@ -39,9 +39,9 @@ const LoginForm = ({ login }: Props) => {
 				/>
 				<button type="submit">Log in</button>
 			</form>
-			<div id="response-container">
-				<div>Action response:</div>
-				<pre className="response">{response}</pre>
+			<div id="result-container">
+				<div>Action result:</div>
+				<pre className="result">{result}</pre>
 			</div>
 		</>
 	);

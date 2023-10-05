@@ -3,43 +3,54 @@ import type { z } from "zod";
 // CLIENT
 
 /**
- * Type of the function called from Client Components with typesafe input data for the Server Action.
+ * Type of the function called from Client Components with typesafe input data.
  */
-export type ClientCaller<IV extends z.ZodTypeAny, Data> = (input: z.input<IV>) => Promise<{
+export type SafeAction<Schema extends z.ZodTypeAny, Data> = (input: z.input<Schema>) => Promise<{
 	data?: Data;
 	serverError?: string;
-	validationError?: Partial<Record<keyof z.input<IV>, string[]>>;
+	validationError?: Partial<Record<keyof z.input<Schema>, string[]>>;
 }>;
 
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ActionServerFn<IV extends z.ZodTypeAny, Data, Context extends object> = (
-	parsedInput: z.input<IV>,
+export type ServerCode<Schema extends z.ZodTypeAny, Data, Context> = (
+	parsedInput: z.input<Schema>,
 	ctx: Context
 ) => Promise<Data>;
 
 // HOOKS
 
 /**
- * Type of `res` object returned by `useAction` and `useOptimisticAction` hooks.
+ * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookRes<IV extends z.ZodTypeAny, Data> = Awaited<ReturnType<ClientCaller<IV, Data>>> & {
+export type HookResult<Schema extends z.ZodTypeAny, Data> = Awaited<
+	ReturnType<SafeAction<Schema, Data>>
+> & {
 	fetchError?: unknown;
 };
 
 /**
- * Type of hooks callbacks (`onSuccess` and `onError`).
- * These are executed when the action succeeds or fails.
+ * Type of hooks callbacks. These are executed when action is in a specific state.
  */
-export type HookCallbacks<IV extends z.ZodTypeAny, Data> = {
-	onSuccess?: (
-		data: NonNullable<Pick<HookRes<IV, Data>, "data">["data"]>,
-		reset: () => void,
-		input: z.input<IV>
-	) => void;
-	onError?: (error: Omit<HookRes<IV, Data>, "data">, reset: () => void, input: z.input<IV>) => void;
-	onExecute?: (input: z.input<IV>) => unknown;
+export type HookCallbacks<Schema extends z.ZodTypeAny, Data> = {
+	onExecute?: (input: z.input<Schema>) => MaybePromise<void>;
+	onSuccess?: (data: Data, input: z.input<Schema>, reset: () => void) => MaybePromise<void>;
+	onError?: (
+		error: Omit<HookResult<Schema, Data>, "data">,
+		input: z.input<Schema>,
+		reset: () => void
+	) => MaybePromise<void>;
+	onSettled?: (
+		result: HookResult<Schema, Data>,
+		input: z.input<Schema>,
+		reset: () => void
+	) => MaybePromise<void>;
 };
 
-export type MaybePromise<T> = T | Promise<T>;
+/**
+ * Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
+ */
+export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
+
+export type MaybePromise<T> = Promise<T> | T;
