@@ -10,7 +10,7 @@ const tweets: TweetProps[] = [
 		authorHandle: "zaphodias",
 		authorImage:
 			"https://pbs.twimg.com/profile_images/1478681149824245762/OPY0MMZX_400x400.jpg",
-		date: "May, 4, 2023",
+		date: "May 4, 2023",
 		textHTML: `step 1: upgrade to next 13.4;<br>
 step 2: understand actions;<br>
 step 3: use <b>@TheEdoRan</b>'s lib 🎉`,
