@@ -103,10 +103,10 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 		setIsExecuting(true);
 		setInput(input);
 
-		return startTransition(() =>
+		return startTransition(() => {
 			executor
 				.current(input)
-				.then((res) => (res ? setResult(res) : void 0))
+				.then((res) => setResult(res ?? DEFAULT_RESULT))
 				.catch((e) => {
 					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
 						throw e;
@@ -114,8 +114,8 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 
 					setResult({ fetchError: e });
 				})
-				.finally(() => setIsExecuting(false))
-		);
+				.finally(() => setIsExecuting(false));
+		});
 	}, []);
 
 	const reset = useCallback(() => setResult(DEFAULT_RESULT), []);
@@ -168,9 +168,9 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 
 			executor
 				.current(input)
-				.then((res) => (res ? setResult(res) : void 0))
+				.then((res) => setResult(res ?? DEFAULT_RESULT))
 				.catch((e) => {
-					// TODO: this doesn't work at the moment.
+					// NOTE: this doesn't work at the moment.
 					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
 						throw e;
 					}
