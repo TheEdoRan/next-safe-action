@@ -104,7 +104,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 		setInput(input);
 
 		return startTransition(() => {
-			executor
+			return executor
 				.current(input)
 				.then((res) => setResult(res ?? DEFAULT_RESULT))
 				.catch((e) => {
@@ -114,11 +114,15 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 
 					setResult({ fetchError: e });
 				})
-				.finally(() => setIsExecuting(false));
+				.finally(() => {
+					setIsExecuting(false);
+				});
 		});
 	}, []);
 
-	const reset = useCallback(() => setResult(DEFAULT_RESULT), []);
+	const reset = useCallback(() => {
+		setResult(DEFAULT_RESULT);
+	}, []);
 
 	useActionCallbacks(result, input, status, reset, callbacks);
 
@@ -166,23 +170,26 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 			setOptimisticState(input);
 			setInput(input);
 
-			executor
+			return executor
 				.current(input)
 				.then((res) => setResult(res ?? DEFAULT_RESULT))
 				.catch((e) => {
-					// NOTE: this doesn't work at the moment.
 					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
 						throw e;
 					}
 
 					setResult({ fetchError: e });
 				})
-				.finally(() => setIsExecuting(false));
+				.finally(() => {
+					setIsExecuting(false);
+				});
 		},
 		[setOptimisticState]
 	);
 
-	const reset = useCallback(() => setResult(DEFAULT_RESULT), []);
+	const reset = useCallback(() => {
+		setResult(DEFAULT_RESULT);
+	}, []);
 
 	useActionCallbacks(result, input, status, reset, callbacks);
 
