@@ -11,7 +11,7 @@ import {
 import {} from "react/experimental";
 import type { z } from "zod";
 import type { HookActionStatus, HookCallbacks, HookResult, SafeAction } from "./types";
-import { isNextNotFoundError, isNextRedirectError } from "./utils";
+import { isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 // UTILS
 
@@ -112,7 +112,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 						throw e;
 					}
 
-					setResult({ fetchError: e });
+					setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
 				})
 				.finally(() => {
 					setIsExecuting(false);
@@ -178,7 +178,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 						throw e;
 					}
 
-					setResult({ fetchError: e });
+					setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
 				})
 				.finally(() => {
 					setIsExecuting(false);

@@ -27,7 +27,7 @@ export type ServerCode<Schema extends z.ZodTypeAny, Data, Context> = (
 export type HookResult<Schema extends z.ZodTypeAny, Data> = Awaited<
 	ReturnType<SafeAction<Schema, Data>>
 > & {
-	fetchError?: unknown;
+	fetchError?: string;
 };
 
 /**
