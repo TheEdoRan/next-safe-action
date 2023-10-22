@@ -71,9 +71,9 @@ export const createSafeActionClient = <Context>(createOpts?: {
 					return { serverError: DEFAULT_SERVER_ERROR };
 				}
 
-				await Promise.resolve(handleServerErrorLog(e as Error));
+				await Promise.resolve(handleServerErrorLog(e));
 
-				return await Promise.resolve(handleReturnedServerError(e as Error));
+				return await Promise.resolve(handleReturnedServerError(e));
 			}
 		};
 	};
