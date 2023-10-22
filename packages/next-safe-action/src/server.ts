@@ -7,7 +7,7 @@ import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError
  * @param createOpts Options for creating a new action client.
  * @returns {Function} A function that creates a new action, to be used in server files.
  *
- * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#project-configuration See an example}
+ * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
 export const createSafeActionClient = <Context>(createOpts?: {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;

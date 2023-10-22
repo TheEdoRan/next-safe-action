@@ -85,7 +85,7 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
  * @param safeAction The typesafe action.
  * @param callbacks Optional callbacks executed when the action succeeds or fails.
  *
- * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#2-the-hook-way See an example}
+ * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useaction See an example}
  */
 export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
@@ -142,7 +142,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
  * @param initialOptimisticData Initial optimistic data.
  * @param callbacks Optional callbacks executed when the action succeeds or fails.
  *
- * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#optimistic-update--experimental See an example}
+ * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useoptimisticaction See an example}
  */
 export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
