@@ -32,11 +32,13 @@ type ServerCode<Schema extends z.ZodTypeAny, Data, Context> = (
 
 Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
 
+If a server-client communication error occurs, `fetchError` will be set to the error message.
+
 ```typescript
 type HookResult<Schema extends z.ZodTypeAny, Data> = Awaited<
   ReturnType<SafeAction<Schema, Data>>
 > & {
-  fetchError?: unknown;
+  fetchError?: string;
 };
 ```
 

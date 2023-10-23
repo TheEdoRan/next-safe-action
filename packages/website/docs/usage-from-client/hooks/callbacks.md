@@ -16,7 +16,7 @@ const action = useAction(testAction, {
 });
 ```
 
-Here is the full list of callbacks, with their behavior explained. All of thme are optional and have return type `void` or `Promise<void>` (normal or async functions with no return):
+Here is the full list of callbacks, with their behavior explained. All of them are optional and have return type `void` or `Promise<void>` (async or non-async functions with no return):
 
 | Name         | [`HookActionStatus`](/docs/types#hookactionstatus) state               | Arguments                                                                                                |
 |--------------|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|

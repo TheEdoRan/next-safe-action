@@ -11,9 +11,16 @@ import {
 import {} from "react/experimental";
 import type { z } from "zod";
 import type { HookActionStatus, HookCallbacks, HookResult, SafeAction } from "./types";
-import { isNextNotFoundError, isNextRedirectError } from "./utils";
+import { isError, isNextNotFoundError, isNextRedirectError } from "./utils";
 
 // UTILS
+
+const DEFAULT_RESULT: HookResult<z.ZodTypeAny, any> = {
+	data: undefined,
+	serverError: undefined,
+	validationError: undefined,
+	fetchError: undefined,
+};
 
 const getActionStatus = <const Schema extends z.ZodTypeAny, const Data>(
 	isExecuting: boolean,
@@ -78,7 +85,7 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
  * @param safeAction The typesafe action.
  * @param callbacks Optional callbacks executed when the action succeeds or fails.
  *
- * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#2-the-hook-way See an example}
+ * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useaction See an example}
  */
 export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
@@ -86,7 +93,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 ) => {
 	const [, startTransition] = useTransition();
 	const executor = useRef(safeAction);
-	const [result, setResult] = useState<HookResult<Schema, Data>>({});
+	const [result, setResult] = useState<HookResult<Schema, Data>>(DEFAULT_RESULT);
 	const [input, setInput] = useState<z.input<Schema>>();
 	const [isExecuting, setIsExecuting] = useState(false);
 
@@ -99,13 +106,13 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 		return startTransition(() => {
 			return executor
 				.current(input)
-				.then((res) => setResult(res))
+				.then((res) => setResult(res ?? DEFAULT_RESULT))
 				.catch((e) => {
 					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
 						throw e;
 					}
 
-					setResult({ fetchError: e });
+					setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
 				})
 				.finally(() => {
 					setIsExecuting(false);
@@ -114,7 +121,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 	}, []);
 
 	const reset = useCallback(() => {
-		setResult({});
+		setResult(DEFAULT_RESULT);
 	}, []);
 
 	useActionCallbacks(result, input, status, reset, callbacks);
@@ -135,7 +142,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
  * @param initialOptimisticData Initial optimistic data.
  * @param callbacks Optional callbacks executed when the action succeeds or fails.
  *
- * {@link https://github.com/TheEdoRan/next-safe-action/tree/main/packages/next-safe-action#optimistic-update--experimental See an example}
+ * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useoptimisticaction See an example}
  */
 export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Data>(
 	safeAction: SafeAction<Schema, Data>,
@@ -143,7 +150,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	reducer: (state: Data, input: z.input<Schema>) => Data,
 	callbacks?: HookCallbacks<Schema, Data>
 ) => {
-	const [result, setResult] = useState<HookResult<Schema, Data>>({});
+	const [result, setResult] = useState<HookResult<Schema, Data>>(DEFAULT_RESULT);
 	const [input, setInput] = useState<z.input<Schema>>();
 
 	const [optimisticData, setOptimisticState] = experimental_useOptimistic<Data, z.input<Schema>>(
@@ -165,14 +172,13 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 
 			return executor
 				.current(input)
-				.then((res) => setResult(res))
+				.then((res) => setResult(res ?? DEFAULT_RESULT))
 				.catch((e) => {
-					// NOTE: this doesn't work at the moment.
 					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
 						throw e;
 					}
 
-					setResult({ fetchError: e });
+					setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
 				})
 				.finally(() => {
 					setIsExecuting(false);
@@ -182,7 +188,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	);
 
 	const reset = useCallback(() => {
-		setResult({});
+		setResult(DEFAULT_RESULT);
 	}, []);
 
 	useActionCallbacks(result, input, status, reset, callbacks);
