@@ -23,7 +23,7 @@ Type of the function that executes server code when defining a new safe action.
 
 ```typescript
 type ServerCode<Schema extends z.ZodTypeAny, Data, Context> = (
-  parsedInput: z.input<Schema>,
+  parsedInput: z.infer<Schema>,
   ctx: Context
 ) => Promise<Data>;
 ```
