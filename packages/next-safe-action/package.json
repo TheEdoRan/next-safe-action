@@ -2,7 +2,7 @@
 	"name": "next-safe-action",
 	"version": "0.0.0-development",
 	"private": false,
-	"description": "A typesafe server actions implementation for Next.js with RSC using Zod.",
+	"description": "Type safe and validated Server Actions in your Next.js (App Router) project.",
 	"main": "./dist/index.mjs",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.mts",

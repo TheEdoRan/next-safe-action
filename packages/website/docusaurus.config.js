@@ -9,7 +9,7 @@ const vercelBadge = `<a href="https://vercel.com" target="_blank"><img src="/img
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "next-safe-action",
-	tagline: "Typesafe Server Actions in your Next.js 13 app",
+	tagline: "Type safe Server Actions in your Next.js (App Router) project",
 	favicon: "img/favicon.ico",
 
 	// Set the production url of your site here
