@@ -6,7 +6,7 @@ on:
       - main
       - alpha
       - beta
-      - experimental
+      - 4.x
   pull_request:
     branches:
       - "*"
