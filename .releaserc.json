@@ -81,7 +81,67 @@
 				]
 			}
 		],
-		"@semantic-release/release-notes-generator",
+		[
+			"@semantic-release/release-notes-generator",
+			{
+				"preset": "conventionalCommits",
+				"presetConfig": {
+					"types": [
+						{
+							"type": "feat",
+							"section": "Features"
+						},
+						{
+							"type": "fix",
+							"section": "Bug Fixes"
+						},
+						{
+							"type": "perf",
+							"section": "Performance improvements"
+						},
+						{
+							"type": "revert",
+							"section": "Reverts"
+						},
+						{
+							"type": "docs",
+							"section": "Documentation",
+							"hidden": false
+						},
+						{
+							"type": "style",
+							"section": "Styles",
+							"hidden": false
+						},
+						{
+							"type": "chore",
+							"section": "Chores",
+							"hidden": false
+						},
+						{
+							"type": "refactor",
+							"section": "Refactors",
+							"hidden": false
+						},
+						{
+							"type": "test",
+							"section": "Tests",
+							"hidden": false
+						},
+						{
+							"type": "build",
+							"section": "Build System",
+							"hidden": false
+						},
+						{
+							"type": "ci",
+							"section": "CI/CD",
+							"hidden": false
+						}
+					]
+				}
+			}
+		],
 		"@semantic-release/npm",
 		"@semantic-release/github"
 	]
