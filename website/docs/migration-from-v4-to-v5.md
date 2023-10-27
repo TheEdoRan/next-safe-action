@@ -23,7 +23,6 @@ module.exports = {
 }
 ```
 
-
 ### Internal changes (hooks)
 
 React now exports `useOptimistic` hook, instead of the previous `experimental_useOptimistic`. This is why a new major version of `next-safe-action` is required for Next.js >= 14 apps.
