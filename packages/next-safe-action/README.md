@@ -2,12 +2,27 @@
 
 ## Documentation
 
-**Explore the documentation for version 4 of the library on [next-safe-action website](https://next-safe-action.dev).** ✨
+**Explore the documentation for version 5 of the library on [next-safe-action website](https://next-safe-action.dev).** ✨
 
-If you are looking for old versions documentation, check out:
-- the [README_v3](packages/next-safe-action/README_v3.md) file for version 3.x.x.
-- the [README_v2](packages/next-safe-action/README_v2.md) file for version 2.x.x.
+## Next.js >= 14 vs 13
+
+Server Actions are now a stable feature in React. For this reason, there were some internal breaking changes to the API, and so a new version of the library is required to prevent backward compatibility issues.
+
+**You can continue to use `next-safe-action` version 4 for your Next.js 13 app:**
+
+```bash
+# For Next.js 13 apps
+npm i next-safe-action@v4
+
+
+# For Next.js >= 14 apps
+npm i next-safe-action
+```
 
 ## Migration guide
 
 Version 4.x.x of the library introduced some breaking changes to the API. Please check out the [v3 to v4 migration guide](https://next-safe-action.dev/docs/migration-from-v3-to-v4) on the website for more information.
+
+---
+
+Version 5.x.x of the library is required for Next.js >= 14 applications. Please check out the [v4 to v5 migration guide](https://next-safe-action.dev/docs/migration-from-v4-to-v5) on the website for more information.

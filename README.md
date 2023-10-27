@@ -37,8 +37,12 @@ Server Actions are now a stable feature in React. For this reason, there were so
 **You can continue to use `next-safe-action` version 4 for your Next.js 13 app:**
 
 ```bash
-# For Next.js 13 apps only
+# For Next.js 13 apps
 npm i next-safe-action@v4
+
+
+# For Next.js >= 14 apps
+npm i next-safe-action
 ```
 
 ## Migration guide
