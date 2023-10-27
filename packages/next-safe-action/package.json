@@ -47,21 +47,21 @@
 		"node": ">=16"
 	},
 	"devDependencies": {
-		"@types/node": "^20.7.0",
-		"@types/react": "^18.2.23",
-		"@typescript-eslint/eslint-plugin": "^6.7.3",
-		"@typescript-eslint/parser": "^6.7.3",
-		"eslint": "^8.50.0",
+		"@types/node": "^20.8.9",
+		"@types/react": "^18.2.33",
+		"@typescript-eslint/eslint-plugin": "^6.9.0",
+		"@typescript-eslint/parser": "^6.9.0",
+		"eslint": "^8.52.0",
 		"eslint-config-prettier": "^9.0.0",
-		"next": "13.5.3",
+		"next": "14.0.0",
 		"prettier": "^3.0.3",
 		"react": "18.2.0",
 		"tsup": "^7.2.0",
 		"typescript": "^5.2.2",
-		"zod": ">= 3.0.0"
+		"zod": ">=3.22.4"
 	},
 	"peerDependencies": {
-		"next": ">= 13.4.2",
+		"next": ">= 14.0.0",
 		"react": ">= 18.2.0",
 		"zod": ">= 3.0.0"
 	},

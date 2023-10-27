@@ -10,7 +10,7 @@ description: Learn how to use the `useOptimisticAction` hook.
 :::
 
 :::caution warning
-This hook  uses an experimental hook from React called `experimental_useOptimistic` under the hood. For this reason, you might experience some bugs and breaking changes in the future.
+This hook  uses an experimental hook from React called `useOptimistic` under the hood. For this reason, you might experience some bugs and breaking changes in the future.
 :::
 
 

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	experimental_useOptimistic,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-	useTransition,
-} from "react";
+import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition } from "react";
 import {} from "react/experimental";
 import type { z } from "zod";
 import type { HookActionStatus, HookCallbacks, HookResult, SafeAction } from "./types";
@@ -100,8 +93,8 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 	const status = getActionStatus<Schema, Data>(isExecuting, result);
 
 	const execute = useCallback((input: z.input<Schema>) => {
-		setIsExecuting(true);
 		setInput(input);
+		setIsExecuting(true);
 
 		return startTransition(() => {
 			return executor
@@ -150,10 +143,11 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 	reducer: (state: Data, input: z.input<Schema>) => Data,
 	callbacks?: HookCallbacks<Schema, Data>
 ) => {
+	const [, startTransition] = useTransition();
 	const [result, setResult] = useState<HookResult<Schema, Data>>(DEFAULT_RESULT);
 	const [input, setInput] = useState<z.input<Schema>>();
 
-	const [optimisticData, setOptimisticState] = experimental_useOptimistic<Data, z.input<Schema>>(
+	const [optimisticData, setOptimisticState] = useOptimistic<Data, z.input<Schema>>(
 		initialOptimisticData,
 		reducer
 	);
@@ -166,23 +160,25 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 
 	const execute = useCallback(
 		(input: z.input<Schema>) => {
-			setIsExecuting(true);
-			setOptimisticState(input);
 			setInput(input);
+			setIsExecuting(true);
 
-			return executor
-				.current(input)
-				.then((res) => setResult(res ?? DEFAULT_RESULT))
-				.catch((e) => {
-					if (isNextRedirectError(e) || isNextNotFoundError(e)) {
-						throw e;
-					}
+			return startTransition(() => {
+				setOptimisticState(input);
+				return executor
+					.current(input)
+					.then((res) => setResult(res ?? DEFAULT_RESULT))
+					.catch((e) => {
+						if (isNextRedirectError(e) || isNextNotFoundError(e)) {
+							throw e;
+						}
 
-					setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
-				})
-				.finally(() => {
-					setIsExecuting(false);
-				});
+						setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
+					})
+					.finally(() => {
+						setIsExecuting(false);
+					});
+			});
 		},
 		[setOptimisticState]
 	);

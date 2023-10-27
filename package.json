@@ -6,7 +6,6 @@
 	"scripts": {
 		"prepare": "is-ci || husky install",
 		"example": "turbo run dev --filter=example-app",
-		"web": "turbo run dev --filter=website",
 		"lint": "turbo run lint",
 		"build": "turbo run build",
 		"build:lib": "turbo run build --filter=next-safe-action",
@@ -30,13 +29,13 @@
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"dependencies": {
-		"@commitlint/cli": "^17.7.1",
-		"@commitlint/config-conventional": "^17.7.0",
+		"@commitlint/cli": "^18.2.0",
+		"@commitlint/config-conventional": "^18.1.0",
 		"@manypkg/cli": "^0.21.0",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^8.0.3",
 		"is-ci": "^3.0.1",
 		"semantic-release": "^22.0.5",
-		"turbo": "^1.10.14"
+		"turbo": "^1.10.16"
 	}
 }

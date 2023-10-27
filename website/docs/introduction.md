@@ -20,7 +20,3 @@ Like magic. 🪄
 - ✅ Input validation using Zod
 - ✅ Advanced server error handling
 - ✅ Optimistic updates
-
-:::note
-Server Actions are still an experimental feature in React/Next.js. For more information, please check out the Next.js [Server Actions documentation page](https://nextjs.org/docs/app/api-reference/functions/server-actions).
-:::

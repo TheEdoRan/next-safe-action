@@ -26,25 +26,10 @@ npm i next-safe-action zod
 ## Usage
 
 :::note
-Turning on Server Actions in Next.js configuration file will switch the used React version to experimental.
+Next.js also requires to enable `serverActions` flag under the `experimental` object in next.config.js file. Find out more [here](/docs/migration-from-v4-to-v5).
 :::
 
-### 1. Enable server actions in Next.js
-
-To be able to use server actions, you need to enable them in your Next.js configuration (next.config.js file in project's root directory):
-
-```javascript title="next.config.js"
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    serverActions: true, // add this
-  },
-};
-
-module.exports = nextConfig;
-```
-
-### 2. Instantiate a new client
+### 1. Instantiate a new client
 
  You can create a new client with the following code:
 
@@ -56,7 +41,7 @@ export const action = createSafeActionClient();
 
 This is a basic client, without any options. If you want to explore the full set of options, check out the [safe action client](/docs/safe-action-client) section.
 
-### 3. Define a new action
+### 2. Define a new action
 
 This is how a safe action is created. Providing a Zod input schema to the function, we're sure that data that comes in is type safe and validated.
 The second argument of this function is an async function that receives the parsed input, and defines what happens on the server when the action is called from client. In short, this is your server code. It never runs on the client:
@@ -86,7 +71,7 @@ export const loginUser = action(schema, async ({ username, password }) => {
 
 `action` returns a new function that can be called from the client.
 
-### 4. Pass the action from a Server Component to a Client Component
+### 3. Pass the action from a Server Component to a Client Component
 
 To avoid getting unwanted bugs when revalidating data on the server, it is _strongly_ recommended to pass the action from a Server Component to a Client Component, like this:
 
@@ -101,7 +86,7 @@ export default function Home() {
 }
 ```
 
-### 5. Execute the action
+### 4. Execute the action
 
 In this example, we're **directly** calling the Server Actions from a Client Component. The action is passed as a prop to the component, and we can infer its type by simply using `typeof`: 
 
