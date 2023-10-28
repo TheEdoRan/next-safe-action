@@ -12,7 +12,7 @@ If you're still using Next.js 13, please install version 4 of the library with `
 :::
 
 :::info Requirements
-- Next.js >= 13.4.2
+- v4: Next.js >= 13.4.2, v5: Next.js >= 14.0.0
 - TypeScript >= 5.0.0
 - Zod >= 3.0.0
 :::
@@ -28,7 +28,7 @@ npm i next-safe-action zod
 ## Usage
 
 :::note
-Next.js also requires to enable `serverActions` flag under the `experimental` object in next.config.js file. Find out more [here](/docs/migration-from-v4-to-v5).
+If you're still using Next.js 13, you need to enable `serverActions` flag under the `experimental` object in next.config.js file. Find out more [here](/docs/migration-from-v4-to-v5).
 :::
 
 ### 1. Instantiate a new client
