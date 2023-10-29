@@ -53,11 +53,14 @@ export const createSafeActionClient = <Context>(createOpts?: {
 					};
 				}
 
-				// Get the context if `middleware` is provided, otherwise use an
-				// empty object.
+				// Get the context if `middleware` is provided.
 				const ctx = (await Promise.resolve(createOpts?.middleware?.())) as Context;
 
-				return { data: await serverCode(parsedInput.data, ctx) };
+				// Get `result.data` from the server code function. If it doesn't return
+				// anything, `data` will be `null`.
+				const data = ((await serverCode(parsedInput.data, ctx)) ?? null) as Data;
+
+				return { data };
 			} catch (e: unknown) {
 				// next/navigation functions work by throwing an error that will be
 				// processed internally by Next.js. So, in this case we need to rethrow it.
