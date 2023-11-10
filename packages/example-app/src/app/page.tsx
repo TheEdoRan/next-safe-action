@@ -12,6 +12,7 @@ export default function Home() {
 			<Link href="/with-context">Go to /with-context</Link>
 			<Link href="/hook">Go to /hook</Link>
 			<Link href="/optimistic-hook">Go to /optimistic-hook</Link>
+			<Link href="/form">Go to /form</Link>
 			<h1>Action without auth</h1>
 			{/* Pass the typesafe mutation to Client Component */}
 			<LoginForm login={loginUser} />
