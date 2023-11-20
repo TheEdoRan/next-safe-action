@@ -13,9 +13,14 @@ export const action = createSafeActionClient({
 export const authAction = createSafeActionClient({
 	// You can provide a middleware function. In this case, context is used
 	// for (fake) auth purposes.
-	middleware() {
+	middleware(parsedInput) {
 		const userId = randomUUID();
 
-		console.log("HELLO FROM ACTION MIDDLEWARE, USER ID:", userId);
+		console.log(
+			"HELLO FROM ACTION MIDDLEWARE, USER ID:",
+			userId,
+			"PARSED INPUT:",
+			parsedInput
+		);
 	},
 });

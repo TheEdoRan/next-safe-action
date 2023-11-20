@@ -15,8 +15,11 @@ import { cookies } from "next/headers";
 import { getUserIdFromSessionId } from "./db";
 
 export const authAction = createSafeActionClient({
+  // If you need to access validated input, you can use `parsedInput` how you want
+  // in your middleware. Please note that `parsedInput` is typed unknown, as it
+  // comes from an action, while middleware is an (optional) instance function.
   // Can also be a non async function.
-  async middleware() {
+  async middleware(parsedInput) {
     const session = cookies().get("session")?.value;
 
     if (!session) {
