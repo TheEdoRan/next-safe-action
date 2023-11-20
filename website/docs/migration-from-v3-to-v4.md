@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 description: Learn how to migrate from next-safe-action version 3 to version 4.
 ---
 
