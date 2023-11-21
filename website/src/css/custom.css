@@ -65,3 +65,9 @@ body {
 		box-shadow: 0px 1px #44403c !important;
 	}
 }
+
+video {
+	max-width: 900px;
+	width: 100%;
+	height: auto;
+}
