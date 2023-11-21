@@ -9,12 +9,7 @@
 
 Like magic. 🪄
 
-<div align="center">
-  <video width="640" height="360" controls autoplay>
-    <source src="/assets/demo.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-</div>
+https://github.com/TheEdoRan/next-safe-action/assets/1337629/7ebc398e-6c7d-49b2-8d03-e85e17d2ae32
 
 ## Features
 
