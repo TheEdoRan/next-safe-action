@@ -12,7 +12,7 @@ import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError
 export const createSafeActionClient = <Context>(createOpts?: {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<{ serverError: string }>;
-	middleware?: () => MaybePromise<Context>;
+	middleware?: (parsedInput: unknown) => MaybePromise<Context>;
 }) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
@@ -54,7 +54,7 @@ export const createSafeActionClient = <Context>(createOpts?: {
 				}
 
 				// Get the context if `middleware` is provided.
-				const ctx = (await Promise.resolve(createOpts?.middleware?.())) as Context;
+				const ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data))) as Context;
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.

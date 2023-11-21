@@ -6,7 +6,6 @@
 	"scripts": {
 		"prepare": "is-ci || husky install",
 		"example": "turbo run dev --filter=example-app",
-		"web": "turbo run dev --filter=website",
 		"lint": "turbo run lint",
 		"build": "turbo run build",
 		"build:lib": "turbo run build --filter=next-safe-action",
