@@ -1,14 +1,13 @@
 "use client";
 
 import { useAction } from "next-safe-action/hook";
-import type { deleteUser } from "./deleteuser-action";
+import { deleteUser } from "./deleteuser-action";
 
 type Props = {
 	userId: string;
-	deleteUser: typeof deleteUser; // infer types with `typeof`
 };
 
-const DeleteUserForm = ({ userId, deleteUser }: Props) => {
+const DeleteUserForm = ({ userId }: Props) => {
 	// Safe action (`deleteUser`) and optional `onSuccess` and `onError` callbacks
 	// passed to `useAction` hook.
 	const { execute, result, status, reset } = useAction(deleteUser, {

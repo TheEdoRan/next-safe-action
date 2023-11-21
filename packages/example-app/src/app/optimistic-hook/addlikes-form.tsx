@@ -1,14 +1,13 @@
 "use client";
 
 import { useOptimisticAction } from "next-safe-action/hook";
-import type { addLikes } from "./addlikes-action";
+import { addLikes } from "./addlikes-action";
 
 type Props = {
-	addLikes: typeof addLikes;
 	likesCount: number;
 };
 
-const AddLikesForm = ({ likesCount, addLikes }: Props) => {
+const AddLikesForm = ({ likesCount }: Props) => {
 	// Here we pass safe action (`addLikes`) and current server state to `useAction` hook.
 	const { execute, result, status, reset, optimisticData } =
 		useOptimisticAction(

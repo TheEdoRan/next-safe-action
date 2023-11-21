@@ -11,7 +11,10 @@ description: next-safe-action is a library that takes full advantage of the late
 
 Like magic. 🪄
 
-<img src="/img/demo-hd.gif" alt="How does next-safe-action work?" />
+<video width="640" height="360" controls autoPlay>
+  <source src="/vid/demo.mp4" type="video/mp4" />
+Your browser does not support the video tag.
+</video>
 
 ## Features
 - ✅ Pretty simple

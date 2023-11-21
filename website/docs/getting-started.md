@@ -73,35 +73,16 @@ export const loginUser = action(schema, async ({ username, password }) => {
 
 `action` returns a new function that can be called from the client.
 
-### 3. Pass the action from a Server Component to a Client Component
-
-To avoid getting unwanted bugs when revalidating data on the server, it is _strongly_ recommended to pass the action from a Server Component to a Client Component, like this:
-
-```tsx title="src/app/page.tsx"
-import Login from "./login";
-import { loginUser } from "./login-action";
-
-export default function Home() {
-  return (
-    <Login loginUser={loginUser} />
-  );
-}
-```
-
-### 4. Execute the action
+### 3. Import and execute the action
 
 In this example, we're **directly** calling the Server Actions from a Client Component. The action is passed as a prop to the component, and we can infer its type by simply using `typeof`: 
 
 ```tsx title="src/app/login.tsx"
 "use client"; // this is a Client Component
 
-import type { loginUser } from "./login-action";
+import { loginUser } from "./login-action";
 
-type Props = {
-  loginUser: typeof loginUser; // infer typings with `typeof`
-}
-
-export default function Login({ loginUser }: Props) {
+export default function Login() {
   return (
     <button
       onClick={async () => {

@@ -3,7 +3,15 @@
 import { action } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { incrementLikes } from "./db";
+
+let likes = 42;
+
+export const getLikes = () => likes;
+
+const incrementLikes = (by: number) => {
+	likes += by;
+	return likes;
+};
 
 const input = z.object({
 	incrementBy: z.number(),

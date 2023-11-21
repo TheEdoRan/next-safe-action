@@ -3,7 +3,15 @@
 import { action } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { updateUserId } from "./db";
+
+let userId = "";
+
+export const getUserId = () => userId;
+
+const updateUserId = (newUserId: string) => {
+	userId = newUserId;
+	return userId;
+};
 
 const input = z.object({
 	userId: z.string().min(1).max(10),

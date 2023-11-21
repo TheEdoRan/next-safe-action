@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { editUser } from "./edituser-action";
 import EditUserForm from "./edituser-form";
 
 export const metadata = {
@@ -11,8 +10,7 @@ export default function WithAuth() {
 		<>
 			<Link href="/">Go to home</Link>
 			<h1>Action with auth</h1>
-			{/* Pass the typesafe mutation to Client Component */}
-			<EditUserForm edit={editUser} />
+			<EditUserForm />
 		</>
 	);
 }

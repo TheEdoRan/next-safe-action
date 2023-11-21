@@ -26,25 +26,12 @@ export const greetUser = action(schema, async ({ name }) => {
 });
 ```
 
-2. Then, in your Server Component, you need to pass the action to a Client Component: 
-```tsx title=src/app/page.tsx
-export default function Home() {
-  return (
-    <main>
-      <Greet greetUser={greetUser} />
-    </main>
-  );
-}
-```
-
-3. Finally, in your Client Component, you can use it like this:
+2. In your Client Component, you can use it like this:
 
 ```tsx title=src/app/greet.tsx
-type Props = {
-  greetUser: typeof greetUser;
-}
+import { greetUser } from "@/app/greet-action";
 
-export default function Greet({ greetUser }: Props) {
+export default function Greet() {
   const [name, setName] = useState("");
   const { execute, result } = useAction(greetUser);
 

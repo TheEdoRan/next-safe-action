@@ -1,13 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { editUser } from "./edituser-action";
+import { editUser } from "./edituser-action";
 
-type Props = {
-	edit: typeof editUser; // infer types with `typeof`
-};
-
-const EditUserForm = ({ edit }: Props) => {
+const EditUserForm = () => {
 	const [result, setResult] = useState(
 		"fill in form and click on the update profile button"
 	);
@@ -22,7 +18,7 @@ const EditUserForm = ({ edit }: Props) => {
 						fullName: string;
 						age: string;
 					};
-					const res = await edit(input); // this is the typesafe action called from client
+					const res = await editUser(input); // this is the typesafe action called from client
 					setResult(JSON.stringify(res, null, 1));
 				}}>
 				<input

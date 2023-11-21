@@ -36,11 +36,10 @@ export function Hero() {
 					<a
 						href="/docs/getting-started"
 						className="cursor-pointer relative z-20 flex items-center justify-center mb-8">
-						<img
-							className="inline-block rounded-lg"
-							src="/img/demo-hd.gif"
-							alt="Hero image showing dashboard"
-						/>
+						<video width="1280" height="720" controls autoPlay>
+							<source src="/vid/demo.mp4" type="video/mp4" />
+							Your browser does not support the video tag.
+						</video>
 					</a>
 				</div>
 			</div>

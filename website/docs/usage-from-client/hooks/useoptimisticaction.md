@@ -44,7 +44,7 @@ export const addLikes = action(schema, async ({ amount }) => {
 });
 ```
 
-2. Then, in your Server Component, you need to pass both the `addLikes` action and the current number of likes:
+2. Then, in your Server Component, you need to pass the current number of likes to the Client Component:
 
 ```tsx title=src/app/page.tsx
 export default function Home() {
@@ -53,7 +53,7 @@ export default function Home() {
       {/* Here we pass current number of likes to the Client Component.
       This is updated on the server every time the action is executed, since we
       used `revalidatePath()` inside action's server code. */}
-      <AddLikes numOfLikes={getLikes()} addLikes={addLikes} />
+      <AddLikes numOfLikes={getLikes()} />
     </main>
   );
 }
@@ -62,12 +62,13 @@ export default function Home() {
 3. Finally, in your Client Component, you can use it like this:
 
 ```tsx title=src/app/add-likes.tsx
+import { addLikes } from "@/app/add-likes-action";
+
 type Props = {
   numOfLikes: number;
-  addLikes: typeof addLikes;
 }
 
-export default function AddLikes({ numOfLikes, addLikes }: Props) {
+export default function AddLikes({ numOfLikes }: Props) {
   const { execute, result, optimisticData } = useOptimisticAction(
     addLikes,
     { numOfLikes },

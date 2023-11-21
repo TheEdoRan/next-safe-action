@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { getUserId } from "./db";
-import { deleteUser } from "./deleteuser-action";
+import { getUserId } from "./deleteuser-action";
 import DeleteUserForm from "./deleteuser-form";
 
 export const metadata = {
@@ -14,8 +13,8 @@ export default function Hook() {
 		<>
 			<Link href="/">Go to home</Link>
 			<h1>Action using hook</h1>
-			{/* Pass the typesafe mutation to Client Component */}
-			<DeleteUserForm userId={userId} deleteUser={deleteUser} />
+			{/* Pass the user id from server to Client Component */}
+			<DeleteUserForm userId={userId} />
 		</>
 	);
 }
