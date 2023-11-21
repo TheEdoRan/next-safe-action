@@ -66,6 +66,14 @@ If you want to contribute to next-safe-action, the best way is to fork this repo
 
 If you found bugs or just want to ask a question, feel free to [open an issue](https://github.com/TheEdoRan/next-safe-action/issues).
 
+## Contributors
+
+<a href="https://github.com/TheEdoRan/next-safe-action/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=TheEdoRan/next-safe-action" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
+
 ## License
 
 next-safe-action is released under the MIT license.
