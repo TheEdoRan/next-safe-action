@@ -25,3 +25,7 @@ yarn-error.log*
 
 # Turborepo
 .turbo
+
+# Website
+/website/.docusaurus
+/website/node_modules
