@@ -44,12 +44,13 @@ export const createSafeActionClient = <Context>(createOpts?: {
 				const parsedInput = await schema.safeParseAsync(clientInput);
 
 				if (!parsedInput.success) {
-					const fieldErrors = parsedInput.error.flatten().fieldErrors as Partial<
-						Record<keyof z.input<typeof schema>, string[]>
-					>;
+					const { formErrors, fieldErrors } = parsedInput.error.flatten();
 
 					return {
-						validationError: fieldErrors,
+						validationError: {
+							_root: formErrors && formErrors.length ? formErrors : undefined,
+							...fieldErrors,
+						} as Partial<Record<keyof z.input<Schema> | "_root", string[]>>,
 					};
 				}
 

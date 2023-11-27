@@ -13,7 +13,7 @@ Type of the function called from Client Components with typesafe input data.
 type SafeAction<Schema extends z.ZodTypeAny, Data> = (input: z.input<Schema>) => Promise<{
   data?: Data;
   serverError?: string;
-  validationError?: Partial<Record<keyof z.input<Schema>, string[]>>;
+  validationError?: Partial<Record<keyof z.input<Schema> | "_root", string[]>>;
 }>;
 ```
 
