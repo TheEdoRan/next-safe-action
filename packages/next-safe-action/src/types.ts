@@ -8,7 +8,7 @@ import type { z } from "zod";
 export type SafeAction<Schema extends z.ZodTypeAny, Data> = (input: z.input<Schema>) => Promise<{
 	data?: Data;
 	serverError?: string;
-	validationError?: Partial<Record<keyof z.input<Schema>, string[]>>;
+	validationError?: Partial<Record<keyof z.input<Schema> | "_root", string[]>>;
 }>;
 
 /**
