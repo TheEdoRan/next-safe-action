@@ -1,5 +1,7 @@
 "use client";
 
+import { isNotFoundError } from "next/dist/client/components/not-found";
+import { isRedirectError } from "next/dist/client/components/redirect";
 import {
 	useCallback,
 	useEffect,
@@ -11,7 +13,7 @@ import {
 import {} from "react/experimental";
 import type { z } from "zod";
 import type { HookActionStatus, HookCallbacks, HookResult, SafeAction } from "./types";
-import { isError, isNextNotFoundError, isNextRedirectError } from "./utils";
+import { isError } from "./utils";
 
 // UTILS
 
@@ -107,7 +109,7 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
 				return safeAction(input)
 					.then((res) => setResult(res ?? DEFAULT_RESULT))
 					.catch((e) => {
-						if (isNextRedirectError(e) || isNextNotFoundError(e)) {
+						if (isRedirectError(e) || isNotFoundError(e)) {
 							throw e;
 						}
 
@@ -174,7 +176,7 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 				return safeAction(input)
 					.then((res) => setResult(res ?? DEFAULT_RESULT))
 					.catch((e) => {
-						if (isNextRedirectError(e) || isNextNotFoundError(e)) {
+						if (isRedirectError(e) || isNotFoundError(e)) {
 							throw e;
 						}
 
