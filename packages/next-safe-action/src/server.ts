@@ -1,6 +1,8 @@
+import { isNotFoundError } from "next/dist/client/components/not-found";
+import { isRedirectError } from "next/dist/client/components/redirect";
 import type { z } from "zod";
 import type { MaybePromise, SafeAction, ServerCode } from "./types";
-import { DEFAULT_SERVER_ERROR, isError, isNextNotFoundError, isNextRedirectError } from "./utils";
+import { DEFAULT_SERVER_ERROR, isError } from "./utils";
 
 /**
  * Initialize a new action client.
@@ -65,7 +67,7 @@ export const createSafeActionClient = <Context>(createOpts?: {
 			} catch (e: unknown) {
 				// next/navigation functions work by throwing an error that will be
 				// processed internally by Next.js. So, in this case we need to rethrow it.
-				if (isNextRedirectError(e) || isNextNotFoundError(e)) {
+				if (isRedirectError(e) || isNotFoundError(e)) {
 					throw e;
 				}
 
