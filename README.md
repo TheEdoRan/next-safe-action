@@ -32,15 +32,14 @@ If you are looking for old versions documentation, check out:
 
 Server Actions are now a stable feature in React. For this reason, there were some internal breaking changes to the API, and so a new version of the library is required to prevent backward compatibility issues.
 
-**You can continue to use `next-safe-action` version 4 for your Next.js 13 app:**
+**You can continue to use `next-safe-action` version 4 for your Next.js 13 app.**
 
 ```bash
-# For Next.js 13 apps
-npm i next-safe-action@v4
+npm i next-safe-action # for Next.js >= 14
+```
 
-
-# For Next.js >= 14 apps
-npm i next-safe-action
+```bash
+npm i next-safe-action@v4 # for Next.js 13
 ```
 
 ## Migration guide
