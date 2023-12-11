@@ -1,7 +1,7 @@
 import { isNotFoundError } from "next/dist/client/components/not-found";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import type { z } from "zod";
-import type { MaybePromise, SafeAction, ServerCode } from "./types";
+import type { MaybePromise, SafeAction, ServerCodeFn } from "./types";
 import { DEFAULT_SERVER_ERROR, isError } from "./utils";
 
 /**
@@ -36,7 +36,7 @@ export const createSafeActionClient = <Context>(createOpts?: {
 	// It returns a function callable by the client.
 	const actionBuilder = <const Schema extends z.ZodTypeAny, const Data>(
 		schema: Schema,
-		serverCode: ServerCode<Schema, Data, Context>
+		serverCode: ServerCodeFn<Schema, Data, Context>
 	): SafeAction<Schema, Data> => {
 		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
