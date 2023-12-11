@@ -11,15 +11,15 @@
 	],
 	"exports": {
 		".": "./dist/index.mjs",
-		"./hook": "./dist/hook.mjs"
+		"./hooks": "./dist/hooks.mjs"
 	},
 	"typesVersions": {
 		"*": {
 			".": [
 				"./dist/index.d.mts"
 			],
-			"hook": [
-				"./dist/hook.d.mts"
+			"hooks": [
+				"./dist/hooks.d.mts"
 			]
 		}
 	},
