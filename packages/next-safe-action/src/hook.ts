@@ -13,7 +13,7 @@ import { isError } from "./utils";
 const DEFAULT_RESULT: HookResult<z.ZodTypeAny, any> = {
 	data: undefined,
 	serverError: undefined,
-	validationError: undefined,
+	validationErrors: undefined,
 	fetchError: undefined,
 };
 
@@ -26,7 +26,7 @@ const getActionStatus = <const Schema extends z.ZodTypeAny, const Data>(
 	} else if (typeof result.data !== "undefined") {
 		return "hasSucceeded";
 	} else if (
-		typeof result.validationError !== "undefined" ||
+		typeof result.validationErrors !== "undefined" ||
 		typeof result.serverError !== "undefined" ||
 		typeof result.fetchError !== "undefined"
 	) {

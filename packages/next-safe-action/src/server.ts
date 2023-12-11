@@ -49,10 +49,10 @@ export const createSafeActionClient = <Context>(createOpts?: {
 					const { formErrors, fieldErrors } = parsedInput.error.flatten();
 
 					return {
-						validationError: {
-							_root: formErrors && formErrors.length ? formErrors : undefined,
-							...fieldErrors,
-						} as Partial<Record<keyof z.input<Schema> | "_root", string[]>>,
+						validationErrors: {
+							form: formErrors.length ? formErrors : undefined,
+							fields: fieldErrors,
+						} as Awaited<ReturnType<SafeAction<Schema, Data>>>["validationErrors"],
 					};
 				}
 
