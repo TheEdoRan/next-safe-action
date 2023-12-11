@@ -197,5 +197,3 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 		status,
 	};
 };
-
-export type { HookActionStatus, HookCallbacks, HookResult };

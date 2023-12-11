@@ -1,7 +1,8 @@
 import { isNotFoundError } from "next/dist/client/components/not-found";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import type { z } from "zod";
-import type { MaybePromise, SafeAction, ServerCodeFn } from "./types";
+import type { SafeAction, ServerCodeFn } from "./types";
+import type { MaybePromise } from "./utils";
 import { DEFAULT_SERVER_ERROR, isError } from "./utils";
 
 /**
