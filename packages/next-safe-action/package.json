@@ -11,7 +11,8 @@
 	],
 	"exports": {
 		".": "./dist/index.mjs",
-		"./hooks": "./dist/hooks.mjs"
+		"./hooks": "./dist/hooks.mjs",
+		"./types": "./dist/types.mjs"
 	},
 	"typesVersions": {
 		"*": {
