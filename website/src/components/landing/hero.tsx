@@ -1,5 +1,4 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import React from "react";
 import { StarsButton } from "./stars-button";
 
 export function Hero() {
@@ -33,14 +32,12 @@ export function Hero() {
 							</div>
 						</div>
 					</div>
-					<a
-						href="/docs/getting-started"
-						className="cursor-pointer relative z-20 flex items-center justify-center mb-8">
+					<div className="cursor-pointer relative z-20 flex items-center justify-center mb-8">
 						<video width="1280" height="720" controls autoPlay>
 							<source src="/vid/demo.mp4" type="video/mp4" />
 							Your browser does not support the video tag.
 						</video>
-					</a>
+					</div>
 				</div>
 			</div>
 		</header>

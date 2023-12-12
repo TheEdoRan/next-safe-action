@@ -49,7 +49,7 @@ export const action = createSafeActionClient({
 
 ### `handleServerErrorLog?`
 
-You can provide this optional function to the safe action client. This is used to define how error should be logged when an error occurs while the server is executing an action. This includes errors thrown by the action server code, and errors thrown by the middleware. Here you get as argument the **original error**, not one with a custom message customized by `handleReturnedServerError`, if provided.
+You can provide this optional function to the safe action client. This is used to define how errors should be logged when one occurs while the server is executing an action. This includes errors thrown by the action server code, and errors thrown by the middleware. Here you get as argument the **original error object**, not a message customized by `handleReturnedServerError`, if provided.
 
 Here's a simple example, logging error to the console while also reporting it to an error handling system:
 

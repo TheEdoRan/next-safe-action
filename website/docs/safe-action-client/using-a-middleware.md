@@ -39,7 +39,7 @@ export const authAction = createSafeActionClient({
 });
 ```
 
-As you can see, you can use the `cookies()` and `headers()` functions from `next/headers` to get cookie values and request headers. You can also delete/manipulate cookies in the middleware (since it is part of a Server Action execution), and safely throw an error, that will be caught by the client and returned to the client as a `serverError` result.
+As you can see, you can use the `cookies()` and `headers()` functions from `next/headers` to get cookie values and request headers. You can also delete/manipulate cookies in the middleware (since it is part of a Server Action execution), and safely throw an error, that will be caught by the safe action client and returned to the client as a `serverError` result.
 
 Middleware can also be used to return a context, that will be passed as the second argument of the action server code function. This is very useful if you want, for example, find out which user executed the action. Here's an example reusing the `authAction` client defined above:
 

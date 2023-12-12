@@ -17,7 +17,7 @@ If you're still using Next.js 13, please install version 4 of the library with `
 - Zod >= 3.0.0
 :::
 
-**next-safe-action** provides a typesafe Server Actions implementation for Next.js's 13 App Router, using Zod.
+**next-safe-action** provides a typesafe Server Actions implementation for Next.js 13 App Router, using Zod.
 
 ## Installation
 
