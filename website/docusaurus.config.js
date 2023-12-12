@@ -1,11 +1,7 @@
-// @ts-check
-// Note: type annotations allow type checking and IDEs autocompletion
-
-const lightCodeTheme = require("prism-react-renderer/themes/vsLight");
-const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
+import { themes } from "prism-react-renderer";
 
 /** @type {import('@docusaurus/types').Config} */
-const config = {
+export default {
 	title: "next-safe-action",
 	tagline: "Type safe Server Actions in your Next.js (App Router) project",
 	favicon: "img/favicon.ico",
@@ -36,7 +32,7 @@ const config = {
 		[
 			"classic",
 			/** @type {import('@docusaurus/preset-classic').Options} */
-			({
+			{
 				docs: {
 					sidebarPath: require.resolve("./sidebars.js"),
 					// Please change this to your repo.
@@ -51,13 +47,13 @@ const config = {
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
-			}),
+			},
 		],
 	],
 
 	themeConfig:
 		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-		({
+		{
 			// Replace with your project's social card
 			image: "img/social-card.png",
 			algolia: {
@@ -90,10 +86,9 @@ const config = {
 				copyright: `Copyleft <span class="copyleft">&copy;</span> ${new Date().getFullYear()} Edoardo Ranghieri`,
 			},
 			prism: {
-				theme: lightCodeTheme,
-				darkTheme: darkCodeTheme,
+				additionalLanguages: ["typescript"],
+				theme: themes.vsLight,
+				darkTheme: themes.vsDark,
 			},
-		}),
+		},
 };
-
-module.exports = config;
