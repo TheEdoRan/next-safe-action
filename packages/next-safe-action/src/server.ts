@@ -14,7 +14,7 @@ import { DEFAULT_SERVER_ERROR, isError } from "./utils";
  */
 export const createSafeActionClient = <Context>(createOpts?: {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
-	handleReturnedServerError?: (e: Error) => MaybePromise<{ serverError: string }>;
+	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
 	middleware?: (parsedInput: unknown) => MaybePromise<Context>;
 }) => {
 	// If server log function is not provided, default to `console.error` for logging
@@ -28,8 +28,8 @@ export const createSafeActionClient = <Context>(createOpts?: {
 	// If `handleReturnedServerError` is provided, use it to handle server error
 	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
-	const handleReturnedServerError =
-		createOpts?.handleReturnedServerError || (() => ({ serverError: DEFAULT_SERVER_ERROR }));
+	const handleReturnedServerError = (e: Error) =>
+		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR;
 
 	// `actionBuilder` is the server function that creates a new action.
 	// It expects an input schema and a `serverCode` function, so the action
@@ -80,7 +80,9 @@ export const createSafeActionClient = <Context>(createOpts?: {
 
 				await Promise.resolve(handleServerErrorLog(e));
 
-				return await Promise.resolve(handleReturnedServerError(e));
+				return {
+					serverError: await Promise.resolve(handleReturnedServerError(e)),
+				};
 			}
 		};
 	};
