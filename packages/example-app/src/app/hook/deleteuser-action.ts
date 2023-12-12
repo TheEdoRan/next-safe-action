@@ -1,6 +1,6 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
+import { ActionError, action } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -19,6 +19,10 @@ const input = z.object({
 
 export const deleteUser = action(input, async ({ userId }) => {
 	await new Promise((res) => setTimeout(res, 1000));
+
+	if (Math.random() > 0.5) {
+		throw new ActionError("Could not delete user!");
+	}
 
 	updateUserId(userId);
 
