@@ -1,7 +1,7 @@
 "use client";
 
-import { isNotFoundError } from "next/dist/client/components/not-found";
-import { isRedirectError } from "next/dist/client/components/redirect";
+import { isNotFoundError } from "next/dist/client/components/not-found.js";
+import { isRedirectError } from "next/dist/client/components/redirect.js";
 import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition } from "react";
 import {} from "react/experimental";
 import type { z } from "zod";
