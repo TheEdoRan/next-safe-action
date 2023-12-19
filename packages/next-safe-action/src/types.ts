@@ -11,7 +11,7 @@ export type SafeAction<Schema extends z.ZodTypeAny, Data> = (input: z.input<Sche
 	serverError?: string;
 	validationErrors?: {
 		form: string[] | undefined;
-		fields: Partial<Record<keyof z.input<Schema>, string[]>>;
+		fields: Partial<Record<keyof z.infer<Schema>, string[]>>;
 	};
 }>;
 
