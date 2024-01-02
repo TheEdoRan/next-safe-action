@@ -51,44 +51,42 @@ export default {
 		],
 	],
 
-	themeConfig:
-		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-		{
-			// Replace with your project's social card
-			image: "img/social-card.png",
-			algolia: {
-				appId: "I6TZS9IBSZ",
-				apiKey: "87b638e133658cdec7cc633e6c4986c3",
-				indexName: "next-safe-action",
-			},
-			navbar: {
-				title: "next-safe-action",
-				logo: {
-					alt: "next-safe-action",
-					src: "img/logo.svg",
-				},
-				items: [
-					{
-						type: "docSidebar",
-						sidebarId: "docsSidebar",
-						position: "left",
-						label: "Docs",
-					},
-					{
-						href: "https://github.com/TheEdoRan/next-safe-action",
-						label: "GitHub",
-						position: "right",
-					},
-				],
-			},
-			footer: {
-				style: "light",
-				copyright: `Copyleft <span class="copyleft">&copy;</span> ${new Date().getFullYear()} Edoardo Ranghieri`,
-			},
-			prism: {
-				additionalLanguages: ["typescript"],
-				theme: themes.vsLight,
-				darkTheme: themes.vsDark,
-			},
+	/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+	themeConfig: {
+		// Replace with your project's social card
+		image: "img/social-card.png",
+		algolia: {
+			appId: "I6TZS9IBSZ",
+			apiKey: "87b638e133658cdec7cc633e6c4986c3",
+			indexName: "next-safe-action",
 		},
+		navbar: {
+			title: "next-safe-action",
+			logo: {
+				alt: "next-safe-action",
+				src: "img/logo.svg",
+			},
+			items: [
+				{
+					type: "docSidebar",
+					sidebarId: "docsSidebar",
+					position: "left",
+					label: "Docs",
+				},
+				{
+					href: "https://github.com/TheEdoRan/next-safe-action",
+					label: "GitHub",
+					position: "right",
+				},
+			],
+		},
+		footer: {
+			style: "light",
+			copyright: `Copyleft <span class="copyleft">&copy;</span> ${new Date().getFullYear()} Edoardo Ranghieri`,
+		},
+		prism: {
+			additionalLanguages: ["typescript"],
+			theme: themes.vsDark,
+		},
+	},
 };

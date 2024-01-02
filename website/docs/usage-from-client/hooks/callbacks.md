@@ -20,7 +20,7 @@ Here is the full list of callbacks, with their behavior explained. All of them a
 
 | Name         | [`HookActionStatus`](/docs/types#hookactionstatus) state               | Arguments                                                                                                |
 |--------------|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| `onExecute?` | `"executing"`                                                          | `input: z.input<Schema>`                                                                                 |
-| `onSuccess?` | `"hasSucceeded"`                                                        | `data: Data`,<br/> `input: z.input<Schema>`,<br/> `reset: () => void`                                    |
-| `onError?`   | `"hasErrored"`                                                         | `error: Omit<HookResult<Schema, Data>, "data">`,<br/> `input: z.input<Schema>`,<br/> `reset: () => void` |
-| `onSettled?` | `"hasSucceeded"` or `"hasErrored"` (after `onSuccess` and/or `onError`) | `result: HookResult<Schema, Data>`,<br/> `input: z.input<Schema>`,<br/> `reset: () => void`              |
+| `onExecute?` | `"executing"`                                                          | `input: InferIn<S>`                                                                                 |
+| `onSuccess?` | `"hasSucceeded"`                                                        | `data: Data`,<br/> `input: InferIn<S>`,<br/> `reset: () => void`                                    |
+| `onError?`   | `"hasErrored"`                                                         | `error: Omit<HookResult<S, Data>, "data">`,<br/> `input: InferIn<S>`,<br/> `reset: () => void` |
+| `onSettled?` | `"hasSucceeded"` or `"hasErrored"` (after `onSuccess` and/or `onError`) | `result: HookResult<S, Data>`,<br/> `input: InferIn<S>`,<br/> `reset: () => void`              |

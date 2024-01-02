@@ -15,9 +15,7 @@ Here's a simple example, changing the message for every error thrown on the serv
 export const action = createSafeActionClient({
   // Can also be an async function.
   handleReturnedServerError(e) {
-    return {
-      serverError: "Oh no, something went wrong!",
-    };
+    return "Oh no, something went wrong!";
   },
 });
 ```
@@ -27,22 +25,21 @@ export const action = createSafeActionClient({
 A more useful one would be to customize the message based on the error type. We can, for instance, create a custom error class and check the error type inside this function:
 
 ```typescript title=src/lib/safe-action.ts
+import { DEFAULT_SERVER_ERROR } from "next-safe-action";
+
 class MyCustomError extends Error {}
 
 export const action = createSafeActionClient({
+  // Can also be an async function.
   handleReturnedServerError(e) {
     // In this case, we can use the 'MyCustomError` class to unmask errors
     // and return them with their actual messages to the client.
     if (e instanceof MyCustomError) {
-      return {
-        serverError: e.message,
-      };
+      return e.message;
     }
 
-    // Every other error will be masked with this message.
-    return {
-      serverError: "Oh no, something went wrong!",
-    };
+    // Every other error that occurs will be masked with the default message.
+    return DEFAULT_SERVER_ERROR;
   },
 });
 ```
