@@ -8,6 +8,15 @@ import { buildValidationErrors, isError } from "./utils";
 // TYPES
 
 /**
+ * Type of options when creating a new safe action client.
+ */
+export type SafeClientOpts<Context> = {
+	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
+	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
+	middleware?: (parsedInput: unknown) => MaybePromise<Context>;
+};
+
+/**
  * Type of the function called from Client Components with typesafe input data.
  */
 export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<{
@@ -37,11 +46,7 @@ export const DEFAULT_SERVER_ERROR = "Something went wrong while executing the op
  *
  * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
-export const createSafeActionClient = <Context>(createOpts?: {
-	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
-	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
-	middleware?: (parsedInput: unknown) => MaybePromise<Context>;
-}) => {
+export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Context>) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
