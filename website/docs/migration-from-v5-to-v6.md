@@ -9,7 +9,7 @@ description: Learn how to migrate from next-safe-action version 5 to version 6.
 
 With next-safe-action version 6, you can now use a wide range of validation libraries, even multiple and custom ones at the same time, thanks to the great [TypeSchema](https://typeschema.com/) library. You can find supported libraries [here](https://typeschema.com/#coverage).
 
-Existing code will not be affected, since Zod is supported by TypeSchema. However, now you an or example define a new safe action using [Yup](https://github.com/jquense/yup) or [Valibot](https://valibot.dev/), while still keeping existing actions with Zod validation, and everything will be handled internally by next-safe-action, thanks to the TypeSchema abstractions.
+Existing code will not be affected, since Zod is supported by TypeSchema. However, now you can for example define a new safe action using [Yup](https://github.com/jquense/yup) or [Valibot](https://valibot.dev/), while still keeping existing actions with Zod validation, and everything will be handled internally by next-safe-action, thanks to the TypeSchema abstractions.
 
 ## BREAKING CHANGES
 
