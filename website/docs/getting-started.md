@@ -6,7 +6,7 @@ description: Getting started with next-safe-action version 5.
 # Getting started
 
 :::note
-This is the documentation for the current version of the library (5.x.x). If you are looking for version 3.x.x or 2.x.x docs, please check out [README_v3](https://github.com/TheEdoRan/next-safe-action/blob/main/packages/next-safe-action/README_v3.md) or [README_v2](https://github.com/TheEdoRan/next-safe-action/blob/main/packages/next-safe-action/README_v2.md) from the GitHub repository.
+This is the documentation for the current version of the library (6.x.x).
 :::
 
 :::info Requirements
