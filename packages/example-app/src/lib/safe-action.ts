@@ -3,6 +3,16 @@ import { DEFAULT_SERVER_ERROR, createSafeActionClient } from "next-safe-action";
 
 export class ActionError extends Error {}
 
+const handleReturnedServerError = (e: Error) => {
+	// If the error is an instance of `ActionError`, unmask the message.
+	if (e instanceof ActionError) {
+		return e.message;
+	}
+
+	// Otherwise return default error message.
+	return DEFAULT_SERVER_ERROR;
+};
+
 export const action = createSafeActionClient({
 	// You can provide a custom log Promise, otherwise the lib will use `console.error`
 	// as the default logging system. If you want to disable server errors logging,
@@ -13,15 +23,7 @@ export const action = createSafeActionClient({
 			e.message
 		);
 	},
-	handleReturnedServerError(e) {
-		// If the error is an instance of `ActionError`, unmask the message.
-		if (e instanceof ActionError) {
-			return e.message;
-		}
-
-		// Otherwise return default error message.
-		return DEFAULT_SERVER_ERROR;
-	},
+	handleReturnedServerError,
 });
 
 export const authAction = createSafeActionClient({
@@ -37,4 +39,5 @@ export const authAction = createSafeActionClient({
 			parsedInput
 		);
 	},
+	handleReturnedServerError,
 });
