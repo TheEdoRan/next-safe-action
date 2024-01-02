@@ -5,18 +5,17 @@ labels: ["question"]
 body:
 - type: checkboxes
   attributes:
-    label: Are you using the latest version of this library?
-    description: Please let us know if you are using the latest version of next-safe-action or not.
-    options:
-    - label: I verified that the issue exists in the latest next-safe-action release
-      required: false
-- type: checkboxes
-  attributes:
     label: Is there an existing issue for this?
     description: Please search to see if an issue already exists for the bug you encountered.
     options:
     - label: I have searched the existing issues
       required: true
+- type: input
+  attributes:
+    label: Library version (optional)
+    placeholder: 6.0.0
+  validations:
+    required: false
 - type: textarea
   attributes:
     label: Ask a question
