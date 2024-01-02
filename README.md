@@ -3,7 +3,8 @@
   <a href="https://github.com/TheEdoRan/next-safe-action"><h1>next-safe-action</h1></a>
 </div>
 
-> next-safe-action is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe Server Actions and execute them inside Client Components.
+> next-safe-action is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using validation libraries of your choice, to let you define typesafe Server Actions and execute them inside Client Components.
+
 
 ## How does it work?
 
@@ -16,13 +17,13 @@ https://github.com/TheEdoRan/next-safe-action/assets/1337629/7ebc398e-6c7d-49b2-
 - ✅ Pretty simple
 - ✅ End-to-end type safety
 - ✅ Context based clients (with middlewares)
-- ✅ Input validation using Zod
+- ✅ Input validation using multiple validation libraries
 - ✅ Advanced server error handling
 - ✅ Optimistic updates
 
 ## Documentation
 
-**Explore the documentation for version 5 of the library on the [next-safe-action website](https://next-safe-action.dev).** ✨
+**Explore the documentation for version 6 of the library on the [next-safe-action website](https://next-safe-action.dev).** ✨
 
 If you are looking for old versions documentation, check out:
 - the [README_v3](packages/next-safe-action/README_v3.md) file for version 3.x.x.
@@ -49,6 +50,10 @@ Version 4.x.x of the library introduced some breaking changes to the API. Please
 ---
 
 Version 5.x.x of the library is required for Next.js >= 14 applications. Please check out the [v4 to v5 migration guide](https://next-safe-action.dev/docs/migration-from-v4-to-v5) on the website for more information.
+
+---
+
+Version 6.x.x of the library lets you use validation libraries other than Zod. Please check out the [v5 to v6 migration guide](https://next-safe-action.dev/docs/migration-from-v5-to-v6) on the website for more information.
 
 ## Example
 
