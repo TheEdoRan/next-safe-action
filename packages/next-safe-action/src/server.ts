@@ -1,9 +1,10 @@
+import type { Schema } from "@decs/typeschema";
+import { wrap } from "@decs/typeschema";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
-import type { z } from "zod";
 import type { SafeAction, ServerCodeFn } from "./types";
 import type { MaybePromise } from "./utils";
-import { DEFAULT_SERVER_ERROR, isError } from "./utils";
+import { DEFAULT_SERVER_ERROR, buildValidationErrors, isError } from "./utils";
 
 /**
  * Initialize a new action client.
@@ -35,25 +36,20 @@ export const createSafeActionClient = <Context>(createOpts?: {
 	// It expects an input schema and a `serverCode` function, so the action
 	// knows what to do on the server when called by the client.
 	// It returns a function callable by the client.
-	const actionBuilder = <const Schema extends z.ZodTypeAny, const Data>(
-		schema: Schema,
-		serverCode: ServerCodeFn<Schema, Data, Context>
-	): SafeAction<Schema, Data> => {
+	const actionBuilder = <const S extends Schema, const Data>(
+		schema: S,
+		serverCode: ServerCodeFn<S, Data, Context>
+	): SafeAction<S, Data> => {
 		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
 		return async (clientInput) => {
 			try {
-				const parsedInput = await schema.safeParseAsync(clientInput);
+				const parsedInput = await wrap(schema).validate(clientInput);
 
-				if (!parsedInput.success) {
-					const { formErrors, fieldErrors } = parsedInput.error.flatten();
-
+				if ("issues" in parsedInput) {
 					return {
-						validationErrors: {
-							form: formErrors.length ? formErrors : undefined,
-							fields: fieldErrors,
-						} as Awaited<ReturnType<SafeAction<Schema, Data>>>["validationErrors"],
+						validationErrors: buildValidationErrors(parsedInput.issues),
 					};
 				}
 

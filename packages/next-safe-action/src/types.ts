@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type { Infer, InferIn, Schema } from "@decs/typeschema";
 import type { MaybePromise } from "./utils";
 
 // CLIENT
@@ -6,20 +6,17 @@ import type { MaybePromise } from "./utils";
 /**
  * Type of the function called from Client Components with typesafe input data.
  */
-export type SafeAction<Schema extends z.ZodTypeAny, Data> = (input: z.input<Schema>) => Promise<{
+export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<{
 	data?: Data;
 	serverError?: string;
-	validationErrors?: {
-		form: string[] | undefined;
-		fields: Partial<Record<keyof z.infer<Schema>, string[]>>;
-	};
+	validationErrors?: Partial<Record<keyof Infer<S> | "_root", string[]>>;
 }>;
 
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<Schema extends z.ZodTypeAny, Data, Context> = (
-	parsedInput: z.infer<Schema>,
+export type ServerCodeFn<S extends Schema, Data, Context> = (
+	parsedInput: Infer<S>,
 	ctx: Context
 ) => Promise<Data>;
 
@@ -28,26 +25,24 @@ export type ServerCodeFn<Schema extends z.ZodTypeAny, Data, Context> = (
 /**
  * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookResult<Schema extends z.ZodTypeAny, Data> = Awaited<
-	ReturnType<SafeAction<Schema, Data>>
-> & {
+export type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeAction<S, Data>>> & {
 	fetchError?: string;
 };
 
 /**
  * Type of hooks callbacks. These are executed when action is in a specific state.
  */
-export type HookCallbacks<Schema extends z.ZodTypeAny, Data> = {
-	onExecute?: (input: z.input<Schema>) => MaybePromise<void>;
-	onSuccess?: (data: Data, input: z.input<Schema>, reset: () => void) => MaybePromise<void>;
+export type HookCallbacks<S extends Schema, Data> = {
+	onExecute?: (input: InferIn<S>) => MaybePromise<void>;
+	onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
 	onError?: (
-		error: Omit<HookResult<Schema, Data>, "data">,
-		input: z.input<Schema>,
+		error: Omit<HookResult<S, Data>, "data">,
+		input: InferIn<S>,
 		reset: () => void
 	) => MaybePromise<void>;
 	onSettled?: (
-		result: HookResult<Schema, Data>,
-		input: z.input<Schema>,
+		result: HookResult<S, Data>,
+		input: InferIn<S>,
 		reset: () => void
 	) => MaybePromise<void>;
 };
