@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimisticAction } from "next-safe-action/hook";
+import { useOptimisticAction } from "next-safe-action/hooks";
 import { addLikes } from "./addlikes-action";
 
 type Props = {

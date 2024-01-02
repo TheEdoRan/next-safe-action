@@ -1,11 +1,7 @@
-// @ts-check
-// Note: type annotations allow type checking and IDEs autocompletion
-
-const lightCodeTheme = require("prism-react-renderer/themes/vsLight");
-const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
+import { themes } from "prism-react-renderer";
 
 /** @type {import('@docusaurus/types').Config} */
-const config = {
+export default {
 	title: "next-safe-action",
 	tagline: "Type safe Server Actions in your Next.js (App Router) project",
 	favicon: "img/favicon.ico",
@@ -36,7 +32,7 @@ const config = {
 		[
 			"classic",
 			/** @type {import('@docusaurus/preset-classic').Options} */
-			({
+			{
 				docs: {
 					sidebarPath: require.resolve("./sidebars.js"),
 					// Please change this to your repo.
@@ -51,49 +47,46 @@ const config = {
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
-			}),
+			},
 		],
 	],
 
-	themeConfig:
-		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-		({
-			// Replace with your project's social card
-			image: "img/social-card.png",
-			algolia: {
-				appId: "I6TZS9IBSZ",
-				apiKey: "87b638e133658cdec7cc633e6c4986c3",
-				indexName: "next-safe-action",
+	/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+	themeConfig: {
+		// Replace with your project's social card
+		image: "img/social-card.png",
+		algolia: {
+			appId: "I6TZS9IBSZ",
+			apiKey: "87b638e133658cdec7cc633e6c4986c3",
+			indexName: "next-safe-action",
+		},
+		navbar: {
+			title: "next-safe-action",
+			logo: {
+				alt: "next-safe-action",
+				src: "img/logo.svg",
 			},
-			navbar: {
-				title: "next-safe-action",
-				logo: {
-					alt: "next-safe-action",
-					src: "img/logo.svg",
+			items: [
+				{
+					type: "docSidebar",
+					sidebarId: "docsSidebar",
+					position: "left",
+					label: "Docs",
 				},
-				items: [
-					{
-						type: "docSidebar",
-						sidebarId: "docsSidebar",
-						position: "left",
-						label: "Docs",
-					},
-					{
-						href: "https://github.com/TheEdoRan/next-safe-action",
-						label: "GitHub",
-						position: "right",
-					},
-				],
-			},
-			footer: {
-				style: "light",
-				copyright: `Copyleft <span class="copyleft">&copy;</span> ${new Date().getFullYear()} Edoardo Ranghieri`,
-			},
-			prism: {
-				theme: lightCodeTheme,
-				darkTheme: darkCodeTheme,
-			},
-		}),
+				{
+					href: "https://github.com/TheEdoRan/next-safe-action",
+					label: "GitHub",
+					position: "right",
+				},
+			],
+		},
+		footer: {
+			style: "light",
+			copyright: `Copyleft <span class="copyleft">&copy;</span> ${new Date().getFullYear()} Edoardo Ranghieri`,
+		},
+		prism: {
+			additionalLanguages: ["typescript"],
+			theme: themes.vsDark,
+		},
+	},
 };
-
-module.exports = config;

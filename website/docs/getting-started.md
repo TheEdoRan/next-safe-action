@@ -6,23 +6,33 @@ description: Getting started with next-safe-action version 5.
 # Getting started
 
 :::note
-This is the documentation for the current version of the library (5.x.x). If you are looking for version 3.x.x or 2.x.x docs, please check out [README_v3](https://github.com/TheEdoRan/next-safe-action/blob/main/packages/next-safe-action/README_v3.md) or [README_v2](https://github.com/TheEdoRan/next-safe-action/blob/main/packages/next-safe-action/README_v2.md) from the GitHub repository.
-
-If you're still using Next.js 13, please install version 4 of the library with `npm i next-safe-action@v4`.
+This is the documentation for the current version of the library (6.x.x).
 :::
 
 :::info Requirements
 - v4: Next.js >= 13.4.2, v5: Next.js >= 14.0.0
 - TypeScript >= 5.0.0
-- Zod >= 3.0.0
+- pre-v6: Zod >= 3.0.0, from v6: a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
 :::
 
-**next-safe-action** provides a typesafe Server Actions implementation for Next.js's 13 App Router, using Zod.
+**next-safe-action** provides a typesafe Server Actions implementation for Next.js App Router.
+
+## Validation libraries support
+
+We will use Zod as our validation library in this documentation, but since version 6 of next-safe-action, you can use your validation library of choice, or even multiple and custom ones at the same time, thanks to the **TypeSchema** library. You can find supported libraries [here](https://typeschema.com/#coverage).
 
 ## Installation
 
+For Next.js >= 14, use the following command:
+
 ```bash npm2yarn
-npm i next-safe-action zod
+npm i next-safe-action
+```
+
+For Next.js 13, use the following command:
+
+```bash npm2yarn
+npm i next-safe-action@v4 zod
 ```
 
 ## Usage
@@ -45,7 +55,7 @@ This is a basic client, without any options. If you want to explore the full set
 
 ### 2. Define a new action
 
-This is how a safe action is created. Providing a Zod input schema to the function, we're sure that data that comes in is type safe and validated.
+This is how a safe action is created. Providing a validation input schema to the function, we're sure that data that comes in is type safe and validated.
 The second argument of this function is an async function that receives the parsed input, and defines what happens on the server when the action is called from client. In short, this is your server code. It never runs on the client:
 
 ```typescript title="src/app/login-action.ts"

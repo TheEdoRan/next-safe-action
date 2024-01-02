@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 
 const features: { title: string; description: string }[] = [
 	{
@@ -18,9 +18,9 @@ const features: { title: string; description: string }[] = [
 			"Powerful context-based clients with custom logic execution, thanks to middlewares.",
 	},
 	{
-		title: "Input validation using Zod",
+		title: "Input validation using multiple validation libraries",
 		description:
-			"Input passed from the client to the server is validated using Zod schemas.",
+			"Input passed from the client to the server is validated using libraries of your choice.",
 	},
 	{
 		title: "Advanced server error handling",

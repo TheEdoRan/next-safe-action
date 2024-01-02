@@ -11,15 +11,15 @@
 	],
 	"exports": {
 		".": "./dist/index.mjs",
-		"./hook": "./dist/hook.mjs"
+		"./hooks": "./dist/hooks.mjs"
 	},
 	"typesVersions": {
 		"*": {
 			".": [
 				"./dist/index.d.mts"
 			],
-			"hook": [
-				"./dist/hook.d.mts"
+			"hooks": [
+				"./dist/hooks.d.mts"
 			]
 		}
 	},
@@ -44,29 +44,30 @@
 	"author": "Edoardo Ranghieri",
 	"license": "MIT",
 	"engines": {
-		"node": ">=16"
+		"node": ">=18.17"
 	},
 	"devDependencies": {
-		"@types/node": "^20.8.9",
-		"@types/react": "^18.2.33",
-		"@typescript-eslint/eslint-plugin": "^6.9.0",
-		"@typescript-eslint/parser": "^6.9.0",
-		"eslint": "^8.52.0",
-		"eslint-config-prettier": "^9.0.0",
-		"next": "14.0.0",
-		"prettier": "^3.0.3",
+		"@types/node": "^20.10.6",
+		"@types/react": "^18.2.46",
+		"@typescript-eslint/eslint-plugin": "^6.17.0",
+		"@typescript-eslint/parser": "^6.17.0",
+		"eslint": "^8.56.0",
+		"eslint-config-prettier": "^9.1.0",
+		"next": "14.0.4",
+		"prettier": "^3.1.1",
 		"react": "18.2.0",
-		"tsup": "^7.2.0",
-		"typescript": "^5.2.2",
-		"zod": ">=3.22.4"
+		"tsup": "^8.0.1",
+		"typescript": "^5.3.3"
 	},
 	"peerDependencies": {
 		"next": ">= 14.0.0",
-		"react": ">= 18.2.0",
-		"zod": ">= 3.0.0"
+		"react": ">= 18.2.0"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
+	},
+	"dependencies": {
+		"@decs/typeschema": "^0.12.1"
 	}
 }

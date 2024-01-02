@@ -29,6 +29,7 @@ export const greetUser = action(schema, async ({ name }) => {
 2. In your Client Component, you can use it like this:
 
 ```tsx title=src/app/greet.tsx
+import { useAction } from "next-safe-action/hooks";
 import { greetUser } from "@/app/greet-action";
 
 export default function Greet() {
@@ -67,7 +68,7 @@ As you can see, here we display a greet message after the action is performed, i
 
 | Name      | Type                                         | Purpose                                                                                           |
 |-----------|----------------------------------------------|---------------------------------------------------------------------------------------------------|
-| `execute` | `(input: z.input<Schema>) => void`           | An action caller with no return. The input is the same as the safe action you passed to the hook. |
+| `execute` | `(input: InferIn<S>) => void`           | An action caller with no return. The input is the same as the safe action you passed to the hook. |
 | `result`  | [`HookResult`](/docs/types#hookresult)       | When the action gets called via `execute`, this is the result object.                             |
 | `status`  | [`HookActionStatus`](/docs/types#hookresult) | The action current status.                                                                        |
 | `reset`   | `() => void`                                 | You can programmatically reset the `result` object with this function.                            |

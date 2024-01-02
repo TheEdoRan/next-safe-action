@@ -1,9 +1,26 @@
-import React from "react";
 import { Tweet, TweetProps } from "./tweet";
 
 const libURLSpan = `<span class="text-blue-500 dark:text-blue-400">https://github.com/TheEdoRan/next-safe-action</span>`;
 
 const tweets: TweetProps[] = [
+	{
+		tweetURL: "https://twitter.com/dihmeetree/status/1734512058597605854",
+		authorName: "Dmitry",
+		authorHandle: "dihmeetree",
+		authorImage:
+			"https://pbs.twimg.com/profile_images/1726767674275848192/HuBrtE-__400x400.jpg",
+		date: "Dec 12, 2023",
+		textHTML: `Thank you <b>@TheEdoRan</b> for the "next-safe-action" package! It's super awesome!! Keep up the amazing work! 😊`,
+	},
+	{
+		tweetURL: "https://twitter.com/Kingsley_codes/status/1718282007510143183",
+		authorName: "Kingsley O.",
+		authorHandle: "Kingsley_codes",
+		authorImage:
+			"https://pbs.twimg.com/profile_images/1679549288689352704/RqDBl9w1_400x400.jpg",
+		date: "Oct 28, 2023",
+		textHTML: `If you aren't using next-safe-actions by <b>@TheEdoRan</b> for your Next 14 app, what are you waiting for? The DX is marvelous. An even better package than zact and <b>@t3dotgg</b> recommends it too so you know it's good!`,
+	},
 	{
 		tweetURL: "https://twitter.com/zaphodias/status/1654158096048979973",
 		authorName: "zaphodias",

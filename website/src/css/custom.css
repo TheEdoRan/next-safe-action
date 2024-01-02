@@ -28,6 +28,15 @@ body {
 	transform: rotate(180deg);
 }
 
+.navbar__brand::after {
+	content: "v6";
+	margin-left: 0.5rem;
+	font-weight: 500;
+	position: relative;
+	top: -0.4rem;
+	font-size: 90%;
+}
+
 :root {
 	--ifm-color-primary: #da6f0c;
 	--ifm-color-primary-dark: #c4640b;

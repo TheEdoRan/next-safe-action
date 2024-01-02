@@ -62,6 +62,7 @@ export default function Home() {
 3. Finally, in your Client Component, you can use it like this:
 
 ```tsx title=src/app/add-likes.tsx
+import { useOptimisticAction } from "next-safe-action/hooks";
 import { addLikes } from "@/app/add-likes-action";
 
 type Props = {
@@ -103,7 +104,7 @@ export default function AddLikes({ numOfLikes }: Props) {
 |------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `safeAction`     | [`SafeAction`](/docs/types#safeaction)                                | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                              |
 | `initialOptimisticData` | `Data` (return type of the `safeAction` you passed as first argument) | An initializer for the optimistic state. Usually this value comes from the parent Server Component.                                                                                                                                                   |
-| `reducer`        | `(state: Data, input: z.input<Schema>) => Data`                      | When you call the action via `execute`, this function determines how the optimistic update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server.  |
+| `reducer`        | `(state: Data, input: InferIn<S>) => Data`                      | When you call the action via `execute`, this function determines how the optimistic update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server.  |
 | `callbacks?`     | [`HookCallbacks`](/docs/types#hookcallbacks)                          | Optional callbacks. More information about them [here](/docs/usage-from-client/hooks/callbacks).                                                                                                                                                      |
 
 
@@ -113,7 +114,7 @@ export default function AddLikes({ numOfLikes }: Props) {
 
 | Name             | Type                                                                  | Purpose                                                                                                                                                                                                                                   |
 |------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `execute`        | `(input: z.input<Schema>) => void`                                    | An action caller with no return. The input is the same as the safe action you passed to the hook.                                                                                                                                         |
+| `execute`        | `(input: InferIn<S>) => void`                                    | An action caller with no return. The input is the same as the safe action you passed to the hook.                                                                                                                                         |
 | `result`         | [`HookResult`](/docs/types#hookresult)                                | When the action gets called via `execute`, this is the result object.                                                                                                                                                                     |
 | `status`         | [`HookActionStatus`](/docs/types#hookresult)                          | The action current status.                                                                                                                                                                                                                |
 | `reset`          | `() => void`                                                          | You can programmatically reset the `result` object with this function.                                                                                                                                                                    |

@@ -1,32 +1,65 @@
 "use client";
 
+import type { InferIn, Schema } from "@decs/typeschema";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition } from "react";
 import {} from "react/experimental";
-import type { z } from "zod";
-import type { HookActionStatus, HookCallbacks, HookResult, SafeAction } from "./types";
+import type { SafeAction } from ".";
+import type { MaybePromise } from "./utils";
 import { isError } from "./utils";
+
+// TYPES
+
+/**
+ * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
+ */
+export type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeAction<S, Data>>> & {
+	fetchError?: string;
+};
+
+/**
+ * Type of hooks callbacks. These are executed when action is in a specific state.
+ */
+export type HookCallbacks<S extends Schema, Data> = {
+	onExecute?: (input: InferIn<S>) => MaybePromise<void>;
+	onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
+	onError?: (
+		error: Omit<HookResult<S, Data>, "data">,
+		input: InferIn<S>,
+		reset: () => void
+	) => MaybePromise<void>;
+	onSettled?: (
+		result: HookResult<S, Data>,
+		input: InferIn<S>,
+		reset: () => void
+	) => MaybePromise<void>;
+};
+
+/**
+ * Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
+ */
+export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
 
 // UTILS
 
-const DEFAULT_RESULT: HookResult<z.ZodTypeAny, any> = {
+const DEFAULT_RESULT = {
 	data: undefined,
-	serverError: undefined,
-	validationError: undefined,
 	fetchError: undefined,
-};
+	serverError: undefined,
+	validationErrors: undefined,
+} satisfies HookResult<any, any>;
 
-const getActionStatus = <const Schema extends z.ZodTypeAny, const Data>(
+const getActionStatus = <const S extends Schema, const Data>(
 	isExecuting: boolean,
-	result: HookResult<Schema, Data>
+	result: HookResult<S, Data>
 ): HookActionStatus => {
 	if (isExecuting) {
 		return "executing";
 	} else if (typeof result.data !== "undefined") {
 		return "hasSucceeded";
 	} else if (
-		typeof result.validationError !== "undefined" ||
+		typeof result.validationErrors !== "undefined" ||
 		typeof result.serverError !== "undefined" ||
 		typeof result.fetchError !== "undefined"
 	) {
@@ -36,12 +69,12 @@ const getActionStatus = <const Schema extends z.ZodTypeAny, const Data>(
 	return "idle";
 };
 
-const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
-	result: HookResult<Schema, Data>,
-	input: z.input<Schema>,
+const useActionCallbacks = <const S extends Schema, const Data>(
+	result: HookResult<S, Data>,
+	input: InferIn<S>,
 	status: HookActionStatus,
 	reset: () => void,
-	cb?: HookCallbacks<Schema, Data>
+	cb?: HookCallbacks<S, Data>
 ) => {
 	const onExecuteRef = useRef(cb?.onExecute);
 	const onSuccessRef = useRef(cb?.onSuccess);
@@ -75,6 +108,8 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
 	}, [status, result, reset, input]);
 };
 
+// HOOKS
+
 /**
  * Use the action from a Client Component via hook.
  * @param safeAction The typesafe action.
@@ -82,19 +117,19 @@ const useActionCallbacks = <const Schema extends z.ZodTypeAny, const Data>(
  *
  * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useaction See an example}
  */
-export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
-	safeAction: SafeAction<Schema, Data>,
-	callbacks?: HookCallbacks<Schema, Data>
+export const useAction = <const S extends Schema, const Data>(
+	safeAction: SafeAction<S, Data>,
+	callbacks?: HookCallbacks<S, Data>
 ) => {
 	const [, startTransition] = useTransition();
-	const [result, setResult] = useState<HookResult<Schema, Data>>(DEFAULT_RESULT);
-	const [input, setInput] = useState<z.input<Schema>>();
+	const [result, setResult] = useState<HookResult<S, Data>>(DEFAULT_RESULT);
+	const [input, setInput] = useState<InferIn<S>>();
 	const [isExecuting, setIsExecuting] = useState(false);
 
-	const status = getActionStatus<Schema, Data>(isExecuting, result);
+	const status = getActionStatus<S, Data>(isExecuting, result);
 
 	const execute = useCallback(
-		(input: z.input<Schema>) => {
+		(input: InferIn<S>) => {
 			setInput(input);
 			setIsExecuting(true);
 
@@ -141,26 +176,26 @@ export const useAction = <const Schema extends z.ZodTypeAny, const Data>(
  *
  * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useoptimisticaction See an example}
  */
-export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Data>(
-	safeAction: SafeAction<Schema, Data>,
+export const useOptimisticAction = <const S extends Schema, const Data>(
+	safeAction: SafeAction<S, Data>,
 	initialOptimisticData: Data,
-	reducer: (state: Data, input: z.input<Schema>) => Data,
-	callbacks?: HookCallbacks<Schema, Data>
+	reducer: (state: Data, input: InferIn<S>) => Data,
+	callbacks?: HookCallbacks<S, Data>
 ) => {
 	const [, startTransition] = useTransition();
-	const [result, setResult] = useState<HookResult<Schema, Data>>(DEFAULT_RESULT);
-	const [input, setInput] = useState<z.input<Schema>>();
+	const [result, setResult] = useState<HookResult<S, Data>>(DEFAULT_RESULT);
+	const [input, setInput] = useState<InferIn<S>>();
 	const [isExecuting, setIsExecuting] = useState(false);
 
-	const [optimisticData, setOptimisticState] = useOptimistic<Data, z.input<Schema>>(
+	const [optimisticData, setOptimisticState] = useOptimistic<Data, InferIn<S>>(
 		initialOptimisticData,
 		reducer
 	);
 
-	const status = getActionStatus<Schema, Data>(isExecuting, result);
+	const status = getActionStatus<S, Data>(isExecuting, result);
 
 	const execute = useCallback(
-		(input: z.input<Schema>) => {
+		(input: InferIn<S>) => {
 			setInput(input);
 			setIsExecuting(true);
 
@@ -197,5 +232,3 @@ export const useOptimisticAction = <const Schema extends z.ZodTypeAny, const Dat
 		status,
 	};
 };
-
-export type { HookActionStatus, HookCallbacks, HookResult };

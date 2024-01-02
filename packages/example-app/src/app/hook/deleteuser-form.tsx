@@ -1,6 +1,6 @@
 "use client";
 
-import { useAction } from "next-safe-action/hook";
+import { useAction } from "next-safe-action/hooks";
 import { deleteUser } from "./deleteuser-action";
 
 type Props = {
