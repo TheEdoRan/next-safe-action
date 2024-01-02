@@ -1,11 +1,11 @@
 "use server";
 
 import { authAction } from "@/lib/safe-action";
-import { z } from "zod";
+import { maxLength, minLength, object, string } from "valibot";
 
-const input = z.object({
-	fullName: z.string().min(3).max(50),
-	age: z.string().min(1).max(3),
+const input = object({
+	fullName: string([minLength(3, "Too short"), maxLength(20, "Too long")]),
+	age: string([minLength(2, "Too young"), maxLength(3, "Too old")]),
 });
 
 export const editUser = authAction(
