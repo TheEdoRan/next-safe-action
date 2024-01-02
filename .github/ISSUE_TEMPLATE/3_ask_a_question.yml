@@ -1,0 +1,32 @@
+name: Ask a question
+description: Need help with something? Let us know
+title: "[ASK] <title>"
+labels: ["question"]
+body:
+- type: checkboxes
+  attributes:
+    label: Are you using the latest version of this library?
+    description: Please confirm that you are using the latest version of next-safe-action.
+    options:
+    - label: I verified that the issue exists in the latest next-safe-action release
+      required: false
+- type: checkboxes
+  attributes:
+    label: Is there an existing issue for this?
+    description: Please search to see if an issue already exists for the bug you encountered.
+    options:
+    - label: I have searched the existing issues
+      required: true
+- type: textarea
+  attributes:
+    label: Ask a question
+    description: Is your question related to an issue? Do you have any doubts about this library? Please describe it here.
+    placeholder: I don't understand how ... works
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Additional context
+    description: Add any other context about your question here.
+  validations:
+    required: false
