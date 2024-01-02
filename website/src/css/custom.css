@@ -28,13 +28,13 @@ body {
 	transform: rotate(180deg);
 }
 
-.navbar__brand::after {
+/* .navbar__brand::after {
 	content: "ALPHA";
 	margin-left: 0.5rem;
 	font-weight: 500;
 	position: relative;
 	font-size: 70%;
-}
+} */
 
 :root {
 	--ifm-color-primary: #da6f0c;
