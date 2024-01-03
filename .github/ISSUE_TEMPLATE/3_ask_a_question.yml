@@ -1,6 +1,6 @@
 name: Ask a question
 description: Need help with something? Let us know
-title: "[ASK] <title>"
+title: "[ASK] "
 labels: ["question"]
 body:
 - type: checkboxes
@@ -8,7 +8,7 @@ body:
     label: Is there an existing issue for this?
     description: Please search to see if an issue already exists for the bug you encountered.
     options:
-    - label: I have searched the existing issues
+    - label: I have searched the existing issues and found nothing that matches
       required: true
 - type: input
   attributes:

@@ -1,6 +1,6 @@
 name: Bug report
 description: Create a report to help us fix bugs
-title: "[BUG] <title>"
+title: "[BUG] "
 labels: ["bug"]
 body:
 - type: checkboxes
@@ -15,7 +15,7 @@ body:
     label: Is there an existing issue for this?
     description: Please search to see if an issue already exists for the bug you encountered.
     options:
-    - label: I have searched the existing issues
+    - label: I have searched the existing issues and found nothing that matches
       required: true
 - type: textarea
   attributes:
@@ -41,6 +41,13 @@ body:
     label: Expected behavior
     description: A description of what you expected to happen instead.
     placeholder: I expected that this happened instead.
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Reproduction example
+    description: Link to an example that reproduces the bug. Could be, for example, a GitHub repo or a CodeSandbox link.
+    placeholder: https://github.com/...
   validations:
     required: true
 - type: markdown
