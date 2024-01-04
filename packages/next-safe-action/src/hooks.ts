@@ -14,7 +14,7 @@ import { isError } from "./utils";
 /**
  * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeAction<S, Data>>> & {
+export type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeAction<[S], Data>>> & {
 	fetchError?: string;
 };
 
@@ -118,7 +118,7 @@ const useActionCallbacks = <const S extends Schema, const Data>(
  * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useaction See an example}
  */
 export const useAction = <const S extends Schema, const Data>(
-	safeAction: SafeAction<S, Data>,
+	safeAction: SafeAction<[S], Data>,
 	callbacks?: HookCallbacks<S, Data>
 ) => {
 	const [, startTransition] = useTransition();
@@ -177,7 +177,7 @@ export const useAction = <const S extends Schema, const Data>(
  * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useoptimisticaction See an example}
  */
 export const useOptimisticAction = <const S extends Schema, const Data>(
-	safeAction: SafeAction<S, Data>,
+	safeAction: SafeAction<[S], Data>,
 	initialOptimisticData: Data,
 	reducer: (state: Data, input: InferIn<S>) => Data,
 	callbacks?: HookCallbacks<S, Data>
