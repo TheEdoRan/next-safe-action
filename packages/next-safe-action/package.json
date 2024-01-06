@@ -11,7 +11,8 @@
 	],
 	"exports": {
 		".": "./dist/index.mjs",
-		"./hooks": "./dist/hooks.mjs"
+		"./hooks": "./dist/hooks.mjs",
+		"./zod": "./dist/zod.mjs"
 	},
 	"typesVersions": {
 		"*": {
@@ -20,6 +21,9 @@
 			],
 			"hooks": [
 				"./dist/hooks.d.mts"
+			],
+			"zod": [
+				"./dist/zod.d.mts"
 			]
 		}
 	},
@@ -69,5 +73,8 @@
 	},
 	"dependencies": {
 		"@decs/typeschema": "^0.12.1"
+	},
+	"optionalDependencies": {
+		"zod": "^3.22.4"
 	}
 }
