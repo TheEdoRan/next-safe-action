@@ -1,7 +1,8 @@
 import type { Infer, Schema, ValidationIssue } from "@decs/typeschema";
+import { ServerValidationError } from "./index";
 
 export const isError = (error: any): error is Error => error instanceof Error;
-
+export const isServerValidationError = <S extends Schema>(error: unknown): error is ServerValidationError<S> => error instanceof ServerValidationError;
 // UTIL TYPES
 
 // Returns type or promise of type.

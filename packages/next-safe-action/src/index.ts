@@ -3,7 +3,7 @@ import { wrap } from "@decs/typeschema";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type { MaybePromise, ValidationErrors } from "./utils";
-import { buildValidationErrors, isError } from "./utils";
+import { buildValidationErrors, isError, isServerValidationError } from "./utils";
 
 // TYPES
 
@@ -30,12 +30,21 @@ export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<
  */
 export type ServerCodeFn<S extends Schema, Data, Context> = (
 	parsedInput: Infer<S>,
-	ctx: Context
+	ctx: Context,
+	serverValidationError: (validationErrors: ValidationErrors<S>) => never,
 ) => Promise<Data>;
 
 // UTILS
 
 export const DEFAULT_SERVER_ERROR = "Something went wrong while executing the operation";
+
+export class ServerValidationError<S extends Schema> extends Error {
+	public validationErrors: ValidationErrors<S>;
+	constructor(validationErrors: ValidationErrors<S>) {
+		super("Server Validation Error");
+		this.validationErrors = validationErrors;
+	}
+}
 
 // SAFE ACTION CLIENT
 
@@ -69,6 +78,11 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 		schema: S,
 		serverCode: ServerCodeFn<S, Data, Context>
 	): SafeAction<S, Data> => {
+		// Helper function to create ServerValidationError with injected schema
+		const serverValidationError = (validationErrors: ValidationErrors<S>) => {
+			throw new ServerValidationError<S>(validationErrors);
+		}
+
 		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
@@ -88,7 +102,7 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.
-				const data = ((await serverCode(parsedInput.data, ctx)) ?? null) as Data;
+				const data = ((await serverCode(parsedInput.data, ctx, serverValidationError)) ?? null) as Data;
 
 				return { data };
 			} catch (e: unknown) {
@@ -96,6 +110,11 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 				// processed internally by Next.js. So, in this case we need to rethrow it.
 				if (isRedirectError(e) || isNotFoundError(e)) {
 					throw e;
+				}
+
+				// If error is ServerValidationError, return validationErrors as if schema validation would fail
+				if (isServerValidationError<ValidationErrors<S>>(e)) {
+					return { validationErrors: e.validationErrors };
 				}
 
 				// If error cannot be handled, warn the user and return a generic message.
