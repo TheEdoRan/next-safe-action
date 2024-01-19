@@ -53,6 +53,10 @@ export const action = createSafeActionClient();
 
 This is a basic client, without any options. If you want to explore the full set of options, check out the [safe action client](/docs/safe-action-client) section.
 
+:::note
+If you are using the beta Turbopack bundler in Next.js, i.e. `next dev --turbo`, you may encounter `Module not found` errors from **TypeSchema**. If you are also using zod as your validation library, this error can be avoided by instead importing the `createSafeActionClient` from `next-safe-action/zod`.
+:::
+
 ### 2. Define a new action
 
 This is how a safe action is created. Providing a validation input schema to the function, we're sure that data that comes in is type safe and validated.
