@@ -72,7 +72,7 @@
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"dependencies": {
-		"@decs/typeschema": "^0.12.1"
+		"@decs/typeschema": "^0.12.2"
 	},
 	"optionalDependencies": {
 		"zod": "^3.22.4"
