@@ -3,7 +3,7 @@
 import type { InferIn, Schema } from "@decs/typeschema";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
-import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition } from "react";
+import * as React from "react";
 import {} from "react/experimental";
 import type { SafeAction } from ".";
 import type { MaybePromise } from "./utils";
@@ -76,13 +76,13 @@ const useActionCallbacks = <const S extends Schema, const Data>(
 	reset: () => void,
 	cb?: HookCallbacks<S, Data>
 ) => {
-	const onExecuteRef = useRef(cb?.onExecute);
-	const onSuccessRef = useRef(cb?.onSuccess);
-	const onErrorRef = useRef(cb?.onError);
-	const onSettledRef = useRef(cb?.onSettled);
+	const onExecuteRef = React.useRef(cb?.onExecute);
+	const onSuccessRef = React.useRef(cb?.onSuccess);
+	const onErrorRef = React.useRef(cb?.onError);
+	const onSettledRef = React.useRef(cb?.onSettled);
 
 	// Execute the callback when the action status changes.
-	useEffect(() => {
+	React.useEffect(() => {
 		const onExecute = onExecuteRef.current;
 		const onSuccess = onSuccessRef.current;
 		const onError = onErrorRef.current;
@@ -121,14 +121,14 @@ export const useAction = <const S extends Schema, const Data>(
 	safeAction: SafeAction<S, Data>,
 	callbacks?: HookCallbacks<S, Data>
 ) => {
-	const [, startTransition] = useTransition();
-	const [result, setResult] = useState<HookResult<S, Data>>(DEFAULT_RESULT);
-	const [input, setInput] = useState<InferIn<S>>();
-	const [isExecuting, setIsExecuting] = useState(false);
+	const [, startTransition] = React.useTransition();
+	const [result, setResult] = React.useState<HookResult<S, Data>>(DEFAULT_RESULT);
+	const [input, setInput] = React.useState<InferIn<S>>();
+	const [isExecuting, setIsExecuting] = React.useState(false);
 
 	const status = getActionStatus<S, Data>(isExecuting, result);
 
-	const execute = useCallback(
+	const execute = React.useCallback(
 		(input: InferIn<S>) => {
 			setInput(input);
 			setIsExecuting(true);
@@ -151,7 +151,7 @@ export const useAction = <const S extends Schema, const Data>(
 		[safeAction]
 	);
 
-	const reset = useCallback(() => {
+	const reset = React.useCallback(() => {
 		setResult(DEFAULT_RESULT);
 	}, []);
 
@@ -182,19 +182,19 @@ export const useOptimisticAction = <const S extends Schema, const Data>(
 	reducer: (state: Data, input: InferIn<S>) => Data,
 	callbacks?: HookCallbacks<S, Data>
 ) => {
-	const [, startTransition] = useTransition();
-	const [result, setResult] = useState<HookResult<S, Data>>(DEFAULT_RESULT);
-	const [input, setInput] = useState<InferIn<S>>();
-	const [isExecuting, setIsExecuting] = useState(false);
+	const [, startTransition] = React.useTransition();
+	const [result, setResult] = React.useState<HookResult<S, Data>>(DEFAULT_RESULT);
+	const [input, setInput] = React.useState<InferIn<S>>();
+	const [isExecuting, setIsExecuting] = React.useState(false);
 
-	const [optimisticData, setOptimisticState] = useOptimistic<Data, InferIn<S>>(
+	const [optimisticData, setOptimisticState] = React.useOptimistic<Data, InferIn<S>>(
 		initialOptimisticData,
 		reducer
 	);
 
 	const status = getActionStatus<S, Data>(isExecuting, result);
 
-	const execute = useCallback(
+	const execute = React.useCallback(
 		(input: InferIn<S>) => {
 			setInput(input);
 			setIsExecuting(true);
@@ -218,7 +218,7 @@ export const useOptimisticAction = <const S extends Schema, const Data>(
 		[setOptimisticState, safeAction]
 	);
 
-	const reset = useCallback(() => {
+	const reset = React.useCallback(() => {
 		setResult(DEFAULT_RESULT);
 	}, []);
 
