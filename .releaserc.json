@@ -14,6 +14,11 @@
 			"prerelease": true
 		},
 		{
+			"name": "next",
+			"channel": "next",
+			"prerelease": true
+		},
+		{
 			"name": "4.x",
 			"range": "4.x",
 			"channel": "4.x"

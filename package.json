@@ -29,13 +29,13 @@
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"dependencies": {
-		"@commitlint/cli": "^18.4.3",
-		"@commitlint/config-conventional": "^18.4.3",
-		"@manypkg/cli": "^0.21.1",
+		"@commitlint/cli": "^18.5.0",
+		"@commitlint/config-conventional": "^18.5.0",
+		"@manypkg/cli": "^0.21.2",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^8.0.3",
 		"is-ci": "^3.0.1",
-		"semantic-release": "^22.0.12",
-		"turbo": "^1.11.2"
+		"semantic-release": "22.0.12",
+		"turbo": "^1.11.3"
 	}
 }
