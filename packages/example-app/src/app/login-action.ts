@@ -8,9 +8,9 @@ const input = z.object({
 	password: z.string().min(8).max(100),
 });
 
-export const loginUser = action(input, async ({ username, password }, _ctx, { throwServerValidationError }) => {
+export const loginUser = action(input, async ({ username, password }, _ctx, { returnValidationErrors }) => {
 	if (username === "johndoe") {
-		throwServerValidationError({
+		returnValidationErrors({
 			username: ['user_suspended'],
 		});
 	}
@@ -21,7 +21,7 @@ export const loginUser = action(input, async ({ username, password }, _ctx, { th
 		};
 	}
 
-	throwServerValidationError({
+	returnValidationErrors({
 		username: ['incorrect_credentials'],
     });
 });

@@ -27,7 +27,7 @@ export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<
 }>;
 
 type Utils<S extends Schema> = {
-	throwServerValidationError: typeof throwServerValidationError<S>
+	returnValidationErrors: typeof throwServerValidationError<S>
 };
 
 /**
@@ -86,7 +86,7 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 		// Helper function to create ServerValidationError with injected schema
 
 		const utils: Utils<S> = {
-			throwServerValidationError,
+			returnValidationErrors: throwServerValidationError,
 		};
 
 		// This is the function called by client. If `input` fails the schema
