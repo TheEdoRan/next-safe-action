@@ -1,7 +1,7 @@
 import type { Infer, Schema, ValidationIssue } from "@decs/typeschema";
 import { ServerValidationError } from "./index";
 
-export const isError = (error: any): error is Error => error instanceof Error;
+export const isError = (error: unknown): error is Error => error instanceof Error;
 export const isServerValidationError = <S extends Schema>(error: unknown): error is ServerValidationError<S> => error instanceof ServerValidationError;
 // UTIL TYPES
 
@@ -63,3 +63,7 @@ export const buildValidationErrors = <const S extends Schema>(issues: Validation
 
 	return ve as ValidationErrors<S>;
 };
+
+export const throwServerValidationError = <S extends Schema>(validationErrors: ValidationErrors<S>): never => {
+	throw new ServerValidationError<S>(validationErrors);
+}
