@@ -17,6 +17,7 @@ In this example, we will use [zod-form-data](https://www.npmjs.com/package/zod-f
 "use server";
 
 import { action } from "@/lib/safe-action";
+import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 const schema = zfd.formData({
