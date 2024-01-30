@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { loginUser } from "./login-action";
 import LoginForm from "./login-form";
 
 export const metadata = {
@@ -13,9 +12,9 @@ export default function Home() {
 			<Link href="/hook">Go to /hook</Link>
 			<Link href="/optimistic-hook">Go to /optimistic-hook</Link>
 			<Link href="/form">Go to /form</Link>
+			<Link href="/nested-schema">Go to /nested-schema</Link>
 			<h1>Action without auth</h1>
-			{/* Pass the typesafe mutation to Client Component */}
-			<LoginForm login={loginUser} />
+			<LoginForm />
 		</>
 	);
 }

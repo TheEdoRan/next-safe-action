@@ -1,13 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { loginUser } from "./login-action";
+import { loginUser } from "./login-action";
 
-type Props = {
-	login: typeof loginUser; // infer types with `typeof`
-};
-
-const LoginForm = ({ login }: Props) => {
+const LoginForm = () => {
 	const [result, setResult] = useState(
 		"fill in form and click on the log in button"
 	);
@@ -22,7 +18,7 @@ const LoginForm = ({ login }: Props) => {
 						username: string;
 						password: string;
 					};
-					const res = await login(input); // this is the typesafe action called from client
+					const res = await loginUser(input); // this is the typesafe action called from client
 					setResult(JSON.stringify(res, null, 1));
 				}}>
 				<input
