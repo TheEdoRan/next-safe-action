@@ -2,7 +2,7 @@ import type { Infer, InferIn, Schema } from "@decs/typeschema";
 import { wrap } from "@decs/typeschema";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
-import type { MaybePromise } from "./utils";
+import type { MaybePromise, ValidationErrors } from "./utils";
 import { buildValidationErrors, isError } from "./utils";
 
 // TYPES
@@ -22,7 +22,7 @@ export type SafeClientOpts<Context> = {
 export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<{
 	data?: Data;
 	serverError?: string;
-	validationErrors?: Partial<Record<keyof Infer<S> | "_root", string[]>>;
+	validationErrors?: ValidationErrors<S>;
 }>;
 
 /**
@@ -79,7 +79,7 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 				// If schema validation fails.
 				if ("issues" in parsedInput) {
 					return {
-						validationErrors: buildValidationErrors(parsedInput.issues),
+						validationErrors: buildValidationErrors<S>(parsedInput.issues),
 					};
 				}
 
