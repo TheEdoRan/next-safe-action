@@ -13,7 +13,7 @@ export const editUser = authAction(
 	// Here you have access to `userId`, which comes from `buildContext`
 	// return object in src/lib/safe-action.ts.
 	//                          \\\\\
-	async ({ fullName, age }, userId) => {
+	async ({ fullName, age }, { ctx: { userId } }) => {
 		if (fullName.toLowerCase() === "john doe") {
 			return {
 				error: {

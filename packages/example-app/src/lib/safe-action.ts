@@ -39,7 +39,7 @@ export const authAction = createSafeActionClient({
 			parsedInput
 		);
 
-		return userId;
+		return { userId };
 	},
 	handleReturnedServerError,
 });

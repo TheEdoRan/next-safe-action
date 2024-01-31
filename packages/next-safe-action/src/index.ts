@@ -26,7 +26,8 @@ export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<
 	validationErrors?: ValidationErrors<S>;
 }>;
 
-type Utils<S extends Schema> = {
+type Utils<S extends Schema, Context> = {
+	ctx: Context
 	returnValidationErrors: typeof throwServerValidationError<S>
 };
 
@@ -35,8 +36,7 @@ type Utils<S extends Schema> = {
  */
 export type ServerCodeFn<S extends Schema, Data, Context> = (
 	parsedInput: Infer<S>,
-	ctx: Context,
-	utils: Utils<S>,
+	utils: Utils<S, Context>,
 ) => Promise<Data>;
 
 // UTILS
@@ -60,7 +60,7 @@ export class ServerValidationError<S extends Schema> extends Error {
  *
  * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
-export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Context>) => {
+export const createSafeActionClient = <Context = null>(createOpts?: SafeClientOpts<Context>) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
@@ -85,8 +85,9 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 	): SafeAction<S, Data> => {
 		// Helper function to create ServerValidationError with injected schema
 
-		const utils: Utils<S> = {
+		const utils: Utils<S, Context> = {
 			returnValidationErrors: throwServerValidationError,
+			ctx: null as Context,
 		};
 
 		// This is the function called by client. If `input` fails the schema
@@ -104,11 +105,11 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 				}
 
 				// Get the context if `middleware` is provided.
-				const ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data))) as Context;
+				utils.ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data))) as Context;
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.
-				const data = ((await serverCode(parsedInput.data, ctx, utils)) ?? null) as Data;
+				const data = ((await serverCode(parsedInput.data, utils)) ?? null) as Data;
 
 				return { data };
 			} catch (e: unknown) {
