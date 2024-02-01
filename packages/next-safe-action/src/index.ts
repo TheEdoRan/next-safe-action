@@ -2,9 +2,8 @@ import type { Infer, InferIn, Schema } from "@decs/typeschema";
 import { wrap } from "@decs/typeschema";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
-import type {MaybePromise, ValidationErrors} from "./utils";
-import { throwServerValidationError} from "./utils";
-import { buildValidationErrors, isError, isServerValidationError } from "./utils";
+import type { MaybePromise, ValidationErrors } from "./utils";
+import { buildValidationErrors, isError } from "./utils";
 
 // TYPES
 
@@ -26,30 +25,17 @@ export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<
 	validationErrors?: ValidationErrors<S>;
 }>;
 
-type Utils<S extends Schema, Context> = {
-	ctx: Context
-	returnValidationErrors: typeof throwServerValidationError<S>
-};
-
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
 export type ServerCodeFn<S extends Schema, Data, Context> = (
 	parsedInput: Infer<S>,
-	utils: Utils<S, Context>,
+	ctx: Context
 ) => Promise<Data>;
 
 // UTILS
 
 export const DEFAULT_SERVER_ERROR = "Something went wrong while executing the operation";
-
-export class ServerValidationError<S extends Schema> extends Error {
-	public validationErrors: ValidationErrors<S>;
-	constructor(validationErrors: ValidationErrors<S>) {
-		super("Server Validation Error");
-		this.validationErrors = validationErrors;
-	}
-}
 
 // SAFE ACTION CLIENT
 
@@ -60,7 +46,7 @@ export class ServerValidationError<S extends Schema> extends Error {
  *
  * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
-export const createSafeActionClient = <Context = null>(createOpts?: SafeClientOpts<Context>) => {
+export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Context>) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
@@ -83,13 +69,6 @@ export const createSafeActionClient = <Context = null>(createOpts?: SafeClientOp
 		schema: S,
 		serverCode: ServerCodeFn<S, Data, Context>
 	): SafeAction<S, Data> => {
-		// Helper function to create ServerValidationError with injected schema
-
-		const utils: Utils<S, Context> = {
-			returnValidationErrors: throwServerValidationError,
-			ctx: null as Context,
-		};
-
 		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
@@ -105,11 +84,11 @@ export const createSafeActionClient = <Context = null>(createOpts?: SafeClientOp
 				}
 
 				// Get the context if `middleware` is provided.
-				utils.ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data))) as Context;
+				const ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data))) as Context;
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.
-				const data = ((await serverCode(parsedInput.data, utils)) ?? null) as Data;
+				const data = ((await serverCode(parsedInput.data, ctx)) ?? null) as Data;
 
 				return { data };
 			} catch (e: unknown) {
@@ -119,9 +98,9 @@ export const createSafeActionClient = <Context = null>(createOpts?: SafeClientOp
 					throw e;
 				}
 
-				// If error is ServerValidationError, return validationErrors as if schema validation would fail
-				if (isServerValidationError<S>(e)) {
-					return { validationErrors: e.validationErrors };
+				// If error is ServerValidationError, return validationErrors as if schema validation would fail.
+				if (e instanceof ServerValidationError) {
+					return { validationErrors: e.validationErrors as ValidationErrors<S> };
 				}
 
 				// If error cannot be handled, warn the user and return a generic message.
@@ -141,3 +120,29 @@ export const createSafeActionClient = <Context = null>(createOpts?: SafeClientOp
 
 	return actionBuilder;
 };
+
+// VALIDATION ERRORS
+
+// This class is internally used to throw validation errors in action's server code function, using
+// `returnValidationErrors`.
+class ServerValidationError<S extends Schema> extends Error {
+	public validationErrors: ValidationErrors<S>;
+	constructor(validationErrors: ValidationErrors<S>) {
+		super("Server Validation Error");
+		this.validationErrors = validationErrors;
+	}
+}
+
+/**
+ * Return custom validation errors to the client from the action's server code function.
+ * Code declared after this function invocation will not be executed.
+ * @param schema Input schema
+ * @param validationErrors Validation errors object
+ * @throws {ServerValidationError}
+ */
+export function returnValidationErrors<S extends Schema>(
+	schema: S,
+	validationErrors: ValidationErrors<S>
+): never {
+	throw new ServerValidationError<S>(validationErrors);
+}
