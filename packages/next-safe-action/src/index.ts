@@ -7,30 +7,37 @@ import { buildValidationErrors, isError } from "./utils";
 
 // TYPES
 
+export type InferInArray<S extends Schema[]> = {
+	[K in keyof S]: InferIn<S[K]>;
+};
+
+export type InferArray<S extends Schema[]> = {
+	[K in keyof S]: Infer<S[K]>;
+};
+
 /**
  * Type of options when creating a new safe action client.
  */
 export type SafeClientOpts<Context> = {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
-	middleware?: (parsedInput: unknown) => MaybePromise<Context>;
+	middleware?: (...parsedInputs: unknown[]) => MaybePromise<Context>;
 };
 
 /**
  * Type of the function called from Client Components with typesafe input data.
  */
-export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<{
+export type SafeAction<S extends Schema[], Data> = (...args: [...InferInArray<S>]) => Promise<{
 	data?: Data;
 	serverError?: string;
-	validationErrors?: Partial<Record<keyof Infer<S> | "_root", string[]>>;
+	validationErrors?: Partial<Record<keyof InferArray<S>[number] | "_root", string[]>>;
 }>;
 
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema, Data, Context> = (
-	parsedInput: Infer<S>,
-	ctx: Context
+export type ServerCodeFn<S extends Schema[], Data, Context> = (
+	...args: [...InferArray<S>, Context]
 ) => Promise<Data>;
 
 // UTILS
@@ -65,30 +72,48 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 	// It expects an input schema and a `serverCode` function, so the action
 	// knows what to do on the server when called by the client.
 	// It returns a function callable by the client.
-	const actionBuilder = <const S extends Schema, const Data>(
-		schema: S,
-		serverCode: ServerCodeFn<S, Data, Context>
+	const actionBuilder = <const S extends Schema[], const Data>(
+		...args: [...S, ServerCodeFn<S, Data, Context>]
 	): SafeAction<S, Data> => {
 		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
 		// all the invalid fields provided.
-		return async (clientInput) => {
-			try {
-				const parsedInput = await wrap(schema).validate(clientInput);
 
-				// If schema validation fails.
-				if ("issues" in parsedInput) {
-					return {
-						validationErrors: buildValidationErrors(parsedInput.issues),
-					};
+		const schemas = args.slice(0, -1) as S;
+		const serverCode = args[args.length - 1] as ServerCodeFn<S, Data, Context>;
+
+		return async (...inputs) => {
+			try {
+				const parsedInputs = await Promise.all(
+					inputs.map(async (input, index) => {
+						const schema = schemas[index]!;
+						return await wrap(schema).validate(input);
+					})
+				);
+
+				const failedInputs = parsedInputs.reduce(
+					(prev, parsedInput) => {
+						return "issues" in parsedInput
+							? { ...prev, ...buildValidationErrors(parsedInput.issues) }
+							: prev;
+					},
+					{} as Partial<Record<keyof InferArray<S>[number] | "_root", string[]>>
+				);
+
+				if (Object.keys(failedInputs).length > 0) {
+					return { validationErrors: failedInputs };
 				}
 
+				const validatedInputs = parsedInputs.map((i) => "data" in i && i.data) as InferInArray<S>;
+
 				// Get the context if `middleware` is provided.
-				const ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data))) as Context;
+				const ctx = (await Promise.resolve(
+					createOpts?.middleware?.(...validatedInputs)
+				)) as Context;
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.
-				const data = ((await serverCode(parsedInput.data, ctx)) ?? null) as Data;
+				const data = ((await serverCode(...validatedInputs, ctx)) ?? null) as Data;
 
 				return { data };
 			} catch (e: unknown) {
