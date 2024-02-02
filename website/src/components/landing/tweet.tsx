@@ -1,10 +1,7 @@
-import React from "react";
-
 export type TweetProps = {
 	tweetURL: string;
 	authorName: string;
 	authorHandle: string;
-	authorImage: string;
 	date: string;
 	textHTML: string;
 };
@@ -13,7 +10,6 @@ export function Tweet({
 	tweetURL,
 	authorName,
 	authorHandle,
-	authorImage,
 	date,
 	textHTML,
 }: TweetProps) {
@@ -24,7 +20,10 @@ export function Tweet({
 			rel="noopener noreferrer"
 			className="p-4 bg-white dark:bg-stone-800 rounded-xl flex flex-col space-y-4 max-w-lg !no-underline transition hover:brightness-90">
 			<div className="flex space-x-4 items-center">
-				<img src={authorImage} className="rounded-full w-10 h-10" />
+				<img
+					src={`/img/x/${authorHandle}.jpg`}
+					className="rounded-full w-10 h-10"
+				/>
 				<div className="flex flex-col">
 					<span className="text-sm font-semibold text-stone-950 dark:text-stone-50">
 						{authorName}
