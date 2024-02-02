@@ -1,6 +1,6 @@
 import type { Infer, Schema, ValidationIssue } from "@decs/typeschema";
 
-export const isError = (error: any): error is Error => error instanceof Error;
+export const isError = (error: unknown): error is Error => error instanceof Error;
 
 // UTIL TYPES
 

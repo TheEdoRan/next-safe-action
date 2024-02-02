@@ -1,6 +1,7 @@
 "use server";
 
 import { action } from "@/lib/safe-action";
+import { returnValidationErrors } from "next-safe-action";
 import { z } from "zod";
 
 const input = z.object({
@@ -8,13 +9,13 @@ const input = z.object({
 	password: z.string().min(8).max(100),
 });
 
-export const loginUser = action(input, async ({ username, password }) => {
+export const loginUser = action(input, async ({ username, password }, ctx) => {
 	if (username === "johndoe") {
-		return {
-			error: {
-				reason: "user_suspended",
+		returnValidationErrors(input, {
+			username: {
+				_errors: ["user_suspended"],
 			},
-		};
+		});
 	}
 
 	if (username === "user" && password === "password") {
@@ -23,9 +24,9 @@ export const loginUser = action(input, async ({ username, password }) => {
 		};
 	}
 
-	return {
-		error: {
-			reason: "incorrect_credentials",
+	returnValidationErrors(input, {
+		username: {
+			_errors: ["incorrect_credentials"],
 		},
-	};
+	});
 });

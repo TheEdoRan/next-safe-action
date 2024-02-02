@@ -98,6 +98,11 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 					throw e;
 				}
 
+				// If error is ServerValidationError, return validationErrors as if schema validation would fail.
+				if (e instanceof ServerValidationError) {
+					return { validationErrors: e.validationErrors as ValidationErrors<S> };
+				}
+
 				// If error cannot be handled, warn the user and return a generic message.
 				if (!isError(e)) {
 					console.warn("Could not handle server error. Not an instance of Error: ", e);
@@ -115,3 +120,29 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 
 	return actionBuilder;
 };
+
+// VALIDATION ERRORS
+
+// This class is internally used to throw validation errors in action's server code function, using
+// `returnValidationErrors`.
+class ServerValidationError<S extends Schema> extends Error {
+	public validationErrors: ValidationErrors<S>;
+	constructor(validationErrors: ValidationErrors<S>) {
+		super("Server Validation Error");
+		this.validationErrors = validationErrors;
+	}
+}
+
+/**
+ * Return custom validation errors to the client from the action's server code function.
+ * Code declared after this function invocation will not be executed.
+ * @param schema Input schema
+ * @param validationErrors Validation errors object
+ * @throws {ServerValidationError}
+ */
+export function returnValidationErrors<S extends Schema>(
+	schema: S,
+	validationErrors: ValidationErrors<S>
+): never {
+	throw new ServerValidationError<S>(validationErrors);
+}
