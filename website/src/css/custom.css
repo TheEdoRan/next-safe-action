@@ -29,7 +29,7 @@ body {
 }
 
 .navbar__brand::after {
-	content: "v6";
+	content: "v7";
 	margin-left: 0.5rem;
 	font-weight: 500;
 	position: relative;

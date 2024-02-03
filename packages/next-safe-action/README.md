@@ -2,7 +2,7 @@
 
 ## Documentation
 
-**Explore the documentation for version 6 of the library on [next-safe-action website](https://next-safe-action.dev).** ✨
+**Explore the documentation for version 7 of the library on [next-safe-action website](https://next-safe-action.dev).** ✨
 
 ## Next.js >= 14 vs 13
 
@@ -29,3 +29,7 @@ Version 5.x.x of the library is required for Next.js >= 14 applications. Please 
 ---
 
 Version 6.x.x of the library lets you use validation libraries other than Zod. Please check out the [v5 to v6 migration guide](https://next-safe-action.dev/docs/migration-from-v5-to-v6) on the website for more information.
+
+---
+
+Version 7.x.x of the library supports form actions and improves validation errors handling. Please check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migration-from-v6-to-v7) on the website for more information.

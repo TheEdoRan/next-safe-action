@@ -1,12 +1,12 @@
 ---
 sidebar_position: 2
-description: Getting started with next-safe-action version 5.
+description: Getting started with next-safe-action version 7.
 ---
 
 # Getting started
 
 :::note
-This is the documentation for the current version of the library (6.x.x).
+This is the documentation for the current version of the library (7.x.x).
 :::
 
 :::info Requirements
@@ -38,7 +38,7 @@ npm i next-safe-action@v4 zod
 ## Usage
 
 :::note
-If you're still using Next.js 13, you need to enable `serverActions` flag under the `experimental` object in next.config.js file. Find out more [here](/docs/migration-from-v4-to-v5).
+If you're still using Next.js 13 with next-safe-action v4, you need to enable `serverActions` flag under the `experimental` object in next.config.js file. Find out more [here](/docs/migration-from-v4-to-v5).
 :::
 
 ### 1. Instantiate a new client

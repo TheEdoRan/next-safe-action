@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 description: Learn how to contribute to next-safe-action via GitHub.
 ---
 
