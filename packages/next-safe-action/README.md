@@ -18,18 +18,18 @@ npm i next-safe-action # for Next.js >= 14
 npm i next-safe-action@v4 # for Next.js 13
 ```
 
-## Migration guides
+## Migration guide
 
-Version 4.x.x of the library introduced some breaking changes to the API. Please check out the [v3 to v4 migration guide](https://next-safe-action.dev/docs/migration-from-v3-to-v4) on the website for more information.
-
----
-
-Version 5.x.x of the library is required for Next.js >= 14 applications. Please check out the [v4 to v5 migration guide](https://next-safe-action.dev/docs/migration-from-v4-to-v5) on the website for more information.
+Version 4.x.x of the library introduced some breaking changes to the API. Please check out the [v3 to v4 migration guide](https://next-safe-action.dev/docs/migration/v3-to-v4) on the website for more information.
 
 ---
 
-Version 6.x.x of the library lets you use validation libraries other than Zod. Please check out the [v5 to v6 migration guide](https://next-safe-action.dev/docs/migration-from-v5-to-v6) on the website for more information.
+Version 5.x.x of the library is required for Next.js >= 14 applications. Please check out the [v4 to v5 migration guide](https://next-safe-action.dev/docs/migration/v4-to-v5) on the website for more information.
 
 ---
 
-Version 7.x.x of the library supports form actions and improves validation errors handling. Please check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migration-from-v6-to-v7) on the website for more information.
+Version 6.x.x of the library lets you use validation libraries other than Zod. Please check out the [v5 to v6 migration guide](https://next-safe-action.dev/docs/migration/v5-to-v6) on the website for more information.
+
+---
+
+Version 7.x.x of the library supports form actions and improves validation errors handling. Please check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migration/v6-to-v7) on the website for more information.
