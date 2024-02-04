@@ -70,7 +70,7 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 		serverCode: ServerCodeFn<S, Data, Context>
 	): SafeAction<S, Data> => {
 		// This is the function called by client. If `input` fails the schema
-		// parsing, the function will return a `validationError` object, containing
+		// parsing, the function will return a `validationErrors` object, containing
 		// all the invalid fields provided.
 		return async (clientInput) => {
 			try {
