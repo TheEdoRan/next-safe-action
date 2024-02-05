@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 description: Learn how to migrate from next-safe-action version 4 to version 5.
-title: v4 to v5
+sidebar_label: v4 to v5
 ---
 
 # Migration from v4 to v5

@@ -82,7 +82,7 @@ export default {
 		},
 		footer: {
 			style: "light",
-			copyright: `Copyleft <span class="copyleft">&copy;</span> ${new Date().getFullYear()} Edoardo Ranghieri`,
+			copyright: `Copyleft <span class="copyleft">&copy;</span> 2023 Edoardo Ranghieri`,
 		},
 		prism: {
 			additionalLanguages: ["typescript"],

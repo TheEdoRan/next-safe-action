@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 description: Learn how to migrate from next-safe-action version 3 to version 4.
-title: v3 to v4
+sidebar_label: v3 to v4
 ---
 
 # Migration from v3 to v4
@@ -28,7 +28,7 @@ You can continue to use version 3 of the library if you want to. There are no se
 - Reorganized callbacks arguments for `onSuccess` and `onError`: 
   - from `onSuccess(data, reset, input)` to `onSuccess(data, input, reset)`
   - from `onError(error, reset, input)` to `onError(error, input, reset)`
-- `useOptimisticAction` just required a safe action and an initial optimistic state before. Now it requires a `reducer` function too, that determines the behavior of the optimistic state update when the `execute` function is called. Also, now only one input argument is required by `execute`, instead of two. The same input passed to the actual safe action is now passed to the `reducer` function too, as the second argument (`input`). More information about this hook can be found [here](/docs/usage-from-client/hooks/useoptimisticaction).
+- `useOptimisticAction` just required a safe action and an initial optimistic state before. Now it requires a `reducer` function too, that determines the behavior of the optimistic state update when the `execute` function is called. Also, now only one input argument is required by `execute`, instead of two. The same input passed to the actual safe action is now passed to the `reducer` function too, as the second argument (`input`). More information about this hook can be found [here](/docs/usage/client-components/hooks/useoptimisticaction).
 
 ### Types
 

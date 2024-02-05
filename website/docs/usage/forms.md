@@ -1,6 +1,7 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
 description: Learn how to execute safe actions as form actions.
+sidebar_label: Forms
 ---
 
 # Usage with forms

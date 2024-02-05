@@ -6,7 +6,7 @@ description: Learn how to use the `useOptimisticAction` hook.
 # `useOptimisticAction`
 
 :::info
-`useOptimisticAction` **does not wait** for the action to finish execution before returning the optimistic data. It is then synced with the real result from server when the action has finished its execution. If you need to perform normal mutations, use [`useAction`](/docs/usage-from-client/hooks/useaction) instead.
+`useOptimisticAction` **does not wait** for the action to finish execution before returning the optimistic data. It is then synced with the real result from server when the action has finished its execution. If you need to perform normal mutations, use [`useAction`](/docs/usage/client-components/hooks/useaction) instead.
 :::
 
 :::caution warning
@@ -105,7 +105,7 @@ export default function AddLikes({ numOfLikes }: Props) {
 | `safeAction`     | [`SafeAction`](/docs/types#safeaction)                                | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                              |
 | `initialOptimisticData` | `Data` (return type of the `safeAction` you passed as first argument) | An initializer for the optimistic state. Usually this value comes from the parent Server Component.                                                                                                                                                   |
 | `reducer`        | `(state: Data, input: InferIn<S>) => Data`                      | When you call the action via `execute`, this function determines how the optimistic update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server.  |
-| `callbacks?`     | [`HookCallbacks`](/docs/types#hookcallbacks)                          | Optional callbacks. More information about them [here](/docs/usage-from-client/hooks/callbacks).                                                                                                                                                      |
+| `callbacks?`     | [`HookCallbacks`](/docs/types#hookcallbacks)                          | Optional callbacks. More information about them [here](/docs/usage/client-components/hooks/callbacks).                                                                                                                                                      |
 
 
 ### `useOptimisticAction` return object

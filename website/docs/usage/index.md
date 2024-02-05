@@ -1,5 +1,6 @@
 ---
-sidebar_position: 8
+sidebar_position: 3
 description: Learn how to migrate from a version to the next one.
-title: Migration
 ---
+
+# Usage

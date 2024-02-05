@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7 
+sidebar_position: 6 
 description: List of exported types.
 ---
 
@@ -40,6 +40,14 @@ type ServerCodeFn<S extends Schema, Data, Context> = (
   parsedInput: Infer<S>,
   ctx: Context
 ) => Promise<Data>;
+```
+
+### `ValidationErrors`
+
+Type of the returned object when input validation fails.
+
+```typescript
+export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
 ```
 
 ## /hooks
@@ -83,6 +91,44 @@ Type of the action status returned by `useAction` and `useOptimisticAction` hook
 
 ```typescript
 type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
+```
+
+---
+
+## Utility types
+
+### `MaybePromise`
+
+Returns type or promise of type.
+
+```typescript
+export type MaybePromise<T> = Promise<T> | T;
+```
+
+### `Extend`
+
+Extends an object without printing "&".
+
+```typescript
+export type Extend<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
+```
+
+### `ErrorList`
+
+Object with an optional list of validation errors. Used in [`ValidationErrors`](#validationerrors) type.
+
+```typescript
+export type ErrorList = { _errors?: string[] } & {};
+```
+
+### `SchemaErrors`
+
+Creates nested schema validation errors type using recursion. Used in [`ValidationErrors`](#validationerrors) type.
+
+```typescript
+export type SchemaErrors<S> = {
+  [K in keyof S]?: S[K] extends object ? Extend<ErrorList & SchemaErrors<S[K]>> : ErrorList;
+} & {};
 ```
 
 ---

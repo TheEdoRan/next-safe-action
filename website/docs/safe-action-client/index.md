@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 4
 description: Safe action client is the instance that you can use to create typesafe actions.
 ---
 
