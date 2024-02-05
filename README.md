@@ -23,11 +23,7 @@ https://github.com/TheEdoRan/next-safe-action/assets/1337629/7ebc398e-6c7d-49b2-
 
 ## Documentation
 
-**Explore the documentation for version 7 of the library on the [next-safe-action website](https://next-safe-action.dev).** ✨
-
-If you are looking for old versions documentation, check out:
-- the [README_v3](packages/next-safe-action/README_v3.md) file for version 3.x.x.
-- the [README_v2](packages/next-safe-action/README_v2.md) file for version 2.x.x.
+**Explore the documentation for the current library version on [next-safe-action website](https://next-safe-action.dev).** ✨
 
 ## Next.js >= 14 vs 13
 
@@ -45,19 +41,7 @@ npm i next-safe-action@v4 # for Next.js 13
 
 ## Migration guide
 
-Version 4.x.x of the library introduced some breaking changes to the API. Please check out the [v3 to v4 migration guide](https://next-safe-action.dev/docs/migration/v3-to-v4) on the website for more information.
-
----
-
-Version 5.x.x of the library is required for Next.js >= 14 applications. Please check out the [v4 to v5 migration guide](https://next-safe-action.dev/docs/migration/v4-to-v5) on the website for more information.
-
----
-
-Version 6.x.x of the library lets you use validation libraries other than Zod. Please check out the [v5 to v6 migration guide](https://next-safe-action.dev/docs/migration/v5-to-v6) on the website for more information.
-
----
-
-Version 7.x.x of the library supports form actions and improves validation errors handling. Please check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migration/v6-to-v7) on the website for more information.
+Version 7.x.x of the library supports form actions and improves validation errors handling. Please check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migrations/v6-to-v7) on the website for more information.
 
 ## Example
 
