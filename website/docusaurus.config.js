@@ -74,15 +74,12 @@ export default {
 					label: "Docs",
 				},
 				{
-					href: "https://github.com/TheEdoRan/next-safe-action",
-					label: "GitHub",
-					position: "right",
+					"href": "https://github.com/TheEdoRan/next-safe-action",
+					"position": "right",
+					"className": "header-github-link",
+					"aria-label": "next-safe-action's GitHub page",
 				},
 			],
-		},
-		footer: {
-			style: "light",
-			copyright: `Copyleft <span class="copyleft">&copy;</span> 2023 Edoardo Ranghieri`,
 		},
 		prism: {
 			additionalLanguages: ["typescript"],
