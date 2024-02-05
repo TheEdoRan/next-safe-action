@@ -1,4 +1,5 @@
-import type { Infer, Schema, ValidationIssue } from "@decs/typeschema";
+import type { Schema, ValidationIssue } from "@decs/typeschema";
+import type { ValidationErrors } from ".";
 
 export const isError = (error: unknown): error is Error => error instanceof Error;
 
@@ -8,19 +9,17 @@ export const isError = (error: unknown): error is Error => error instanceof Erro
 export type MaybePromise<T> = Promise<T> | T;
 
 // Extends an object without printing "&".
-type Extend<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
+export type Extend<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
 
 // VALIDATION ERRORS
 
-type ErrorList = { _errors?: string[] } & {};
+// Object with an optional list of validation errors.
+export type ErrorList = { _errors?: string[] } & {};
 
-// Creates nested schema errors type using recursion.
-type SchemaErrors<S> = {
+// Creates nested schema validation errors type using recursion.
+export type SchemaErrors<S> = {
 	[K in keyof S]?: S[K] extends object ? Extend<ErrorList & SchemaErrors<S[K]>> : ErrorList;
 } & {};
-
-// Merges root errors with nested schema errors.
-export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
 
 // This function is used to build the validation errors object from a list of validation issues.
 export const buildValidationErrors = <const S extends Schema>(issues: ValidationIssue[]) => {
@@ -31,7 +30,7 @@ export const buildValidationErrors = <const S extends Schema>(issues: Validation
 
 		// When path is undefined or empty, set root errors.
 		if (!path || path.length === 0) {
-			ve._errors = Array.isArray(ve._errors) ? [...ve._errors, message] : [message];
+			ve._errors = ve._errors ? [...ve._errors, message] : [message];
 			continue;
 		}
 
@@ -42,7 +41,7 @@ export const buildValidationErrors = <const S extends Schema>(issues: Validation
 		for (let i = 0; i < path.length - 1; i++) {
 			const k = path[i]!;
 
-			if (!(k in ref)) {
+			if (!ref[k]) {
 				ref[k] = {};
 			}
 
@@ -54,8 +53,8 @@ export const buildValidationErrors = <const S extends Schema>(issues: Validation
 
 		// Set error for the current path. If `_errors` array exists, add the message to it.
 		ref[key] = (
-			Array.isArray(ref[key]?._errors)
-				? { ...structuredClone(ref[key]), _errors: [...ref[key]!._errors!, message] }
+			ref[key]?._errors
+				? { ...structuredClone(ref[key]), _errors: [...ref[key]._errors, message] }
 				: { ...structuredClone(ref[key]), _errors: [message] }
 		) satisfies ErrorList;
 	}

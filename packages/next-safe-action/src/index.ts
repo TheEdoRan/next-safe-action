@@ -2,7 +2,7 @@ import type { Infer, InferIn, Schema } from "@decs/typeschema";
 import { wrap } from "@decs/typeschema";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
-import type { MaybePromise, ValidationErrors } from "./utils";
+import type { ErrorList, Extend, MaybePromise, SchemaErrors } from "./utils";
 import { buildValidationErrors, isError } from "./utils";
 
 // TYPES
@@ -32,6 +32,11 @@ export type ServerCodeFn<S extends Schema, Data, Context> = (
 	parsedInput: Infer<S>,
 	ctx: Context
 ) => Promise<Data>;
+
+/**
+ * Type of the returned object when input validation fails.
+ */
+export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
 
 // UTILS
 

@@ -115,7 +115,7 @@ const useActionCallbacks = <const S extends Schema, const Data>(
  * @param safeAction The typesafe action.
  * @param callbacks Optional callbacks executed based on the action status.
  *
- * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useaction See an example}
+ * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useaction See an example}
  */
 export const useAction = <const S extends Schema, const Data>(
 	safeAction: SafeAction<S, Data>,
@@ -174,7 +174,7 @@ export const useAction = <const S extends Schema, const Data>(
  * @param reducer Optimistic state reducer.
  * @param callbacks Optional callbacks executed based on the action status.
  *
- * {@link https://next-safe-action.dev/docs/usage-from-client/hooks/useoptimisticaction See an example}
+ * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useoptimisticaction See an example}
  */
 export const useOptimisticAction = <const S extends Schema, const Data>(
 	safeAction: SafeAction<S, Data>,
