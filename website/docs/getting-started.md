@@ -38,7 +38,7 @@ npm i next-safe-action@v4 zod
 ## Usage
 
 :::note
-If you're still using Next.js 13 with next-safe-action v4, you need to enable `serverActions` flag under the `experimental` object in next.config.js file. Find out more [here](/docs/migration/v4-to-v5).
+If you're still using Next.js 13 with next-safe-action v4, you need to enable `serverActions` flag under the `experimental` object in next.config.js file. Find out more [here](/docs/migrations/v4-to-v5).
 :::
 
 ### 1. Instantiate a new client
