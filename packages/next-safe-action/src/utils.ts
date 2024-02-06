@@ -18,7 +18,9 @@ export type ErrorList = { _errors?: string[] } & {};
 
 // Creates nested schema validation errors type using recursion.
 export type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends object ? Extend<ErrorList & SchemaErrors<S[K]>> : ErrorList;
+	[K in keyof S]?: S[K] extends object | null | undefined
+		? Extend<ErrorList & SchemaErrors<S[K]>>
+		: ErrorList;
 } & {};
 
 // This function is used to build the validation errors object from a list of validation issues.

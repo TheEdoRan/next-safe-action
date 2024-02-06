@@ -127,7 +127,9 @@ Creates nested schema validation errors type using recursion. Used in [`Validati
 
 ```typescript
 export type SchemaErrors<S> = {
-  [K in keyof S]?: S[K] extends object ? Extend<ErrorList & SchemaErrors<S[K]>> : ErrorList;
+  [K in keyof S]?: S[K] extends object | null | undefined
+    ? Extend<ErrorList & SchemaErrors<S[K]>>
+    : ErrorList;
 } & {};
 ```
 
