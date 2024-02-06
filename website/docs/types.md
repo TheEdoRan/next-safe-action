@@ -1,6 +1,6 @@
 ---
-sidebar_position: 6 
-description: List of exported types.
+sidebar_position: 7 
+description: List of next-safe-action types.
 ---
 
 # Types
