@@ -1,6 +1,7 @@
 "use client";
 
 import { useAction } from "next-safe-action/hooks";
+import { isExecuting } from "next-safe-action/status";
 import { deleteUser } from "./deleteuser-action";
 
 type Props = {
@@ -57,7 +58,7 @@ const DeleteUserForm = ({ userId }: Props) => {
 			</form>
 			<div id="result-container">
 				<pre>Deleted user ID: {userId}</pre>
-				<pre>Is executing: {JSON.stringify(status === "executing")}</pre>
+				<pre>Is executing: {JSON.stringify(isExecuting(status))}</pre>
 				<div>Action result:</div>
 				<pre className="result">
 					{
