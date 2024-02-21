@@ -5,6 +5,7 @@ export default function SignUpPage() {
 	return (
 		<>
 			<Link href="/">Go to home</Link>
+			{/* @ts-ignore */}
 			<form action={signup}>
 				<input type="text" name="email" placeholder="name@example.com" />
 				<input type="password" name="password" placeholder="••••••••" />

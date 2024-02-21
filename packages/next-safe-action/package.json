@@ -51,16 +51,16 @@
 		"node": ">=18.17"
 	},
 	"devDependencies": {
-		"@types/node": "^20.11.16",
-		"@types/react": "^18.2.55",
-		"@typescript-eslint/eslint-plugin": "^6.21.0",
-		"@typescript-eslint/parser": "^6.21.0",
+		"@types/node": "^20.11.19",
+		"@types/react": "^18.2.57",
+		"@typescript-eslint/eslint-plugin": "^7.0.2",
+		"@typescript-eslint/parser": "^7.0.2",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"next": "14.1.0",
 		"prettier": "^3.2.5",
 		"react": "18.2.0",
-		"tsup": "^8.0.1",
+		"tsup": "^8.0.2",
 		"typescript": "^5.3.3"
 	},
 	"peerDependencies": {
