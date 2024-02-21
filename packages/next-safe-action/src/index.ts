@@ -13,7 +13,7 @@ import { buildValidationErrors, isError } from "./utils";
 export type SafeClientOpts<Context> = {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
-	middleware?: (parsedInput: unknown) => MaybePromise<Context>;
+	middleware?: (parsedInput: unknown, additionalArguments?: unknown) => MaybePromise<Context>;
 };
 
 /**
@@ -67,7 +67,8 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 	// It returns a function callable by the client.
 	const actionBuilder = <const S extends Schema, const Data>(
 		schema: S,
-		serverCode: ServerCodeFn<S, Data, Context>
+		serverCode: ServerCodeFn<S, Data, Context>,
+		additionalArguments?: unknown,
 	): SafeAction<S, Data> => {
 		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
@@ -84,7 +85,7 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 				}
 
 				// Get the context if `middleware` is provided.
-				const ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data))) as Context;
+				const ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data, additionalArguments))) as Context;
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.
