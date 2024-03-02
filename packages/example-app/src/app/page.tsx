@@ -1,20 +1,22 @@
-import Link from "next/link";
-import LoginForm from "./login-form";
-
-export const metadata = {
-	title: "Action without auth",
-};
+import { ExampleLink } from "./_components/example-link";
 
 export default function Home() {
 	return (
-		<>
-			<Link href="/with-context">Go to /with-context</Link>
-			<Link href="/hook">Go to /hook</Link>
-			<Link href="/optimistic-hook">Go to /optimistic-hook</Link>
-			<Link href="/form">Go to /form</Link>
-			<Link href="/nested-schema">Go to /nested-schema</Link>
-			<h1>Action without auth</h1>
-			<LoginForm />
-		</>
+		<main className="text-center">
+			<h1 className="text-4xl font-semibold">Examples</h1>
+			<div className="mt-4 flex flex-col space-y-2">
+				<ExampleLink href="/direct">Direct call</ExampleLink>
+				<ExampleLink href="/with-context">With Context</ExampleLink>
+				<ExampleLink href="/nested-schema">Nested schema</ExampleLink>
+				<ExampleLink href="/hook">
+					<span className="font-mono">useAction</span> hook
+				</ExampleLink>
+				<ExampleLink href="/optimistic-hook">
+					<span className="font-mono">useOptimisticAction</span> hook
+				</ExampleLink>
+				<ExampleLink href="/server-form">Server Form</ExampleLink>
+				<ExampleLink href="/client-form">Client Form</ExampleLink>
+			</div>
+		</main>
 	);
 }

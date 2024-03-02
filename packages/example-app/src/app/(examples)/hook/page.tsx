@@ -1,16 +1,14 @@
 "use client";
 
+import { StyledButton } from "@/app/_components/styled-button";
+import { StyledHeading } from "@/app/_components/styled-heading";
+import { StyledInput } from "@/app/_components/styled-input";
 import { useAction } from "next-safe-action/hooks";
-import { isExecuting } from "next-safe-action/status";
+import { ResultBox } from "../../_components/result-box";
 import { deleteUser } from "./deleteuser-action";
 
-type Props = {
-	userId: string;
-};
-
-const DeleteUserForm = ({ userId }: Props) => {
-	// Safe action (`deleteUser`) and optional `onSuccess` and `onError` callbacks
-	// passed to `useAction` hook.
+export default function Hook() {
+	// Safe action (`deleteUser`) and optional callbacks passed to `useAction` hook.
 	const { execute, result, status, reset } = useAction(deleteUser, {
 		onSuccess(data, input, reset) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
@@ -38,8 +36,10 @@ const DeleteUserForm = ({ userId }: Props) => {
 	console.log("status:", status);
 
 	return (
-		<>
+		<main className="w-96 max-w-full px-4">
+			<StyledHeading>Action using hook</StyledHeading>
 			<form
+				className="flex flex-col mt-8 space-y-4"
 				onSubmit={(e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);
@@ -50,26 +50,18 @@ const DeleteUserForm = ({ userId }: Props) => {
 					// Action call.
 					execute(input);
 				}}>
-				<input type="text" name="userId" id="userId" placeholder="User ID" />
-				<button type="submit">Delete user</button>
-				<button type="button" onClick={reset}>
+				<StyledInput
+					type="text"
+					name="userId"
+					id="userId"
+					placeholder="User ID"
+				/>
+				<StyledButton type="submit">Delete user</StyledButton>
+				<StyledButton type="button" onClick={reset}>
 					Reset
-				</button>
+				</StyledButton>
 			</form>
-			<div id="result-container">
-				<pre>Deleted user ID: {userId}</pre>
-				<pre>Is executing: {JSON.stringify(isExecuting(status))}</pre>
-				<div>Action result:</div>
-				<pre className="result">
-					{
-						result // if got back a result,
-							? JSON.stringify(result, null, 1)
-							: "fill in form and click on the delete user button" // if action never ran
-					}
-				</pre>
-			</div>
-		</>
+			<ResultBox result={result} status={status} />
+		</main>
 	);
-};
-
-export default DeleteUserForm;
+}
