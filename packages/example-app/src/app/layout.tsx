@@ -13,12 +13,13 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body>
+			<body className="antialiased bg-slate-50 dark:bg-slate-950 dark:text-slate-50 text-slate-950 flex flex-col min-h-screen items-center pt-24">
 				<a
 					id="github-link"
 					href="https://github.com/TheEdoRan/next-safe-action"
 					target="_blank"
-					rel="noopener noreferrer">
+					rel="noopener noreferrer"
+					className="mb-8">
 					<GitHubLogo width={40} height={40} />
 				</a>
 				{children}

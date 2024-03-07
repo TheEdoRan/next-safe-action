@@ -1,6 +1,9 @@
 "use client";
 
+import { StyledButton } from "@/app/_components/styled-button";
+import { StyledInput } from "@/app/_components/styled-input";
 import { useOptimisticAction } from "next-safe-action/hooks";
+import { ResultBox } from "../../_components/result-box";
 import { addLikes } from "./addlikes-action";
 
 type Props = {
@@ -46,6 +49,7 @@ const AddLikesForm = ({ likesCount }: Props) => {
 	return (
 		<>
 			<form
+				className="flex flex-col mt-8 space-y-4"
 				onSubmit={(e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);
@@ -59,31 +63,18 @@ const AddLikesForm = ({ likesCount }: Props) => {
 					// data.
 					execute({ incrementBy: intIncrementBy });
 				}}>
-				<input
+				<StyledInput
 					type="text"
 					name="incrementBy"
 					id="incrementBy"
 					placeholder="Increment by"
 				/>
-				<button type="submit">Add likes</button>
-				<button type="button" onClick={reset}>
+				<StyledButton type="submit">Add likes</StyledButton>
+				<StyledButton type="button" onClick={reset}>
 					Reset
-				</button>
+				</StyledButton>
 			</form>
-			<div id="result-container">
-				{/* This object will update immediately when you execute the action.
-						Real data will come back once action has finished executing. */}
-				<pre>Optimistic data: {JSON.stringify(optimisticData)}</pre>{" "}
-				<pre>Is executing: {JSON.stringify(status === "executing")}</pre>
-				<div>Action result:</div>
-				<pre className="result">
-					{
-						result // if got back a result,
-							? JSON.stringify(result, null, 1)
-							: "fill in form and click on the add likes button" // if action never ran
-					}
-				</pre>
-			</div>
+			<ResultBox result={optimisticData} status={status} />
 		</>
 	);
 };

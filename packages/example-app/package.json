@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev --turbo",
+		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint"
@@ -11,6 +11,7 @@
 	"license": "MIT",
 	"author": "Edoardo Ranghieri",
 	"dependencies": {
+		"lucide-react": "^0.343.0",
 		"next": "14.1.0",
 		"next-safe-action": "file:../next-safe-action",
 		"react": "18.2.0",
@@ -23,10 +24,10 @@
 		"@types/node": "^20.11.19",
 		"@types/react": "^18.2.57",
 		"@types/react-dom": "18.2.19",
-		"postcss": "8.4.35",
 		"autoprefixer": "10.4.17",
 		"eslint": "^8.56.0",
 		"eslint-config-next": "14.1.0",
+		"postcss": "8.4.35",
 		"tailwindcss": "3.4.1",
 		"typescript": "^5.3.3"
 	}
