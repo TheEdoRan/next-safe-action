@@ -28,9 +28,9 @@ export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema, Data, ActionContext> = (
+export type ServerCodeFn<S extends Schema, Data, Context> = (
 	parsedInput: Infer<S>,
-	ctx: ActionContext
+	ctx: Context
 ) => Promise<Data>;
 
 // UTILS
@@ -46,8 +46,8 @@ export const DEFAULT_SERVER_ERROR = "Something went wrong while executing the op
  *
  * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
-export const createSafeActionClient = <ActionContext, MiddlewareData>(
-	createOpts?: SafeClientOpts<ActionContext, MiddlewareData>
+export const createSafeActionClient = <Context, MiddlewareData>(
+	createOpts?: SafeClientOpts<Context, MiddlewareData>
 ) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
@@ -69,7 +69,7 @@ export const createSafeActionClient = <ActionContext, MiddlewareData>(
 	// It returns a function callable by the client.
 	const actionBuilder = <const S extends Schema, const Data>(
 		schema: S,
-		serverCode: ServerCodeFn<S, Data, ActionContext>,
+		serverCode: ServerCodeFn<S, Data, Context>,
 		utils?: {
 			middlewareData?: MiddlewareData;
 		}
@@ -91,7 +91,7 @@ export const createSafeActionClient = <ActionContext, MiddlewareData>(
 				// Get the context if `middleware` is provided.
 				const ctx = (await Promise.resolve(
 					createOpts?.middleware?.(parsedInput.data, utils?.middlewareData)
-				)) as ActionContext;
+				)) as Context;
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.
