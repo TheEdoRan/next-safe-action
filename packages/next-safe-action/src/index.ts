@@ -10,10 +10,10 @@ import { buildValidationErrors, isError } from "./utils";
 /**
  * Type of options when creating a new safe action client.
  */
-export type SafeClientOpts<Context> = {
+export type SafeClientOpts<Context, MiddlewareData> = {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
-	middleware?: (parsedInput: unknown, additionalArguments?: unknown) => MaybePromise<Context>;
+	middleware?: (parsedInput: any, data?: MiddlewareData) => MaybePromise<Context>;
 };
 
 /**
@@ -28,9 +28,9 @@ export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema, Data, Context> = (
+export type ServerCodeFn<S extends Schema, Data, ActionContext> = (
 	parsedInput: Infer<S>,
-	ctx: Context
+	ctx: ActionContext
 ) => Promise<Data>;
 
 // UTILS
@@ -46,7 +46,9 @@ export const DEFAULT_SERVER_ERROR = "Something went wrong while executing the op
  *
  * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
-export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Context>) => {
+export const createSafeActionClient = <ActionContext, MiddlewareData>(
+	createOpts?: SafeClientOpts<ActionContext, MiddlewareData>
+) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
@@ -67,8 +69,10 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 	// It returns a function callable by the client.
 	const actionBuilder = <const S extends Schema, const Data>(
 		schema: S,
-		serverCode: ServerCodeFn<S, Data, Context>,
-		additionalArguments?: unknown,
+		serverCode: ServerCodeFn<S, Data, ActionContext>,
+		utils?: {
+			middlewareData?: MiddlewareData;
+		}
 	): SafeAction<S, Data> => {
 		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
@@ -85,7 +89,9 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 				}
 
 				// Get the context if `middleware` is provided.
-				const ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data, additionalArguments))) as Context;
+				const ctx = (await Promise.resolve(
+					createOpts?.middleware?.(parsedInput.data, utils?.middlewareData)
+				)) as ActionContext;
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.
