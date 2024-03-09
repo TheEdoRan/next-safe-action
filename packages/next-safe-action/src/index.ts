@@ -10,10 +10,10 @@ import { buildValidationErrors, isError } from "./utils";
 /**
  * Type of options when creating a new safe action client.
  */
-export type SafeClientOpts<Context> = {
+export type SafeClientOpts<Context, MiddlewareData> = {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
-	middleware?: (parsedInput: unknown) => MaybePromise<Context>;
+	middleware?: (parsedInput: any, data?: MiddlewareData) => MaybePromise<Context>;
 };
 
 /**
@@ -46,7 +46,9 @@ export const DEFAULT_SERVER_ERROR = "Something went wrong while executing the op
  *
  * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
-export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Context>) => {
+export const createSafeActionClient = <Context, MiddlewareData>(
+	createOpts?: SafeClientOpts<Context, MiddlewareData>
+) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
@@ -67,7 +69,10 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 	// It returns a function callable by the client.
 	const actionBuilder = <const S extends Schema, const Data>(
 		schema: S,
-		serverCode: ServerCodeFn<S, Data, Context>
+		serverCode: ServerCodeFn<S, Data, Context>,
+		utils?: {
+			middlewareData?: MiddlewareData;
+		}
 	): SafeAction<S, Data> => {
 		// This is the function called by client. If `input` fails the schema
 		// parsing, the function will return a `validationError` object, containing
@@ -84,7 +89,9 @@ export const createSafeActionClient = <Context>(createOpts?: SafeClientOpts<Cont
 				}
 
 				// Get the context if `middleware` is provided.
-				const ctx = (await Promise.resolve(createOpts?.middleware?.(parsedInput.data))) as Context;
+				const ctx = (await Promise.resolve(
+					createOpts?.middleware?.(parsedInput.data, utils?.middlewareData)
+				)) as Context;
 
 				// Get `result.data` from the server code function. If it doesn't return
 				// anything, `data` will be `null`.
