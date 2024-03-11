@@ -1,4 +1,5 @@
-import type { Schema, ValidationIssue } from "@decs/typeschema";
+import type { ValidationIssue } from "@typeschema/core";
+import type { Schema } from "@typeschema/main";
 import type { ValidationErrors } from ".";
 
 export const isError = (error: unknown): error is Error => error instanceof Error;

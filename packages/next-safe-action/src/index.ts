@@ -1,5 +1,5 @@
-import type { Infer, InferIn, Schema } from "@decs/typeschema";
-import { wrap } from "@decs/typeschema";
+import type { Infer, InferIn, Schema } from "@typeschema/main";
+import { validate } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type { ErrorList, Extend, MaybePromise, SchemaErrors } from "./utils";
@@ -84,10 +84,10 @@ export const createSafeActionClient = <Context, MiddlewareData>(
 		// all the invalid fields provided.
 		return async (clientInput) => {
 			try {
-				const parsedInput = await wrap(schema).validate(clientInput);
+				const parsedInput = await validate(schema, clientInput);
 
 				// If schema validation fails.
-				if ("issues" in parsedInput) {
+				if (!parsedInput.success) {
 					return {
 						validationErrors: buildValidationErrors<S>(parsedInput.issues),
 					};

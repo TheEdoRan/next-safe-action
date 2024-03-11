@@ -10,36 +10,26 @@ This is the documentation for the current version of the library (7.x.x).
 :::
 
 :::info Requirements
-- v4: Next.js >= 13.4.2, v5: Next.js >= 14.0.0
+- Next.js >= 14.0.0
 - TypeScript >= 5.0.0
-- pre-v6: Zod >= 3.0.0, from v6: a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
+- a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
 :::
 
 **next-safe-action** provides a typesafe Server Actions implementation for Next.js App Router.
 
 ## Validation libraries support
 
-We will use Zod as our validation library in this documentation, but since version 6 of next-safe-action, you can use your validation library of choice, or even multiple and custom ones at the same time, thanks to the **TypeSchema** library. You can find supported libraries [here](https://typeschema.com/#coverage).
+We will use Zod as our validation library in this documentation, but since version 6 of next-safe-action, you can use your validation library of choice, or even multiple and custom ones at the same time, thanks to the **TypeSchema** library. Note that we also need to install the related TypeSchema adapter for our validation library of choice. You can find supported libraries and related adapters [here](https://typeschema.com/#coverage).
 
 ## Installation
 
-For Next.js >= 14, use the following command:
+For Next.js >= 14, assuming you want to use Zod as your validation library, use the following command:
 
 ```bash npm2yarn
-npm i next-safe-action
-```
-
-For Next.js 13, use the following command:
-
-```bash npm2yarn
-npm i next-safe-action@v4 zod
+npm i next-safe-action zod @typeschema/zod
 ```
 
 ## Usage
-
-:::note
-If you're still using Next.js 13 with next-safe-action v4, you need to enable `serverActions` flag under the `experimental` object in next.config.js file. Find out more [here](/docs/migrations/v4-to-v5).
-:::
 
 ### 1. Instantiate a new client
 
