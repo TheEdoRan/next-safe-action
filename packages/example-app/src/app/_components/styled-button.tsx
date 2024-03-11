@@ -1,12 +1,17 @@
-import { ComponentProps } from "react";
+import { ComponentProps, forwardRef } from "react";
 
 type Props = ComponentProps<"button">;
 
-export function StyledButton(props: Props) {
-	return (
-		<button
-			{...props}
-			className={`${props.className ?? ""} bg-slate-950 text-slate-50 px-3 py-2 rounded-md w-full font-medium dark:bg-slate-50 dark:text-slate-950`}
-		/>
-	);
-}
+export const StyledButton = forwardRef<HTMLButtonElement, Props>(
+	function StyledButton(props: Props, ref) {
+		return (
+			<button
+				{...props}
+				ref={ref}
+				className={`${props.className ?? ""} bg-slate-950 text-slate-50 px-3 py-2 rounded-md w-full font-medium dark:bg-slate-50 dark:text-slate-950`}
+			/>
+		);
+	}
+);
+
+StyledButton.displayName = "StyledButton";

@@ -12,11 +12,13 @@
 	"author": "Edoardo Ranghieri",
 	"dependencies": {
 		"lucide-react": "^0.343.0",
+		"@hookform/resolvers": "^3.3.4",
 		"next": "14.1.0",
 		"next-safe-action": "file:../next-safe-action",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
 		"valibot": "^0.29.0",
+		"react-hook-form": "^7.51.0",
 		"zod": "^3.22.4",
 		"zod-form-data": "^2.0.2"
 	},

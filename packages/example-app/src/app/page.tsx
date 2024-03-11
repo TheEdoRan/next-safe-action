@@ -16,6 +16,7 @@ export default function Home() {
 				</ExampleLink>
 				<ExampleLink href="/server-form">Server Form</ExampleLink>
 				<ExampleLink href="/client-form">Client Form</ExampleLink>
+				<ExampleLink href="/react-hook-form">React Hook Form</ExampleLink>
 			</div>
 		</main>
 	);

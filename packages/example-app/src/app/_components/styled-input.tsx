@@ -1,14 +1,19 @@
-import { ComponentProps } from "react";
+import { ComponentProps, forwardRef } from "react";
 
 type Props = ComponentProps<"input">;
 
-export function StyledInput(props: Props) {
-	return (
-		<>
-			<input
-				{...props}
-				className={`${props.className ?? ""} py-1 px-2 border rounded-md dark:bg-slate-800 dark:border-slate-700`}
-			/>
-		</>
-	);
-}
+export const StyledInput = forwardRef<HTMLInputElement, Props>(
+	function StyledInput(props: Props, ref) {
+		return (
+			<>
+				<input
+					{...props}
+					ref={ref}
+					className={`${props.className ?? ""} py-1 px-2 border rounded-md dark:bg-slate-800 dark:border-slate-700`}
+				/>
+			</>
+		);
+	}
+);
+
+StyledInput.displayName = "StyledInput";

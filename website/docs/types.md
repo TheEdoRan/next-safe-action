@@ -12,10 +12,10 @@ description: List of next-safe-action types.
 Type of options when creating a new safe action client.
 
 ```typescript
-export type SafeClientOpts<Context> = {
+export type SafeClientOpts<Context, MiddlewareData> = {
   handleServerErrorLog?: (e: Error) => MaybePromise<void>;
   handleReturnedServerError?: (e: Error) => MaybePromise<string>;
-  middleware?: (parsedInput: unknown) => MaybePromise<Context>;
+  middleware?: (parsedInput: any, data?: MiddlewareData) => MaybePromise<Context>;
 };
 ```
 
