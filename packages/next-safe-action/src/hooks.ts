@@ -1,6 +1,6 @@
 "use client";
 
-import type { InferIn, Schema } from "@decs/typeschema";
+import type { InferIn, Schema } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
