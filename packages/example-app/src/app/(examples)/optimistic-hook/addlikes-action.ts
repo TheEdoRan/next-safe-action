@@ -6,7 +6,7 @@ import { z } from "zod";
 
 let likes = 42;
 
-export const getLikes = () => likes;
+export const getLikes = async () => likes;
 
 const incrementLikes = (by: number) => {
 	likes += by;

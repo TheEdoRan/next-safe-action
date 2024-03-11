@@ -2,8 +2,9 @@ import { StyledHeading } from "@/app/_components/styled-heading";
 import { getLikes } from "./addlikes-action";
 import AddLikeForm from "./addlikes-form";
 
-export default function OptimisticHook() {
-	const likesCount = getLikes();
+export default async function OptimisticHookPage() {
+	const likesCount = await getLikes();
+
 	return (
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>Action using optimistic hook</StyledHeading>

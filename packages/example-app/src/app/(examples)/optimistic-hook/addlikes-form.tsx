@@ -74,7 +74,11 @@ const AddLikesForm = ({ likesCount }: Props) => {
 					Reset
 				</StyledButton>
 			</form>
-			<ResultBox result={optimisticData} status={status} />
+			<ResultBox
+				result={optimisticData}
+				status={status}
+				customTitle="Optimistic data:"
+			/>
 		</>
 	);
 };
