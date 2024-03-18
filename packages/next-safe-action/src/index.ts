@@ -79,7 +79,7 @@ export const createSafeActionClient = <Context, MiddlewareData>(
 		schema: S,
 		serverCode: ServerCodeFn<S, Data, Context>,
 		utils?: {
-			actionName: string;
+			actionName?: string;
 			middlewareData?: MiddlewareData;
 		}
 	): SafeAction<S, Data> => {
