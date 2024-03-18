@@ -7,6 +7,13 @@ import { buildValidationErrors, isError } from "./utils";
 
 // TYPES
 
+export type WrapExecutionFn<S extends Schema, Data, Context> = (
+	serverCode: ServerCodeFn<S, Data, Context>,
+	parsedInput: Infer<S>,
+	ctx: Context,
+	actionName: string | undefined
+) => Promise<Data>;
+
 /**
  * Type of options when creating a new safe action client.
  */
@@ -14,6 +21,7 @@ export type SafeClientOpts<Context, MiddlewareData> = {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
 	middleware?: (parsedInput: any, data?: MiddlewareData) => MaybePromise<Context>;
+	wrapExecution?: WrapExecutionFn<any, any, Context>;
 };
 
 /**
@@ -71,6 +79,7 @@ export const createSafeActionClient = <Context, MiddlewareData>(
 		schema: S,
 		serverCode: ServerCodeFn<S, Data, Context>,
 		utils?: {
+			actionName: string;
 			middlewareData?: MiddlewareData;
 		}
 	): SafeAction<S, Data> => {
@@ -93,9 +102,14 @@ export const createSafeActionClient = <Context, MiddlewareData>(
 					createOpts?.middleware?.(parsedInput.data, utils?.middlewareData)
 				)) as Context;
 
-				// Get `result.data` from the server code function. If it doesn't return
-				// anything, `data` will be `null`.
-				const data = ((await serverCode(parsedInput.data, ctx)) ?? null) as Data;
+				// Create a function that calls wrapExecution or serverCode directly, depending on configuration
+				const execute = createOpts?.wrapExecution
+					? (parsedInput: Infer<S>, ctx: Context) =>
+							createOpts.wrapExecution!(serverCode, parsedInput, ctx, utils?.actionName)
+					: serverCode;
+
+				// Use the execute function to call serverCode, potentially wrapped by wrapExecution
+				const data = ((await execute(parsedInput.data, ctx)) ?? null) as Data;
 
 				return { data };
 			} catch (e: unknown) {
