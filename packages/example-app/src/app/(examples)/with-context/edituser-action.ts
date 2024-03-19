@@ -8,12 +8,12 @@ const input = object({
 	age: string([minLength(2, "Too young"), maxLength(3, "Too old")]),
 });
 
-export const editUser = authAction(
+export const editUser = authAction.define(
 	input,
 	// Here you have access to `userId`, which comes from `buildContext`
 	// return object in src/lib/safe-action.ts.
 	//                          \\\\\
-	async ({ fullName, age }, { userId }) => {
+	async ({ fullName, age }, { userId, sessionId }) => {
 		if (fullName.toLowerCase() === "john doe") {
 			return {
 				error: {
@@ -37,6 +37,7 @@ export const editUser = authAction(
 				newFullName: fullName,
 				newAge: intAge,
 				userId,
+				sessionId,
 			},
 		};
 	}

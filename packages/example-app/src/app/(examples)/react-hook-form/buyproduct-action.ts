@@ -4,7 +4,7 @@ import { action } from "@/lib/safe-action";
 import { randomUUID } from "crypto";
 import { schema } from "./validation";
 
-export const buyProduct = action(schema, async ({ productId }) => {
+export const buyProduct = action.define(schema, async ({ productId }) => {
 	return {
 		productId,
 		transactionId: randomUUID(),

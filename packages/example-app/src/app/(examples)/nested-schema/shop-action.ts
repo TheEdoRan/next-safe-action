@@ -3,7 +3,7 @@
 import { action } from "@/lib/safe-action";
 import { z } from "zod";
 
-const input = z
+const schema = z
 	.object({
 		user: z.object({
 			id: z.string().uuid(),
@@ -68,7 +68,7 @@ const input = z
 		}
 	});
 
-export const buyProduct = action(input, async () => {
+export const buyProduct = action.define(schema, async () => {
 	return {
 		success: true,
 	};

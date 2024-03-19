@@ -26,20 +26,41 @@ export const action = createSafeActionClient({
 	handleReturnedServerError,
 });
 
+async function getSessionId() {
+	return randomUUID();
+}
+
 export const authAction = createSafeActionClient({
-	// You can provide a middleware function. In this case, context is used
-	// for (fake) auth purposes.
-	middleware(parsedInput) {
+	handleReturnedServerError,
+})
+	// Middleware can be async/non async.
+	.use(() => {
+		// You can provide a middleware function. In this case, context is used
+		// for (fake) auth purposes.
 		const userId = randomUUID();
 
+		console.log("HELLO FROM FIRST AUTH ACTION MIDDLEWARE, USER ID:", userId);
+
+		return {
+			nextCtx: {
+				userId,
+			},
+		};
+	})
+	// Here we get `userId` from the previous context, all type safe.
+	.use(async ({ ctx }) => {
+		const sessionId = await getSessionId();
+
 		console.log(
-			"HELLO FROM ACTION MIDDLEWARE, USER ID:",
-			userId,
-			"PARSED INPUT:",
-			parsedInput
+			"HELLO FROM SECOND AUTH ACTION MIDDLEWARE, USER ID:",
+			sessionId
 		);
 
-		return { userId };
-	},
-	handleReturnedServerError,
-});
+		return {
+			// Here we extend the previous context with session data.
+			nextCtx: {
+				...ctx,
+				sessionId,
+			},
+		};
+	});

@@ -13,11 +13,11 @@ const incrementLikes = (by: number) => {
 	return likes;
 };
 
-const input = z.object({
+const schema = z.object({
 	incrementBy: z.number(),
 });
 
-export const addLikes = action(input, async ({ incrementBy }) => {
+export const addLikes = action.define(schema, async ({ incrementBy }) => {
 	await new Promise((res) => setTimeout(res, 2000));
 
 	const likesCount = incrementLikes(incrementBy);
