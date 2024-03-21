@@ -33,10 +33,20 @@ export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<
 /**
  * Type of the middleware function passed to a safe action client.
  */
-export type MiddlewareFn<Ctx, NextCtx> = (args: {
-	ctx: Ctx;
-	parsedInput: unknown;
-}) => MaybePromise<{ nextCtx: NextCtx }>;
+export type MiddlewareFn<ClientInput, Ctx, NextCtx> = {
+	(opts: {
+		clientInput: ClientInput;
+		ctx: Ctx;
+		next: {
+			<const NC>(opts: { ctx: NC }): Promise<NC>;
+		};
+	}): Promise<NextCtx>;
+};
+
+/**
+ * Type of any middleware function.
+ */
+export type AnyMiddlewareFn = MiddlewareFn<any, any, any>;
 
 /**
  * Type of the function that executes server code when defining a new safe action.
@@ -48,27 +58,27 @@ export type ServerCodeFn<S extends Schema, Data, Context> = (
 
 // SAFE ACTION CLIENT
 
-class SafeActionClient<const Ctx = undefined> {
+class SafeActionClient<const Ctx = null> {
 	private readonly handleServerErrorLog: NonNullable<SafeActionClientOpts["handleServerErrorLog"]>;
 	private readonly handleReturnedServerError: NonNullable<
 		SafeActionClientOpts["handleReturnedServerError"]
 	>;
 
-	private middlewareFns: MiddlewareFn<any, any>[];
+	private middlewareFns: AnyMiddlewareFn[];
 
-	constructor(opts: { middlewareFns: MiddlewareFn<any, any>[] } & Required<SafeActionClientOpts>) {
+	constructor(opts: { middlewareFns: AnyMiddlewareFn[] } & Required<SafeActionClientOpts>) {
 		this.middlewareFns = opts.middlewareFns;
 		this.handleServerErrorLog = opts.handleServerErrorLog;
 		this.handleReturnedServerError = opts.handleReturnedServerError;
 	}
 
 	// `use` is used to use a middleware function for this safe action client.
-	public use<const NextCtx>(middlewareFn: MiddlewareFn<Ctx, NextCtx>) {
+	public use<const ClientInput, const NextCtx>(
+		middlewareFn: MiddlewareFn<ClientInput, Ctx, NextCtx>
+	) {
 		this.middlewareFns.push(middlewareFn);
 
-		type NC = Awaited<ReturnType<typeof middlewareFn>>["nextCtx"];
-
-		return new SafeActionClient<NC>({
+		return new SafeActionClient<NextCtx>({
 			middlewareFns: this.middlewareFns,
 			handleReturnedServerError: this.handleReturnedServerError,
 			handleServerErrorLog: this.handleServerErrorLog,
@@ -79,29 +89,53 @@ class SafeActionClient<const Ctx = undefined> {
 	// It expects an input schema and a `serverCode` function, so the action
 	// knows what to do on the server when called by the client.
 	// It returns a function callable by the client.
-	public define<const S extends Schema, const Data>(
+	public define<const S extends Schema, const Data = null>(
 		schema: S,
 		serverCodeFn: ServerCodeFn<S, Data, Ctx>
 	): SafeAction<S, Data> {
-		return async (clientInput) => {
+		return async (clientInput: unknown) => {
 			try {
-				const parsedInput = await validate(schema, clientInput);
+				let prevCtx: any = undefined;
+				let validationErrors: ValidationErrors<S> | undefined = undefined;
+				let data: Data | undefined = undefined;
 
-				if (!parsedInput.success) {
+				// Execute the middleware stack.
+				const executeMiddlewareChain = async (idx = 0) => {
+					const currentFn = this.middlewareFns[idx];
+
+					if (currentFn) {
+						await currentFn({
+							clientInput, // pass raw client input
+							ctx: prevCtx,
+							next: async ({ ctx }) => {
+								prevCtx = ctx;
+								await executeMiddlewareChain(idx + 1);
+								return ctx;
+							},
+						});
+					} else {
+						const parsedInput = await validate(schema, clientInput);
+
+						if (!parsedInput.success) {
+							validationErrors = buildValidationErrors<S>(parsedInput.issues);
+							return;
+						}
+
+						data = await serverCodeFn(parsedInput.data, prevCtx);
+					}
+				};
+
+				await executeMiddlewareChain();
+
+				if (validationErrors) {
 					return {
-						validationErrors: buildValidationErrors<S>(parsedInput.issues),
+						validationErrors,
 					};
 				}
 
-				let ctx: any = undefined;
-
-				for (const middlewareFn of this.middlewareFns) {
-					ctx = await Promise.resolve(middlewareFn({ ctx, parsedInput: parsedInput.data })).then(
-						({ nextCtx }) => nextCtx
-					);
-				}
-
-				return { data: await serverCodeFn(parsedInput.data, ctx) };
+				return {
+					data: (data ?? null) as Data,
+				};
 			} catch (e: unknown) {
 				// next/navigation functions work by throwing an error that will be
 				// processed internally by Next.js. So, in this case we need to rethrow it.
@@ -155,7 +189,7 @@ export const createSafeActionClient = (createOpts?: SafeActionClientOpts) => {
 		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR;
 
 	return new SafeActionClient({
-		middlewareFns: [() => ({ nextCtx: undefined })],
+		middlewareFns: [async ({ next }) => next({ ctx: null })],
 		handleServerErrorLog,
 		handleReturnedServerError,
 	});
