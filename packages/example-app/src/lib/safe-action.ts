@@ -33,22 +33,45 @@ async function getSessionId() {
 export const authAction = createSafeActionClient({
 	handleReturnedServerError,
 })
-	// Middleware can be async/non async.
-	.use(() => {
-		// You can provide a middleware function. In this case, context is used
-		// for (fake) auth purposes.
+	// Here we use a logging middleware.
+	.use(async ({ next, clientInput }) => {
+		const start = Date.now();
+		console.log("LOGGING MIDDLEWARE: clientInput:", clientInput);
+
+		// Here we await the next middleware.
+		const result = await next({ ctx: {} });
+
+		const end = Date.now();
+
+		// Log the execution time of the action.
+		console.log(
+			"LOGGING MIDDLEWARE: this action took",
+			end - start,
+			"ms to execute"
+		);
+
+		// And then return the result of the awaited next middleware.
+		return result;
+	})
+	.use(async ({ next }) => {
+		// In this case, context is used for (fake) auth purposes.
 		const userId = randomUUID();
 
 		console.log("HELLO FROM FIRST AUTH ACTION MIDDLEWARE, USER ID:", userId);
 
-		return {
-			nextCtx: {
+		return next({
+			ctx: {
 				userId,
 			},
-		};
+		});
 	})
-	// Here we get `userId` from the previous context, all type safe.
-	.use(async ({ ctx }) => {
+	// Here we get `userId` from the previous context, and it's all type safe.
+	.use(async ({ ctx, next }) => {
+		// Emulate a slow server.
+		await new Promise((res) =>
+			setTimeout(res, Math.max(Math.random() * 2000, 500))
+		);
+
 		const sessionId = await getSessionId();
 
 		console.log(
@@ -56,11 +79,10 @@ export const authAction = createSafeActionClient({
 			sessionId
 		);
 
-		return {
-			// Here we extend the previous context with session data.
-			nextCtx: {
-				...ctx,
-				sessionId,
+		return next({
+			ctx: {
+				...ctx, // here we spread the previous context to extend it
+				sessionId, // with session id
 			},
-		};
+		});
 	});
