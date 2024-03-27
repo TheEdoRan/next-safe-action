@@ -17,6 +17,7 @@ module.exports = {
 		"@typescript-eslint/no-floating-promises": "warn",
 		"@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/ban-types": "off",
+		"@typescript-eslint/no-this-alias": "off",
 		"no-mixed-spaces-and-tabs": "off",
 		"react-hooks/exhaustive-deps": "warn",
 	},
