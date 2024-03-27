@@ -68,8 +68,10 @@ const schema = z
 		}
 	});
 
-export const buyProduct = action.define(schema, async () => {
-	return {
-		success: true,
-	};
-});
+export const buyProduct = action
+	.metadata({ actionName: "buyProduct" })
+	.define(schema, async () => {
+		return {
+			success: true,
+		};
+	});

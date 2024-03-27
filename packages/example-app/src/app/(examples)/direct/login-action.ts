@@ -9,9 +9,9 @@ const schema = z.object({
 	password: z.string().min(8).max(100),
 });
 
-export const loginUser = action.define(
-	schema,
-	async ({ username, password }, ctx) => {
+export const loginUser = action
+	.metadata({ actionName: "loginUser" })
+	.define(schema, async ({ username, password }, ctx) => {
 		if (username === "johndoe") {
 			returnValidationErrors(schema, {
 				username: {
@@ -31,5 +31,4 @@ export const loginUser = action.define(
 				_errors: ["incorrect_credentials"],
 			},
 		});
-	}
-);
+	});

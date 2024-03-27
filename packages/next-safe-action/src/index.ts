@@ -1,8 +1,17 @@
-import type { Infer, InferIn, Schema } from "@typeschema/main";
+import type { Schema } from "@typeschema/main";
 import { validate } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
-import type { MaybePromise } from "./utils";
+import type {
+	ActionMetadata,
+	AnyMiddlewareFn,
+	MiddlewareFn,
+	MiddlewareResult,
+	SafeAction,
+	SafeActionClientOpts,
+	SafeActionResult,
+	ServerCodeFn,
+} from "./index.types";
 import { DEFAULT_SERVER_ERROR, isError } from "./utils";
 import type { ValidationErrors } from "./validation-errors";
 import {
@@ -11,53 +20,6 @@ import {
 	returnValidationErrors,
 } from "./validation-errors";
 
-// TYPES
-
-/**
- * Type of options when creating a new safe action client.
- */
-export type SafeActionClientOpts = {
-	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
-	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
-};
-
-/**
- * Type of the function called from Client Components with typesafe input data.
- */
-export type SafeAction<S extends Schema, Data> = (input: InferIn<S>) => Promise<{
-	data?: Data;
-	serverError?: string;
-	validationErrors?: ValidationErrors<S>;
-}>;
-
-/**
- * Type of the middleware function passed to a safe action client.
- */
-export type MiddlewareFn<ClientInput, Ctx, NextCtx> = {
-	(opts: {
-		clientInput: ClientInput;
-		ctx: Ctx;
-		next: {
-			<const NC>(opts: { ctx: NC }): Promise<NC>;
-		};
-	}): Promise<NextCtx>;
-};
-
-/**
- * Type of any middleware function.
- */
-export type AnyMiddlewareFn = MiddlewareFn<any, any, any>;
-
-/**
- * Type of the function that executes server code when defining a new safe action.
- */
-export type ServerCodeFn<S extends Schema, Data, Context> = (
-	parsedInput: Infer<S>,
-	ctx: Context
-) => Promise<Data>;
-
-// SAFE ACTION CLIENT
-
 class SafeActionClient<const Ctx = null> {
 	private readonly handleServerErrorLog: NonNullable<SafeActionClientOpts["handleServerErrorLog"]>;
 	private readonly handleReturnedServerError: NonNullable<
@@ -65,6 +27,7 @@ class SafeActionClient<const Ctx = null> {
 	>;
 
 	private middlewareFns: AnyMiddlewareFn[];
+	private _metadata: ActionMetadata = {};
 
 	constructor(opts: { middlewareFns: AnyMiddlewareFn[] } & Required<SafeActionClientOpts>) {
 		this.middlewareFns = opts.middlewareFns;
@@ -72,7 +35,24 @@ class SafeActionClient<const Ctx = null> {
 		this.handleReturnedServerError = opts.handleReturnedServerError;
 	}
 
-	// `use` is used to use a middleware function for this safe action client.
+	/**
+	 * Clone the safe action client keeping the same middleware and initialization functions.
+	 * This is used to extend the base client with additional middleware functions.
+	 * @returns {SafeActionClient}
+	 */
+	public clone() {
+		return new SafeActionClient<Ctx>({
+			handleReturnedServerError: this.handleReturnedServerError,
+			handleServerErrorLog: this.handleServerErrorLog,
+			middlewareFns: [...this.middlewareFns], // copy the middleware stack so we don't mutate it
+		});
+	}
+
+	/**
+	 * Use a middleware function.
+	 * @param middlewareFn Middleware function
+	 * @returns SafeActionClient
+	 */
 	public use<const ClientInput, const NextCtx>(
 		middlewareFn: MiddlewareFn<ClientInput, Ctx, NextCtx>
 	) {
@@ -85,83 +65,113 @@ class SafeActionClient<const Ctx = null> {
 		});
 	}
 
-	// `define` is used to define a new safe action.
-	// It expects an input schema and a `serverCode` function, so the action
-	// knows what to do on the server when called by the client.
-	// It returns a function callable by the client.
+	/**
+	 * Set metadata for the action that will be defined afterwards.
+	 * @param data Metadata for the action
+	 * @returns {Function} Define a new action
+	 */
+	public metadata(data: ActionMetadata) {
+		this._metadata = data;
+
+		return {
+			define: this.define.bind(this),
+		};
+	}
+
+	/**
+	 * Define a new safe action.
+	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
+	 * @param serverCodeFn A function that executes the server code.
+	 * @param meta Optional metadata for the action.
+	 * @returns {SafeAction}
+	 */
 	public define<const S extends Schema, const Data = null>(
 		schema: S,
 		serverCodeFn: ServerCodeFn<S, Data, Ctx>
 	): SafeAction<S, Data> {
 		return async (clientInput: unknown) => {
-			try {
-				let prevCtx: any = undefined;
-				let validationErrors: ValidationErrors<S> | undefined = undefined;
-				let data: Data | undefined = undefined;
+			let prevCtx: any = null;
+			let frameworkError: Error | undefined = undefined;
+			const middlewareResult: MiddlewareResult<any> = { __label: Symbol("MiddlewareResult") };
 
-				// Execute the middleware stack.
-				const executeMiddlewareChain = async (idx = 0) => {
-					const currentFn = this.middlewareFns[idx];
+			// Execute the middleware stack.
+			const executeMiddlewareChain = async (idx = 0) => {
+				const currentFn = this.middlewareFns[idx];
 
+				middlewareResult.ctx = prevCtx;
+
+				try {
 					if (currentFn) {
 						await currentFn({
 							clientInput, // pass raw client input
 							ctx: prevCtx,
+							metadata: this._metadata ?? {},
 							next: async ({ ctx }) => {
 								prevCtx = ctx;
 								await executeMiddlewareChain(idx + 1);
-								return ctx;
+								return middlewareResult;
 							},
 						});
 					} else {
 						const parsedInput = await validate(schema, clientInput);
 
 						if (!parsedInput.success) {
-							validationErrors = buildValidationErrors<S>(parsedInput.issues);
+							middlewareResult.validationErrors = buildValidationErrors<S>(parsedInput.issues);
 							return;
 						}
 
-						data = await serverCodeFn(parsedInput.data, prevCtx);
+						const data = (await serverCodeFn(parsedInput.data, prevCtx)) ?? null;
+						middlewareResult.data = data;
+						middlewareResult.parsedInput = parsedInput.data;
 					}
-				};
+				} catch (e: unknown) {
+					// next/navigation functions work by throwing an error that will be
+					// processed internally by Next.js.
+					if (isRedirectError(e) || isNotFoundError(e)) {
+						frameworkError = e;
+						return;
+					}
 
-				await executeMiddlewareChain();
+					// If error is ServerValidationError, return validationErrors as if schema validation would fail.
+					if (e instanceof ServerValidationError) {
+						middlewareResult.validationErrors = e.validationErrors;
+						return;
+					}
 
-				if (validationErrors) {
-					return {
-						validationErrors,
-					};
+					if (!isError(e)) {
+						console.warn("Could not handle server error. Not an instance of Error: ", e);
+						middlewareResult.serverError = DEFAULT_SERVER_ERROR;
+						return;
+					}
+
+					await Promise.resolve(this.handleServerErrorLog(e));
+
+					middlewareResult.serverError = await Promise.resolve(this.handleReturnedServerError(e));
 				}
+			};
 
-				return {
-					data: (data ?? null) as Data,
-				};
-			} catch (e: unknown) {
-				// next/navigation functions work by throwing an error that will be
-				// processed internally by Next.js. So, in this case we need to rethrow it.
-				if (isRedirectError(e) || isNotFoundError(e)) {
-					throw e;
-				}
+			await executeMiddlewareChain();
 
-				// If error is ServerValidationError, return validationErrors as if schema validation would fail.
-				if (e instanceof ServerValidationError) {
-					return {
-						validationErrors: e.validationErrors as ValidationErrors<S>,
-					};
-				}
-
-				if (!isError(e)) {
-					console.warn("Could not handle server error. Not an instance of Error: ", e);
-
-					return { serverError: DEFAULT_SERVER_ERROR };
-				}
-
-				await Promise.resolve(this.handleServerErrorLog(e));
-
-				return {
-					serverError: await Promise.resolve(this.handleReturnedServerError(e)),
-				};
+			// If an internal framework error occurred, throw it, so it will be processed by Next.js.
+			if (frameworkError) {
+				throw frameworkError;
 			}
+
+			const actionResult: SafeActionResult<S, Data> = {};
+
+			if (typeof middlewareResult.data !== "undefined") {
+				actionResult.data = middlewareResult.data as Data;
+			}
+
+			if (typeof middlewareResult.validationErrors !== "undefined") {
+				actionResult.validationErrors = middlewareResult.validationErrors as ValidationErrors<S>;
+			}
+
+			if (typeof middlewareResult.serverError !== "undefined") {
+				actionResult.serverError = middlewareResult.serverError;
+			}
+
+			return actionResult;
 		};
 	}
 }
@@ -196,3 +206,14 @@ export const createSafeActionClient = (createOpts?: SafeActionClientOpts) => {
 };
 
 export { DEFAULT_SERVER_ERROR, returnValidationErrors, type ValidationErrors };
+
+export type {
+	ActionMetadata,
+	AnyMiddlewareFn,
+	MiddlewareFn,
+	MiddlewareResult,
+	SafeAction,
+	SafeActionClientOpts,
+	SafeActionResult,
+	ServerCodeFn,
+};
