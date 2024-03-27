@@ -6,7 +6,8 @@ import { schema } from "./validation";
 
 export const buyProduct = action
 	.metadata({ actionName: "buyProduct" })
-	.define(schema, async ({ productId }) => {
+	.schema(schema)
+	.define(async ({ productId }) => {
 		return {
 			productId,
 			transactionId: randomUUID(),

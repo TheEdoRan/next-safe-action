@@ -75,103 +75,113 @@ class SafeActionClient<const Ctx = null> {
 		this._metadata = data;
 
 		return {
-			define: this.define.bind(this),
+			schema: this.schema.bind(this),
 		};
 	}
 
 	/**
-	 * Define a new safe action.
+	 * Pass an input schema to define safe action arguments.
 	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
-	 * @param serverCodeFn A function that executes the server code.
-	 * @returns {SafeAction}
+	 * @returns {Function} The `define` function, which is used to define a new safe action.
 	 */
-	public define<const S extends Schema, const Data = null>(
-		schema: S,
-		serverCodeFn: ServerCodeFn<S, Data, Ctx>
-	): SafeAction<S, Data> {
-		return async (clientInput: unknown) => {
-			let prevCtx: any = null;
-			let frameworkError: Error | undefined = undefined;
-			const middlewareResult: MiddlewareResult<any> = { __label: Symbol("MiddlewareResult") };
+	public schema<const S extends Schema>(schema: S) {
+		const classThis = this;
 
-			// Execute the middleware stack.
-			const executeMiddlewareChain = async (idx = 0) => {
-				const currentFn = this.middlewareFns[idx];
+		return {
+			/**
+			 * Define a new safe action.
+			 * @param serverCodeFn A function that executes the server code.
+			 * @returns {SafeAction}
+			 */
+			define<const Data = null>(serverCodeFn: ServerCodeFn<S, Data, Ctx>): SafeAction<S, Data> {
+				return async (clientInput: unknown) => {
+					let prevCtx: any = null;
+					let frameworkError: Error | undefined = undefined;
+					const middlewareResult: MiddlewareResult<any> = { __label: Symbol("MiddlewareResult") };
 
-				middlewareResult.ctx = prevCtx;
+					// Execute the middleware stack.
+					const executeMiddlewareChain = async (idx = 0) => {
+						const currentFn = classThis.middlewareFns[idx];
 
-				try {
-					if (currentFn) {
-						await currentFn({
-							clientInput, // pass raw client input
-							ctx: prevCtx,
-							metadata: this._metadata ?? {},
-							next: async ({ ctx }) => {
-								prevCtx = ctx;
-								await executeMiddlewareChain(idx + 1);
-								return middlewareResult;
-							},
-						});
-					} else {
-						const parsedInput = await validate(schema, clientInput);
+						middlewareResult.ctx = prevCtx;
 
-						if (!parsedInput.success) {
-							middlewareResult.validationErrors = buildValidationErrors<S>(parsedInput.issues);
-							return;
+						try {
+							if (currentFn) {
+								await currentFn({
+									clientInput, // pass raw client input
+									ctx: prevCtx,
+									metadata: classThis._metadata,
+									next: async ({ ctx }) => {
+										prevCtx = ctx;
+										await executeMiddlewareChain(idx + 1);
+										return middlewareResult;
+									},
+								});
+							} else {
+								const parsedInput = await validate(schema, clientInput);
+
+								if (!parsedInput.success) {
+									middlewareResult.validationErrors = buildValidationErrors<S>(parsedInput.issues);
+									return;
+								}
+
+								const data = (await serverCodeFn(parsedInput.data, prevCtx)) ?? null;
+								middlewareResult.data = data;
+								middlewareResult.parsedInput = parsedInput.data;
+							}
+						} catch (e: unknown) {
+							// next/navigation functions work by throwing an error that will be
+							// processed internally by Next.js.
+							if (isRedirectError(e) || isNotFoundError(e)) {
+								frameworkError = e;
+								return;
+							}
+
+							// If error is ServerValidationError, return validationErrors as if schema validation would fail.
+							if (e instanceof ServerValidationError) {
+								middlewareResult.validationErrors = e.validationErrors;
+								return;
+							}
+
+							if (!isError(e)) {
+								console.warn("Could not handle server error. Not an instance of Error: ", e);
+								middlewareResult.serverError = DEFAULT_SERVER_ERROR;
+								return;
+							}
+
+							await Promise.resolve(classThis.handleServerErrorLog(e));
+
+							middlewareResult.serverError = await Promise.resolve(
+								classThis.handleReturnedServerError(e)
+							);
 						}
+					};
 
-						const data = (await serverCodeFn(parsedInput.data, prevCtx)) ?? null;
-						middlewareResult.data = data;
-						middlewareResult.parsedInput = parsedInput.data;
-					}
-				} catch (e: unknown) {
-					// next/navigation functions work by throwing an error that will be
-					// processed internally by Next.js.
-					if (isRedirectError(e) || isNotFoundError(e)) {
-						frameworkError = e;
-						return;
+					await executeMiddlewareChain();
+
+					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
+					if (frameworkError) {
+						throw frameworkError;
 					}
 
-					// If error is ServerValidationError, return validationErrors as if schema validation would fail.
-					if (e instanceof ServerValidationError) {
-						middlewareResult.validationErrors = e.validationErrors;
-						return;
+					const actionResult: SafeActionResult<S, Data> = {};
+
+					if (typeof middlewareResult.data !== "undefined") {
+						actionResult.data = middlewareResult.data as Data;
 					}
 
-					if (!isError(e)) {
-						console.warn("Could not handle server error. Not an instance of Error: ", e);
-						middlewareResult.serverError = DEFAULT_SERVER_ERROR;
-						return;
+					if (typeof middlewareResult.validationErrors !== "undefined") {
+						actionResult.validationErrors =
+							middlewareResult.validationErrors as ValidationErrors<S>;
 					}
 
-					await Promise.resolve(this.handleServerErrorLog(e));
+					if (typeof middlewareResult.serverError !== "undefined") {
+						actionResult.serverError = middlewareResult.serverError;
+					}
 
-					middlewareResult.serverError = await Promise.resolve(this.handleReturnedServerError(e));
-				}
-			};
-
-			await executeMiddlewareChain();
-
-			// If an internal framework error occurred, throw it, so it will be processed by Next.js.
-			if (frameworkError) {
-				throw frameworkError;
-			}
-
-			const actionResult: SafeActionResult<S, Data> = {};
-
-			if (typeof middlewareResult.data !== "undefined") {
-				actionResult.data = middlewareResult.data as Data;
-			}
-
-			if (typeof middlewareResult.validationErrors !== "undefined") {
-				actionResult.validationErrors = middlewareResult.validationErrors as ValidationErrors<S>;
-			}
-
-			if (typeof middlewareResult.serverError !== "undefined") {
-				actionResult.serverError = middlewareResult.serverError;
-			}
-
-			return actionResult;
+					return actionResult;
+				};
+			},
 		};
 	}
 }

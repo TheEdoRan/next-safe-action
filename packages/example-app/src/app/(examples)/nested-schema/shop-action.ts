@@ -70,7 +70,8 @@ const schema = z
 
 export const buyProduct = action
 	.metadata({ actionName: "buyProduct" })
-	.define(schema, async () => {
+	.schema(schema)
+	.define(async () => {
 		return {
 			success: true,
 		};

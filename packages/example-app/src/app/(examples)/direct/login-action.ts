@@ -11,7 +11,8 @@ const schema = z.object({
 
 export const loginUser = action
 	.metadata({ actionName: "loginUser" })
-	.define(schema, async ({ username, password }, ctx) => {
+	.schema(schema)
+	.define(async ({ username, password }, ctx) => {
 		if (username === "johndoe") {
 			returnValidationErrors(schema, {
 				username: {
