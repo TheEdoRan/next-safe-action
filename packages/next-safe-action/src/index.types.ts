@@ -56,11 +56,6 @@ export type MiddlewareFn<ClientInput, Ctx, NextCtx> = {
 };
 
 /**
- * Type of any middleware function.
- */
-export type AnyMiddlewareFn = MiddlewareFn<any, any, any>;
-
-/**
  * Type of the function that executes server code when defining a new safe action.
  */
 export type ServerCodeFn<S extends Schema, Data, Context> = (

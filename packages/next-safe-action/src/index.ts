@@ -4,7 +4,6 @@ import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {
 	ActionMetadata,
-	AnyMiddlewareFn,
 	MiddlewareFn,
 	MiddlewareResult,
 	SafeAction,
@@ -26,10 +25,12 @@ class SafeActionClient<const Ctx = null> {
 		SafeActionClientOpts["handleReturnedServerError"]
 	>;
 
-	private middlewareFns: AnyMiddlewareFn[];
+	private middlewareFns: MiddlewareFn<any, any, any>[];
 	private _metadata: ActionMetadata = {};
 
-	constructor(opts: { middlewareFns: AnyMiddlewareFn[] } & Required<SafeActionClientOpts>) {
+	constructor(
+		opts: { middlewareFns: MiddlewareFn<any, any, any>[] } & Required<SafeActionClientOpts>
+	) {
 		this.middlewareFns = opts.middlewareFns;
 		this.handleServerErrorLog = opts.handleServerErrorLog;
 		this.handleReturnedServerError = opts.handleReturnedServerError;
@@ -208,7 +209,6 @@ export { DEFAULT_SERVER_ERROR, returnValidationErrors, type ValidationErrors };
 
 export type {
 	ActionMetadata,
-	AnyMiddlewareFn,
 	MiddlewareFn,
 	MiddlewareResult,
 	SafeAction,
