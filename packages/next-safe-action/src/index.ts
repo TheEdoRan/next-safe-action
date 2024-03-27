@@ -13,12 +13,12 @@ import type {
 	ServerCodeFn,
 } from "./index.types";
 import { DEFAULT_SERVER_ERROR, isError } from "./utils";
-import type { ValidationErrors } from "./validation-errors";
 import {
 	ServerValidationError,
 	buildValidationErrors,
 	returnValidationErrors,
 } from "./validation-errors";
+import type { ValidationErrors } from "./validation-errors.types";
 
 class SafeActionClient<const Ctx = null> {
 	private readonly handleServerErrorLog: NonNullable<SafeActionClientOpts["handleServerErrorLog"]>;

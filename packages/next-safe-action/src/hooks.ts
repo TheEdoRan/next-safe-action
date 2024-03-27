@@ -6,40 +6,8 @@ import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
 import {} from "react/experimental";
 import type { SafeAction } from ".";
-import type { MaybePromise } from "./utils";
+import type { HookActionStatus, HookCallbacks, HookResult } from "./hooks.types";
 import { isError } from "./utils";
-
-// TYPES
-
-/**
- * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
- */
-export type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeAction<S, Data>>> & {
-	fetchError?: string;
-};
-
-/**
- * Type of hooks callbacks. These are executed when action is in a specific state.
- */
-export type HookCallbacks<S extends Schema, Data> = {
-	onExecute?: (input: InferIn<S>) => MaybePromise<void>;
-	onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
-	onError?: (
-		error: Omit<HookResult<S, Data>, "data">,
-		input: InferIn<S>,
-		reset: () => void
-	) => MaybePromise<void>;
-	onSettled?: (
-		result: HookResult<S, Data>,
-		input: InferIn<S>,
-		reset: () => void
-	) => MaybePromise<void>;
-};
-
-/**
- * Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
- */
-export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
 
 // UTILS
 
@@ -232,3 +200,5 @@ export const useOptimisticAction = <const S extends Schema, const Data>(
 		status,
 	};
 };
+
+export type { HookActionStatus, HookCallbacks, HookResult };

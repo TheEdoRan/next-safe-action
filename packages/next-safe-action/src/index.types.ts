@@ -1,6 +1,6 @@
 import type { Infer, InferIn, Schema } from "@typeschema/main";
 import type { MaybePromise } from "./utils";
-import type { ValidationErrors } from "./validation-errors";
+import type { ValidationErrors } from "./validation-errors.types";
 
 /**
  * Type of options when creating a new safe action client.

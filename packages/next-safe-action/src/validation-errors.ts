@@ -1,29 +1,8 @@
 import type { ValidationIssue } from "@typeschema/core";
-import type { Infer, Schema } from "@typeschema/main";
+import type { Schema } from "@typeschema/main";
+import type { ErrorList, ValidationErrors } from "./validation-errors.types";
 
-// TYPES
-
-// Extends an object without printing "&".
-export type Extend<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
-
-// VALIDATION ERRORS
-
-// Object with an optional list of validation errors.
-export type ErrorList = { _errors?: string[] } & {};
-
-// Creates nested schema validation errors type using recursion.
-export type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends object | null | undefined
-		? Extend<ErrorList & SchemaErrors<S[K]>>
-		: ErrorList;
-} & {};
-
-/**
- * Type of the returned object when input validation fails.
- */
-export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
-
-// This function is used to build the validation errors object from a list of validation issues.
+// This function is used internally to build the validation errors object from a list of validation issues.
 export const buildValidationErrors = <const S extends Schema>(issues: ValidationIssue[]) => {
 	const ve: any = {};
 
@@ -66,8 +45,6 @@ export const buildValidationErrors = <const S extends Schema>(issues: Validation
 
 	return ve as ValidationErrors<S>;
 };
-
-// VALIDATION ERRORS
 
 // This class is internally used to throw validation errors in action's server code function, using
 // `returnValidationErrors`.
