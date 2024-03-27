@@ -31,7 +31,7 @@ export type SafeAction<S extends Schema, Data> = (
 export type MiddlewareResult<NextCtx> = SafeActionResult<any, unknown, NextCtx> & {
 	parsedInput?: unknown;
 	ctx?: unknown;
-	__label: Symbol;
+	success: boolean;
 };
 
 /**

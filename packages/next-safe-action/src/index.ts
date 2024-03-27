@@ -97,7 +97,7 @@ class SafeActionClient<const Ctx = null> {
 				return async (clientInput: unknown) => {
 					let prevCtx: any = null;
 					let frameworkError: Error | undefined = undefined;
-					const middlewareResult: MiddlewareResult<any> = { __label: Symbol("MiddlewareResult") };
+					const middlewareResult: MiddlewareResult<any> = { success: false };
 
 					// Execute the middleware stack.
 					const executeMiddlewareChain = async (idx = 0) => {
@@ -126,6 +126,7 @@ class SafeActionClient<const Ctx = null> {
 								}
 
 								const data = (await serverCodeFn(parsedInput.data, prevCtx)) ?? null;
+								middlewareResult.success = true;
 								middlewareResult.data = data;
 								middlewareResult.parsedInput = parsedInput.data;
 							}
@@ -133,6 +134,7 @@ class SafeActionClient<const Ctx = null> {
 							// next/navigation functions work by throwing an error that will be
 							// processed internally by Next.js.
 							if (isRedirectError(e) || isNotFoundError(e)) {
+								middlewareResult.success = true;
 								frameworkError = e;
 								return;
 							}
