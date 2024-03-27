@@ -82,7 +82,6 @@ class SafeActionClient<const Ctx = null> {
 	 * Define a new safe action.
 	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
 	 * @param serverCodeFn A function that executes the server code.
-	 * @param meta Optional metadata for the action.
 	 * @returns {SafeAction}
 	 */
 	public define<const S extends Schema, const Data = null>(
