@@ -100,7 +100,7 @@ export default function Login() {
         const res = await loginUser({ username: "johndoe", password: "123456" });
 
         // Result keys.
-        const { data, validationError, serverError } = res;
+        const { data, validationErrors, serverError } = res;
       }}>
       Log in
     </button>
