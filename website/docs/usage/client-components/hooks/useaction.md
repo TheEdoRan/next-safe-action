@@ -21,9 +21,11 @@ const schema = z.object({
   name: z.string(),
 });
 
-export const greetUser = action(schema, async ({ name }) => {
-  return { message: `Hello ${name}!` };
-});
+export const greetUser = actionClient
+  .schema(schema)
+  .define(async ({ name }) => {
+    return { message: `Hello ${name}!` };
+  });
 ```
 
 2. In your Client Component, you can use it like this:
@@ -73,4 +75,4 @@ As you can see, here we display a greet message after the action is performed, i
 | `status`  | [`HookActionStatus`](/docs/types#hookresult) | The action current status.                                                                        |
 | `reset`   | `() => void`                                 | You can programmatically reset the `result` object with this function.                            |
 
-Explore a working example [here](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/example-app/src/app/hook).
+Explore a working example [here](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/example-app/src/app/(examples)/hook).

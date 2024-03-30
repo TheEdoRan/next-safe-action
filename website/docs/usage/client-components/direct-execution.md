@@ -5,7 +5,7 @@ description: You can execute safe actions by directrly calling them inside Clien
 
 # 1. Direct execution
 
-The first way to execute Server Actions inside Client Components is by passing the action from a Server Component to a Client Component and directly calling it in a function. This method is the most simple one, but in some cases it could be all you need, for example if you just need the action result inside an `onClick` or `onSubmit` handler, without overcomplicating things:
+The first way to execute Server Actions inside Client Components is by importing it and directly calling it in a function. This method is the simplest one, but in some cases it could be all you need, for example if you just need the action result inside an `onClick` or `onSubmit` handlers, without overcomplicating things:
 
 ```tsx
 export default function Login({ loginUser }: Props) {
@@ -27,4 +27,4 @@ export default function Login({ loginUser }: Props) {
 
 Every action you execute returns an object with the same structure. This is described in the [action result object](/docs/usage/action-result-object) section.
 
-Explore a working example [here](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/example-app/src/app).
+Explore a working example [here](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/example-app/src/app/(examples)/direct).
