@@ -60,5 +60,5 @@ export type MiddlewareFn<ClientInput, Ctx, NextCtx> = {
  */
 export type ServerCodeFn<S extends Schema, Data, Context> = (
 	parsedInput: Infer<S>,
-	ctx: Context
+	utils: { ctx: Context; metadata: ActionMetadata }
 ) => Promise<Data>;

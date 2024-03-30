@@ -125,7 +125,11 @@ class SafeActionClient<const Ctx = null> {
 									return;
 								}
 
-								const data = (await serverCodeFn(parsedInput.data, prevCtx)) ?? null;
+								const data =
+									(await serverCodeFn(parsedInput.data, {
+										ctx: prevCtx,
+										metadata: classThis._metadata,
+									})) ?? null;
 								middlewareResult.success = true;
 								middlewareResult.data = data;
 								middlewareResult.parsedInput = parsedInput.data;
