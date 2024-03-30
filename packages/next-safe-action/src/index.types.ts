@@ -10,6 +10,9 @@ export type SafeActionClientOpts = {
 	handleReturnedServerError?: (e: Error) => MaybePromise<string>;
 };
 
+/**
+ * Type of the result of a safe action.
+ */
 // eslint-disable-next-line
 export type SafeActionResult<S extends Schema, Data, NextCtx = unknown> = {
 	data?: Data;
@@ -18,7 +21,7 @@ export type SafeActionResult<S extends Schema, Data, NextCtx = unknown> = {
 };
 
 /**
- * Type of the function called from Client Components with typesafe input data.
+ * Type of the function called from components with typesafe input data.
  */
 export type SafeAction<S extends Schema, Data> = (
 	input: InferIn<S>
