@@ -6,8 +6,8 @@ import type {
 	ActionMetadata,
 	MiddlewareFn,
 	MiddlewareResult,
-	SafeAction,
 	SafeActionClientOpts,
+	SafeActionFn,
 	SafeActionResult,
 	ServerCodeFn,
 } from "./index.types";
@@ -91,9 +91,9 @@ class SafeActionClient<const Ctx = null> {
 			/**
 			 * Define a new safe action.
 			 * @param serverCodeFn A function that executes the server code.
-			 * @returns {SafeAction}
+			 * @returns {SafeActionFn}
 			 */
-			define<const Data = null>(serverCodeFn: ServerCodeFn<S, Data, Ctx>): SafeAction<S, Data> {
+			define<const Data = null>(serverCodeFn: ServerCodeFn<S, Data, Ctx>): SafeActionFn<S, Data> {
 				return async (clientInput: unknown) => {
 					let prevCtx: any = null;
 					let frameworkError: Error | undefined = undefined;
@@ -227,8 +227,8 @@ export type {
 	ActionMetadata,
 	MiddlewareFn,
 	MiddlewareResult,
-	SafeAction,
 	SafeActionClientOpts,
+	SafeActionFn,
 	SafeActionResult,
 	ServerCodeFn,
 };

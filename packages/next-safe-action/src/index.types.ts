@@ -11,21 +11,11 @@ export type SafeActionClientOpts = {
 };
 
 /**
- * Type of the result of a safe action.
+ * Type of meta options to be passed when defining a new safe action.
  */
-// eslint-disable-next-line
-export type SafeActionResult<S extends Schema, Data, NextCtx = unknown> = {
-	data?: Data;
-	serverError?: string;
-	validationErrors?: ValidationErrors<S>;
+export type ActionMetadata = {
+	actionName?: string;
 };
-
-/**
- * Type of the function called from components with typesafe input data.
- */
-export type SafeAction<S extends Schema, Data> = (
-	input: InferIn<S>
-) => Promise<SafeActionResult<S, Data>>;
 
 /**
  * Type of the result of a middleware function. It extends the result of a safe action with
@@ -35,13 +25,6 @@ export type MiddlewareResult<NextCtx> = SafeActionResult<any, unknown, NextCtx> 
 	parsedInput?: unknown;
 	ctx?: unknown;
 	success: boolean;
-};
-
-/**
- * Type of meta options to be passed when defining a new safe action.
- */
-export type ActionMetadata = {
-	actionName?: string;
 };
 
 /**
@@ -65,3 +48,20 @@ export type ServerCodeFn<S extends Schema, Data, Context> = (
 	parsedInput: Infer<S>,
 	utils: { ctx: Context; metadata: ActionMetadata }
 ) => Promise<Data>;
+
+/**
+ * Type of the result of a safe action.
+ */
+// eslint-disable-next-line
+export type SafeActionResult<S extends Schema, Data, NextCtx = unknown> = {
+	data?: Data;
+	serverError?: string;
+	validationErrors?: ValidationErrors<S>;
+};
+
+/**
+ * Type of the function called from components with typesafe input data.
+ */
+export type SafeActionFn<S extends Schema, Data> = (
+	input: InferIn<S>
+) => Promise<SafeActionResult<S, Data>>;

@@ -42,10 +42,10 @@ schema<const S extends Schema>(schema: S) => { define() }
 ## `define`
 
 ```typescript
-define<const Data = null>(serverCodeFn: ServerCodeFn<S, Data, Ctx>) => SafeAction<S, Data>
+define<const Data = null>(serverCodeFn: ServerCodeFn<S, Data, Ctx>) => SafeActionFn<S, Data>
 ```
 
-`define` is the final method in the list. It accepts a [`serverCodeFn`](#servercodefn) of type [`ServerCodeFn`](/docs/types#servercodefn) and returns a new safe action function of type [`SafeAction`](/docs/types#safeaction), which can be called from your components.
+`define` is the final method in the list. It accepts a [`serverCodeFn`](#servercodefn) of type [`ServerCodeFn`](/docs/types#servercodefn) and returns a new safe action function of type [`SafeActionFn`](/docs/types#safeactionfn), which can be called from your components.
 
 When the action is executed, all middleware functions in the chain will be called at runtime, in the order they were defined.
 

@@ -18,26 +18,14 @@ export type SafeActionClientOpts = {
 };
 ```
 
-### `SafeActionResult`
+### `ActionMetadata`
 
-Type of the result of a safe action.
+Type of meta options to be passed when defining a new safe action.
 
 ```typescript
-export type SafeActionResult<S extends Schema, Data, NextCtx = unknown> = {
-  data?: Data;
-  serverError?: string;
-  validationErrors?: ValidationErrors<S>;
+export type ActionMetadata = {
+  actionName?: string;
 };
-```
-
-### `SafeAction`
-
-Type of the function called from components with typesafe input data.
-
-```typescript
-export type SafeAction<S extends Schema, Data> = (
-  input: InferIn<S>
-) => Promise<SafeActionResult<S, Data>>;
 ```
 
 ### `MiddlewareResult`
@@ -49,16 +37,6 @@ export type MiddlewareResult<NextCtx> = SafeActionResult<any, unknown, NextCtx> 
   parsedInput?: unknown;
   ctx?: unknown;
   success: boolean;
-};
-```
-
-### `ActionMetadata`
-
-Type of meta options to be passed when defining a new safe action.
-
-```typescript
-export type ActionMetadata = {
-  actionName?: string;
 };
 ```
 
@@ -98,6 +76,28 @@ Type of the returned object when input validation fails.
 export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
 ```
 
+### `SafeActionResult`
+
+Type of the result of a safe action.
+
+```typescript
+export type SafeActionResult<S extends Schema, Data, NextCtx = unknown> = {
+  data?: Data;
+  serverError?: string;
+  validationErrors?: ValidationErrors<S>;
+};
+```
+
+### `SafeActionFn`
+
+Type of the function called from components with typesafe input data.
+
+```typescript
+export type SafeActionFn<S extends Schema, Data> = (
+  input: InferIn<S>
+) => Promise<SafeActionResult<S, Data>>;
+```
+
 ## /hooks
 
 ### `HookResult`
@@ -107,7 +107,7 @@ Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
 If a server-client communication error occurs, `fetchError` will be set to the error message.
 
 ```typescript
-type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeAction<S, Data>>> & {
+type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeActionFn<S, Data>>> & {
   fetchError?: string;
 };
 ```

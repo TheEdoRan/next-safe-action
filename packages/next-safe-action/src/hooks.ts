@@ -5,8 +5,8 @@ import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
 import {} from "react/experimental";
-import type { SafeAction } from ".";
 import type { HookActionStatus, HookCallbacks, HookResult } from "./hooks.types";
+import type { SafeActionFn } from "./index.types";
 import { isError } from "./utils";
 
 // UTILS
@@ -80,13 +80,13 @@ const useActionCallbacks = <const S extends Schema, const Data>(
 
 /**
  * Use the action from a Client Component via hook.
- * @param safeAction The typesafe action.
+ * @param safeActionFn The typesafe action.
  * @param callbacks Optional callbacks executed based on the action status.
  *
  * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useaction See an example}
  */
 export const useAction = <const S extends Schema, const Data>(
-	safeAction: SafeAction<S, Data>,
+	safeActionFn: SafeActionFn<S, Data>,
 	callbacks?: HookCallbacks<S, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
@@ -102,7 +102,7 @@ export const useAction = <const S extends Schema, const Data>(
 			setIsExecuting(true);
 
 			return startTransition(() => {
-				return safeAction(input)
+				return safeActionFn(input)
 					.then((res) => setResult(res ?? DEFAULT_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
@@ -116,7 +116,7 @@ export const useAction = <const S extends Schema, const Data>(
 					});
 			});
 		},
-		[safeAction]
+		[safeActionFn]
 	);
 
 	const reset = React.useCallback(() => {
@@ -137,7 +137,7 @@ export const useAction = <const S extends Schema, const Data>(
  * Use the action from a Client Component via hook, with optimistic data update.
  *
  * **NOTE: This hook uses an experimental React feature.**
- * @param safeAction The typesafe action.
+ * @param safeActionFn The typesafe action.
  * @param initialOptimisticData Initial optimistic data.
  * @param reducer Optimistic state reducer.
  * @param callbacks Optional callbacks executed based on the action status.
@@ -145,7 +145,7 @@ export const useAction = <const S extends Schema, const Data>(
  * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useoptimisticaction See an example}
  */
 export const useOptimisticAction = <const S extends Schema, const Data>(
-	safeAction: SafeAction<S, Data>,
+	safeActionFn: SafeActionFn<S, Data>,
 	initialOptimisticData: Data,
 	reducer: (state: Data, input: InferIn<S>) => Data,
 	callbacks?: HookCallbacks<S, Data>
@@ -169,7 +169,7 @@ export const useOptimisticAction = <const S extends Schema, const Data>(
 
 			return startTransition(() => {
 				setOptimisticState(input);
-				return safeAction(input)
+				return safeActionFn(input)
 					.then((res) => setResult(res ?? DEFAULT_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
@@ -183,7 +183,7 @@ export const useOptimisticAction = <const S extends Schema, const Data>(
 					});
 			});
 		},
-		[setOptimisticState, safeAction]
+		[setOptimisticState, safeActionFn]
 	);
 
 	const reset = React.useCallback(() => {
