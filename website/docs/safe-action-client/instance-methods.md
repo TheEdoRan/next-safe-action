@@ -21,7 +21,7 @@ actionClient.clone() => new SafeActionClient()
 use<const ClientInput, const NextCtx>(middlewareFn: MiddlewareFn<ClientInput, Ctx, NextCtx>) => new SafeActionClient()
 ```
 
-`use` accepts a middleware function of type [`MiddlewareFn`](/docs/types#middlewarefn) as argument and returns a new instance of the safe action client with that middleware function added to the stack, that will be executed after the last one, if any. Check out how to use this method in the related [middleware section](/docs/usage/middleware) of the usage guide.
+`use` accepts a middleware function of type [`MiddlewareFn`](/docs/types#middlewarefn) as argument and returns a new instance of the safe action client with that middleware function added to the stack, that will be executed after the last one, if any. Check out how to `use` middleware in [the related section](/docs/usage/middleware) of the usage guide.
 
 ## `metadata`
 
