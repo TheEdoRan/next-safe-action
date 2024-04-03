@@ -32,10 +32,12 @@ Here we define our action. The only difference is that we will import the schema
 ```typescript title="buyproduct-action.ts"
 "use server";
 
-import { action } from "@/lib/safe-action";
+import { actionClient } from "@/lib/safe-action";
 import { schema } from "./validation";
 
-export const buyProduct = action(schema, async ({ productId }) => {
+export const buyProduct = actionClient
+  .schema(schema)
+  .define(async ({ productId }) => {
   // We're just returning the productId passed to the action here.
   return {
     productId,
