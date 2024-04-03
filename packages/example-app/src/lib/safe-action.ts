@@ -1,5 +1,8 @@
 import { randomUUID } from "crypto";
-import { DEFAULT_SERVER_ERROR, createSafeActionClient } from "next-safe-action";
+import {
+	DEFAULT_SERVER_ERROR_MESSAGE,
+	createSafeActionClient,
+} from "next-safe-action";
 
 export class ActionError extends Error {}
 
@@ -20,7 +23,7 @@ export const action = createSafeActionClient({
 		}
 
 		// Otherwise return default error message.
-		return DEFAULT_SERVER_ERROR;
+		return DEFAULT_SERVER_ERROR_MESSAGE;
 	},
 }).use(async ({ next, metadata }) => {
 	// Here we use a logging middleware.

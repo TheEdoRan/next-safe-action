@@ -11,7 +11,7 @@ import type {
 	SafeActionResult,
 	ServerCodeFn,
 } from "./index.types";
-import { DEFAULT_SERVER_ERROR, isError } from "./utils";
+import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import {
 	ServerValidationError,
 	buildValidationErrors,
@@ -151,7 +151,7 @@ class SafeActionClient<const Ctx = null> {
 
 							if (!isError(e)) {
 								console.warn("Could not handle server error. Not an instance of Error: ", e);
-								middlewareResult.serverError = DEFAULT_SERVER_ERROR;
+								middlewareResult.serverError = DEFAULT_SERVER_ERROR_MESSAGE;
 								return;
 							}
 
@@ -212,7 +212,7 @@ export const createSafeActionClient = (createOpts?: SafeActionClientOpts) => {
 	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
 	const handleReturnedServerError = (e: Error) =>
-		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR;
+		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR_MESSAGE;
 
 	return new SafeActionClient({
 		middlewareFns: [async ({ next }) => next({ ctx: null })],
@@ -221,7 +221,7 @@ export const createSafeActionClient = (createOpts?: SafeActionClientOpts) => {
 	});
 };
 
-export { DEFAULT_SERVER_ERROR, returnValidationErrors, type ValidationErrors };
+export { DEFAULT_SERVER_ERROR_MESSAGE, returnValidationErrors, type ValidationErrors };
 
 export type {
 	ActionMetadata,

@@ -25,7 +25,7 @@ export const actionClient = createSafeActionClient({
 A more useful one would be to customize the message based on the error type. We can, for instance, create a custom error class and check the error type inside this function:
 
 ```typescript title=src/lib/safe-action.ts
-import { DEFAULT_SERVER_ERROR } from "next-safe-action";
+import { DEFAULT_SERVER_ERROR_MESSAGE } from "next-safe-action";
 
 class MyCustomError extends Error {}
 
@@ -39,7 +39,7 @@ export const actionClient = createSafeActionClient({
     }
 
     // Every other error that occurs will be masked with the default message.
-    return DEFAULT_SERVER_ERROR;
+    return DEFAULT_SERVER_ERROR_MESSAGE;
   },
 });
 ```
