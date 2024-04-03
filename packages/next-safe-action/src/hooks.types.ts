@@ -5,23 +5,27 @@ import type { MaybePromise } from "./utils";
 /**
  * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookResult<S extends Schema, Data> = SafeActionResult<S, Data> & {
+export type HookResult<ServerError, S extends Schema, Data> = SafeActionResult<
+	ServerError,
+	S,
+	Data
+> & {
 	fetchError?: string;
 };
 
 /**
  * Type of hooks callbacks. These are executed when action is in a specific state.
  */
-export type HookCallbacks<S extends Schema, Data> = {
+export type HookCallbacks<ServerError, S extends Schema, Data> = {
 	onExecute?: (input: InferIn<S>) => MaybePromise<void>;
 	onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
 	onError?: (
-		error: Omit<HookResult<S, Data>, "data">,
+		error: Omit<HookResult<ServerError, S, Data>, "data">,
 		input: InferIn<S>,
 		reset: () => void
 	) => MaybePromise<void>;
 	onSettled?: (
-		result: HookResult<S, Data>,
+		result: HookResult<ServerError, S, Data>,
 		input: InferIn<S>,
 		reset: () => void
 	) => MaybePromise<void>;
