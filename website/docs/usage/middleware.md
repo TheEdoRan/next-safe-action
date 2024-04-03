@@ -20,7 +20,7 @@ Instance level is the right place when you want to share middleware behavior for
 Here we'll use a logging middleware in the base client and then extend it with an authorization middleware in `authActionClient`. We'll also define a safe action called `editProfile`, that will use `authActionClient` as its client. Note that the `handleReturnedServerError` function passed to the base client will also be used for `authActionClient`:
 
 ```typescript title="src/lib/safe-action.ts"
-import { createSafeActionClient } from "next-safe-action";
+import { createSafeActionClient, DEFAULT_SERVER_ERROR_MESSAGE } from "next-safe-action";
 import { cookies } from "next/headers";
 import { getUserIdFromSessionId } from "./db";
 
@@ -33,7 +33,7 @@ const actionClient = createSafeActionClient({
       return e.message;
     }
 
-    return DEFAULT_SERVER_ERROR;
+    return DEFAULT_SERVER_ERROR_MESSAGE;
   },
 // Define logging middleware.
 }).use(async ({ next, clientInput, metadata }) => {

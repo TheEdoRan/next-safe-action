@@ -12,10 +12,32 @@ description: List of next-safe-action types.
 Type of options when creating a new safe action client.
 
 ```typescript
-export type SafeActionClientOpts = {
+export type SafeActionClientOpts<ServerError> = {
   handleServerErrorLog?: (e: Error) => MaybePromise<void>;
-  handleReturnedServerError?: (e: Error) => MaybePromise<string>;
+  handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
 };
+```
+
+### `SafeActionResult`
+
+Type of the result of a safe action.
+
+```typescript
+export type SafeActionResult<ServerError, S extends Schema, Data, NextCtx = unknown> = {
+	data?: Data;
+	serverError?: ServerError;
+	validationErrors?: ValidationErrors<S>;
+};
+```
+
+### `SafeActionFn`
+
+Type of the function called from components with typesafe input data.
+
+```typescript
+export type SafeActionFn<ServerError, S extends Schema, Data> = (
+	input: InferIn<S>
+) => Promise<SafeActionResult<ServerError, S, Data>>;
 ```
 
 ### `ActionMetadata`
@@ -33,10 +55,15 @@ export type ActionMetadata = {
 Type of the result of a middleware function. It extends the result of a safe action with `parsedInput` and `ctx` optional properties.
 
 ```typescript
-export type MiddlewareResult<NextCtx> = SafeActionResult<any, unknown, NextCtx> & {
-  parsedInput?: unknown;
-  ctx?: unknown;
-  success: boolean;
+export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
+	ServerError,
+	any,
+	unknown,
+	NextCtx
+> & {
+	parsedInput?: unknown;
+	ctx?: unknown;
+	success: boolean;
 };
 ```
 
@@ -45,15 +72,15 @@ export type MiddlewareResult<NextCtx> = SafeActionResult<any, unknown, NextCtx> 
 Type of the middleware function passed to a safe action client.
 
 ```typescript
-export type MiddlewareFn<ClientInput, Ctx, NextCtx> = {
-  (opts: {
-    clientInput: ClientInput;
-    ctx: Ctx;
-    metadata: ActionMetadata;
-    next: {
-      <const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<NC>>;
-    };
-  }): Promise<MiddlewareResult<NextCtx>>;
+export type MiddlewareFn<ServerError, ClientInput, Ctx, NextCtx> = {
+	(opts: {
+		clientInput: ClientInput;
+		ctx: Ctx;
+		metadata: ActionMetadata;
+		next: {
+			<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
+		};
+	}): Promise<MiddlewareResult<ServerError, NextCtx>>;
 };
 ```
 
@@ -76,28 +103,6 @@ Type of the returned object when input validation fails.
 export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
 ```
 
-### `SafeActionResult`
-
-Type of the result of a safe action.
-
-```typescript
-export type SafeActionResult<S extends Schema, Data, NextCtx = unknown> = {
-  data?: Data;
-  serverError?: string;
-  validationErrors?: ValidationErrors<S>;
-};
-```
-
-### `SafeActionFn`
-
-Type of the function called from components with typesafe input data.
-
-```typescript
-export type SafeActionFn<S extends Schema, Data> = (
-  input: InferIn<S>
-) => Promise<SafeActionResult<S, Data>>;
-```
-
 ## /hooks
 
 ### `HookResult`
@@ -107,8 +112,12 @@ Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
 If a server-client communication error occurs, `fetchError` will be set to the error message.
 
 ```typescript
-type HookResult<S extends Schema, Data> = SafeActionResult<S, Data> & {
-  fetchError?: string;
+export type HookResult<ServerError, S extends Schema, Data> = SafeActionResult<
+	ServerError,
+	S,
+	Data
+> & {
+	fetchError?: string;
 };
 ```
 
@@ -117,19 +126,19 @@ type HookResult<S extends Schema, Data> = SafeActionResult<S, Data> & {
 Type of hooks callbacks. These are executed when action is in a specific state.
 
 ```typescript
-type HookCallbacks<S extends Schema, Data> = {
-  onExecute?: (input: InferIn<S>) => MaybePromise<void>;
-  onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
-  onError?: (
-    error: Omit<HookResult<S, Data>, "data">,
-    input: InferIn<S>,
-    reset: () => void
-  ) => MaybePromise<void>;
-  onSettled?: (
-    result: HookResult<S, Data>,
-    input: InferIn<S>,
-    reset: () => void
-  ) => MaybePromise<void>;
+export type HookCallbacks<ServerError, S extends Schema, Data> = {
+	onExecute?: (input: InferIn<S>) => MaybePromise<void>;
+	onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
+	onError?: (
+		error: Omit<HookResult<ServerError, S, Data>, "data">,
+		input: InferIn<S>,
+		reset: () => void
+	) => MaybePromise<void>;
+	onSettled?: (
+		result: HookResult<ServerError, S, Data>,
+		input: InferIn<S>,
+		reset: () => void
+	) => MaybePromise<void>;
 };
 ```
 

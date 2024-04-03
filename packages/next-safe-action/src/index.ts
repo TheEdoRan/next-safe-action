@@ -11,7 +11,7 @@ import type {
 	SafeActionResult,
 	ServerCodeFn,
 } from "./index.types";
-import { DEFAULT_SERVER_ERROR, isError } from "./utils";
+import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import {
 	ServerValidationError,
 	buildValidationErrors,
@@ -19,17 +19,21 @@ import {
 } from "./validation-errors";
 import type { ValidationErrors } from "./validation-errors.types";
 
-class SafeActionClient<const Ctx = null> {
-	private readonly handleServerErrorLog: NonNullable<SafeActionClientOpts["handleServerErrorLog"]>;
+class SafeActionClient<const ServerError, const Ctx = null> {
+	private readonly handleServerErrorLog: NonNullable<
+		SafeActionClientOpts<ServerError>["handleServerErrorLog"]
+	>;
 	private readonly handleReturnedServerError: NonNullable<
-		SafeActionClientOpts["handleReturnedServerError"]
+		SafeActionClientOpts<ServerError>["handleReturnedServerError"]
 	>;
 
-	private middlewareFns: MiddlewareFn<any, any, any>[];
+	private middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	private _metadata: ActionMetadata = {};
 
 	constructor(
-		opts: { middlewareFns: MiddlewareFn<any, any, any>[] } & Required<SafeActionClientOpts>
+		opts: { middlewareFns: MiddlewareFn<ServerError, any, any, any>[] } & Required<
+			SafeActionClientOpts<ServerError>
+		>
 	) {
 		this.middlewareFns = opts.middlewareFns;
 		this.handleServerErrorLog = opts.handleServerErrorLog;
@@ -42,7 +46,7 @@ class SafeActionClient<const Ctx = null> {
 	 * @returns {SafeActionClient}
 	 */
 	public clone() {
-		return new SafeActionClient<Ctx>({
+		return new SafeActionClient<ServerError, Ctx>({
 			handleReturnedServerError: this.handleReturnedServerError,
 			handleServerErrorLog: this.handleServerErrorLog,
 			middlewareFns: [...this.middlewareFns], // copy the middleware stack so we don't mutate it
@@ -55,11 +59,11 @@ class SafeActionClient<const Ctx = null> {
 	 * @returns SafeActionClient
 	 */
 	public use<const ClientInput, const NextCtx>(
-		middlewareFn: MiddlewareFn<ClientInput, Ctx, NextCtx>
+		middlewareFn: MiddlewareFn<ServerError, ClientInput, Ctx, NextCtx>
 	) {
 		this.middlewareFns.push(middlewareFn);
 
-		return new SafeActionClient<NextCtx>({
+		return new SafeActionClient<ServerError, NextCtx>({
 			middlewareFns: this.middlewareFns,
 			handleReturnedServerError: this.handleReturnedServerError,
 			handleServerErrorLog: this.handleServerErrorLog,
@@ -93,11 +97,13 @@ class SafeActionClient<const Ctx = null> {
 			 * @param serverCodeFn A function that executes the server code.
 			 * @returns {SafeActionFn}
 			 */
-			define<const Data = null>(serverCodeFn: ServerCodeFn<S, Data, Ctx>): SafeActionFn<S, Data> {
+			define<const Data = null>(
+				serverCodeFn: ServerCodeFn<S, Data, Ctx>
+			): SafeActionFn<ServerError, S, Data> {
 				return async (clientInput: unknown) => {
 					let prevCtx: any = null;
 					let frameworkError: Error | undefined = undefined;
-					const middlewareResult: MiddlewareResult<any> = { success: false };
+					const middlewareResult: MiddlewareResult<ServerError, any> = { success: false };
 
 					// Execute the middleware stack.
 					const executeMiddlewareChain = async (idx = 0) => {
@@ -149,16 +155,14 @@ class SafeActionClient<const Ctx = null> {
 								return;
 							}
 
-							if (!isError(e)) {
-								console.warn("Could not handle server error. Not an instance of Error: ", e);
-								middlewareResult.serverError = DEFAULT_SERVER_ERROR;
-								return;
-							}
+							// If error is not an instance of Error, wrap it in an Error object with
+							// the default message.
+							const error = isError(e) ? e : new Error(DEFAULT_SERVER_ERROR_MESSAGE);
 
-							await Promise.resolve(classThis.handleServerErrorLog(e));
+							await Promise.resolve(classThis.handleServerErrorLog(error));
 
 							middlewareResult.serverError = await Promise.resolve(
-								classThis.handleReturnedServerError(e)
+								classThis.handleReturnedServerError(error)
 							);
 						}
 					};
@@ -170,7 +174,7 @@ class SafeActionClient<const Ctx = null> {
 						throw frameworkError;
 					}
 
-					const actionResult: SafeActionResult<S, Data> = {};
+					const actionResult: SafeActionResult<ServerError, S, Data> = {};
 
 					if (typeof middlewareResult.data !== "undefined") {
 						actionResult.data = middlewareResult.data as Data;
@@ -199,7 +203,9 @@ class SafeActionClient<const Ctx = null> {
  *
  * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
-export const createSafeActionClient = (createOpts?: SafeActionClientOpts) => {
+export const createSafeActionClient = <const ServerError = string>(
+	createOpts?: SafeActionClientOpts<ServerError>
+) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
@@ -211,17 +217,19 @@ export const createSafeActionClient = (createOpts?: SafeActionClientOpts) => {
 	// If `handleReturnedServerError` is provided, use it to handle server error
 	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
-	const handleReturnedServerError = (e: Error) =>
-		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR;
+	const handleReturnedServerError = ((e: Error) =>
+		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR_MESSAGE) as NonNullable<
+		SafeActionClientOpts<ServerError>["handleReturnedServerError"]
+	>;
 
-	return new SafeActionClient({
+	return new SafeActionClient<ServerError, null>({
 		middlewareFns: [async ({ next }) => next({ ctx: null })],
 		handleServerErrorLog,
 		handleReturnedServerError,
 	});
 };
 
-export { DEFAULT_SERVER_ERROR, returnValidationErrors, type ValidationErrors };
+export { DEFAULT_SERVER_ERROR_MESSAGE, returnValidationErrors, type ValidationErrors };
 
 export type {
 	ActionMetadata,
