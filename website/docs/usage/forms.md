@@ -26,14 +26,15 @@ const schema = zfd.formData({
   password: zfd.text(z.string().min(8)),
 });
 
-export const signup = action(schema, async ({ email, password }) => {
-  console.log("Email:", email, "Password:", password);
-
-  // Do something useful here.
-});
+export const signup = action
+  .schema(schema)
+  .define(async ({ email, password }) => {
+    console.log("Email:", email, "Password:", password);
+    // Do something useful here.
+  });
 ```
 
-2. Import it in a Server Component and use it as a form action.
+2. Import it in a Server Component and use it as a Form Action.
 
 ```tsx title=src/app/signup/page.tsx
 import { signup } from "./signup-action";

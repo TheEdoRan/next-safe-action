@@ -11,4 +11,4 @@ Have you found bugs or just want to ask a question? Please open a [GitHub issue]
 
 ### Donations
 
-If you find this project useful, please consider making a [donation](https://www.paypal.com/donate/?hosted_button_id=ES9JRPSC66XKW). This is absolutely not required, but is very much appreciated, since it will help to cover the time and resources required to maintain this project. Thank you! 
+If you find this project useful, please consider making a [donation](https://github.com/sponsors/TheEdoRan). This is absolutely not required, but is very much appreciated, since it will help to cover the time and resources required to maintain this project. Thank you! 

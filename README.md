@@ -16,7 +16,7 @@ https://github.com/TheEdoRan/next-safe-action/assets/1337629/7ebc398e-6c7d-49b2-
 
 - ✅ Pretty simple
 - ✅ End-to-end type safety
-- ✅ Context based clients (with middlewares)
+- ✅ Powerful middleware system
 - ✅ Input validation using multiple validation libraries
 - ✅ Advanced server error handling
 - ✅ Optimistic updates

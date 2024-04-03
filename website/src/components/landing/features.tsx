@@ -13,9 +13,9 @@ const features: { title: string; description: string }[] = [
 			"With next-safe-action you get full type safety between server and client code.",
 	},
 	{
-		title: "Context-based clients (with middlewares)",
+		title: "Powerful middleware system",
 		description:
-			"Powerful context-based clients with custom logic execution, thanks to middlewares.",
+			"Manage authorization, log and halt execution, and much more with a composable middleware system.",
 	},
 	{
 		title: "Input validation using multiple validation libraries",

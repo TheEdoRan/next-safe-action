@@ -29,18 +29,20 @@ const schema = z.object({
 let likes = 42;
 export const getLikes = () => likes;
 
-export const addLikes = action(schema, async ({ amount }) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+export const addLikes = actionClient
+  .schema(schema)
+  .define(async ({ amount }) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Mutate data in fake db. This would be a database call in the real world.
-  likes += amount;
+    // Mutate data in fake db. This would be a database call in the real world.
+    likes += amount;
 
-  // We use this function to revalidate server state.
-  // More information about it here:
-  // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
-  revalidatePath("/");
+    // We use this function to revalidate server state.
+    // More information about it here:
+    // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
+    revalidatePath("/");
 
-  return { numOfLikes: likes };
+    return { numOfLikes: likes };
 });
 ```
 
@@ -102,8 +104,8 @@ export default function AddLikes({ numOfLikes }: Props) {
 
 | Name             | Type                                                                  | Purpose                                                                                                                                                                                                                                               |
 |------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `safeAction`     | [`SafeAction`](/docs/types#safeaction)                                | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                              |
-| `initialOptimisticData` | `Data` (return type of the `safeAction` you passed as first argument) | An initializer for the optimistic state. Usually this value comes from the parent Server Component.                                                                                                                                                   |
+| `safeActionFn`     | [`SafeActionFn`](/docs/types#safeactionfn)                                | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                              |
+| `initialOptimisticData` | `Data` (return type of the `safeActionFn` you passed as first argument) | An initializer for the optimistic state. Usually this value comes from the parent Server Component.                                                                                                                                                   |
 | `reducer`        | `(state: Data, input: InferIn<S>) => Data`                      | When you call the action via `execute`, this function determines how the optimistic update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server.  |
 | `callbacks?`     | [`HookCallbacks`](/docs/types#hookcallbacks)                          | Optional callbacks. More information about them [here](/docs/usage/client-components/hooks/callbacks).                                                                                                                                                      |
 
@@ -118,6 +120,6 @@ export default function AddLikes({ numOfLikes }: Props) {
 | `result`         | [`HookResult`](/docs/types#hookresult)                                | When the action gets called via `execute`, this is the result object.                                                                                                                                                                     |
 | `status`         | [`HookActionStatus`](/docs/types#hookresult)                          | The action current status.                                                                                                                                                                                                                |
 | `reset`          | `() => void`                                                          | You can programmatically reset the `result` object with this function.                                                                                                                                                                    |
-| `optimisticData` | `Data` (return type of the `safeAction` you passed as first argument) | This is the data that gets updated immediately after `execute` is called, with the behavior you defined in the `reducer` function hook argument. The initial state is what you provided to the hook via `initialOptimisticData` argument. |
+| `optimisticData` | `Data` (return type of the `safeActionFn` you passed as first argument) | This is the data that gets updated immediately after `execute` is called, with the behavior you defined in the `reducer` function hook argument. The initial state is what you provided to the hook via `initialOptimisticData` argument. |
 
-Explore a working example [here](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/example-app/src/app/optimistic-hook).
+Explore a working example [here](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/example-app/src/app/(examples)/optimistic-hook).

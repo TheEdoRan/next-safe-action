@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 description: Set custom validation errors in schema or in action's server code function.
 ---
 
@@ -39,18 +39,20 @@ import { returnValidationErrors } from "next-safe-action";
 import { action } from "@/lib/safe-action";
 
 // Here we're using the same schema declared above.
-const signupAction = action(schema, async ({email}) => {
-  // Assume this is a database call.
-  if (!isEmailAvailable(email)) {
-    returnValidationErrors(schema, {
-      email: {
-        _errors: ["Email already registered"],
-      },
-    });
-  }
+const signupAction = actionClient
+  .schema(schema)
+  .define(async ({ email }) => {
+    // Assume this is a database call.
+    if (!isEmailAvailable(email)) {
+      returnValidationErrors(schema, {
+        email: {
+          _errors: ["Email already registered"],
+        },
+      });
+    }
 
-  ...
-});
+    ...
+  });
 ```
 
 Note that:

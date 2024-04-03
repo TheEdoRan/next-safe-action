@@ -29,6 +29,8 @@ For Next.js >= 14, assuming you want to use Zod as your validation library, use 
 npm i next-safe-action zod @typeschema/zod
 ```
 
+Find the adapter for your validation library of choice in the [TypeSchema documentation](https://typeschema.com/#coverage).
+
 ## Usage
 
 ### 1. Instantiate a new client
@@ -38,21 +40,21 @@ npm i next-safe-action zod @typeschema/zod
 ```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
 
-export const action = createSafeActionClient();
+export const actionClient = createSafeActionClient();
 ```
 
-This is a basic client, without any options. If you want to explore the full set of options, check out the [safe action client](/docs/safe-action-client) section.
+This is a basic client, without any options or middleware functions. If you want to explore the full set of options, check out the [safe action client](/docs/safe-action-client) section.
 
 ### 2. Define a new action
 
-This is how a safe action is created. Providing a validation input schema to the function, we're sure that data that comes in is type safe and validated.
-The second argument of this function is an async function that receives the parsed input, and defines what happens on the server when the action is called from client. In short, this is your server code. It never runs on the client:
+This is how a safe action is created. Providing a validation input schema to the function via `schema()`, we're sure that data that comes in is type safe and validated.
+The `define()` method lets you define what happens on the server when the action is called from client, via an async function that receives the parsed input and context as arguments. In short, this is your _server code_. **It never runs on the client**:
 
 ```typescript title="src/app/login-action.ts"
 "use server"; // don't forget to add this!
 
 import { z } from "zod";
-import { action } from "@/lib/safe-action";
+import { actionClient } from "@/lib/safe-action";
 
 // This schema is used to validate input from client.
 const schema = z.object({
@@ -60,22 +62,24 @@ const schema = z.object({
   password: z.string().min(8).max(100),
 });
 
-export const loginUser = action(schema, async ({ username, password }) => {
-  if (username === "johndoe" && password === "123456") {
-    return {
-      success: "Successfully logged in",
-    };
-  } 
-    
-  return { failure: "Incorrect credentials" };
-});
+export const loginUser = actionClient
+  .schema(schema)
+  .define(async ({ username, password }) => {
+    if (username === "johndoe" && password === "123456") {
+      return {
+        success: "Successfully logged in",
+      };
+    } 
+      
+    return { failure: "Incorrect credentials" };
+  });
 ```
 
 `action` returns a new function that can be called from the client.
 
 ### 3. Import and execute the action
 
-In this example, we're **directly** calling the Server Actions from a Client Component. The action is passed as a prop to the component, and we can infer its type by simply using `typeof`: 
+In this example, we're **directly** calling the Server Action from a Client Component:
 
 ```tsx title="src/app/login.tsx"
 "use client"; // this is a Client Component

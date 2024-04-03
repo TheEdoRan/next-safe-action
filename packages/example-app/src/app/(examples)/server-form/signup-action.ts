@@ -9,9 +9,12 @@ const schema = zfd.formData({
 	password: zfd.text(z.string().min(8)),
 });
 
-export const signup = action(schema, async ({ email, password }) => {
-	console.log("Email:", email, "Password:", password);
-	return {
-		success: true,
-	};
-});
+export const signup = action
+	.metadata({ actionName: "signup" })
+	.schema(schema)
+	.define(async ({ email, password }) => {
+		console.log("Email:", email, "Password:", password);
+		return {
+			success: true,
+		};
+	});
