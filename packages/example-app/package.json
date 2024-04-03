@@ -14,25 +14,25 @@
 		"@hookform/resolvers": "^3.3.4",
 		"@typeschema/valibot": "^0.13.4",
 		"@typeschema/zod": "^0.13.3",
-		"lucide-react": "^0.354.0",
-		"next": "14.1.3",
+		"lucide-react": "^0.364.0",
+		"next": "14.1.4",
 		"next-safe-action": "file:../next-safe-action",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"react-hook-form": "^7.51.0",
+		"react-hook-form": "^7.51.2",
 		"valibot": "^0.30.0",
 		"zod": "^3.22.4",
 		"zod-form-data": "^2.0.2"
 	},
 	"devDependencies": {
-		"@types/node": "^20.11.25",
-		"@types/react": "^18.2.64",
-		"@types/react-dom": "18.2.21",
-		"autoprefixer": "10.4.18",
+		"@types/node": "^20.12.3",
+		"@types/react": "^18.2.74",
+		"@types/react-dom": "18.2.23",
+		"autoprefixer": "10.4.19",
 		"eslint": "^8.57.0",
-		"eslint-config-next": "14.1.3",
-		"postcss": "8.4.35",
-		"tailwindcss": "3.4.1",
-		"typescript": "^5.4.2"
+		"eslint-config-next": "14.1.4",
+		"postcss": "8.4.38",
+		"tailwindcss": "3.4.3",
+		"typescript": "^5.4.3"
 	}
 }
