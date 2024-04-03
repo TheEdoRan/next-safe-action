@@ -7,9 +7,9 @@ description: You can initialize a safe action client with these options.
 
 ## `handleReturnedServerError?`
 
-You can provide this optional function to the safe action client. It is used to customize the server error message returned to the client, if one occurs during action's server execution. This includes errors thrown by the action server code, and errors thrown by the middleware.
+You can provide this optional function to the safe action client. It is used to customize the server error returned to the client, if one occurs during action's server execution. This includes errors thrown by the action server code, and errors thrown by the middleware.
 
-Here's a simple example, changing the message for every error thrown on the server:
+Here's a simple example, changing the default message for every error thrown on the server:
 
 ```typescript title=src/lib/safe-action.ts
 export const actionClient = createSafeActionClient({
@@ -43,6 +43,8 @@ export const actionClient = createSafeActionClient({
   },
 });
 ```
+
+Note that the return type of this function will determine the type of the server error that will be returned to the client. By default it is a string with the `DEFAULT_SERVER_ERROR_MESSAGE` for all errors.
 
 ## `handleServerErrorLog?`
 
