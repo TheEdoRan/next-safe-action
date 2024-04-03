@@ -11,6 +11,23 @@ export type SafeActionClientOpts<ServerError> = {
 };
 
 /**
+ * Type of the result of a safe action.
+ */
+// eslint-disable-next-line
+export type SafeActionResult<ServerError, S extends Schema, Data, NextCtx = unknown> = {
+	data?: Data;
+	serverError?: ServerError;
+	validationErrors?: ValidationErrors<S>;
+};
+
+/**
+ * Type of the function called from components with typesafe input data.
+ */
+export type SafeActionFn<ServerError, S extends Schema, Data> = (
+	input: InferIn<S>
+) => Promise<SafeActionResult<ServerError, S, Data>>;
+
+/**
  * Type of meta options to be passed when defining a new safe action.
  */
 export type ActionMetadata = {
@@ -53,20 +70,3 @@ export type ServerCodeFn<S extends Schema, Data, Context> = (
 	parsedInput: Infer<S>,
 	utils: { ctx: Context; metadata: ActionMetadata }
 ) => Promise<Data>;
-
-/**
- * Type of the result of a safe action.
- */
-// eslint-disable-next-line
-export type SafeActionResult<ServerError, S extends Schema, Data, NextCtx = unknown> = {
-	data?: Data;
-	serverError?: ServerError;
-	validationErrors?: ValidationErrors<S>;
-};
-
-/**
- * Type of the function called from components with typesafe input data.
- */
-export type SafeActionFn<ServerError, S extends Schema, Data> = (
-	input: InferIn<S>
-) => Promise<SafeActionResult<ServerError, S, Data>>;
