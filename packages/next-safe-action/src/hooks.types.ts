@@ -1,11 +1,11 @@
 import type { InferIn, Schema } from "@typeschema/main";
-import type { SafeActionFn } from "./index.types";
+import type { SafeActionResult } from "./index.types";
 import type { MaybePromise } from "./utils";
 
 /**
  * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
  */
-export type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeActionFn<S, Data>>> & {
+export type HookResult<S extends Schema, Data> = SafeActionResult<S, Data> & {
 	fetchError?: string;
 };
 

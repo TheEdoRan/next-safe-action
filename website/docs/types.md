@@ -107,7 +107,7 @@ Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
 If a server-client communication error occurs, `fetchError` will be set to the error message.
 
 ```typescript
-type HookResult<S extends Schema, Data> = Awaited<ReturnType<SafeActionFn<S, Data>>> & {
+type HookResult<S extends Schema, Data> = SafeActionResult<S, Data> & {
   fetchError?: string;
 };
 ```
