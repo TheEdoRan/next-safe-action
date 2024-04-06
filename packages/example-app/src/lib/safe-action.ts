@@ -25,7 +25,7 @@ export const action = createSafeActionClient({
 		// Otherwise return default error message.
 		return DEFAULT_SERVER_ERROR_MESSAGE;
 	},
-}).use(async ({ next, metadata }) => {
+}).use(async ({ next, metadata, clientInput, bindArgsClientInputs }) => {
 	// Here we use a logging middleware.
 	const start = Date.now();
 
@@ -34,18 +34,16 @@ export const action = createSafeActionClient({
 
 	const end = Date.now();
 
-	// Log the execution time of the action.
-	console.log(
-		"LOGGING MIDDLEWARE: this action took",
-		end - start,
-		"ms to execute"
-	);
+	const durationInMs = end - start;
 
-	// Log the result
-	console.log("LOGGING MIDDLEWARE: result ->", result);
+	const logObject: Record<string, any> = { durationInMs };
 
-	// Log metadata
-	console.log("LOGGING MIDDLEWARE: metadata ->", metadata);
+	logObject.clientInput = clientInput;
+	logObject.bindArgsClientInputs = bindArgsClientInputs;
+	logObject.metadata = metadata;
+	logObject.result = result;
+
+	console.log("MIDDLEWARE LOG:", logObject);
 
 	// And then return the result of the awaited next middleware.
 	return result;

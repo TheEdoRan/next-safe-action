@@ -1,6 +1,6 @@
 import type { Infer, InferIn, Schema } from "@typeschema/main";
-import type { MaybePromise } from "./utils";
-import type { ValidationErrors } from "./validation-errors.types";
+import type { InferArray, InferInArray, MaybePromise } from "./utils";
+import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 
 /**
  * Type of options when creating a new safe action client.
@@ -13,19 +13,26 @@ export type SafeActionClientOpts<ServerError> = {
 /**
  * Type of the result of a safe action.
  */
-// eslint-disable-next-line
-export type SafeActionResult<ServerError, S extends Schema, Data, NextCtx = unknown> = {
+export type SafeActionResult<
+	ServerError,
+	S extends Schema,
+	BAS extends Schema[],
+	Data,
+	// eslint-disable-next-line
+	NextCtx = unknown,
+> = {
 	data?: Data;
 	serverError?: ServerError;
 	validationErrors?: ValidationErrors<S>;
+	bindArgsValidationErrors?: BindArgsValidationErrors<BAS>;
 };
 
 /**
  * Type of the function called from components with typesafe input data.
  */
-export type SafeActionFn<ServerError, S extends Schema, Data> = (
-	input: InferIn<S>
-) => Promise<SafeActionResult<ServerError, S, Data>>;
+export type SafeActionFn<ServerError, S extends Schema, BAS extends Schema[], Data> = (
+	...clientInputs: [...InferInArray<BAS>, InferIn<S>]
+) => Promise<SafeActionResult<ServerError, S, BAS, Data>>;
 
 /**
  * Type of meta options to be passed when defining a new safe action.
@@ -41,6 +48,7 @@ export type ActionMetadata = {
 export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 	ServerError,
 	any,
+	any,
 	unknown,
 	NextCtx
 > & {
@@ -52,9 +60,11 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 /**
  * Type of the middleware function passed to a safe action client.
  */
-export type MiddlewareFn<ServerError, ClientInput, Ctx, NextCtx> = {
+export type MiddlewareFn<ServerError, Ctx, NextCtx> = {
 	(opts: {
-		clientInput: ClientInput;
+		clientInput: unknown;
+		bindArgsClientInputs: unknown[];
+		// bindArgsClientInputs:
 		ctx: Ctx;
 		metadata: ActionMetadata;
 		next: {
@@ -66,7 +76,11 @@ export type MiddlewareFn<ServerError, ClientInput, Ctx, NextCtx> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema, Data, Context> = (
+export type ServerCodeFn<S extends Schema, BAS extends Schema[], Data, Context> = (
 	parsedInput: Infer<S>,
-	utils: { ctx: Context; metadata: ActionMetadata }
+	utils: {
+		bindArgsParsedInputs: InferArray<BAS>;
+		ctx: Context;
+		metadata: ActionMetadata;
+	}
 ) => Promise<Data>;

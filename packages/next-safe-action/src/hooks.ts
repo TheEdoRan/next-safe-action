@@ -5,8 +5,7 @@ import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
 import {} from "react/experimental";
-import type { HookActionStatus, HookCallbacks, HookResult } from "./hooks.types";
-import type { SafeActionFn } from "./index.types";
+import type { HookActionStatus, HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
 import { isError } from "./utils";
 
 // UTILS
@@ -16,11 +15,16 @@ const DEFAULT_RESULT = {
 	fetchError: undefined,
 	serverError: undefined,
 	validationErrors: undefined,
-} satisfies HookResult<any, any, any>;
+} satisfies HookResult<any, any, any, any>;
 
-const getActionStatus = <const ServerError, const S extends Schema, const Data>(
+const getActionStatus = <
+	const ServerError,
+	const S extends Schema,
+	const BAS extends Schema[],
+	const Data,
+>(
 	isExecuting: boolean,
-	result: HookResult<ServerError, S, Data>
+	result: HookResult<ServerError, S, BAS, Data>
 ): HookActionStatus => {
 	if (isExecuting) {
 		return "executing";
@@ -28,6 +32,7 @@ const getActionStatus = <const ServerError, const S extends Schema, const Data>(
 		return "hasSucceeded";
 	} else if (
 		typeof result.validationErrors !== "undefined" ||
+		typeof result.bindArgsValidationErrors !== "undefined" ||
 		typeof result.serverError !== "undefined" ||
 		typeof result.fetchError !== "undefined"
 	) {
@@ -37,12 +42,17 @@ const getActionStatus = <const ServerError, const S extends Schema, const Data>(
 	return "idle";
 };
 
-const useActionCallbacks = <const ServerError, const S extends Schema, const Data>(
-	result: HookResult<ServerError, S, Data>,
+const useActionCallbacks = <
+	const ServerError,
+	const S extends Schema,
+	const BAS extends Schema[],
+	const Data,
+>(
+	result: HookResult<ServerError, S, BAS, Data>,
 	input: InferIn<S>,
 	status: HookActionStatus,
 	reset: () => void,
-	cb?: HookCallbacks<ServerError, S, Data>
+	cb?: HookCallbacks<ServerError, S, BAS, Data>
 ) => {
 	const onExecuteRef = React.useRef(cb?.onExecute);
 	const onSuccessRef = React.useRef(cb?.onSuccess);
@@ -85,16 +95,21 @@ const useActionCallbacks = <const ServerError, const S extends Schema, const Dat
  *
  * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useaction See an example}
  */
-export const useAction = <const ServerError, const S extends Schema, const Data>(
-	safeActionFn: SafeActionFn<ServerError, S, Data>,
-	callbacks?: HookCallbacks<ServerError, S, Data>
+export const useAction = <
+	const ServerError,
+	const S extends Schema,
+	const BAS extends Schema[],
+	const Data,
+>(
+	safeActionFn: HookSafeActionFn<ServerError, S, BAS, Data>,
+	callbacks?: HookCallbacks<ServerError, S, BAS, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, Data>>(DEFAULT_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, Data>>(DEFAULT_RESULT);
 	const [input, setInput] = React.useState<InferIn<S>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
-	const status = getActionStatus<ServerError, S, Data>(isExecuting, result);
+	const status = getActionStatus<ServerError, S, BAS, Data>(isExecuting, result);
 
 	const execute = React.useCallback(
 		(input: InferIn<S>) => {
@@ -144,14 +159,19 @@ export const useAction = <const ServerError, const S extends Schema, const Data>
  *
  * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useoptimisticaction See an example}
  */
-export const useOptimisticAction = <const ServerError, const S extends Schema, const Data>(
-	safeActionFn: SafeActionFn<ServerError, S, Data>,
+export const useOptimisticAction = <
+	const ServerError,
+	const S extends Schema,
+	const BAS extends Schema[],
+	const Data,
+>(
+	safeActionFn: HookSafeActionFn<ServerError, S, BAS, Data>,
 	initialOptimisticData: Data,
 	reducer: (state: Data, input: InferIn<S>) => Data,
-	callbacks?: HookCallbacks<ServerError, S, Data>
+	callbacks?: HookCallbacks<ServerError, S, BAS, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, Data>>(DEFAULT_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, Data>>(DEFAULT_RESULT);
 	const [input, setInput] = React.useState<InferIn<S>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
@@ -160,7 +180,7 @@ export const useOptimisticAction = <const ServerError, const S extends Schema, c
 		reducer
 	);
 
-	const status = getActionStatus<ServerError, S, Data>(isExecuting, result);
+	const status = getActionStatus<ServerError, S, BAS, Data>(isExecuting, result);
 
 	const execute = React.useCallback(
 		(input: InferIn<S>) => {
@@ -201,4 +221,4 @@ export const useOptimisticAction = <const ServerError, const S extends Schema, c
 	};
 };
 
-export type { HookActionStatus, HookCallbacks, HookResult };
+export type { HookActionStatus, HookCallbacks, HookResult, HookSafeActionFn };
