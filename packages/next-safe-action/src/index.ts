@@ -20,24 +20,24 @@ import {
 import type { ValidationErrors } from "./validation-errors.types";
 
 class SafeActionClient<const ServerError, const Ctx = null> {
-	private readonly handleServerErrorLog: NonNullable<
+	readonly #handleServerErrorLog: NonNullable<
 		SafeActionClientOpts<ServerError>["handleServerErrorLog"]
 	>;
-	private readonly handleReturnedServerError: NonNullable<
+	readonly #handleReturnedServerError: NonNullable<
 		SafeActionClientOpts<ServerError>["handleReturnedServerError"]
 	>;
 
-	private middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
-	private _metadata: ActionMetadata = {};
+	#middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
+	#metadata: ActionMetadata = {};
 
 	constructor(
 		opts: { middlewareFns: MiddlewareFn<ServerError, any, any, any>[] } & Required<
 			SafeActionClientOpts<ServerError>
 		>
 	) {
-		this.middlewareFns = opts.middlewareFns;
-		this.handleServerErrorLog = opts.handleServerErrorLog;
-		this.handleReturnedServerError = opts.handleReturnedServerError;
+		this.#middlewareFns = opts.middlewareFns;
+		this.#handleServerErrorLog = opts.handleServerErrorLog;
+		this.#handleReturnedServerError = opts.handleReturnedServerError;
 	}
 
 	/**
@@ -47,9 +47,9 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	 */
 	public clone() {
 		return new SafeActionClient<ServerError, Ctx>({
-			handleReturnedServerError: this.handleReturnedServerError,
-			handleServerErrorLog: this.handleServerErrorLog,
-			middlewareFns: [...this.middlewareFns], // copy the middleware stack so we don't mutate it
+			handleReturnedServerError: this.#handleReturnedServerError,
+			handleServerErrorLog: this.#handleServerErrorLog,
+			middlewareFns: [...this.#middlewareFns], // copy the middleware stack so we don't mutate it
 		});
 	}
 
@@ -61,12 +61,12 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	public use<const ClientInput, const NextCtx>(
 		middlewareFn: MiddlewareFn<ServerError, ClientInput, Ctx, NextCtx>
 	) {
-		this.middlewareFns.push(middlewareFn);
+		this.#middlewareFns.push(middlewareFn);
 
 		return new SafeActionClient<ServerError, NextCtx>({
-			middlewareFns: this.middlewareFns,
-			handleReturnedServerError: this.handleReturnedServerError,
-			handleServerErrorLog: this.handleServerErrorLog,
+			middlewareFns: this.#middlewareFns,
+			handleReturnedServerError: this.#handleReturnedServerError,
+			handleServerErrorLog: this.#handleServerErrorLog,
 		});
 	}
 
@@ -76,7 +76,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	 * @returns {Function} Define a new action
 	 */
 	public metadata(data: ActionMetadata) {
-		this._metadata = data;
+		this.#metadata = data;
 
 		return {
 			schema: this.schema.bind(this),
@@ -107,7 +107,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 
 					// Execute the middleware stack.
 					const executeMiddlewareChain = async (idx = 0) => {
-						const currentFn = classThis.middlewareFns[idx];
+						const currentFn = classThis.#middlewareFns[idx];
 
 						middlewareResult.ctx = prevCtx;
 
@@ -116,7 +116,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 								await currentFn({
 									clientInput, // pass raw client input
 									ctx: prevCtx,
-									metadata: classThis._metadata,
+									metadata: classThis.#metadata,
 									next: async ({ ctx }) => {
 										prevCtx = ctx;
 										await executeMiddlewareChain(idx + 1);
@@ -134,7 +134,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 								const data =
 									(await serverCodeFn(parsedInput.data, {
 										ctx: prevCtx,
-										metadata: classThis._metadata,
+										metadata: classThis.#metadata,
 									})) ?? null;
 								middlewareResult.success = true;
 								middlewareResult.data = data;
@@ -159,10 +159,10 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 							// the default message.
 							const error = isError(e) ? e : new Error(DEFAULT_SERVER_ERROR_MESSAGE);
 
-							await Promise.resolve(classThis.handleServerErrorLog(error));
+							await Promise.resolve(classThis.#handleServerErrorLog(error));
 
 							middlewareResult.serverError = await Promise.resolve(
-								classThis.handleReturnedServerError(error)
+								classThis.#handleReturnedServerError(error)
 							);
 						}
 					};
