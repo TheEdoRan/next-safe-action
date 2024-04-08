@@ -143,18 +143,18 @@ Type of hooks callbacks. These are executed when action is in a specific state.
 
 ```typescript
 export type HookCallbacks<ServerError, S extends Schema, BAS extends Schema[], Data> = {
-  onExecute?: (input: InferIn<S>) => MaybePromise<void>;
-  onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
-  onError?: (
-    error: Omit<HookResult<ServerError, S, BAS, Data>, "data">,
-    input: InferIn<S>,
-    reset: () => void
-  ) => MaybePromise<void>;
-  onSettled?: (
-    result: HookResult<ServerError, S, BAS, Data>,
-    input: InferIn<S>,
-    reset: () => void
-  ) => MaybePromise<void>;
+  onExecute?: (args: { input: InferIn<S> }) => MaybePromise<void>;
+  onSuccess?: (args: { data: Data; input: InferIn<S>; reset: () => void }) => MaybePromise<void>;
+  onError?: (args: {
+    error: Omit<HookResult<ServerError, S, BAS, Data>, "data">;
+    input: InferIn<S>;
+    reset: () => void;
+  }) => MaybePromise<void>;
+  onSettled?: (args: {
+    result: HookResult<ServerError, S, BAS, Data>;
+    input: InferIn<S>;
+    reset: () => void;
+  }) => MaybePromise<void>;
 };
 ```
 

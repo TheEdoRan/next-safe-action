@@ -22,10 +22,13 @@ const getActionStatus = <
 	const S extends Schema,
 	const BAS extends Schema[],
 	const Data,
->(
-	isExecuting: boolean,
-	result: HookResult<ServerError, S, BAS, Data>
-): HookActionStatus => {
+>({
+	isExecuting,
+	result,
+}: {
+	isExecuting: boolean;
+	result: HookResult<ServerError, S, BAS, Data>;
+}): HookActionStatus => {
 	if (isExecuting) {
 		return "executing";
 	} else if (typeof result.data !== "undefined") {
@@ -47,13 +50,19 @@ const useActionCallbacks = <
 	const S extends Schema,
 	const BAS extends Schema[],
 	const Data,
->(
-	result: HookResult<ServerError, S, BAS, Data>,
-	input: InferIn<S>,
-	status: HookActionStatus,
-	reset: () => void,
-	cb?: HookCallbacks<ServerError, S, BAS, Data>
-) => {
+>({
+	result,
+	input,
+	status,
+	reset,
+	cb,
+}: {
+	result: HookResult<ServerError, S, BAS, Data>;
+	input: InferIn<S>;
+	status: HookActionStatus;
+	reset: () => void;
+	cb?: HookCallbacks<ServerError, S, BAS, Data>;
+}) => {
 	const onExecuteRef = React.useRef(cb?.onExecute);
 	const onSuccessRef = React.useRef(cb?.onSuccess);
 	const onErrorRef = React.useRef(cb?.onError);
@@ -69,15 +78,15 @@ const useActionCallbacks = <
 		const executeCallbacks = async () => {
 			switch (status) {
 				case "executing":
-					await Promise.resolve(onExecute?.(input));
+					await Promise.resolve(onExecute?.({ input }));
 					break;
 				case "hasSucceeded":
-					await Promise.resolve(onSuccess?.(result.data!, input, reset));
-					await Promise.resolve(onSettled?.(result, input, reset));
+					await Promise.resolve(onSuccess?.({ data: result.data!, input, reset }));
+					await Promise.resolve(onSettled?.({ result, input, reset }));
 					break;
 				case "hasErrored":
-					await Promise.resolve(onError?.(result, input, reset));
-					await Promise.resolve(onSettled?.(result, input, reset));
+					await Promise.resolve(onError?.({ error: result, input, reset }));
+					await Promise.resolve(onSettled?.({ result, input, reset }));
 					break;
 			}
 		};
@@ -109,7 +118,7 @@ export const useAction = <
 	const [input, setInput] = React.useState<InferIn<S>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
-	const status = getActionStatus<ServerError, S, BAS, Data>(isExecuting, result);
+	const status = getActionStatus<ServerError, S, BAS, Data>({ isExecuting, result });
 
 	const execute = React.useCallback(
 		(input: InferIn<S>) => {
@@ -138,7 +147,7 @@ export const useAction = <
 		setResult(DEFAULT_RESULT);
 	}, []);
 
-	useActionCallbacks(result, input, status, reset, callbacks);
+	useActionCallbacks({ result, input, status, reset, cb: callbacks });
 
 	return {
 		execute,
@@ -180,7 +189,7 @@ export const useOptimisticAction = <
 		reducer
 	);
 
-	const status = getActionStatus<ServerError, S, BAS, Data>(isExecuting, result);
+	const status = getActionStatus<ServerError, S, BAS, Data>({ isExecuting, result });
 
 	const execute = React.useCallback(
 		(input: InferIn<S>) => {
@@ -210,7 +219,7 @@ export const useOptimisticAction = <
 		setResult(DEFAULT_RESULT);
 	}, []);
 
-	useActionCallbacks(result, input, status, reset, callbacks);
+	useActionCallbacks({ result, input, status, reset, cb: callbacks });
 
 	return {
 		execute,
