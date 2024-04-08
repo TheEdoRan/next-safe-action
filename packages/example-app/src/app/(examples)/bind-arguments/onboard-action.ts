@@ -8,7 +8,7 @@ const schema = z.object({
 });
 
 export const onboardUser = action
-	.metadata({ actionName: "deleteUser" })
+	.metadata({ actionName: "onboardUser" })
 	.schema(schema)
 	.bindArgsSchemas<[userId: z.ZodString, age: z.ZodNumber]>([
 		z.string().uuid(),

@@ -7,14 +7,13 @@ import { useAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
 import { onboardUser } from "./onboard-action";
 
-export default function Hook() {
+export default function BindArguments() {
 	const boundOnboardUser = onboardUser.bind(
 		null,
 		crypto.randomUUID(),
 		Math.floor(Math.random() * 200)
 	);
 
-	// Safe action (`deleteUser`) and optional callbacks passed to `useAction` hook.
 	const { execute, result, status, reset } = useAction(boundOnboardUser, {
 		onSuccess(data, input, reset) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
