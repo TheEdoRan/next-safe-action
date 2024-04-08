@@ -53,6 +53,7 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 	NextCtx
 > & {
 	parsedInput?: unknown;
+	bindArgsParsedInputs?: unknown[];
 	ctx?: unknown;
 	success: boolean;
 };
@@ -76,11 +77,9 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema, BAS extends Schema[], Data, Context> = (
-	parsedInput: Infer<S>,
-	utils: {
-		bindArgsParsedInputs: InferArray<BAS>;
-		ctx: Context;
-		metadata: ActionMetadata;
-	}
-) => Promise<Data>;
+export type ServerCodeFn<S extends Schema, BAS extends Schema[], Data, Context> = (args: {
+	parsedInput: Infer<S>;
+	bindArgsParsedInputs: InferArray<BAS>;
+	ctx: Context;
+	metadata: ActionMetadata;
+}) => Promise<Data>;

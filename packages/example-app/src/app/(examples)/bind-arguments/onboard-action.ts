@@ -14,10 +14,15 @@ export const onboardUser = action
 		z.string().uuid(),
 		z.number().min(18).max(150),
 	])
-	.define(async ({ username }, { bindArgsParsedInputs: [userId, age] }) => {
-		await new Promise((res) => setTimeout(res, 1000));
+	.define(
+		async ({
+			parsedInput: { username },
+			bindArgsParsedInputs: [userId, age],
+		}) => {
+			await new Promise((res) => setTimeout(res, 1000));
 
-		return {
-			message: `Welcome on board, ${username}! (age = ${age}, user id = ${userId})`,
-		};
-	});
+			return {
+				message: `Welcome on board, ${username}! (age = ${age}, user id = ${userId})`,
+			};
+		}
+	);

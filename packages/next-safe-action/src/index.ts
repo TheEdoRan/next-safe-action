@@ -164,7 +164,8 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 						}
 
 						const data =
-							(await serverCodeFn(parsedInputDatas.at(-1) as Infer<S>, {
+							(await serverCodeFn({
+								parsedInput: parsedInputDatas.at(-1) as Infer<S>,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								ctx: prevCtx,
 								metadata: this.#metadata,
@@ -173,6 +174,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 						middlewareResult.success = true;
 						middlewareResult.data = data;
 						middlewareResult.parsedInput = parsedInputDatas.at(-1);
+						middlewareResult.bindArgsParsedInputs = parsedInputDatas.slice(0, -1);
 					}
 				} catch (e: unknown) {
 					// next/navigation functions work by throwing an error that will be
