@@ -20,7 +20,7 @@ const schema = z.object({
 export const addLikes = action
 	.metadata({ actionName: "addLikes" })
 	.schema(schema)
-	.define(async ({ parsedInput: { incrementBy } }) => {
+	.action(async ({ parsedInput: { incrementBy } }) => {
 		await new Promise((res) => setTimeout(res, 2000));
 
 		const likesCount = incrementLikes(incrementBy);

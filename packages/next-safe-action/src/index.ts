@@ -87,7 +87,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	 * @param serverCodeFn A function that executes the server code.
 	 * @returns {SafeActionFn}
 	 */
-	#define<const S extends Schema, const BAS extends Schema[], const Data = null>(
+	#action<const S extends Schema, const BAS extends Schema[], const Data = null>(
 		schema: S,
 		bindArgsSchemas: BAS,
 		serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx>
@@ -238,8 +238,8 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 		bindArgsSchemas: BAS
 	) {
 		return {
-			define: <const Data = null>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx>) =>
-				this.#define(mainSchema, bindArgsSchemas, serverCodeFn),
+			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx>) =>
+				this.#action(mainSchema, bindArgsSchemas, serverCodeFn),
 		};
 	}
 
@@ -252,8 +252,8 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 		return {
 			bindArgsSchemas: <const BAS extends Schema[]>(bindArgsSchemas: BAS) =>
 				this.#bindArgsSchemas(schema, bindArgsSchemas),
-			define: <const Data = null>(serverCodeFn: ServerCodeFn<S, [], Data, Ctx>) =>
-				this.#define(schema, [], serverCodeFn),
+			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, [], Data, Ctx>) =>
+				this.#action(schema, [], serverCodeFn),
 		};
 	}
 }

@@ -29,7 +29,7 @@ export const onboardUser = action
     z.string().uuid(),
     z.number().min(18).max(150),
   ])
-  .define(
+  .action(
     async ({
       parsedInput: { username },
       bindArgsParsedInputs: [userId, age],

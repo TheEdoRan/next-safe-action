@@ -11,7 +11,7 @@ const schema = object({
 export const editUser = authAction
 	.metadata({ actionName: "editUser" })
 	.schema(schema)
-	.define(
+	.action(
 		// Here you have access to `userId`, and `sessionId which comes from middleware functions
 		// defined before.
 		//                                              \\\\\\\\\\\\\\\\\\

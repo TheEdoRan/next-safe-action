@@ -28,7 +28,7 @@ const schema = zfd.formData({
 
 export const signup = action
   .schema(schema)
-  .define(async ({ email, password }) => {
+  .action(async ({ email, password }) => {
     console.log("Email:", email, "Password:", password);
     // Do something useful here.
   });

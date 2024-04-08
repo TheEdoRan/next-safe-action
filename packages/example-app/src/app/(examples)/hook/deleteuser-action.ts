@@ -10,7 +10,7 @@ const schema = z.object({
 export const deleteUser = action
 	.metadata({ actionName: "deleteUser" })
 	.schema(schema)
-	.define(async ({ parsedInput: { userId } }) => {
+	.action(async ({ parsedInput: { userId } }) => {
 		await new Promise((res) => setTimeout(res, 1000));
 
 		if (Math.random() > 0.5) {

@@ -37,7 +37,7 @@ import { schema } from "./validation";
 
 export const buyProduct = actionClient
   .schema(schema)
-  .define(async ({ parsedInput: { productId } }) => {
+  .action(async ({ parsedInput: { productId } }) => {
   // We're just returning the productId passed to the action here.
   return {
     productId,

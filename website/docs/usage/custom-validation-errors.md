@@ -41,7 +41,7 @@ import { action } from "@/lib/safe-action";
 // Here we're using the same schema declared above.
 const signupAction = actionClient
   .schema(schema)
-  .define(async ({ parsedInput: { email } }) => {
+  .action(async ({ parsedInput: { email } }) => {
     // Assume this is a database call.
     if (!isEmailAvailable(email)) {
       returnValidationErrors(schema, {

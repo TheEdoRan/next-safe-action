@@ -7,7 +7,7 @@ import { schema } from "./validation";
 export const buyProduct = action
 	.metadata({ actionName: "buyProduct" })
 	.schema(schema)
-	.define(async ({ parsedInput: { productId } }) => {
+	.action(async ({ parsedInput: { productId } }) => {
 		return {
 			productId,
 			transactionId: randomUUID(),

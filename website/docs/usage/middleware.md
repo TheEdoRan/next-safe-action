@@ -89,7 +89,7 @@ const editProfile = authActionClient
   // Here we pass the input schema.
   .schema(z.object({ newUsername: z.string() }))
   // Here we get `userId` from the middleware defined in `authActionClient`.
-  .define(async ({ parsedInput: { newUsername }, ctx: { userId } }) => { 
+  .action(async ({ parsedInput: { newUsername }, ctx: { userId } }) => { 
     await saveNewUsernameInDb(userId, newUsername);
 
     return {
@@ -141,7 +141,7 @@ const deleteUser = authActionClient
   })
   .metadata({ actionName: "deleteUser" })
   .schema(z.void())
-  .define(async ({ ctx: { userId } }) => {
+  .action(async ({ ctx: { userId } }) => {
     // Here we're sure that the user that is performing this operation is an admin.
     await deleteUserFromDb(userId);
   });
