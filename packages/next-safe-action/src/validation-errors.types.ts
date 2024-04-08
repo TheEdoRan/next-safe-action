@@ -17,3 +17,10 @@ type SchemaErrors<S> = {
  * Type of the returned object when input validation fails.
  */
 export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
+
+/**
+ * Type of the array of validation errors of bind arguments.
+ */
+export type BindArgsValidationErrors<BAS extends Schema[]> = (ValidationErrors<
+	BAS[number]
+> | null)[];

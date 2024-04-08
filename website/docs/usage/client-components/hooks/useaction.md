@@ -23,7 +23,7 @@ const schema = z.object({
 
 export const greetUser = actionClient
   .schema(schema)
-  .define(async ({ name }) => {
+  .define(async ({ parsedInput: { name } }) => {
     return { message: `Hello ${name}!` };
   });
 ```

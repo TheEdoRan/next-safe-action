@@ -14,8 +14,8 @@ export const editUser = authAction
 	.define(
 		// Here you have access to `userId`, and `sessionId which comes from middleware functions
 		// defined before.
-		//                                \\\\\\\\\\\\\\\\\\
-		async ({ fullName, age }, { ctx: { userId, sessionId } }) => {
+		//                                              \\\\\\\\\\\\\\\\\\
+		async ({ parsedInput: { fullName, age }, ctx: { userId, sessionId } }) => {
 			if (fullName.toLowerCase() === "john doe") {
 				return {
 					error: {

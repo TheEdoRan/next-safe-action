@@ -14,6 +14,7 @@ export default function Home() {
 				<ExampleLink href="/optimistic-hook">
 					<span className="font-mono">useOptimisticAction</span> hook
 				</ExampleLink>
+				<ExampleLink href="/bind-arguments">Bind arguments</ExampleLink>
 				<ExampleLink href="/server-form">Server Form</ExampleLink>
 				<ExampleLink href="/client-form">Client Form</ExampleLink>
 				<ExampleLink href="/react-hook-form">React Hook Form</ExampleLink>

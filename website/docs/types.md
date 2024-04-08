@@ -23,10 +23,11 @@ export type SafeActionClientOpts<ServerError> = {
 Type of the result of a safe action.
 
 ```typescript
-export type SafeActionResult<ServerError, S extends Schema, Data, NextCtx = unknown> = {
-	data?: Data;
-	serverError?: ServerError;
-	validationErrors?: ValidationErrors<S>;
+export type SafeActionResult<ServerError, S extends Schema, BAS extends Schema[], Data, NextCtx = unknown> = {
+  data?: Data;
+  serverError?: ServerError;
+  validationErrors?: ValidationErrors<S>;
+  bindArgsValidationErrors?: BindArgsValidationErrors<BAS>;
 };
 ```
 
@@ -35,9 +36,9 @@ export type SafeActionResult<ServerError, S extends Schema, Data, NextCtx = unkn
 Type of the function called from components with typesafe input data.
 
 ```typescript
-export type SafeActionFn<ServerError, S extends Schema, Data> = (
-	input: InferIn<S>
-) => Promise<SafeActionResult<ServerError, S, Data>>;
+export type SafeActionFn<ServerError, S extends Schema, BAS extends Schema[], Data> = (
+  ...clientInputs: [...InferInArray<BAS>, InferIn<S>]
+) => Promise<SafeActionResult<ServerError, S, BAS, Data>>;
 ```
 
 ### `ActionMetadata`
@@ -52,18 +53,21 @@ export type ActionMetadata = {
 
 ### `MiddlewareResult`
 
-Type of the result of a middleware function. It extends the result of a safe action with `parsedInput` and `ctx` optional properties.
+
+Type of the result of a middleware function. It extends the result of a safe action with information about the action execution.
 
 ```typescript
 export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
-	ServerError,
-	any,
-	unknown,
-	NextCtx
+  ServerError,
+  any,
+  any,
+  unknown,
+  NextCtx
 > & {
-	parsedInput?: unknown;
-	ctx?: unknown;
-	success: boolean;
+  parsedInput?: unknown;
+  bindArgsParsedInputs?: unknown[];
+  ctx?: unknown;
+  success: boolean;
 };
 ```
 
@@ -72,15 +76,16 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 Type of the middleware function passed to a safe action client.
 
 ```typescript
-export type MiddlewareFn<ServerError, ClientInput, Ctx, NextCtx> = {
-	(opts: {
-		clientInput: ClientInput;
-		ctx: Ctx;
-		metadata: ActionMetadata;
-		next: {
-			<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
-		};
-	}): Promise<MiddlewareResult<ServerError, NextCtx>>;
+export type MiddlewareFn<ServerError, Ctx, NextCtx> = {
+  (opts: {
+    clientInput: unknown;
+    bindArgsClientInputs: unknown[];
+    ctx: Ctx;
+    metadata: ActionMetadata;
+    next: {
+      <const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
+    };
+  }): Promise<MiddlewareResult<ServerError, NextCtx>>;
 };
 ```
 
@@ -89,10 +94,12 @@ export type MiddlewareFn<ServerError, ClientInput, Ctx, NextCtx> = {
 Type of the function that executes server code when defining a new safe action.
 
 ```typescript
-export type ServerCodeFn<S extends Schema, Data, Context> = (
-  parsedInput: Infer<S>,
-  utils: { ctx: Context; metadata: ActionMetadata }
-) => Promise<Data>;
+export type ServerCodeFn<S extends Schema, BAS extends Schema[], Data, Context> = (args: {
+  parsedInput: Infer<S>;
+  bindArgsParsedInputs: InferArray<BAS>;
+  ctx: Context;
+  metadata: ActionMetadata;
+}) => Promise<Data>;
 ```
 
 ### `ValidationErrors`
@@ -103,6 +110,14 @@ Type of the returned object when input validation fails.
 export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
 ```
 
+### `BindArgsValidationErrors`
+
+```typescript
+export type BindArgsValidationErrors<BAS extends Schema[]> = (ValidationErrors<BAS[number]> | null)[];
+```
+
+Type of the array of validation errors of bind arguments.
+
 ## /hooks
 
 ### `HookResult`
@@ -112,12 +127,13 @@ Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
 If a server-client communication error occurs, `fetchError` will be set to the error message.
 
 ```typescript
-export type HookResult<ServerError, S extends Schema, Data> = SafeActionResult<
-	ServerError,
-	S,
-	Data
-> & {
-	fetchError?: string;
+export type HookResult<
+  ServerError,
+  S extends Schema,
+  BAS extends Schema[],
+  Data,
+> = SafeActionResult<ServerError, S, BAS, Data> & {
+  fetchError?: string;
 };
 ```
 
@@ -126,20 +142,30 @@ export type HookResult<ServerError, S extends Schema, Data> = SafeActionResult<
 Type of hooks callbacks. These are executed when action is in a specific state.
 
 ```typescript
-export type HookCallbacks<ServerError, S extends Schema, Data> = {
-	onExecute?: (input: InferIn<S>) => MaybePromise<void>;
-	onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
-	onError?: (
-		error: Omit<HookResult<ServerError, S, Data>, "data">,
-		input: InferIn<S>,
-		reset: () => void
-	) => MaybePromise<void>;
-	onSettled?: (
-		result: HookResult<ServerError, S, Data>,
-		input: InferIn<S>,
-		reset: () => void
-	) => MaybePromise<void>;
+export type HookCallbacks<ServerError, S extends Schema, BAS extends Schema[], Data> = {
+  onExecute?: (input: InferIn<S>) => MaybePromise<void>;
+  onSuccess?: (data: Data, input: InferIn<S>, reset: () => void) => MaybePromise<void>;
+  onError?: (
+    error: Omit<HookResult<ServerError, S, BAS, Data>, "data">,
+    input: InferIn<S>,
+    reset: () => void
+  ) => MaybePromise<void>;
+  onSettled?: (
+    result: HookResult<ServerError, S, BAS, Data>,
+    input: InferIn<S>,
+    reset: () => void
+  ) => MaybePromise<void>;
 };
+```
+
+### `HookSafeActionFn`
+
+ Type of the safe action function passed to hooks. Same as `SafeActionFn` except it accepts just a single input, without bind arguments.
+
+```typescript
+export type HookSafeActionFn<ServerError, S extends Schema, BAS extends Schema[], Data> = (
+  clientInput: InferIn<S>
+) => Promise<SafeActionResult<ServerError, S, BAS, Data>>;
 ```
 
 ### `HookActionStatus`
