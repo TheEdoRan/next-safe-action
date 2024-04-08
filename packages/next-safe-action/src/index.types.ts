@@ -43,7 +43,7 @@ export type ActionMetadata = {
 
 /**
  * Type of the result of a middleware function. It extends the result of a safe action with
- * `parsedInput` and `ctx` optional properties.
+ * information about the action execution.
  */
 export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 	ServerError,
@@ -65,7 +65,6 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx> = {
 	(opts: {
 		clientInput: unknown;
 		bindArgsClientInputs: unknown[];
-		// bindArgsClientInputs:
 		ctx: Ctx;
 		metadata: ActionMetadata;
 		next: {
