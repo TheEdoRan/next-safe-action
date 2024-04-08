@@ -34,10 +34,18 @@ metadata(data: ActionMetadata) => { schema() }
 ## `schema`
 
 ```typescript
-schema<const S extends Schema>(schema: S) => { define() }
+schema<const S extends Schema>(schema: S) => { define(), bindArgsSchemas() }
 ```
 
-`schema` accepts an input schema of type `Schema` (from TypeSchema), which is used to define the arguments that the safe action will receive, and returns the [`define`](#define) method, which allows you to define a new action using that input schema.
+`schema` accepts an input schema of type `Schema` (from TypeSchema), which is used to define the arguments that the safe action will receive, and returns the [`define`](#define) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
+
+## `bindArgsSchemas`
+
+```typescript
+bindArgsSchemas<const BAS extends Schema[]>(bindArgsSchemas: BAS) => { define() }
+```
+
+`bindArgsSchemas` accepts an array of bind input schemas of type `Schema` (from TypeSchema), which is used to define the bind arguments that the safe action will receive, and returns the [`define`](#define) method, which allows you, to define a new action using the input and bind inputs schemas.
 
 ## `define`
 
@@ -52,7 +60,7 @@ When the action is executed, all middleware functions in the chain will be calle
 ### `serverCodeFn`
 
 ```typescript
-serverCodeFn<S extends Schema, Data, Context> = (parsedInput: Infer<S>, utils: { ctx: Context; metadata: ActionMetadata }) => Promise<Data>;
+serverCodeFn<S extends Schema, Data, Context> = (args: { parsedInput: Infer<S>, ctx: Context; metadata: ActionMetadata }) => Promise<Data>;
 ```
 
 `serverCodeFn` is the async function that will be executed on the **server side** when the action is invoked. If input validation fails, or execution gets halted in a middleware function, the server code function will not be called.

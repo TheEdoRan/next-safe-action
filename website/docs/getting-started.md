@@ -64,7 +64,7 @@ const schema = z.object({
 
 export const loginUser = actionClient
   .schema(schema)
-  .define(async ({ username, password }) => {
+  .define(async ({ parsedInput: { username, password } }) => {
     if (username === "johndoe" && password === "123456") {
       return {
         success: "Successfully logged in",
@@ -94,7 +94,7 @@ export default function Login() {
         const res = await loginUser({ username: "johndoe", password: "123456" });
 
         // Result keys.
-        const { data, validationErrors, serverError } = res;
+        const { data, validationErrors, bindArgsValidationErrors, serverError } = res;
       }}>
       Log in
     </button>

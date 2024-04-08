@@ -31,7 +31,7 @@ export const getLikes = () => likes;
 
 export const addLikes = actionClient
   .schema(schema)
-  .define(async ({ amount }) => {
+  .define(async ({ parsedInput: { amount } }) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Mutate data in fake db. This would be a database call in the real world.

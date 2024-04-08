@@ -89,7 +89,7 @@ const editProfile = authActionClient
   // Here we pass the input schema.
   .schema(z.object({ newUsername: z.string() }))
   // Here we get `userId` from the middleware defined in `authActionClient`.
-  .define(async ({ newUsername }, { ctx: { userId } }) => { 
+  .define(async ({ parsedInput: { newUsername }, ctx: { userId } }) => { 
     await saveNewUsernameInDb(userId, newUsername);
 
     return {
@@ -141,7 +141,7 @@ const deleteUser = authActionClient
   })
   .metadata({ actionName: "deleteUser" })
   .schema(z.void())
-  .define(async (_, { ctx: { userId } }) => {
+  .define(async ({ ctx: { userId } }) => {
     // Here we're sure that the user that is performing this operation is an admin.
     await deleteUserFromDb(userId);
   });
@@ -185,7 +185,8 @@ Note that the second line comes from the default `handleServerErrorLog` function
 
 | Name          | Type                                                           | Purpose                                                                                                                                                                      |
 |---------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `clientInput` | `ClientInput` (generic)                                        | The raw input (not parsed) passed from client.                                                                                                                               |
+| `clientInput` | `unknown`                                        | The raw input (not parsed) passed from client.                                                                                                                               |
+| `bindArgsClientInputs` | `unknown[]`                                        | The raw array of bind arguments inputs (not parsed).
 | `ctx`         | `Ctx` (generic)                                                | Type safe context value from previous middleware function(s).                                                                                                                |
 | `metadata`    | [`ActionMetadata`](/docs/types/#actionmetadata)                | Metadata for the safe action execution.                                                                                                                                    |
 | `next`        | `<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<NC>>` | Function that will execute the next function in the middleware stack or the server code function. It expects, as argument, the next `ctx` value for the next function in the chain. |
