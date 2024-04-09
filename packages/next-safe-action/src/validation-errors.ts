@@ -1,6 +1,10 @@
 import type { ValidationIssue } from "@typeschema/core";
 import type { Schema } from "@typeschema/main";
-import type { ErrorList, ValidationErrors } from "./validation-errors.types";
+import type {
+	ErrorList,
+	FlattenedValidationErrors,
+	ValidationErrors,
+} from "./validation-errors.types";
 
 // This function is used internally to build the validation errors object from a list of validation issues.
 export const buildValidationErrors = <const S extends Schema>(issues: ValidationIssue[]) => {
@@ -68,4 +72,37 @@ export function returnValidationErrors<S extends Schema>(
 	validationErrors: ValidationErrors<S>
 ): never {
 	throw new ServerValidationError<S>(validationErrors);
+}
+
+/**
+ * Transform default formatted validation errors into flattened structure.
+ * `rootErrors` contains global errors, and `fieldErrors` contains errors for each field,
+ * one level deep. It skips errors for nested fields.
+ * @param {ValidationErrors} [validationErrors] Validation errors object
+ * @returns {FlattenedValidationErrors}  Flattened validation errors
+ */
+export function flattenValidationErrors<
+	const S extends Schema,
+	const VE extends ValidationErrors<S>,
+>(validationErrors?: VE) {
+	const flattened: FlattenedValidationErrors<S, VE> = {
+		rootErrors: [],
+		fieldErrors: {},
+	};
+
+	if (!validationErrors) {
+		return flattened;
+	}
+
+	for (const [key, value] of Object.entries<string[] | { _errors: string[] }>(validationErrors)) {
+		if (key === "_errors" && Array.isArray(value)) {
+			flattened.rootErrors = [...value];
+		} else {
+			if ("_errors" in value) {
+				flattened.fieldErrors[key as keyof Omit<VE, "_errors">] = [...value._errors];
+			}
+		}
+	}
+
+	return flattened;
 }

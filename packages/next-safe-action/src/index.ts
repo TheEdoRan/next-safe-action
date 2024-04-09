@@ -16,6 +16,7 @@ import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import {
 	ServerValidationError,
 	buildValidationErrors,
+	flattenValidationErrors,
 	returnValidationErrors,
 } from "./validation-errors";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
@@ -291,19 +292,16 @@ export const createSafeActionClient = <const ServerError = string>(
 	});
 };
 
-export {
-	DEFAULT_SERVER_ERROR_MESSAGE,
-	returnValidationErrors,
-	type BindArgsValidationErrors,
-	type ValidationErrors,
-};
+export { DEFAULT_SERVER_ERROR_MESSAGE, flattenValidationErrors, returnValidationErrors };
 
 export type {
 	ActionMetadata,
+	BindArgsValidationErrors,
 	MiddlewareFn,
 	MiddlewareResult,
 	SafeActionClientOpts,
 	SafeActionFn,
 	SafeActionResult,
 	ServerCodeFn,
+	ValidationErrors,
 };

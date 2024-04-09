@@ -24,3 +24,14 @@ export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors
 export type BindArgsValidationErrors<BAS extends Schema[]> = (ValidationErrors<
 	BAS[number]
 > | null)[];
+
+/**
+ * Type of flattened validation errors. `rootErrors` contains global errors, and `fieldErrors`
+ * contains errors for each field, one level deep.
+ */
+export type FlattenedValidationErrors<S extends Schema, VE extends ValidationErrors<S>> = {
+	rootErrors: string[];
+	fieldErrors: {
+		[K in keyof Omit<VE, "_errors">]?: string[];
+	};
+};
