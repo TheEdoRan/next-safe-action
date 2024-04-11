@@ -26,11 +26,11 @@ export type BindArgsValidationErrors<BAS extends Schema[]> = (ValidationErrors<
 > | null)[];
 
 /**
- * Type of flattened validation errors. `rootErrors` contains global errors, and `fieldErrors`
+ * Type of flattened validation errors. `formErrors` contains global errors, and `fieldErrors`
  * contains errors for each field, one level deep.
  */
 export type FlattenedValidationErrors<S extends Schema, VE extends ValidationErrors<S>> = {
-	rootErrors: string[];
+	formErrors: string[];
 	fieldErrors: {
 		[K in keyof Omit<VE, "_errors">]?: string[];
 	};

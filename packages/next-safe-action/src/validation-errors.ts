@@ -76,8 +76,9 @@ export function returnValidationErrors<S extends Schema>(
 
 /**
  * Transform default formatted validation errors into flattened structure.
- * `rootErrors` contains global errors, and `fieldErrors` contains errors for each field,
- * one level deep. It skips errors for nested fields.
+ * `formErrors` contains global errors, and `fieldErrors` contains errors for each field,
+ * one level deep. It discards errors for nested fields.
+ * Emulation of `zod`'s [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) function.
  * @param {ValidationErrors} [validationErrors] Validation errors object
  * @returns {FlattenedValidationErrors}  Flattened validation errors
  */
@@ -86,7 +87,7 @@ export function flattenValidationErrors<
 	const VE extends ValidationErrors<S>,
 >(validationErrors?: VE) {
 	const flattened: FlattenedValidationErrors<S, VE> = {
-		rootErrors: [],
+		formErrors: [],
 		fieldErrors: {},
 	};
 
@@ -96,7 +97,7 @@ export function flattenValidationErrors<
 
 	for (const [key, value] of Object.entries<string[] | { _errors: string[] }>(validationErrors)) {
 		if (key === "_errors" && Array.isArray(value)) {
-			flattened.rootErrors = [...value];
+			flattened.formErrors = [...value];
 		} else {
 			if ("_errors" in value) {
 				flattened.fieldErrors[key as keyof Omit<VE, "_errors">] = [...value._errors];
