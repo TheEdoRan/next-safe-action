@@ -16,23 +16,32 @@ export type SafeActionClientOpts<ServerError> = {
 export type SafeActionResult<
 	ServerError,
 	S extends Schema,
-	BAS extends Schema[],
-	Data,
+	BAS extends readonly Schema[],
+	FVE = ValidationErrors<S>, // FormattedValidationErrors,
+	FBAVE = BindArgsValidationErrors<BAS>, // BindArgsFormattedValidationErrors
+	Data = null,
 	// eslint-disable-next-line
 	NextCtx = unknown,
 > = {
 	data?: Data;
 	serverError?: ServerError;
-	validationErrors?: ValidationErrors<S>;
-	bindArgsValidationErrors?: BindArgsValidationErrors<BAS>;
+	validationErrors?: FVE;
+	bindArgsValidationErrors?: FBAVE;
 };
 
 /**
  * Type of the function called from components with typesafe input data.
  */
-export type SafeActionFn<ServerError, S extends Schema, BAS extends Schema[], Data> = (
+export type SafeActionFn<
+	ServerError,
+	S extends Schema,
+	BAS extends readonly Schema[],
+	FVE,
+	FBAVE,
+	Data,
+> = (
 	...clientInputs: [...InferInArray<BAS>, InferIn<S>]
-) => Promise<SafeActionResult<ServerError, S, BAS, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
 /**
  * Type of meta options to be passed when defining a new safe action.
@@ -47,6 +56,8 @@ export type ActionMetadata = {
  */
 export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 	ServerError,
+	any,
+	any,
 	any,
 	any,
 	unknown,
@@ -76,9 +87,9 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema, BAS extends Schema[], Data, Context> = (args: {
+export type ServerCodeFn<S extends Schema, BAS extends readonly Schema[], Data, Ctx> = (args: {
 	parsedInput: Infer<S>;
 	bindArgsParsedInputs: InferArray<BAS>;
-	ctx: Context;
+	ctx: Ctx;
 	metadata: ActionMetadata;
 }) => Promise<Data>;

@@ -1,7 +1,10 @@
 "use server";
 
 import { action } from "@/lib/safe-action";
-import { returnValidationErrors } from "next-safe-action";
+import {
+	flattenValidationErrors,
+	returnValidationErrors,
+} from "next-safe-action";
 import { z } from "zod";
 
 const schema = z.object({
@@ -11,7 +14,11 @@ const schema = z.object({
 
 export const loginUser = action
 	.metadata({ actionName: "loginUser" })
-	.schema(schema)
+	.schema(schema, {
+		// Here we use the `flattenValidationErrors` function to customize the returned validation errors
+		// object to the client.
+		formatValidationErrors: (ve) => flattenValidationErrors(ve).fieldErrors,
+	})
 	.action(async ({ parsedInput: { username, password } }) => {
 		if (username === "johndoe") {
 			returnValidationErrors(schema, {

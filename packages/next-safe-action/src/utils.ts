@@ -10,11 +10,11 @@ export const isError = (error: unknown): error is Error => error instanceof Erro
 export type MaybePromise<T> = Promise<T> | T;
 
 // Infer input schema type in array of schemas.
-export type InferInArray<S extends Schema[]> = {
-	[K in keyof S]: InferIn<S[K]>;
+export type InferInArray<BAS extends readonly Schema[]> = {
+	[K in keyof BAS]: InferIn<BAS[K]>;
 };
 
 // Infer output schema type in array of schemas.
-export type InferArray<S extends Schema[]> = {
-	[K in keyof S]: Infer<S[K]>;
+export type InferArray<BAS extends readonly Schema[]> = {
+	[K in keyof BAS]: Infer<BAS[K]>;
 };
