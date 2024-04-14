@@ -4,6 +4,7 @@ import type { MaybePromise } from "./utils";
 
 /**
  * Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
+ * If a server-client communication error occurs, `fetchError` will be set to the error message.
  */
 export type HookResult<
 	ServerError,

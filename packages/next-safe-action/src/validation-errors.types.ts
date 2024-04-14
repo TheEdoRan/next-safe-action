@@ -39,10 +39,16 @@ export type FlattenedValidationErrors<S extends Schema, VE extends ValidationErr
 	};
 };
 
+/**
+ * Type of the function used to format validation errors.
+ */
 export type FormatValidationErrorsFn<S extends Schema, FVE> = (
 	validationErrors: ValidationErrors<S>
 ) => FVE;
 
+/**
+ * Type of the function used to format bind arguments validation errors.
+ */
 export type FormatBindArgsValidationErrorsFn<BAS extends readonly Schema[], FBAVE> = (
 	bindArgsValidationErrors: BindArgsValidationErrors<BAS>
 ) => FBAVE;

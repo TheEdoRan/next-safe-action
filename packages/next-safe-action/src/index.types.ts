@@ -17,8 +17,8 @@ export type SafeActionResult<
 	ServerError,
 	S extends Schema,
 	BAS extends readonly Schema[],
-	FVE = ValidationErrors<S>, // FormattedValidationErrors,
-	FBAVE = BindArgsValidationErrors<BAS>, // BindArgsFormattedValidationErrors
+	FVE = ValidationErrors<S>,
+	FBAVE = BindArgsValidationErrors<BAS>,
 	Data = null,
 	// eslint-disable-next-line
 	NextCtx = unknown,
