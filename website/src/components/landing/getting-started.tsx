@@ -11,7 +11,7 @@ export function GettingStarted() {
 					Getting started 🎉
 				</a>
 				<a
-					href="/docs/examples/basic-implementation"
+					href="/docs/recipes/basic-implementation"
 					className="!no-underline hover:brightness-90 transition cursor-pointer rounded-lg mr-4 px-3 py-2 font-bold inline-flex items-center justify-center text-2xl bg-[#ffa024] !text-zinc-100 w-64">
 					Explore example ➡️
 				</a>

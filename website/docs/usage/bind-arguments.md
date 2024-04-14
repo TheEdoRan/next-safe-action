@@ -5,7 +5,7 @@ description: Learn how to pass additional arguments to your actions.
 
 # Bind arguments
 
-Next.js allows you to [pass additional arguments to your actions by using the `bind` method](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#passing-additional-arguments). This method enables Progressive Enhancement.
+Next.js allows you to [pass additional arguments to your actions by using the `bind` method](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#passing-additional-arguments). This method supports Progressive Enhancement.
 
 next-safe-action exposes a [`bindArgsSchemas` method](/docs/safe-action-client/instance-methods#bindargsschemas) that expects an array of schemas for bind arguments.
 
