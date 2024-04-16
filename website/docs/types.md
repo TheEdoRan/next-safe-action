@@ -23,11 +23,19 @@ export type SafeActionClientOpts<ServerError> = {
 Type of the result of a safe action.
 
 ```typescript
-export type SafeActionResult<ServerError, S extends Schema, BAS extends Schema[], Data, NextCtx = unknown> = {
+export type SafeActionResult<
+  ServerError,
+  S extends Schema,
+  BAS extends readonly Schema[],
+  FVE = ValidationErrors<S>,
+  FBAVE = BindArgsValidationErrors<BAS>,
+  Data = null,
+  NextCtx = unknown,
+> = {
   data?: Data;
   serverError?: ServerError;
-  validationErrors?: ValidationErrors<S>;
-  bindArgsValidationErrors?: BindArgsValidationErrors<BAS>;
+  validationErrors?: FVE;
+  bindArgsValidationErrors?: FBAVE;
 };
 ```
 
@@ -36,9 +44,16 @@ export type SafeActionResult<ServerError, S extends Schema, BAS extends Schema[]
 Type of the function called from components with typesafe input data.
 
 ```typescript
-export type SafeActionFn<ServerError, S extends Schema, BAS extends Schema[], Data> = (
+export type SafeActionFn<
+  ServerError,
+  S extends Schema,
+  BAS extends readonly Schema[],
+  FVE,
+  FBAVE,
+  Data,
+> = (
   ...clientInputs: [...InferInArray<BAS>, InferIn<S>]
-) => Promise<SafeActionResult<ServerError, S, BAS, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 ```
 
 ### `ActionMetadata`
@@ -59,6 +74,8 @@ Type of the result of a middleware function. It extends the result of a safe act
 ```typescript
 export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
   ServerError,
+  any,
+  any,
   any,
   any,
   unknown,
@@ -94,10 +111,10 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx> = {
 Type of the function that executes server code when defining a new safe action.
 
 ```typescript
-export type ServerCodeFn<S extends Schema, BAS extends Schema[], Data, Context> = (args: {
+export type ServerCodeFn<S extends Schema, BAS extends readonly Schema[], Data, Ctx> = (args: {
   parsedInput: Infer<S>;
   bindArgsParsedInputs: InferArray<BAS>;
-  ctx: Context;
+  ctx: Ctx;
   metadata: ActionMetadata;
 }) => Promise<Data>;
 ```
@@ -107,16 +124,61 @@ export type ServerCodeFn<S extends Schema, BAS extends Schema[], Data, Context> 
 Type of the returned object when input validation fails.
 
 ```typescript
-export type ValidationErrors<S extends Schema> = Extend<ErrorList & SchemaErrors<Infer<S>>>;
+export type ValidationErrors<S extends Schema> =
+	Infer<S> extends object ? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>> : ErrorList;
 ```
 
 ### `BindArgsValidationErrors`
 
+Type of the array of validation errors of bind arguments.
+
 ```typescript
-export type BindArgsValidationErrors<BAS extends Schema[]> = (ValidationErrors<BAS[number]> | null)[];
+export type BindArgsValidationErrors<BAS extends readonly Schema[]> = {
+	[K in keyof BAS]: ValidationErrors<BAS[K]>;
 ```
 
-Type of the array of validation errors of bind arguments.
+### `FlattenedValidationErrors`
+
+Type of flattened validation errors. `formErrors` contains global errors, and `fieldErrors` contains errors for each field, one level deep.
+
+```typescript
+export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = Prettify<{
+	formErrors: string[];
+	fieldErrors: {
+		[K in keyof Omit<VE, "_errors">]?: string[];
+	};
+}>;
+```
+
+### `FlattenedBindArgsValidationErrors`
+
+Type of flattened bind arguments validation errors.
+
+```typescript
+export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]> = {
+	[K in keyof BAVE]: FlattenedValidationErrors<BAVE[K]>;
+};
+```
+
+### `FormatValidationErrorsFn`
+
+Type of the function used to format validation errors.
+
+```typescript
+export type FormatValidationErrorsFn<S extends Schema, FVE> = (
+	validationErrors: ValidationErrors<S>
+) => FVE;
+```
+
+### `FormatBindArgsValidationErrorsFn`
+
+Type of the function used to format bind arguments validation errors.
+
+```typescript
+export type FormatBindArgsValidationErrorsFn<BAS extends readonly Schema[], FBAVE> = (
+	bindArgsValidationErrors: BindArgsValidationErrors<BAS>
+) => FBAVE;
+```
 
 ## /hooks
 
@@ -128,13 +190,16 @@ If a server-client communication error occurs, `fetchError` will be set to the e
 
 ```typescript
 export type HookResult<
-  ServerError,
-  S extends Schema,
-  BAS extends Schema[],
-  Data,
-> = SafeActionResult<ServerError, S, BAS, Data> & {
-  fetchError?: string;
+	ServerError,
+	S extends Schema,
+	BAS extends readonly Schema[],
+	FVE,
+	FBAVE,
+	Data,
+> = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> & {
+	fetchError?: string;
 };
+
 ```
 
 ### `HookCallbacks`
@@ -142,19 +207,26 @@ export type HookResult<
 Type of hooks callbacks. These are executed when action is in a specific state.
 
 ```typescript
-export type HookCallbacks<ServerError, S extends Schema, BAS extends Schema[], Data> = {
-  onExecute?: (args: { input: InferIn<S> }) => MaybePromise<void>;
-  onSuccess?: (args: { data: Data; input: InferIn<S>; reset: () => void }) => MaybePromise<void>;
-  onError?: (args: {
-    error: Omit<HookResult<ServerError, S, BAS, Data>, "data">;
-    input: InferIn<S>;
-    reset: () => void;
-  }) => MaybePromise<void>;
-  onSettled?: (args: {
-    result: HookResult<ServerError, S, BAS, Data>;
-    input: InferIn<S>;
-    reset: () => void;
-  }) => MaybePromise<void>;
+export type HookCallbacks<
+	ServerError,
+	S extends Schema,
+	BAS extends readonly Schema[],
+	FVE,
+	FBAVE,
+	Data,
+> = {
+	onExecute?: (args: { input: InferIn<S> }) => MaybePromise<void>;
+	onSuccess?: (args: { data: Data; input: InferIn<S>; reset: () => void }) => MaybePromise<void>;
+	onError?: (args: {
+		error: Omit<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>, "data">;
+		input: InferIn<S>;
+		reset: () => void;
+	}) => MaybePromise<void>;
+	onSettled?: (args: {
+		result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
+		input: InferIn<S>;
+		reset: () => void;
+	}) => MaybePromise<void>;
 };
 ```
 
@@ -163,9 +235,14 @@ export type HookCallbacks<ServerError, S extends Schema, BAS extends Schema[], D
  Type of the safe action function passed to hooks. Same as `SafeActionFn` except it accepts just a single input, without bind arguments.
 
 ```typescript
-export type HookSafeActionFn<ServerError, S extends Schema, BAS extends Schema[], Data> = (
-  clientInput: InferIn<S>
-) => Promise<SafeActionResult<ServerError, S, BAS, Data>>;
+export type HookSafeActionFn<
+	ServerError,
+	S extends Schema,
+	BAS extends readonly Schema[],
+	FVE,
+	FBAVE,
+	Data,
+> = (clientInput: InferIn<S>) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 ```
 
 ### `HookActionStatus`
@@ -180,6 +257,16 @@ type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
 
 ## Utility types
 
+### `Prettify`
+
+Takes an object type and makes it more readable.
+
+```typescript
+export type Prettify<T> = {
+	[K in keyof T]: T[K];
+} & {};
+```
+
 ### `MaybePromise`
 
 Returns type or promise of type.
@@ -188,12 +275,32 @@ Returns type or promise of type.
 export type MaybePromise<T> = Promise<T> | T;
 ```
 
-### `Extend`
+### `InferArray`
 
-Extends an object without printing "&".
+Infers output schema type in array of schemas.
 
 ```typescript
-export type Extend<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
+export type InferArray<BAS extends readonly Schema[]> = {
+  [K in keyof BAS]: Infer<BAS[K]>;
+};
+```
+
+### `InferInArray`
+
+Infers input schema type in array of schemas.
+
+```typescript
+export type InferInArray<BAS extends readonly Schema[]> = {
+  [K in keyof BAS]: InferIn<BAS[K]>;
+};
+```
+
+### `PrettyMerge`
+
+Merges an object without printing "&".
+
+```typescript
+type PrettyMerge<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
 ```
 
 ### `ErrorList`
@@ -201,7 +308,7 @@ export type Extend<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
 Object with an optional list of validation errors. Used in [`ValidationErrors`](#validationerrors) type.
 
 ```typescript
-export type ErrorList = { _errors?: string[] } & {};
+export type ErrorList = Prettify<{ _errors?: string[] }>;
 ```
 
 ### `SchemaErrors`
@@ -209,10 +316,10 @@ export type ErrorList = { _errors?: string[] } & {};
 Creates nested schema validation errors type using recursion. Used in [`ValidationErrors`](#validationerrors) type.
 
 ```typescript
-export type SchemaErrors<S> = {
-  [K in keyof S]?: S[K] extends object | null | undefined
-    ? Extend<ErrorList & SchemaErrors<S[K]>>
-    : ErrorList;
+type SchemaErrors<S> = {
+	[K in keyof S]?: S[K] extends object | null | undefined
+		? PrettyMerge<ErrorList & SchemaErrors<S[K]>>
+		: ErrorList;
 } & {};
 ```
 

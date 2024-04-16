@@ -34,18 +34,18 @@ metadata(data: ActionMetadata) => { schema() }
 ## `schema`
 
 ```typescript
-schema<const S extends Schema>(schema: S) => { action(), bindArgsSchemas() }
+schema<const S extends Schema, const FVE = ValidationErrors<S>>(schema: S, { utils?: { formatValidationErrors?: FormatValidationErrorsFn<S, FVE> } }) => { action(), bindArgsSchemas() }
 ```
 
-`schema` accepts an input schema of type `Schema` (from TypeSchema), which is used to define the arguments that the safe action will receive, and returns the [`action`](#action) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
+`schema` accepts an input schema of type `Schema` (from TypeSchema) and an optional `utils` object that accepts a `formatValidationErrors` function. The schema is used to define the arguments that the safe action will receive, the optional `formatValidationErrors` function is used to [return a custom format for validation errors](/docs/recipes/customize-validation-errors-format). It returns the [`action`](#action) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
 
 ## `bindArgsSchemas`
 
 ```typescript
-bindArgsSchemas<const BAS extends Schema[]>(bindArgsSchemas: BAS) => { action() }
+bindArgsSchemas<const BAS extends Schema[], const FBAVE = BindArgsValidationErrors<BAS>>(bindArgsSchemas: BAS, bindArgsUtils?: { formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE> }) => { action() }
 ```
 
-`bindArgsSchemas` accepts an array of bind input schemas of type `Schema` (from TypeSchema), which is used to define the bind arguments that the safe action will receive, and returns the [`action`](#action) method, which allows you, to define a new action using the input and bind inputs schemas.
+`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` (from TypeSchema) and an optional `bindArgsUtils` object that accepts a `formatBindArgsValidationErrors` function. The schema is used to define the bind arguments that the safe action will receive, the optional `formatBindArgsValidationErrors` function is used to [return a custom format for bind arguments validation errors](/docs/recipes/customize-validation-errors-format). It returns the [`action`](#action) method, which allows you, to define a new action using the input and bind inputs schemas.
 
 ## `action`
 

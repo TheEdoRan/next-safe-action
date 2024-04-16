@@ -16,10 +16,18 @@ import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import {
 	ServerValidationError,
 	buildValidationErrors,
+	flattenBindArgsValidationErrors,
 	flattenValidationErrors,
 	returnValidationErrors,
 } from "./validation-errors";
-import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
+import type {
+	BindArgsValidationErrors,
+	FlattenedBindArgsValidationErrors,
+	FlattenedValidationErrors,
+	FormatBindArgsValidationErrorsFn,
+	FormatValidationErrorsFn,
+	ValidationErrors,
+} from "./validation-errors.types";
 
 class SafeActionClient<const ServerError, const Ctx = null> {
 	readonly #handleServerErrorLog: NonNullable<
@@ -88,11 +96,19 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	 * @param serverCodeFn A function that executes the server code.
 	 * @returns {SafeActionFn}
 	 */
-	#action<const S extends Schema, const BAS extends Schema[], const Data = null>(
-		schema: S,
-		bindArgsSchemas: BAS,
-		serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx>
-	): SafeActionFn<ServerError, S, BAS, Data> {
+	#action<
+		const S extends Schema,
+		const BAS extends readonly Schema[],
+		const FVE,
+		const FBAVE = undefined,
+		const Data = null,
+	>(args: {
+		schema: S;
+		bindArgsSchemas: BAS;
+		serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx>;
+		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
+		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
+	}): SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data> {
 		return async (...clientInputs) => {
 			let prevCtx: any = null;
 			let frameworkError: Error | undefined = undefined;
@@ -108,7 +124,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 					if (currentFn) {
 						await currentFn({
 							clientInput: clientInputs.at(-1), // pass raw client input
-							bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
+							bindArgsClientInputs: args.bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
 							ctx: prevCtx,
 							metadata: this.#metadata,
 							next: async ({ ctx }) => {
@@ -121,7 +137,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 						// Validate the client inputs in parallel.
 						const parsedInputs = await Promise.all(
 							clientInputs.map((input, i) => {
-								const s = i === clientInputs.length - 1 ? schema : bindArgsSchemas[i]!;
+								const s = i === clientInputs.length - 1 ? args.schema : args.bindArgsSchemas[i]!;
 								return validate(s, input);
 							})
 						);
@@ -130,7 +146,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 
 						// Initialize the bind args validation errors array with null values.
 						// It has the same length as the number of bind arguments (parsedInputs - 1).
-						middlewareResult.bindArgsValidationErrors = Array(parsedInputs.length - 1).fill(null);
+						const bindArgsValidationErrors = Array(parsedInputs.length - 1).fill({});
 						const parsedInputDatas = [];
 
 						for (let i = 0; i < parsedInputs.length; i++) {
@@ -142,22 +158,29 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 								// If we're processing a bind argument and there are validation errors for this one,
 								// we need to store them in the bind args validation errors array at this index.
 								if (i < parsedInputs.length - 1) {
-									middlewareResult.bindArgsValidationErrors[i] = buildValidationErrors<BAS[number]>(
+									bindArgsValidationErrors[i] = buildValidationErrors<BAS[number]>(
 										parsedInput.issues
 									);
 
 									hasBindValidationErrors = true;
 								} else {
 									// Otherwise, we're processing the non-bind argument (the last one) in the array.
-									middlewareResult.validationErrors = buildValidationErrors<S>(parsedInput.issues);
+									const validationErrors = buildValidationErrors<S>(parsedInput.issues);
+
+									middlewareResult.validationErrors = await Promise.resolve(
+										args.formatValidationErrors?.(validationErrors) ?? validationErrors
+									);
 								}
 							}
 						}
 
-						// If there are no validation errors for the bind arguments, delete the bind args
-						// validation errors array, so it does not appear in the result object for the client.
-						if (!hasBindValidationErrors) {
-							delete middlewareResult.bindArgsValidationErrors;
+						// If there are bind args validation errors, format them and store them in the middleware result.
+						if (hasBindValidationErrors) {
+							middlewareResult.bindArgsValidationErrors = await Promise.resolve(
+								args.formatBindArgsValidationErrors?.(
+									bindArgsValidationErrors as BindArgsValidationErrors<BAS>
+								) ?? bindArgsValidationErrors
+							);
 						}
 
 						if (middlewareResult.validationErrors || middlewareResult.bindArgsValidationErrors) {
@@ -165,7 +188,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 						}
 
 						const data =
-							(await serverCodeFn({
+							(await args.serverCodeFn({
 								parsedInput: parsedInputDatas.at(-1) as Infer<S>,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								ctx: prevCtx,
@@ -188,7 +211,12 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 
 					// If error is ServerValidationError, return validationErrors as if schema validation would fail.
 					if (e instanceof ServerValidationError) {
-						middlewareResult.validationErrors = e.validationErrors;
+						const ve = e.validationErrors as ValidationErrors<S>;
+
+						middlewareResult.validationErrors = await Promise.resolve(
+							args.formatValidationErrors?.(ve) ?? ve
+						);
+
 						return;
 					}
 
@@ -211,19 +239,18 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 				throw frameworkError;
 			}
 
-			const actionResult: SafeActionResult<ServerError, S, BAS, Data> = {};
+			const actionResult: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> = {};
 
 			if (typeof middlewareResult.data !== "undefined") {
 				actionResult.data = middlewareResult.data as Data;
 			}
 
 			if (typeof middlewareResult.validationErrors !== "undefined") {
-				actionResult.validationErrors = middlewareResult.validationErrors as ValidationErrors<S>;
+				actionResult.validationErrors = middlewareResult.validationErrors;
 			}
 
 			if (typeof middlewareResult.bindArgsValidationErrors !== "undefined") {
-				actionResult.bindArgsValidationErrors =
-					middlewareResult.bindArgsValidationErrors as BindArgsValidationErrors<BAS>;
+				actionResult.bindArgsValidationErrors = middlewareResult.bindArgsValidationErrors;
 			}
 
 			if (typeof middlewareResult.serverError !== "undefined") {
@@ -234,13 +261,26 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 		};
 	}
 
-	#bindArgsSchemas<const S extends Schema, const BAS extends Schema[]>(
-		mainSchema: S,
-		bindArgsSchemas: BAS
-	) {
+	#bindArgsSchemas<
+		const S extends Schema,
+		const BAS extends readonly Schema[],
+		const FVE,
+		const FBAVE,
+	>(args: {
+		mainSchema: S;
+		bindArgsSchemas: BAS;
+		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
+		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
+	}) {
 		return {
 			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx>) =>
-				this.#action(mainSchema, bindArgsSchemas, serverCodeFn),
+				this.#action({
+					schema: args.mainSchema,
+					bindArgsSchemas: args.bindArgsSchemas,
+					serverCodeFn,
+					formatValidationErrors: args.formatValidationErrors,
+					formatBindArgsValidationErrors: args.formatBindArgsValidationErrors,
+				}),
 		};
 	}
 
@@ -249,12 +289,35 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
 	 * @returns {Function} The `define` function, which is used to define a new safe action.
 	 */
-	public schema<const S extends Schema>(schema: S) {
+	public schema<const S extends Schema, const FVE = ValidationErrors<S>>(
+		schema: S,
+		utils?: {
+			formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
+		}
+	) {
 		return {
-			bindArgsSchemas: <const BAS extends Schema[]>(bindArgsSchemas: BAS) =>
-				this.#bindArgsSchemas(schema, bindArgsSchemas),
+			bindArgsSchemas: <
+				const BAS extends readonly Schema[],
+				const FBAVE = BindArgsValidationErrors<BAS>,
+			>(
+				bindArgsSchemas: BAS,
+				bindArgsUtils?: {
+					formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
+				}
+			) =>
+				this.#bindArgsSchemas({
+					mainSchema: schema,
+					bindArgsSchemas,
+					formatValidationErrors: utils?.formatValidationErrors,
+					formatBindArgsValidationErrors: bindArgsUtils?.formatBindArgsValidationErrors,
+				}),
 			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, [], Data, Ctx>) =>
-				this.#action(schema, [], serverCodeFn),
+				this.#action({
+					schema,
+					bindArgsSchemas: [],
+					serverCodeFn,
+					formatValidationErrors: utils?.formatValidationErrors,
+				}),
 		};
 	}
 }
@@ -292,11 +355,20 @@ export const createSafeActionClient = <const ServerError = string>(
 	});
 };
 
-export { DEFAULT_SERVER_ERROR_MESSAGE, flattenValidationErrors, returnValidationErrors };
+export {
+	DEFAULT_SERVER_ERROR_MESSAGE,
+	flattenBindArgsValidationErrors,
+	flattenValidationErrors,
+	returnValidationErrors,
+};
 
 export type {
 	ActionMetadata,
 	BindArgsValidationErrors,
+	FlattenedBindArgsValidationErrors,
+	FlattenedValidationErrors,
+	FormatBindArgsValidationErrorsFn,
+	FormatValidationErrorsFn,
 	MiddlewareFn,
 	MiddlewareResult,
 	SafeActionClientOpts,

@@ -1,9 +1,9 @@
 ---
-sidebar_position: 6
-description: Set custom validation errors in schema or in action's server code function.
+sidebar_position: 3
+description: Set additional custom validation errors in schema or in action's server code function.
 ---
 
-# Custom validation errors
+# Additional validation errors
 
 When input data fails schema validation, a `validationErrors` object is returned to the client. This object contains all the fields that failed validation, and their corresponding error messages.
 

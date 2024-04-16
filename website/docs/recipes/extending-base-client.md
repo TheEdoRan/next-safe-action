@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 description: Learn how to use both a basic and an authorization client at the same time in your project.
 ---
 
