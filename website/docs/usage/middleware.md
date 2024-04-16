@@ -22,6 +22,7 @@ Here we'll use a logging middleware in the base client and then extend it with a
 ```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient, DEFAULT_SERVER_ERROR_MESSAGE } from "next-safe-action";
 import { cookies } from "next/headers";
+import { z } from "zod";
 import { getUserIdFromSessionId } from "./db";
 
 class ActionError extends Error {}
@@ -34,6 +35,11 @@ const actionClient = createSafeActionClient({
     }
 
     return DEFAULT_SERVER_ERROR_MESSAGE;
+  },
+  defineMetadataSchema() {
+    return z.object({
+      actionName: z.string(),
+    });
   },
 // Define logging middleware.
 }).use(async ({ next, clientInput, metadata }) => {
@@ -188,7 +194,7 @@ Note that the second line comes from the default `handleServerErrorLog` function
 | `clientInput` | `unknown`                                        | The raw input (not parsed) passed from client.                                                                                                                               |
 | `bindArgsClientInputs` | `unknown[]`                                        | The raw array of bind arguments inputs (not parsed).
 | `ctx`         | `Ctx` (generic)                                                | Type safe context value from previous middleware function(s).                                                                                                                |
-| `metadata`    | [`ActionMetadata`](/docs/types/#actionmetadata)                | Metadata for the safe action execution.                                                                                                                                    |
+| `metadata`    | `MD \| null` (generic)                | Metadata for the safe action execution.                                                                                                                                    |
 | `next`        | `<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<NC>>` | Function that will execute the next function in the middleware stack or the server code function. It expects, as argument, the next `ctx` value for the next function in the chain. |
 
 ## `middlewareFn` return value

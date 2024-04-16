@@ -14,15 +14,14 @@ For example, here we're going to define an `onboardUser` action that has `userId
 ```typescript title="src/app/onboard-action.ts"
 "use server";
 
-import { action } from "@/lib/safe-action";
+import { actionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
 const schema = z.object({
   username: z.string().min(3).max(30),
 });
 
-export const onboardUser = action
-  .metadata({ actionName: "onboardUser" })
+export const onboardUser = actionClient
   .schema(schema)
   // We can pass a named tuple type here, to get named parameters in the final function.
   .bindArgsSchemas<[userId: z.ZodString, age: z.ZodNumber]>([

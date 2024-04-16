@@ -3,7 +3,7 @@ sidebar_position: 1
 description: Explore a basic implementation of next-safe-action.
 ---
 
-# Basic implementation
+# Example app
 
 You can find a basic working implementation [here](https://next-safe-action.vercel.app/).
 

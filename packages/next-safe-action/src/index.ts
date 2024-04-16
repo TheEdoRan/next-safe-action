@@ -3,7 +3,6 @@ import { validate } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {
-	ActionMetadata,
 	MiddlewareFn,
 	MiddlewareResult,
 	SafeActionClientOpts,
@@ -29,20 +28,21 @@ import type {
 	ValidationErrors,
 } from "./validation-errors.types";
 
-class SafeActionClient<const ServerError, const Ctx = null> {
+class SafeActionClient<const ServerError, const Ctx = null, const Metadata = null> {
 	readonly #handleServerErrorLog: NonNullable<
-		SafeActionClientOpts<ServerError>["handleServerErrorLog"]
+		SafeActionClientOpts<any, any>["handleServerErrorLog"]
 	>;
 	readonly #handleReturnedServerError: NonNullable<
-		SafeActionClientOpts<ServerError>["handleReturnedServerError"]
+		SafeActionClientOpts<any, any>["handleReturnedServerError"]
 	>;
 
-	#middlewareFns: MiddlewareFn<ServerError, any, any>[];
-	#metadata: ActionMetadata = {};
+	#middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[];
+	#metadata = null as Metadata;
 
 	constructor(
-		opts: { middlewareFns: MiddlewareFn<ServerError, any, any>[] } & Required<
-			SafeActionClientOpts<ServerError>
+		opts: { middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[] } & Omit<
+			Required<SafeActionClientOpts<any, any>>,
+			"defineMetadataSchema"
 		>
 	) {
 		this.#middlewareFns = opts.middlewareFns;
@@ -56,7 +56,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	 * @returns {SafeActionClient}
 	 */
 	public clone() {
-		return new SafeActionClient<ServerError, Ctx>({
+		return new SafeActionClient<ServerError, Ctx, Metadata>({
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: [...this.#middlewareFns], // copy the middleware stack so we don't mutate it
@@ -68,10 +68,10 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	 * @param middlewareFn Middleware function
 	 * @returns SafeActionClient
 	 */
-	public use<const NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx>) {
+	public use<const NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadata>) {
 		this.#middlewareFns.push(middlewareFn);
 
-		return new SafeActionClient<ServerError, NextCtx>({
+		return new SafeActionClient<ServerError, NextCtx, Metadata>({
 			middlewareFns: this.#middlewareFns,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
@@ -83,11 +83,77 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 	 * @param data Metadata for the action
 	 * @returns {Function} Define a new action
 	 */
-	public metadata(data: ActionMetadata) {
+	public metadata(data: Metadata) {
 		this.#metadata = data;
 
 		return {
-			schema: this.schema.bind(this),
+			schema: <const S extends Schema, const FVE = ValidationErrors<S>>(
+				schema: S,
+				utils?: {
+					formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
+				}
+			) => this.schema<S, FVE, Metadata>(schema, utils),
+		};
+	}
+
+	/**
+	 * Pass an input schema to define safe action arguments.
+	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
+	 * @returns {Function} The `define` function, which is used to define a new safe action.
+	 */
+	public schema<const S extends Schema, const FVE = ValidationErrors<S>, const MD = null>(
+		schema: S,
+		utils?: {
+			formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
+		}
+	) {
+		return {
+			bindArgsSchemas: <
+				const BAS extends readonly Schema[],
+				const FBAVE = BindArgsValidationErrors<BAS>,
+			>(
+				bindArgsSchemas: BAS,
+				bindArgsUtils?: {
+					formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
+				}
+			) =>
+				this.#bindArgsSchemas<S, BAS, FVE, FBAVE, MD>({
+					mainSchema: schema,
+					bindArgsSchemas,
+					formatValidationErrors: utils?.formatValidationErrors,
+					formatBindArgsValidationErrors: bindArgsUtils?.formatBindArgsValidationErrors,
+				}),
+			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, [], Data, Ctx, MD>) =>
+				this.#action({
+					schema,
+					bindArgsSchemas: [],
+					serverCodeFn,
+					formatValidationErrors: utils?.formatValidationErrors,
+				}),
+		};
+	}
+
+	#bindArgsSchemas<
+		const S extends Schema,
+		const BAS extends readonly Schema[],
+		const FVE,
+		const FBAVE,
+		const MD = null,
+	>(args: {
+		mainSchema: S;
+		bindArgsSchemas: BAS;
+		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
+		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
+	}) {
+		return {
+			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>) =>
+				this.#action({
+					schema: args.mainSchema,
+					bindArgsSchemas: args.bindArgsSchemas,
+					serverCodeFn,
+					formatValidationErrors: args.formatValidationErrors,
+					formatBindArgsValidationErrors: args.formatBindArgsValidationErrors,
+				}),
 		};
 	}
 
@@ -102,10 +168,11 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 		const FVE,
 		const FBAVE = undefined,
 		const Data = null,
+		const MD = null,
 	>(args: {
 		schema: S;
 		bindArgsSchemas: BAS;
-		serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx>;
+		serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
 	}): SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data> {
@@ -192,7 +259,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 								parsedInput: parsedInputDatas.at(-1) as Infer<S>,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								ctx: prevCtx,
-								metadata: this.#metadata,
+								metadata: this.#metadata as any as MD,
 							})) ?? null;
 
 						middlewareResult.success = true;
@@ -260,66 +327,6 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 			return actionResult;
 		};
 	}
-
-	#bindArgsSchemas<
-		const S extends Schema,
-		const BAS extends readonly Schema[],
-		const FVE,
-		const FBAVE,
-	>(args: {
-		mainSchema: S;
-		bindArgsSchemas: BAS;
-		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
-		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
-	}) {
-		return {
-			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx>) =>
-				this.#action({
-					schema: args.mainSchema,
-					bindArgsSchemas: args.bindArgsSchemas,
-					serverCodeFn,
-					formatValidationErrors: args.formatValidationErrors,
-					formatBindArgsValidationErrors: args.formatBindArgsValidationErrors,
-				}),
-		};
-	}
-
-	/**
-	 * Pass an input schema to define safe action arguments.
-	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
-	 * @returns {Function} The `define` function, which is used to define a new safe action.
-	 */
-	public schema<const S extends Schema, const FVE = ValidationErrors<S>>(
-		schema: S,
-		utils?: {
-			formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
-		}
-	) {
-		return {
-			bindArgsSchemas: <
-				const BAS extends readonly Schema[],
-				const FBAVE = BindArgsValidationErrors<BAS>,
-			>(
-				bindArgsSchemas: BAS,
-				bindArgsUtils?: {
-					formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
-				}
-			) =>
-				this.#bindArgsSchemas({
-					mainSchema: schema,
-					bindArgsSchemas,
-					formatValidationErrors: utils?.formatValidationErrors,
-					formatBindArgsValidationErrors: bindArgsUtils?.formatBindArgsValidationErrors,
-				}),
-			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, [], Data, Ctx>) =>
-				this.#action({
-					schema,
-					bindArgsSchemas: [],
-					serverCodeFn,
-					formatValidationErrors: utils?.formatValidationErrors,
-				}),
-		};
-	}
 }
 
 /**
@@ -329,8 +336,11 @@ class SafeActionClient<const ServerError, const Ctx = null> {
  *
  * {@link https://next-safe-action.dev/docs/getting-started See an example}
  */
-export const createSafeActionClient = <const ServerError = string>(
-	createOpts?: SafeActionClientOpts<ServerError>
+export const createSafeActionClient = <
+	const ServerError = string,
+	const MetadataSchema extends Schema | undefined = undefined,
+>(
+	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema>
 ) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
@@ -345,10 +355,14 @@ export const createSafeActionClient = <const ServerError = string>(
 	// Otherwise mask the error and use a generic message.
 	const handleReturnedServerError = ((e: Error) =>
 		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR_MESSAGE) as NonNullable<
-		SafeActionClientOpts<ServerError>["handleReturnedServerError"]
+		SafeActionClientOpts<ServerError, MetadataSchema>["handleReturnedServerError"]
 	>;
 
-	return new SafeActionClient<ServerError, null>({
+	return new SafeActionClient<
+		ServerError,
+		null,
+		MetadataSchema extends Schema ? Infer<MetadataSchema> : null
+	>({
 		middlewareFns: [async ({ next }) => next({ ctx: null })],
 		handleServerErrorLog,
 		handleReturnedServerError,
@@ -363,7 +377,6 @@ export {
 };
 
 export type {
-	ActionMetadata,
 	BindArgsValidationErrors,
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,

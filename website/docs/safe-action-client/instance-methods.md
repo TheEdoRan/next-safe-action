@@ -18,7 +18,7 @@ actionClient.clone() => new SafeActionClient()
 ## `use`
 
 ```typescript
-use<const ClientInput, const NextCtx>(middlewareFn: MiddlewareFn<ClientInput, Ctx, NextCtx>) => new SafeActionClient()
+use<const NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadata>) => new SafeActionClient()
 ```
 
 `use` accepts a middleware function of type [`MiddlewareFn`](/docs/types#middlewarefn) as argument and returns a new instance of the safe action client with that middleware function added to the stack, that will be executed after the last one, if any. Check out how to `use` middleware in [the related section](/docs/usage/middleware) of the usage guide.
@@ -26,15 +26,15 @@ use<const ClientInput, const NextCtx>(middlewareFn: MiddlewareFn<ClientInput, Ct
 ## `metadata`
 
 ```typescript
-metadata(data: ActionMetadata) => { schema() }
+metadata(data: Metadata) => { schema() }
 ```
 
-`metadata` expects an object of type [`ActionMetadata`](/docs/types#actionmetadata) that lets you specify useful data about the safe action you're defining, and it returns the [`schema`](#schema) method, since metadata is action specific and not shared with other actions. As of now, the only data you can pass in is the `actionName`, but that could be extended in the future. You can then access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`](#action).
+`metadata` expects an argument of the same type as the return value of the [`defineMetadataSchema`](/docs/safe-action-client/initialization-options#definemetadataschema) optional initialization function. If you don't provide this function to the action client, `metadata` defaults type to `null`. If you don't use this method before defining your action (using [`action`](#action) method), `metadata` will be `null` inside [`serverCodeFn`](#servercodefn). `metadata` lets you specify useful data about the safe action you're executing. It returns the [`schema`](#schema) method, since metadata is action specific and not shared with other actions. You can then access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`](#action).
 
 ## `schema`
 
 ```typescript
-schema<const S extends Schema, const FVE = ValidationErrors<S>>(schema: S, { utils?: { formatValidationErrors?: FormatValidationErrorsFn<S, FVE> } }) => { action(), bindArgsSchemas() }
+schema<const S extends Schema, const FVE = ValidationErrors<S>, const MD = null>(schema: S, { utils?: { formatValidationErrors?: FormatValidationErrorsFn<S, FVE> } }) => { action(), bindArgsSchemas() }
 ```
 
 `schema` accepts an input schema of type `Schema` (from TypeSchema) and an optional `utils` object that accepts a `formatValidationErrors` function. The schema is used to define the arguments that the safe action will receive, the optional `formatValidationErrors` function is used to [return a custom format for validation errors](/docs/recipes/customize-validation-errors-format). It returns the [`action`](#action) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
@@ -50,7 +50,7 @@ bindArgsSchemas<const BAS extends Schema[], const FBAVE = BindArgsValidationErro
 ## `action`
 
 ```typescript
-action<const Data = null>(serverCodeFn: ServerCodeFn<S, Data, Ctx>) => SafeActionFn<S, Data>
+action<const Data = null>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>) => SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>
 ```
 
 `action` is the final method in the list. It accepts a [`serverCodeFn`](#servercodefn) of type [`ServerCodeFn`](/docs/types#servercodefn) and returns a new safe action function of type [`SafeActionFn`](/docs/types#safeactionfn), which can be called from your components.
@@ -60,7 +60,7 @@ When the action is executed, all middleware functions in the chain will be calle
 ### `serverCodeFn`
 
 ```typescript
-serverCodeFn<S extends Schema, Data, Context> = (args: { parsedInput: Infer<S>, ctx: Context; metadata: ActionMetadata }) => Promise<Data>;
+serverCodeFn<S, BAS, Data, Ctx, MD> = (args: { parsedInput: Infer<S>, bindArgsParsedInputs: InferArray<BAS>, ctx: Ctx, metadata: MD }) => Promise<Data>;
 ```
 
 `serverCodeFn` is the async function that will be executed on the **server side** when the action is invoked. If input validation fails, or execution gets halted in a middleware function, the server code function will not be called.

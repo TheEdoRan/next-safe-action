@@ -3,6 +3,7 @@ import {
 	DEFAULT_SERVER_ERROR_MESSAGE,
 	createSafeActionClient,
 } from "next-safe-action";
+import { z } from "zod";
 
 export class ActionError extends Error {}
 
@@ -24,6 +25,12 @@ export const action = createSafeActionClient({
 
 		// Otherwise return default error message.
 		return DEFAULT_SERVER_ERROR_MESSAGE;
+	},
+	// Here we define a metadata type to be used in `metadata` instance method.
+	defineMetadataSchema() {
+		return z.object({
+			actionName: z.string(),
+		});
 	},
 }).use(async ({ next, metadata, clientInput, bindArgsClientInputs }) => {
 	// Here we use a logging middleware.

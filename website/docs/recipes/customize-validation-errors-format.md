@@ -29,8 +29,7 @@ const schema = z.object({
 
 const bindArgsSchemas = [z.string().uuid()] as const;
 
-export const loginUser = action
-  .metadata({ actionName: "loginUser" })
+export const loginUser = actionClient
   .schema(schema, {
     // Here we use the `flattenValidationErrors` function to customize the returned validation errors
     // object to the client.

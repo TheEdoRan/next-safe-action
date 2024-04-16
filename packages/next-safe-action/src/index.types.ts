@@ -5,9 +5,10 @@ import type { BindArgsValidationErrors, ValidationErrors } from "./validation-er
 /**
  * Type of options when creating a new safe action client.
  */
-export type SafeActionClientOpts<ServerError> = {
+export type SafeActionClientOpts<ServerError, MetadataSchema extends Schema | undefined> = {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
+	defineMetadataSchema?: () => MetadataSchema;
 };
 
 /**
@@ -44,13 +45,6 @@ export type SafeActionFn<
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
 /**
- * Type of meta options to be passed when defining a new safe action.
- */
-export type ActionMetadata = {
-	actionName?: string;
-};
-
-/**
  * Type of the result of a middleware function. It extends the result of a safe action with
  * information about the action execution.
  */
@@ -72,12 +66,12 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 /**
  * Type of the middleware function passed to a safe action client.
  */
-export type MiddlewareFn<ServerError, Ctx, NextCtx> = {
+export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 	(opts: {
 		clientInput: unknown;
 		bindArgsClientInputs: unknown[];
 		ctx: Ctx;
-		metadata: ActionMetadata;
+		metadata: MD | null;
 		next: {
 			<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
 		};
@@ -87,9 +81,9 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema, BAS extends readonly Schema[], Data, Ctx> = (args: {
+export type ServerCodeFn<S extends Schema, BAS extends readonly Schema[], Data, Ctx, MD> = (args: {
 	parsedInput: Infer<S>;
 	bindArgsParsedInputs: InferArray<BAS>;
 	ctx: Ctx;
-	metadata: ActionMetadata;
+	metadata: MD;
 }) => Promise<Data>;
