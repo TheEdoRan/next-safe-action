@@ -1,12 +1,11 @@
 import type { Infer, Schema } from "@typeschema/main";
+import type { Prettify } from "./utils";
 
 // Merges an object without printing "&".
 type PrettyMerge<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
 
 // Object with an optional list of validation errors.
-export type ErrorList<BindArg = false> = (BindArg extends true
-	? { _errors: string[] }
-	: { _errors?: string[] }) & {};
+export type ErrorList = Prettify<{ _errors?: string[] }>;
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {
@@ -18,25 +17,32 @@ type SchemaErrors<S> = {
 /**
  * Type of the returned object when input validation fails.
  */
-export type ValidationErrors<S extends Schema, BindArg = false> =
-	Infer<S> extends object ? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>> : ErrorList<BindArg>;
+export type ValidationErrors<S extends Schema> =
+	Infer<S> extends object ? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>> : ErrorList;
 
 /**
  * Type of the array of validation errors of bind arguments.
  */
 export type BindArgsValidationErrors<BAS extends readonly Schema[]> = {
-	[K in keyof BAS]: ValidationErrors<BAS[K], true> | null;
+	[K in keyof BAS]: ValidationErrors<BAS[K]>;
 };
 
 /**
  * Type of flattened validation errors. `formErrors` contains global errors, and `fieldErrors`
  * contains errors for each field, one level deep.
  */
-export type FlattenedValidationErrors<S extends Schema, VE extends ValidationErrors<S>> = {
+export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = Prettify<{
 	formErrors: string[];
 	fieldErrors: {
 		[K in keyof Omit<VE, "_errors">]?: string[];
 	};
+}>;
+
+/**
+ * Type of flattened bind arguments validation errors.
+ */
+export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]> = {
+	[K in keyof BAVE]: FlattenedValidationErrors<BAVE[K]>;
 };
 
 /**

@@ -16,11 +16,14 @@ import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import {
 	ServerValidationError,
 	buildValidationErrors,
+	flattenBindArgsValidationErrors,
 	flattenValidationErrors,
 	returnValidationErrors,
 } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
+	FlattenedBindArgsValidationErrors,
+	FlattenedValidationErrors,
 	FormatBindArgsValidationErrorsFn,
 	FormatValidationErrorsFn,
 	ValidationErrors,
@@ -143,7 +146,7 @@ class SafeActionClient<const ServerError, const Ctx = null> {
 
 						// Initialize the bind args validation errors array with null values.
 						// It has the same length as the number of bind arguments (parsedInputs - 1).
-						const bindArgsValidationErrors = Array(parsedInputs.length - 1).fill(null);
+						const bindArgsValidationErrors = Array(parsedInputs.length - 1).fill({});
 						const parsedInputDatas = [];
 
 						for (let i = 0; i < parsedInputs.length; i++) {
@@ -352,11 +355,18 @@ export const createSafeActionClient = <const ServerError = string>(
 	});
 };
 
-export { DEFAULT_SERVER_ERROR_MESSAGE, flattenValidationErrors, returnValidationErrors };
+export {
+	DEFAULT_SERVER_ERROR_MESSAGE,
+	flattenBindArgsValidationErrors,
+	flattenValidationErrors,
+	returnValidationErrors,
+};
 
 export type {
 	ActionMetadata,
 	BindArgsValidationErrors,
+	FlattenedBindArgsValidationErrors,
+	FlattenedValidationErrors,
 	FormatBindArgsValidationErrorsFn,
 	FormatValidationErrorsFn,
 	MiddlewareFn,

@@ -18,6 +18,7 @@ For example, if you want to flatten the validation errors (emulation of Zod's [`
 import { actionClient } from "@/lib/safe-action";
 import {
   flattenValidationErrors,
+  flattenBindArgsValidationErrors,
 } from "next-safe-action";
 import { z } from "zod";
 
@@ -26,6 +27,8 @@ const schema = z.object({
   password: z.string().min(8).max(100),
 });
 
+const bindArgsSchemas = [z.string().uuid()] as const;
+
 export const loginUser = action
   .metadata({ actionName: "loginUser" })
   .schema(schema, {
@@ -33,14 +36,19 @@ export const loginUser = action
     // object to the client.
     formatValidationErrors: (ve) => flattenValidationErrors(ve).fieldErrors,
   })
+  .bindArgs(bindArgsSchemas, {
+    // Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
+    // validation errors object array to the client.
+    formatBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve)
+  })
   .action(async ({ parsedInput: { username, password } }) => {
     // Your code here...
   });
 ```
 
-### `flattenValidationErrors` utility function
+### `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions
 
-The exported `flattenValidationErrors` utility function emulates Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method for building validation errors and return them to the client. Be aware that it discards errors for nested fields in objects, but when dealing with simple one-level schemas, it's sometimes better to use the flattened format instead of the formatted one.
+Exported `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions emulates Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method for building validation errors and return them to the client. Be aware that they discard errors for nested fields in objects, but when dealing with simple one-level schemas, it's sometimes better to use the flattened format instead of the formatted one.
 
 So, for instance, a formatted (default) validation errors object like this:
 
@@ -70,4 +78,46 @@ flattenedErrors = {
   },
 }
 
+```
+
+`flattenBindArgsValidationErrors` works the same way, but with bind args (in [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) method), to build the validation errors array.
+
+### Flatten function for `schema` method
+
+next-safe-action, by default, uses the formatted validation errors structure, so errors for nested fields don't get discarded.
+
+If you need or want to flatten validation errors often, though, you can define an utility function like this one (assuming you're using Zod, but you can adapt it to your needs):
+
+```typescript title="src/lib/safe-action.ts"
+function fve<const S extends z.ZodTypeAny>(schema: S): [S, {
+    formatValidationErrors: FormatValidationErrorsFn<
+      S,
+      FlattenedValidationErrors<ValidationErrors<S>>
+    >;
+  },
+] {
+  return [
+    schema,
+    { formatValidationErrors: (ve: ValidationErrors<S>) => flattenValidationErrors(ve) },
+  ];
+}
+```
+
+That can then be used in [`schema`](/docs/safe-action-client/instance-methods#schema) method:
+
+```typescript src="src/app/login-action.ts"
+import { actionClient, fve } from "@/lib/safe-action";
+import { z } from "zod";
+
+const schema = z.object({
+  username: z.string().min(3).max(30),
+});
+
+// Spread `fve` utility function in the `schema` method. Type safety is preserved.
+//                                     \\\\\\\\\\\\\\
+const loginUser = actionClient.schema(...fve(schema)).action(async ({ parsedInput: { username } }) => {
+  return {
+    greeting: `Welcome back, ${username}!`,
+  };
+});
 ```
