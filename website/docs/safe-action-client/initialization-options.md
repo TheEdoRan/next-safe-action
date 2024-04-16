@@ -83,4 +83,4 @@ export const actionClient = createSafeActionClient({
 });
 ```
 
-Note that the schema is used just to infer the type of the metadata, and not to validate it:
+Note that the schema is used just to infer the type of the metadata, and not to validate it.

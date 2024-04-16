@@ -29,7 +29,9 @@ use<const NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadat
 metadata(data: Metadata) => { schema() }
 ```
 
-`metadata` expects an argument of the same type as the return value of the [`defineMetadataSchema`](/docs/safe-action-client/initialization-options#definemetadataschema) optional initialization function. If you don't provide this function to the action client, `metadata` defaults type to `null`. If you don't use this method before defining your action (using [`action`](#action) method), `metadata` will be `null` inside [`serverCodeFn`](#servercodefn). `metadata` lets you specify useful data about the safe action you're executing. It returns the [`schema`](#schema) method, since metadata is action specific and not shared with other actions. You can then access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`](#action).
+`metadata` expects an argument of the same type as the return value of the [`defineMetadataSchema`](/docs/safe-action-client/initialization-options#definemetadataschema) optional initialization function. If you don't provide this function to the action client when you initialize it, `metadata` will be `null`.
+
+`metadata` lets you specify useful data about the safe action you're executing. If you don't use this method before defining your action (using [`action`](#action) method), `metadata` will be `null` inside [`serverCodeFn`](#servercodefn). It returns the [`schema`](#schema) method, since metadata is action specific and not shared with other actions. You can then access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`](#action).
 
 ## `schema`
 
