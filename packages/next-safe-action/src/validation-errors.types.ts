@@ -17,8 +17,11 @@ type SchemaErrors<S> = {
 /**
  * Type of the returned object when input validation fails.
  */
-export type ValidationErrors<S extends Schema> =
-	Infer<S> extends object ? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>> : ErrorList;
+export type ValidationErrors<S extends Schema | undefined> = S extends Schema
+	? Infer<S> extends object
+		? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>>
+		: ErrorList
+	: undefined;
 
 /**
  * Type of the array of validation errors of bind arguments.
@@ -31,12 +34,14 @@ export type BindArgsValidationErrors<BAS extends readonly Schema[]> = {
  * Type of flattened validation errors. `formErrors` contains global errors, and `fieldErrors`
  * contains errors for each field, one level deep.
  */
-export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = Prettify<{
-	formErrors: string[];
-	fieldErrors: {
-		[K in keyof Omit<VE, "_errors">]?: string[];
-	};
-}>;
+export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = VE extends undefined
+	? undefined
+	: Prettify<{
+			formErrors: string[];
+			fieldErrors: {
+				[K in keyof Omit<VE, "_errors">]?: string[];
+			};
+		}>;
 
 /**
  * Type of flattened bind arguments validation errors.
@@ -48,7 +53,7 @@ export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationEr
 /**
  * Type of the function used to format validation errors.
  */
-export type FormatValidationErrorsFn<S extends Schema, FVE> = (
+export type FormatValidationErrorsFn<S extends Schema | undefined, FVE> = (
 	validationErrors: ValidationErrors<S>
 ) => FVE;
 

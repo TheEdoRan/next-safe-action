@@ -8,7 +8,9 @@ import type {
 } from "./validation-errors.types";
 
 // This function is used internally to build the validation errors object from a list of validation issues.
-export const buildValidationErrors = <const S extends Schema>(issues: ValidationIssue[]) => {
+export const buildValidationErrors = <const S extends Schema | undefined>(
+	issues: ValidationIssue[]
+) => {
 	const ve: any = {};
 
 	for (const issue of issues) {
@@ -91,7 +93,9 @@ export function flattenValidationErrors<const VE extends ValidationErrors<any>>(
 		fieldErrors: {},
 	};
 
-	for (const [key, value] of Object.entries<string[] | { _errors: string[] }>(validationErrors)) {
+	for (const [key, value] of Object.entries<string[] | { _errors: string[] }>(
+		validationErrors ?? {}
+	)) {
 		if (key === "_errors" && Array.isArray(value)) {
 			flattened.formErrors = [...value];
 		} else {

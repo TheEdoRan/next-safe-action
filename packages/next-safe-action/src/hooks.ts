@@ -19,7 +19,7 @@ const DEFAULT_RESULT = {
 
 const getActionStatus = <
 	const ServerError,
-	const S extends Schema,
+	const S extends Schema | undefined,
 	const BAS extends readonly Schema[],
 	const FVE,
 	const FBAVE,
@@ -49,7 +49,7 @@ const getActionStatus = <
 
 const useActionCallbacks = <
 	const ServerError,
-	const S extends Schema,
+	const S extends Schema | undefined,
 	const BAS extends readonly Schema[],
 	const FVE,
 	const FBAVE,
@@ -62,7 +62,7 @@ const useActionCallbacks = <
 	cb,
 }: {
 	result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
-	input: InferIn<S>;
+	input: S extends Schema ? InferIn<S> : undefined;
 	status: HookActionStatus;
 	reset: () => void;
 	cb?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>;
@@ -110,7 +110,7 @@ const useActionCallbacks = <
  */
 export const useAction = <
 	const ServerError,
-	const S extends Schema,
+	const S extends Schema | undefined,
 	const BAS extends readonly Schema[],
 	const FVE,
 	const FBAVE,
@@ -122,13 +122,13 @@ export const useAction = <
 	const [, startTransition] = React.useTransition();
 	const [result, setResult] =
 		React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
-	const [input, setInput] = React.useState<InferIn<S>>();
+	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : undefined>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
 	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result });
 
 	const execute = React.useCallback(
-		(input: InferIn<S>) => {
+		(input: S extends Schema ? InferIn<S> : undefined) => {
 			setInput(input);
 			setIsExecuting(true);
 
@@ -154,7 +154,13 @@ export const useAction = <
 		setResult(DEFAULT_RESULT);
 	}, []);
 
-	useActionCallbacks({ result, input, status, reset, cb: callbacks });
+	useActionCallbacks({
+		result,
+		input: input as S extends Schema ? InferIn<S> : undefined,
+		status,
+		reset,
+		cb: callbacks,
+	});
 
 	return {
 		execute,
@@ -177,7 +183,7 @@ export const useAction = <
  */
 export const useOptimisticAction = <
 	const ServerError,
-	const S extends Schema,
+	const S extends Schema | undefined,
 	const BAS extends readonly Schema[],
 	const FVE,
 	const FBAVE,
@@ -185,24 +191,24 @@ export const useOptimisticAction = <
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
 	initialOptimisticData: Data,
-	reducer: (state: Data, input: InferIn<S>) => Data,
+	reducer: (state: Data, input: S extends Schema ? InferIn<S> : undefined) => Data,
 	callbacks?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
 	const [result, setResult] =
 		React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
-	const [input, setInput] = React.useState<InferIn<S>>();
+	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : undefined>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
-	const [optimisticData, setOptimisticState] = React.useOptimistic<Data, InferIn<S>>(
-		initialOptimisticData,
-		reducer
-	);
+	const [optimisticData, setOptimisticState] = React.useOptimistic<
+		Data,
+		S extends Schema ? InferIn<S> : undefined
+	>(initialOptimisticData, reducer);
 
 	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result });
 
 	const execute = React.useCallback(
-		(input: InferIn<S>) => {
+		(input: S extends Schema ? InferIn<S> : undefined) => {
 			setInput(input);
 			setIsExecuting(true);
 
@@ -229,7 +235,13 @@ export const useOptimisticAction = <
 		setResult(DEFAULT_RESULT);
 	}, []);
 
-	useActionCallbacks({ result, input, status, reset, cb: callbacks });
+	useActionCallbacks({
+		result,
+		input: input as S extends Schema ? InferIn<S> : undefined,
+		status,
+		reset,
+		cb: callbacks,
+	});
 
 	return {
 		execute,

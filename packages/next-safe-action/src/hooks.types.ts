@@ -8,7 +8,7 @@ import type { MaybePromise } from "./utils";
  */
 export type HookResult<
 	ServerError,
-	S extends Schema,
+	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	FVE,
 	FBAVE,
@@ -22,22 +22,26 @@ export type HookResult<
  */
 export type HookCallbacks<
 	ServerError,
-	S extends Schema,
+	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	FVE,
 	FBAVE,
 	Data,
 > = {
-	onExecute?: (args: { input: InferIn<S> }) => MaybePromise<void>;
-	onSuccess?: (args: { data: Data; input: InferIn<S>; reset: () => void }) => MaybePromise<void>;
+	onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
+	onSuccess?: (args: {
+		data: Data;
+		input: S extends Schema ? InferIn<S> : undefined;
+		reset: () => void;
+	}) => MaybePromise<void>;
 	onError?: (args: {
 		error: Omit<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>, "data">;
-		input: InferIn<S>;
+		input: S extends Schema ? InferIn<S> : undefined;
 		reset: () => void;
 	}) => MaybePromise<void>;
 	onSettled?: (args: {
 		result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
-		input: InferIn<S>;
+		input: S extends Schema ? InferIn<S> : undefined;
 		reset: () => void;
 	}) => MaybePromise<void>;
 };
@@ -48,12 +52,14 @@ export type HookCallbacks<
  */
 export type HookSafeActionFn<
 	ServerError,
-	S extends Schema,
+	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	FVE,
 	FBAVE,
 	Data,
-> = (clientInput: InferIn<S>) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+> = (
+	clientInput: S extends Schema ? InferIn<S> : undefined
+) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
 /**
  * Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
