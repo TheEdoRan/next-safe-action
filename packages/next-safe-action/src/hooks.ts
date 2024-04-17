@@ -122,18 +122,18 @@ export const useAction = <
 	const [, startTransition] = React.useTransition();
 	const [result, setResult] =
 		React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
-	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : undefined>();
+	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
 	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result });
 
 	const execute = React.useCallback(
-		(input: S extends Schema ? InferIn<S> : undefined) => {
+		(input: S extends Schema ? InferIn<S> : void) => {
 			setInput(input);
 			setIsExecuting(true);
 
 			return startTransition(() => {
-				return safeActionFn(input)
+				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? DEFAULT_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
@@ -197,7 +197,7 @@ export const useOptimisticAction = <
 	const [, startTransition] = React.useTransition();
 	const [result, setResult] =
 		React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
-	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : undefined>();
+	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
 	const [optimisticData, setOptimisticState] = React.useOptimistic<
@@ -208,13 +208,13 @@ export const useOptimisticAction = <
 	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result });
 
 	const execute = React.useCallback(
-		(input: S extends Schema ? InferIn<S> : undefined) => {
+		(input: S extends Schema ? InferIn<S> : void) => {
 			setInput(input);
 			setIsExecuting(true);
 
 			return startTransition(() => {
-				setOptimisticState(input);
-				return safeActionFn(input)
+				setOptimisticState(input as S extends Schema ? InferIn<S> : undefined);
+				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? DEFAULT_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
