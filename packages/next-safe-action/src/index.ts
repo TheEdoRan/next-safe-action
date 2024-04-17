@@ -87,8 +87,8 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 		this.#metadata = data;
 
 		return {
-			schema: <const S extends Schema, const FVE = ValidationErrors<S>>(
-				schema: S,
+			schema: <const S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>>(
+				schema?: S,
 				utils?: {
 					formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 				}
@@ -101,8 +101,12 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
 	 * @returns {Function} The `define` function, which is used to define a new safe action.
 	 */
-	public schema<const S extends Schema, const FVE = ValidationErrors<S>, const MD = null>(
-		schema: S,
+	public schema<
+		const S extends Schema | undefined = undefined,
+		const FVE = ValidationErrors<S>,
+		const MD = null,
+	>(
+		schema?: S,
 		utils?: {
 			formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 		}
@@ -134,13 +138,13 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	}
 
 	#bindArgsSchemas<
-		const S extends Schema,
+		const S extends Schema | undefined,
 		const BAS extends readonly Schema[],
 		const FVE,
 		const FBAVE,
 		const MD = null,
 	>(args: {
-		mainSchema: S;
+		mainSchema?: S;
 		bindArgsSchemas: BAS;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
@@ -163,14 +167,14 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	 * @returns {SafeActionFn}
 	 */
 	#action<
-		const S extends Schema,
+		const S extends Schema | undefined,
 		const BAS extends readonly Schema[],
 		const FVE,
 		const FBAVE = undefined,
 		const Data = null,
 		const MD = null,
 	>(args: {
-		schema: S;
+		schema?: S;
 		bindArgsSchemas: BAS;
 		serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
@@ -180,6 +184,14 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 			let prevCtx: any = null;
 			let frameworkError: Error | undefined = undefined;
 			const middlewareResult: MiddlewareResult<ServerError, any> = { success: false };
+
+			// If the number of bind args schemas + 1 (which is the optional main arg schema) is greater
+			// than the number of provided client inputs, it means that the main argument is missing.
+			// This happens when the main schema is missing (since it's optional), or if a void main schema
+			// is provided along with bind args schemas.
+			if (args.bindArgsSchemas.length + 1 > clientInputs.length) {
+				clientInputs.push(undefined);
+			}
 
 			// Execute the middleware stack.
 			const executeMiddlewareChain = async (idx = 0) => {
@@ -204,8 +216,22 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 						// Validate the client inputs in parallel.
 						const parsedInputs = await Promise.all(
 							clientInputs.map((input, i) => {
-								const s = i === clientInputs.length - 1 ? args.schema : args.bindArgsSchemas[i]!;
-								return validate(s, input);
+								// Last client input in the array, main argument (no bind arg).
+								if (i === clientInputs.length - 1) {
+									// If schema is undefined, set parsed data to undefined.
+									if (typeof args.schema === "undefined") {
+										return {
+											success: true,
+											data: undefined,
+										} as const;
+									}
+
+									// Otherwise, parse input with the schema.
+									return validate(args.schema, input);
+								}
+
+								// Otherwise, we're processing bind args client inputs.
+								return validate(args.bindArgsSchemas[i]!, input);
 							})
 						);
 
@@ -256,7 +282,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 
 						const data =
 							(await args.serverCodeFn({
-								parsedInput: parsedInputDatas.at(-1) as Infer<S>,
+								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								ctx: prevCtx,
 								metadata: this.#metadata as any as MD,

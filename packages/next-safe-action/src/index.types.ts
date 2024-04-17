@@ -16,7 +16,7 @@ export type SafeActionClientOpts<ServerError, MetadataSchema extends Schema | un
  */
 export type SafeActionResult<
 	ServerError,
-	S extends Schema,
+	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	FVE = ValidationErrors<S>,
 	FBAVE = BindArgsValidationErrors<BAS>,
@@ -35,13 +35,13 @@ export type SafeActionResult<
  */
 export type SafeActionFn<
 	ServerError,
-	S extends Schema,
+	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	FVE,
 	FBAVE,
 	Data,
 > = (
-	...clientInputs: [...InferInArray<BAS>, InferIn<S>]
+	...clientInputs: [...InferInArray<BAS>, S extends Schema ? InferIn<S> : void]
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
 /**
@@ -81,8 +81,14 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema, BAS extends readonly Schema[], Data, Ctx, MD> = (args: {
-	parsedInput: Infer<S>;
+export type ServerCodeFn<
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	Data,
+	Ctx,
+	MD,
+> = (args: {
+	parsedInput: S extends Schema ? Infer<S> : undefined;
 	bindArgsParsedInputs: InferArray<BAS>;
 	ctx: Ctx;
 	metadata: MD;

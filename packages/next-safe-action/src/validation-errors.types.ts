@@ -17,8 +17,11 @@ type SchemaErrors<S> = {
 /**
  * Type of the returned object when input validation fails.
  */
-export type ValidationErrors<S extends Schema> =
-	Infer<S> extends object ? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>> : ErrorList;
+export type ValidationErrors<S extends Schema | undefined> = S extends Schema
+	? Infer<S> extends object
+		? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>>
+		: ErrorList
+	: undefined;
 
 /**
  * Type of the array of validation errors of bind arguments.
@@ -48,7 +51,7 @@ export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationEr
 /**
  * Type of the function used to format validation errors.
  */
-export type FormatValidationErrorsFn<S extends Schema, FVE> = (
+export type FormatValidationErrorsFn<S extends Schema | undefined, FVE> = (
 	validationErrors: ValidationErrors<S>
 ) => FVE;
 

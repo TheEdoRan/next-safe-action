@@ -36,10 +36,10 @@ metadata(data: Metadata) => { schema() }
 ## `schema`
 
 ```typescript
-schema<const S extends Schema, const FVE = ValidationErrors<S>, const MD = null>(schema: S, { utils?: { formatValidationErrors?: FormatValidationErrorsFn<S, FVE> } }) => { action(), bindArgsSchemas() }
+schema<const S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>, const MD = null>(schema: S, { utils?: { formatValidationErrors?: FormatValidationErrorsFn<S, FVE> } }) => { action(), bindArgsSchemas() }
 ```
 
-`schema` accepts an input schema of type `Schema` (from TypeSchema) and an optional `utils` object that accepts a `formatValidationErrors` function. The schema is used to define the arguments that the safe action will receive, the optional `formatValidationErrors` function is used to [return a custom format for validation errors](/docs/recipes/customize-validation-errors-format). It returns the [`action`](#action) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
+`schema` accepts an **optional** input schema of type `Schema` (from TypeSchema) and an optional `utils` object that accepts a [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns the [`action`](#action) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
 
 ## `bindArgsSchemas`
 
