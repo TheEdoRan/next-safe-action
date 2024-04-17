@@ -34,14 +34,12 @@ export type BindArgsValidationErrors<BAS extends readonly Schema[]> = {
  * Type of flattened validation errors. `formErrors` contains global errors, and `fieldErrors`
  * contains errors for each field, one level deep.
  */
-export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = VE extends undefined
-	? undefined
-	: Prettify<{
-			formErrors: string[];
-			fieldErrors: {
-				[K in keyof Omit<VE, "_errors">]?: string[];
-			};
-		}>;
+export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = Prettify<{
+	formErrors: string[];
+	fieldErrors: {
+		[K in keyof Omit<VE, "_errors">]?: string[];
+	};
+}>;
 
 /**
  * Type of flattened bind arguments validation errors.
