@@ -1,8 +1,5 @@
 import type { Infer, Schema } from "@typeschema/main";
-import type { Prettify } from "./utils";
-
-// Merges an object without printing "&".
-type PrettyMerge<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
+import type { Prettify, PrettyMerge } from "./utils";
 
 // Object with an optional list of validation errors.
 export type ErrorList = Prettify<{ _errors?: string[] }>;

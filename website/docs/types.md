@@ -254,7 +254,7 @@ type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
 
 ---
 
-## Utility types
+## Internal utility types
 
 ### `Prettify`
 
@@ -272,6 +272,14 @@ Returns type or promise of type.
 
 ```typescript
 export type MaybePromise<T> = Promise<T> | T;
+```
+
+### `PrettyMerge`
+
+Merges an object without printing "&".
+
+```typescript
+type PrettyMerge<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
 ```
 
 ### `InferArray`
@@ -294,13 +302,7 @@ export type InferInArray<BAS extends readonly Schema[]> = {
 };
 ```
 
-### `PrettyMerge`
-
-Merges an object without printing "&".
-
-```typescript
-type PrettyMerge<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
-```
+## Internal validation errors types
 
 ### `ErrorList`
 
@@ -326,4 +328,4 @@ type SchemaErrors<S> = {
 
 ## TypeSchema library
 
-`Infer`, `InferIn`, `Schema` types come from [TypeSchema](https://typeschema.com) library.
+`Infer`, `InferIn`, `Schema` types used in this documentation come from [TypeSchema](https://typeschema.com) library.

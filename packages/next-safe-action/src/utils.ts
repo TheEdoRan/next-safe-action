@@ -14,6 +14,9 @@ export type Prettify<T> = {
 // Returns type or promise of type.
 export type MaybePromise<T> = Promise<T> | T;
 
+// Merges an object without printing "&".
+export type PrettyMerge<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
+
 // Infers output schema type in array of schemas.
 export type InferArray<BAS extends readonly Schema[]> = {
 	[K in keyof BAS]: Infer<BAS[K]>;
