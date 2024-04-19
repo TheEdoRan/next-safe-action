@@ -37,7 +37,6 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	>;
 
 	#middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[];
-	#metadata = null as Metadata;
 
 	constructor(
 		opts: { middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[] } & Omit<
@@ -84,33 +83,43 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	 * @returns {Function} Define a new action
 	 */
 	public metadata(data: Metadata) {
-		this.#metadata = data;
-
 		return {
 			schema: <const S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>>(
 				schema?: S,
 				utils?: {
 					formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 				}
-			) => this.schema<S, FVE, Metadata>(schema, utils),
+			) =>
+				this.#schema<S, FVE, Metadata>({
+					schema,
+					formatValidationErrors: utils?.formatValidationErrors,
+					metadata: data,
+				}),
 		};
 	}
-
 	/**
 	 * Pass an input schema to define safe action arguments.
 	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
 	 * @returns {Function} The `define` function, which is used to define a new safe action.
 	 */
-	public schema<
-		const S extends Schema | undefined = undefined,
-		const FVE = ValidationErrors<S>,
-		const MD = null,
-	>(
+	public schema<const S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>>(
 		schema?: S,
 		utils?: {
 			formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 		}
 	) {
+		return this.#schema<S, FVE, null>({
+			schema,
+			formatValidationErrors: utils?.formatValidationErrors,
+			metadata: null,
+		});
+	}
+
+	#schema<
+		const S extends Schema | undefined = undefined,
+		const FVE = ValidationErrors<S>,
+		const MD = null,
+	>(args: { schema?: S; formatValidationErrors?: FormatValidationErrorsFn<S, FVE>; metadata: MD }) {
 		return {
 			bindArgsSchemas: <
 				const BAS extends readonly Schema[],
@@ -122,17 +131,19 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 				}
 			) =>
 				this.#bindArgsSchemas<S, BAS, FVE, FBAVE, MD>({
-					mainSchema: schema,
+					mainSchema: args.schema,
 					bindArgsSchemas,
-					formatValidationErrors: utils?.formatValidationErrors,
+					formatValidationErrors: args.formatValidationErrors,
 					formatBindArgsValidationErrors: bindArgsUtils?.formatBindArgsValidationErrors,
+					metadata: args.metadata,
 				}),
 			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, [], Data, Ctx, MD>) =>
 				this.#action({
-					schema,
+					schema: args.schema,
 					bindArgsSchemas: [],
 					serverCodeFn,
-					formatValidationErrors: utils?.formatValidationErrors,
+					formatValidationErrors: args.formatValidationErrors,
+					metadata: args.metadata,
 				}),
 		};
 	}
@@ -148,6 +159,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 		bindArgsSchemas: BAS;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
+		metadata: MD;
 	}) {
 		return {
 			action: <const Data = null>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>) =>
@@ -157,6 +169,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 					serverCodeFn,
 					formatValidationErrors: args.formatValidationErrors,
 					formatBindArgsValidationErrors: args.formatBindArgsValidationErrors,
+					metadata: args.metadata,
 				}),
 		};
 	}
@@ -179,6 +192,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 		serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
+		metadata: MD;
 	}): SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data> {
 		return async (...clientInputs) => {
 			let prevCtx: any = null;
@@ -205,7 +219,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 							clientInput: clientInputs.at(-1), // pass raw client input
 							bindArgsClientInputs: args.bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
 							ctx: prevCtx,
-							metadata: this.#metadata,
+							metadata: args.metadata as Metadata | null,
 							next: async ({ ctx }) => {
 								prevCtx = ctx;
 								await executeMiddlewareChain(idx + 1);
@@ -285,7 +299,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								ctx: prevCtx,
-								metadata: this.#metadata as any as MD,
+								metadata: args.metadata,
 							})) ?? null;
 
 						middlewareResult.success = true;
