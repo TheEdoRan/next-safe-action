@@ -9,6 +9,7 @@
 		"lint": "turbo run lint",
 		"build": "turbo run build",
 		"build:lib": "turbo run build --filter=next-safe-action",
+		"rebuild:lib": "npm run build:lib -- --force && npm i",
 		"deploy": "turbo run deploy"
 	},
 	"author": "Edoardo Ranghieri",
