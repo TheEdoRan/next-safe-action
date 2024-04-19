@@ -60,8 +60,6 @@ const actionClient = createSafeActionClient({
 // Note that the same initialization options and middleware functions of the base client
 // will also be used for this one.
 const authActionClient = actionClient
-  // Clone the base client so it doesn't get mutated.
-  .clone()
   // Define authorization middleware.
   .use(async ({ next }) => {
     const session = cookies().get("session")?.value;

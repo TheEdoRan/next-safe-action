@@ -50,19 +50,6 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	}
 
 	/**
-	 * Clone the safe action client keeping the same middleware and initialization functions.
-	 * This is used to extend the base client with additional middleware functions.
-	 * @returns {SafeActionClient}
-	 */
-	public clone() {
-		return new SafeActionClient<ServerError, Ctx, Metadata>({
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
-			middlewareFns: [...this.#middlewareFns], // copy the middleware stack so we don't mutate it
-		});
-	}
-
-	/**
 	 * Use a middleware function.
 	 * @param middlewareFn Middleware function
 	 * @returns SafeActionClient
@@ -71,7 +58,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 		this.#middlewareFns.push(middlewareFn);
 
 		return new SafeActionClient<ServerError, NextCtx, Metadata>({
-			middlewareFns: this.#middlewareFns,
+			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 		});

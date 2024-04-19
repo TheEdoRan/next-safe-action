@@ -7,14 +7,6 @@ description: List of methods of the safe action client.
 
 `createSafeActionClient` creates an instance of the safe action client, which has the following methods:
 
-## `clone`
-
-```typescript
-actionClient.clone() => new SafeActionClient()
-```
-
-`clone` returns a new instance of the safe action client with the same initialization options and middleware functions as the original one. It is used to extend a base client with additional middleware functions. If you don't use `clone` when creating a new client, the middleware function list of the original one will be mutated and extended with the new ones, which is not desirable.
-
 ## `use`
 
 ```typescript

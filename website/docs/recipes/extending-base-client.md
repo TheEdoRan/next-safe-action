@@ -27,8 +27,6 @@ export const actionClient = createSafeActionClient().use(async ({ next }) => {
 // action server code function. Note that by extending the base client, you don't need to
 // redeclare the logging middleware, is will simply be inherited by the new client.
 export const authActionClient = actionClient
-  // Clone the base client to extend this one with additional middleware functions.
-  .clone()
   // In this case, context is used for (fake) auth purposes.
   .use(async ({ next }) => {
     const session = cookies().get("session")?.value;

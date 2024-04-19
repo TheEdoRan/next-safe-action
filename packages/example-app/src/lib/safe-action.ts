@@ -62,8 +62,6 @@ async function getSessionId() {
 }
 
 export const authAction = action
-	// Clone the base client to extend this one with additional middleware functions.
-	.clone()
 	// In this case, context is used for (fake) auth purposes.
 	.use(async ({ next }) => {
 		const userId = randomUUID();
