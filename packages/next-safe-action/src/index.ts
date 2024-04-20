@@ -55,8 +55,6 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	 * @returns SafeActionClient
 	 */
 	public use<const NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadata>) {
-		this.#middlewareFns.push(middlewareFn);
-
 		return new SafeActionClient<ServerError, NextCtx, Metadata>({
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
