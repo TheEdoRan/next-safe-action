@@ -35,7 +35,7 @@ export default function EmptySchema() {
 
 	return (
 		<main className="w-96 max-w-full px-4">
-			<StyledHeading>Action without schema</StyledHeading>
+			<StyledHeading>Action without arguments</StyledHeading>
 			<form
 				className="flex flex-col mt-8 space-y-4"
 				onSubmit={(e) => {

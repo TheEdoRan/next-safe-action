@@ -80,8 +80,15 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 					formatValidationErrors: utils?.formatValidationErrors,
 					metadata: data,
 				}),
+			action: <const Data = null>(serverCodeFn: ServerCodeFn<undefined, [], Data, Ctx, Metadata>) =>
+				this.#action({
+					serverCodeFn,
+					bindArgsSchemas: [],
+					metadata: data,
+				}),
 		};
 	}
+
 	/**
 	 * Pass an input schema to define safe action arguments.
 	 * @param schema An input schema supported by [TypeSchema](https://typeschema.com/#coverage).
@@ -96,6 +103,19 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 		return this.#schema<S, FVE, null>({
 			schema,
 			formatValidationErrors: utils?.formatValidationErrors,
+			metadata: null,
+		});
+	}
+
+	/**
+	 * Define a new safe action without input arguments.
+	 * @param serverCodeFn Server code function
+	 * @returns
+	 */
+	public action<const Data = null>(serverCodeFn: ServerCodeFn<undefined, [], Data, Ctx, null>) {
+		return this.#action({
+			serverCodeFn,
+			bindArgsSchemas: [],
 			metadata: null,
 		});
 	}

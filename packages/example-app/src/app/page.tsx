@@ -15,7 +15,7 @@ export default function Home() {
 					<span className="font-mono">useOptimisticAction</span> hook
 				</ExampleLink>
 				<ExampleLink href="/bind-arguments">Bind arguments</ExampleLink>
-				<ExampleLink href="/empty-schema">Empty schema</ExampleLink>
+				<ExampleLink href="/without-arguments">Without arguments</ExampleLink>
 				<ExampleLink href="/server-form">Server Form</ExampleLink>
 				<ExampleLink href="/client-form">Client Form</ExampleLink>
 				<ExampleLink href="/react-hook-form">React Hook Form</ExampleLink>
