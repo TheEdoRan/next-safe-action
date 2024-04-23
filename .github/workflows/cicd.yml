@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - alpha
-      - beta
       - next
       - 4.x
   pull_request:
@@ -24,11 +22,13 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-      - run: npm ci
-      - run: npm run lint -- --filter=next-safe-action
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint lib code
+        run: npm run lint:lib
 
   CD:
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/alpha' || github.ref == 'refs/heads/beta' ||  github.ref == 'refs/heads/next'|| github.ref == 'refs/heads/4.x' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/next'|| github.ref == 'refs/heads/4.x' }}
     runs-on: ubuntu-latest
     needs: [CI]
     steps:
@@ -40,10 +40,12 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-      - run: npm ci
-      - run: npm run build -- --filter=next-safe-action
-      - name: Release
+      - name: Install dependencies
+        run: npm ci
+      - name: Build lib package
+        run: npm run build:lib
+      - name: Release lib to NPM
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run deploy -- --filter=next-safe-action
+        run: npm run deploy:lib

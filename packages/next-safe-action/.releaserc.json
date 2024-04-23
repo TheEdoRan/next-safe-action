@@ -4,16 +4,6 @@
 			"name": "main"
 		},
 		{
-			"name": "alpha",
-			"channel": "alpha",
-			"prerelease": true
-		},
-		{
-			"name": "beta",
-			"channel": "beta",
-			"prerelease": true
-		},
-		{
 			"name": "next",
 			"channel": "next",
 			"prerelease": true
@@ -28,7 +18,7 @@
 		[
 			"@semantic-release/commit-analyzer",
 			{
-				"preset": "angular",
+				"preset": "conventionalcommits",
 				"releaseRules": [
 					{
 						"breaking": true,
@@ -43,10 +33,6 @@
 						"release": "minor"
 					},
 					{
-						"type": "chore",
-						"release": "patch"
-					},
-					{
 						"type": "fix",
 						"release": "patch"
 					},
@@ -55,72 +41,63 @@
 						"release": "patch"
 					},
 					{
+						"type": "refactor",
+						"release": "patch"
+					},
+					{
 						"type": "build",
 						"release": "patch"
 					},
 					{
 						"type": "docs",
-						"scope": "readme",
 						"release": "patch"
 					},
 					{
-						"type": "refactor",
-						"release": "patch"
-					},
-					{
-						"scope": "no-release",
+						"type": "chore",
 						"release": false
 					},
 					{
-						"scope": "example",
+						"type": "test",
 						"release": false
 					},
 					{
-						"scope": "website",
+						"type": "ci",
 						"release": false
 					},
 					{
-						"scope": "release",
-						"release": "patch"
+						"type": "style",
+						"release": false
 					}
-				]
+				],
+				"parserOpts": {
+					"noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+				}
 			}
 		],
 		[
 			"@semantic-release/release-notes-generator",
 			{
-				"preset": "conventionalCommits",
+				"preset": "conventionalcommits",
 				"presetConfig": {
 					"types": [
 						{
+							"type": "revert",
+							"section": "Reverts",
+							"hidden": false
+						},
+						{
 							"type": "feat",
-							"section": "Features"
+							"section": "Features",
+							"hidden": false
 						},
 						{
 							"type": "fix",
-							"section": "Bug Fixes"
+							"section": "Bug Fixes",
+							"hidden": false
 						},
 						{
 							"type": "perf",
-							"section": "Performance improvements"
-						},
-						{
-							"type": "revert",
-							"section": "Reverts"
-						},
-						{
-							"type": "docs",
-							"section": "Documentation",
-							"hidden": false
-						},
-						{
-							"type": "style",
-							"section": "Styles",
-							"hidden": false
-						},
-						{
-							"type": "chore",
-							"section": "Chores",
+							"section": "Performance improvements",
 							"hidden": false
 						},
 						{
@@ -129,21 +106,35 @@
 							"hidden": false
 						},
 						{
-							"type": "test",
-							"section": "Tests",
-							"hidden": false
-						},
-						{
 							"type": "build",
 							"section": "Build System",
 							"hidden": false
 						},
 						{
-							"type": "ci",
-							"section": "CI/CD",
+							"type": "docs",
+							"section": "Documentation",
 							"hidden": false
+						},
+						{
+							"type": "chore",
+							"hidden": true
+						},
+						{
+							"type": "test",
+							"hidden": true
+						},
+						{
+							"type": "ci",
+							"hidden": true
+						},
+						{
+							"type": "style",
+							"hidden": true
 						}
 					]
+				},
+				"parserOpts": {
+					"noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
 				}
 			}
 		],
