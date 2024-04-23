@@ -2,11 +2,15 @@ name: CI/CD
 
 on:
   push:
+    paths:
+      - "packages/**"
     branches:
       - main
       - next
       - 4.x
   pull_request:
+    paths:
+      - "packages/**"
     branches:
       - "*"
 
