@@ -32,13 +32,15 @@ npm i next-safe-action@next
 
 ## Playground
 
-You can find a basic working implementation of the library [here](apps/playground).
+You can find a basic working implementation of the library [here](https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground).
 
 ## Contributing
 
-If you want to contribute to next-safe-action, the best way is to fork this repository and [open a pull request](https://github.com/TheEdoRan/next-safe-action/pulls) when you're done implementing your feature.
+## Contributing
 
-If you found bugs or just want to ask a question, feel free to [open an issue](https://github.com/TheEdoRan/next-safe-action/issues).
+If you want to contribute to next-safe-action, please check out the [contributing guide](https://github.com/TheEdoRan/next-safe-action/tree/main/CONTRIBUTING.md).
+
+If you found bugs or just want to ask a question, feel free to open an issue or a discussion by following the [issue templates](https://github.com/TheEdoRan/next-safe-action/issues/new/choose).
 
 ## Contributors
 

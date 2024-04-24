@@ -36,9 +36,9 @@ You can find a basic working implementation of the library [here](apps/playgroun
 
 ## Contributing
 
-If you want to contribute to next-safe-action, the best way is to fork this repository and [open a pull request](https://github.com/TheEdoRan/next-safe-action/pulls) when you're done implementing your feature.
+If you want to contribute to next-safe-action, please check out the [contributing guide](CONTRIBUTING.md).
 
-If you found bugs or just want to ask a question, feel free to [open an issue](https://github.com/TheEdoRan/next-safe-action/issues).
+If you found bugs or just want to ask a question, feel free to open an issue or a discussion by following the [issue templates](https://github.com/TheEdoRan/next-safe-action/issues/new/choose).
 
 ## Contributors
 
