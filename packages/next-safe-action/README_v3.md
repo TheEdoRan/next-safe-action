@@ -5,13 +5,13 @@
 This is the documentation for version 3 of the library. If you want to check out the old 2.x.x documentation, [you can find it here](README_v2.md). If you want to check out documentation for version 4.x.x, [you can find it here](README.md).
 
 ## Features
+
 - ✅ Pretty simple
 - ✅ End to end type safety
 - ✅ Context based clients
 - ✅ Input validation
 - ✅ Direct or hook usage from client
 - ✅ Optimistic updates
-
 
 ## Requirements
 
@@ -36,9 +36,9 @@ In `next.config.js` (since Next.js 13.4.0):
 ```ts
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: true, // add this
-  },
+	experimental: {
+		serverActions: true, // add this
+	},
 };
 
 module.exports = nextConfig;
@@ -66,8 +66,8 @@ import { action } from "@/lib/safe-action";
 
 // This is used to validate input from client.
 const input = z.object({
-  username: z.string().min(3).max(10),
-  password: z.string().min(8).max(100),
+	username: z.string().min(3).max(10),
+	password: z.string().min(8).max(100),
 });
 
 // This is how a safe action is created.
@@ -78,27 +78,26 @@ const input = z.object({
 // called from the client.
 // In short, this is your backend code. It never runs on the client.
 export const loginUser = action(input, async ({ username, password }) => {
-    if (username === "johndoe") {
-      return {
-        failure: {
-          reason: "user_suspended",
-        },
-      };
-    }
+	if (username === "johndoe") {
+		return {
+			failure: {
+				reason: "user_suspended",
+			},
+		};
+	}
 
-    if (username === "user" && password === "password") {
-      return {
-        success: true,
-      };
-    }
+	if (username === "user" && password === "password") {
+		return {
+			success: true,
+		};
+	}
 
-    return {
-      failure: {
-        reason: "incorrect_credentials",
-      },
-    };
-  }
-);
+	return {
+		failure: {
+			reason: "incorrect_credentials",
+		},
+	};
+});
 ```
 
 `action` returns a new function (in this case `loginUser`). At this time, to make it actually work, we must pass the action to a Client Component as a prop, otherwise calling actions from hooks wouldn't work properly.
@@ -134,22 +133,23 @@ There are two ways to call safe actions from the client:
 import type { loginUser } from "./login-action";
 
 type Props = {
-  loginUser: typeof loginUser; // infer typings with `typeof`
-}
+	loginUser: typeof loginUser; // infer typings with `typeof`
+};
 
 export default function Login({ loginUser }: Props) {
-  return (
-    <button
-      onClick={async () => {
-        // Typesafe action called from client.
-        const res = await loginUser({ username: "user", password: "password" });
+	return (
+		<button
+			onClick={async () => {
+				// Typesafe action called from client.
+				const res = await loginUser({ username: "user", password: "password" });
 
-        // Res keys.
-        const { data, validationError, serverError } = res;
-      }}>
-      Log in
-    </button>
-  );
+				// Res keys.
+				const { data, validationError, serverError } = res;
+			}}
+		>
+			Log in
+		</button>
+	);
 }
 ```
 
@@ -161,9 +161,9 @@ On the client you get back a typesafe response object, with three optional keys:
 
 ```json
 {
-  "validationError": {
-    "fieldName": ["issue"],
-  }
+	"validationError": {
+		"fieldName": ["issue"]
+	}
 }
 ```
 
@@ -184,68 +184,64 @@ import { useAction } from "next-safe-action/hook";
 import { loginUser } from "./login-action";
 
 type Props = {
-  loginUser: typeof loginUser;
+	loginUser: typeof loginUser;
 };
 
 export default function Login({ loginUser }: Props) {
-  // Safe action (`loginUser`) and optional `onSuccess`, `onError` and `onExecute` callbacks
-  // passed to `useAction` hook.
-  const {
-    execute,
-    res,
-    isExecuting,
-    hasExecuted,
-    hasSucceded,
-    hasErrored,
-    reset,
-  } = useAction(loginUser, {
-      onSuccess: (data, reset, input) => {
-        // Data from server action.
-        const { failure, success } = data;
+	// Safe action (`loginUser`) and optional `onSuccess`, `onError` and `onExecute` callbacks
+	// passed to `useAction` hook.
+	const { execute, res, isExecuting, hasExecuted, hasSucceded, hasErrored, reset } = useAction(
+		loginUser,
+		{
+			onSuccess: (data, reset, input) => {
+				// Data from server action.
+				const { failure, success } = data;
 
-        // Reset response object.
-        reset();
+				// Reset response object.
+				reset();
 
-        // Data used to call `execute`.
-        const { username, password } = input;
-      },
-      onError: (error, reset, input) => {
-        // One of these errors.
-        const { fetchError, serverError, validationError } = error;
+				// Data used to call `execute`.
+				const { username, password } = input;
+			},
+			onError: (error, reset, input) => {
+				// One of these errors.
+				const { fetchError, serverError, validationError } = error;
 
-        // Reset response object.
-        reset();
+				// Reset response object.
+				reset();
 
-        // Data used to call `execute`.
-        const { username, password } = input;
-      },
-      onExecute: (input) => {
-        // Action input.
-        const { username, password } = input;
-      },
-    }
-  );
+				// Data used to call `execute`.
+				const { username, password } = input;
+			},
+			onExecute: (input) => {
+				// Action input.
+				const { username, password } = input;
+			},
+		}
+	);
 
-  return (
-    <>
-      <button
-        onClick={() => {
-          // Typesafe action called from client.
-          execute({ username: "user", password: "password" });
-        }}>
-        Log in
-      </button>
-      <button
-        onClick={() => {
-          // Reset response object programmatically.
-          reset();
-        }}>
-        Reset
-      </button>
-      <p>Is executing: {JSON.stringify(isExecuting)}</p>
-      <p>Res: {JSON.stringify(res)}</p>
-    </>
-  );
+	return (
+		<>
+			<button
+				onClick={() => {
+					// Typesafe action called from client.
+					execute({ username: "user", password: "password" });
+				}}
+			>
+				Log in
+			</button>
+			<button
+				onClick={() => {
+					// Reset response object programmatically.
+					reset();
+				}}
+			>
+				Reset
+			</button>
+			<p>Is executing: {JSON.stringify(isExecuting)}</p>
+			<p>Res: {JSON.stringify(res)}</p>
+		</>
+	);
 }
 ```
 
@@ -281,24 +277,23 @@ import { action } from "@/lib/safe-action";
 import { incrementLikes } from "./db";
 
 const input = z.object({
-  incrementBy: z.number(),
+	incrementBy: z.number(),
 });
 
 export const addLikes = action(input, async ({ incrementBy }) => {
-    // Add delay to simulate db call.
-    await new Promise((res) => setTimeout(res, 2000));
+	// Add delay to simulate db call.
+	await new Promise((res) => setTimeout(res, 2000));
 
-    const likesCount = incrementLikes(incrementBy);
+	const likesCount = incrementLikes(incrementBy);
 
-    // This Next.js function revalidates the provided path.
-    // More info here: https://nextjs.org/docs/app/api-reference/functions/revalidatePath
-    revalidatePath("/optimistic-hook");
+	// This Next.js function revalidates the provided path.
+	// More info here: https://nextjs.org/docs/app/api-reference/functions/revalidatePath
+	revalidatePath("/optimistic-hook");
 
-    return {
-      likesCount,
-    };
-  }
-);
+	return {
+		likesCount,
+	};
+});
 ```
 
 > **Note**
@@ -313,51 +308,41 @@ import { useOptimisticAction } from "next-safe-action/hook";
 import { addLikes } from "./addlikes-action";
 
 type Props = {
-  likesCount: number; // this is fetched initially from server
-  addLikes: typeof addLikes;
+	likesCount: number; // this is fetched initially from server
+	addLikes: typeof addLikes;
 };
 
 export default function AddLikes({ likesCount, addLikes }: Props) {
-  // Safe action (`addLikes`), initial data, and optional
-  // `onSuccess` and `onError` callbacks passed to `useOptimisticAction` hook.
-  const {
-    execute,
-    isExecuting,
-    res,
-    hasExecuted,
-    hasSucceded,
-    hasErrored,
-    reset,
-    optimisticData,
-  } = useOptimisticAction(
-    addLikes,
-    { likesCount }, // [1]
-    {
-      onSuccess: (data, reset, input) => {},
-      onError: (error, reset, input) => {},
-      onExecute: (input) => {},
-    }
-  );
+	// Safe action (`addLikes`), initial data, and optional
+	// `onSuccess` and `onError` callbacks passed to `useOptimisticAction` hook.
+	const { execute, isExecuting, res, hasExecuted, hasSucceded, hasErrored, reset, optimisticData } =
+		useOptimisticAction(
+			addLikes,
+			{ likesCount }, // [1]
+			{
+				onSuccess: (data, reset, input) => {},
+				onError: (error, reset, input) => {},
+				onExecute: (input) => {},
+			}
+		);
 
-  return (
-    <>
-      <button
-        onClick={() => {
-          const randomIncrement = Math.round(Math.random() * 100);
+	return (
+		<>
+			<button
+				onClick={() => {
+					const randomIncrement = Math.round(Math.random() * 100);
 
-          // Action call. Here we pass action input and expected (optimistic) data.
-          execute(
-            { incrementBy: randomIncrement },
-            { likesCount: likesCount + randomIncrement }
-          );
-        }}>
-        Add likes
-      </button>
-      <p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [2] */}
-      <p>Is executing: {JSON.stringify(isExecuting)}</p>
-      <p>Res: {JSON.stringify(res)}</p>
-    </>
-  );
+					// Action call. Here we pass action input and expected (optimistic) data.
+					execute({ incrementBy: randomIncrement }, { likesCount: likesCount + randomIncrement });
+				}}
+			>
+				Add likes
+			</button>
+			<p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [2] */}
+			<p>Is executing: {JSON.stringify(isExecuting)}</p>
+			<p>Res: {JSON.stringify(res)}</p>
+		</>
+	);
 }
 ```
 
@@ -371,7 +356,6 @@ It returns the same seven keys as the regular `useAction` hook, plus one additio
 
 A key feature of this library is the ability to define a context builder function when initializing a new action client. This object will then be passed as the second argument of the server action function.
 
-
 To build your context, first, when creating the safe action client, you have to provide an async function called `buildContext` as an option. You can return any object you want from here, and safely throw an error in this function's body. It will be caught, and the client will receive a `serverError` response.
 
 ```typescript
@@ -384,19 +368,19 @@ export const action = createSafeActionClient();
 
 // This is a safe action client with an auth context.
 export const authAction = createSafeActionClient({
-  // Here you can use functions such as `cookies()` or `headers()`
-  // from next/headers, or utilities like `getServerSession()` from NextAuth here.
-  buildContext: async () => {
-    const session = true;
+	// Here you can use functions such as `cookies()` or `headers()`
+	// from next/headers, or utilities like `getServerSession()` from NextAuth here.
+	buildContext: async () => {
+		const session = true;
 
-    if (!session) {
-      throw new Error("user is not authenticated!");
-    }
+		if (!session) {
+			throw new Error("user is not authenticated!");
+		}
 
-    return {
-      userId: "coolest_user_id",
-    };
-  },
+		return {
+			userId: "coolest_user_id",
+		};
+	},
 });
 ```
 
@@ -425,6 +409,7 @@ export const editUser = authAction(input, async (parsedInput, { userId /* [1] */
 As you just saw, you can provide a `buildContext` function to `createSafeActionClient` function.
 
 You **can** also provide:
+
 1. A custom logger function for server errors, that has the error object `e` as argument. By default, they'll be logged via `console.error` (on the server, obviously), but this is configurable.
 2. A Promise called `handleReturnedServerError`, that has the error object `e` as argument, and returns a response object with a `serverError` key. When this option is provided, the safe action client lets you handle returned server errors in a custom way. So, if an error occurs on the server, instead of returning back a default message to the client, the custom logic of this function will be used to build the response object. Though, the original server error will still be logged and/or passed to the `serverErrorLogFunction`, if provided.
 
@@ -434,23 +419,24 @@ You **can** also provide:
 import { createSafeActionClient } from "next-safe-action";
 
 export const action = createSafeActionClient({
-  // You can also provide an empty function here (if you don't want server error
-  // logging), or a Promise. Return type is `void`.
-  serverErrorLogFunction: (e) => {
-    console.error("CUSTOM ERROR LOG FUNCTION:", e);
-  },
-  // Default is undefined. If this Promise is not provided, the client will return
-  // a default server error response when an error occurs on the server.
-  handleReturnedServerError: async (e) => {
-    // Your custom error handling logic here.
-    // ...
+	// You can also provide an empty function here (if you don't want server error
+	// logging), or a Promise. Return type is `void`.
+	serverErrorLogFunction: (e) => {
+		console.error("CUSTOM ERROR LOG FUNCTION:", e);
+	},
+	// Default is undefined. If this Promise is not provided, the client will return
+	// a default server error response when an error occurs on the server.
+	handleReturnedServerError: async (e) => {
+		// Your custom error handling logic here.
+		// ...
 
-    return {
-      serverError: "Something went wrong",
-    }
-  }
+		return {
+			serverError: "Something went wrong",
+		};
+	},
 });
 ```
+
 ## Credits
 
 - [Zod](https://github.com/colinhacks/zod) - without Zod, this library wouldn't exist.

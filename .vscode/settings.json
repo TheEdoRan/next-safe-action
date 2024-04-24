@@ -1,5 +1,5 @@
 {
-	"eslint.validate": ["typescript"],
+	"eslint.validate": ["typescript", "typescriptreact"],
 	"editor.codeActionsOnSave": {
 		"source.organizeImports": "explicit",
 		"source.fixAll.eslint": "explicit"
