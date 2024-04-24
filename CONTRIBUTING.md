@@ -44,7 +44,7 @@ Before opening a pull request, please follow the general rule of **opening an is
 After forking, cloning the repository and optionally creating a new branch from the base one, you can install the dependencies using `pnpm` in the project root directory:
 
 ```sh
-pnpm install --frozen-lockfile
+pnpm install
 ```
 
 Then, you can run the `rebuild:lib` command to rebuild the library code, and then test it in the playground app:
@@ -61,7 +61,7 @@ If you updated user facing APIs of the library, you're **not required**, but **h
 Note that the [`website`](../website) project is not part of the monorepo packages, so you need to `cd` into it and then run this command to install its dependencies:
 
 ```sh
-pnpm run install --frozen-lockfile
+pnpm run install
 ```
 
 Then you can start the Docusaurus development server with:
