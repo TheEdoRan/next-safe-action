@@ -2,6 +2,7 @@ import type { Infer, Schema } from "@typeschema/main";
 import { validate } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
+import type {} from "zod";
 import type {
 	MiddlewareFn,
 	MiddlewareResult,
@@ -30,7 +31,7 @@ import type {
 
 class SafeActionClient<const ServerError, const Ctx = null, const Metadata = null> {
 	readonly #handleServerErrorLog: NonNullable<
-		SafeActionClientOpts<any, any>["handleServerErrorLog"]
+		SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]
 	>;
 	readonly #handleReturnedServerError: NonNullable<
 		SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]
@@ -39,9 +40,13 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	#middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[];
 
 	constructor(
-		opts: { middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[] } & Omit<
-			Required<SafeActionClientOpts<any, any>>,
-			"defineMetadataSchema"
+		opts: {
+			middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[];
+		} & Required<
+			Pick<
+				SafeActionClientOpts<ServerError, any>,
+				"handleReturnedServerError" | "handleServerErrorLog"
+			>
 		>
 	) {
 		this.#middlewareFns = opts.middlewareFns;

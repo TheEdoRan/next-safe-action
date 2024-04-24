@@ -4,13 +4,13 @@
 	"private": true,
 	"description": "next-safe-action monorepo",
 	"scripts": {
-		"prepare": "is-ci || husky install",
-		"example": "turbo run dev --filter=basic-example",
+		"prepare": "is-ci || husky",
+		"playground": "turbo run dev --filter=@apps/playground",
 		"lint": "turbo run lint",
 		"build": "turbo run build",
 		"lint:lib": "turbo run lint --filter=next-safe-action",
 		"build:lib": "turbo run build --filter=next-safe-action",
-		"rebuild:lib": "turbo run build --filter=next-safe-action --force && npm i",
+		"rebuild:lib": "turbo run build --filter=next-safe-action --force && pnpm install",
 		"deploy:lib": "turbo run deploy --filter=next-safe-action"
 	},
 	"author": "Edoardo Ranghieri",
@@ -18,10 +18,6 @@
 	"engines": {
 		"node": ">=18.17"
 	},
-	"workspaces": [
-		"packages/*",
-		"apps/*"
-	],
 	"config": {
 		"commitizen": {
 			"path": "./node_modules/cz-conventional-changelog"
@@ -31,11 +27,11 @@
 		"type": "git",
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
-	"packageManager": "npm@10.5.2",
 	"dependencies": {
 		"@commitlint/cli": "^19.3.0",
 		"@commitlint/config-conventional": "^19.2.2",
 		"@manypkg/cli": "^0.21.4",
+		"commitizen": "^4.3.0",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^9.0.11",
 		"is-ci": "^3.0.1",

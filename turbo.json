@@ -6,7 +6,9 @@
 			"outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
 		},
 		"lint": {},
-		"deploy": {},
+		"deploy": {
+			"dependsOn": ["build", "lint"]
+		},
 		"dev": {
 			"cache": false,
 			"persistent": true

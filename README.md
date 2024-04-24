@@ -44,7 +44,7 @@ Version 7.x.x of the library supports form actions and improves validation error
 
 ## Example
 
-You can find a basic working implementation of the library [here](packages/example-app).
+You can find a basic working implementation of the library [here](apps/playground).
 
 ## Contributing
 

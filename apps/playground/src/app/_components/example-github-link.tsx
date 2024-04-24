@@ -14,7 +14,7 @@ export function ExampleGithubLink({ className }: Props) {
 
 	return (
 		<a
-			href={`https://github.com/TheEdoRan/next-safe-action/tree/main/apps/basic-example/src/app/(examples)${pathname}`}
+			href={`https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)${pathname}`}
 			target="_blank"
 			rel="noopener noreferrer"
 			aria-label="Example link to GitHub"

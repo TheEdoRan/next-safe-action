@@ -9,17 +9,20 @@ The first way to execute Server Actions inside Client Components is by importing
 
 ```tsx
 export default function Login({ loginUser }: Props) {
-  return (
-    <button
-      onClick={async () => {
-        // Result is scoped to this function.
-        const result = await loginUser({ username: "johndoe", password: "123456" });
+	return (
+		<button
+			onClick={async () => {
+				// Result is scoped to this function.
+				const result = await loginUser({
+					username: "johndoe",
+					password: "123456",
+				});
 
-       // You can do something with it here.
-      }}>
-      Log in
-    </button>
-  );
+				// You can do something with it here.
+			}}>
+			Log in
+		</button>
+	);
 }
 ```
 
@@ -27,4 +30,4 @@ export default function Login({ loginUser }: Props) {
 
 Every action you execute returns an object with the same structure. This is described in the [action result object](/docs/usage/action-result-object) section.
 
-Explore a working example [here](https://github.com/TheEdoRan/next-safe-action/tree/main/packages/example-app/src/app/(examples)/direct).
+Explore a working example [here](<https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)/direct>).

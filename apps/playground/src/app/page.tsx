@@ -3,7 +3,7 @@ import { ExampleLink } from "./_components/example-link";
 export default function Home() {
 	return (
 		<main className="text-center">
-			<h1 className="text-4xl font-semibold">Examples</h1>
+			<h1 className="text-4xl font-semibold">Playground</h1>
 			<div className="mt-4 flex flex-col space-y-2">
 				<ExampleLink href="/direct">Direct call</ExampleLink>
 				<ExampleLink href="/with-context">With Context</ExampleLink>

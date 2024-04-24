@@ -54,6 +54,7 @@
 		"@eslint/js": "^9.0.0",
 		"@types/node": "^20.12.7",
 		"@types/react": "^18.2.79",
+		"@typeschema/core": "^0.13.2",
 		"@typeschema/zod": "^0.13.3",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
@@ -65,7 +66,8 @@
 		"semantic-release": "^23.0.8",
 		"tsup": "^8.0.2",
 		"typescript": "^5.4.5",
-		"typescript-eslint": "^7.7.0"
+		"typescript-eslint": "^7.7.0",
+		"zod": "^3.23.4"
 	},
 	"peerDependencies": {
 		"next": ">= 14.0.0",
