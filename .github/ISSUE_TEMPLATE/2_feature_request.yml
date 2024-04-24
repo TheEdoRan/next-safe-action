@@ -8,19 +8,19 @@ body:
     label: Are you using the latest version of this library?
     description: Please confirm that you are using the latest version of next-safe-action.
     options:
-    - label: I verified that the issue exists in the latest next-safe-action release
+    - label: I verified that the feature is not already implemented in the latest next-safe-action release
       required: true
 - type: checkboxes
   attributes:
     label: Is there an existing issue for this?
-    description: Please search to see if an issue already exists for the bug you encountered.
+    description: Please search to see if an issue already exists for the feature you are requesting to implement.
     options:
     - label: I have searched the existing issues and found nothing that matches
       required: true
 - type: textarea
   attributes:
     label: Suggest an idea
-    description: Is your feature request related to a problem? Do you have a suggestion for improving this library? Please describe it here.
+    description: Please describe in detail what you would like to see implemented in the library.
     placeholder: I'd like to see ... implemented because...
   validations:
     required: true

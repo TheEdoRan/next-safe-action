@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a question
+    url: https://github.com/TheEdoRan/next-safe-action/discussions/new?category=q-a
+    about: Do you want to ask something about next-safe-action? Open a new discussion to get help from the community.
