@@ -22,27 +22,15 @@ https://github.com/TheEdoRan/next-safe-action/assets/1337629/7ebc398e-6c7d-49b2-
 
 ## Documentation
 
-**Explore the documentation for the current library version on [next-safe-action website](https://next-safe-action.dev).** ✨
+**Explore the documentation for the next version of the library on the [next-safe-action website](https://next.next-safe-action.dev).** ✨
 
-## Next.js >= 14 vs 13
-
-Server Actions are now a stable feature in React. For this reason, there were some internal breaking changes to the API, and so a new version of the library is required to prevent backward compatibility issues.
-
-**You can continue to use `next-safe-action` version 4 for your Next.js 13 app.**
+## Installation
 
 ```bash
-npm i next-safe-action # for Next.js >= 14
+npm i next-safe-action@next
 ```
 
-```bash
-npm i next-safe-action@v4 # for Next.js 13
-```
-
-## Migration guide
-
-Version 7.x.x of the library supports form actions and improves validation errors handling. Please check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migrations/v6-to-v7) on the website for more information.
-
-## Example
+## Playground
 
 You can find a basic working implementation of the library [here](apps/playground).
 
