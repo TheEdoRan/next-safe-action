@@ -14,7 +14,7 @@
 		"deploy:lib": "turbo run deploy --filter=next-safe-action"
 	},
 	"author": "Edoardo Ranghieri",
-	"license": "MIT",
+	"license": "BSD-3-Clause",
 	"engines": {
 		"node": ">=18.17"
 	},

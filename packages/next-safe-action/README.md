@@ -21,3 +21,7 @@ npm i next-safe-action@v4 # for Next.js 13
 ## Migration guide
 
 Version 7.x.x of the library supports form actions and improves validation errors handling. Please check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migrations/v6-to-v7) on the website for more information.
+
+## License
+
+next-safe-action is released under the [BSD-3-Clause License](https://opensource.org/license/bsd-3-clause).
