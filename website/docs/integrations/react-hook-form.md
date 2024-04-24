@@ -10,7 +10,7 @@ next-safe-action works greatly in combo with [React Hook Form](https://react-hoo
 Here's a guide on how to work with the two libraries together.
 
 :::info
-These code snippets are from the [React Hook Form example](https://next-safe-action.vercel.app/react-hook-form) of the example application.
+These code snippets are from the [React Hook Form example](https://next-safe-action-playground.vercel.app/react-hook-form) of the playground app.
 :::
 
 ## 1. Define a validation schema
@@ -21,7 +21,7 @@ First of all, we need to define the validation schema. We'll use Zod in this cas
 import { z } from "zod";
 
 export const schema = z.object({
-  productId: z.string(),
+	productId: z.string(),
 });
 ```
 
@@ -36,13 +36,13 @@ import { actionClient } from "@/lib/safe-action";
 import { schema } from "./validation";
 
 export const buyProduct = actionClient
-  .schema(schema)
-  .action(async ({ parsedInput: { productId } }) => {
-  // We're just returning the productId passed to the action here.
-  return {
-    productId,
-  };
-});
+	.schema(schema)
+	.action(async ({ parsedInput: { productId } }) => {
+		// We're just returning the productId passed to the action here.
+		return {
+			productId,
+		};
+	});
 ```
 
 ## 3. Define the form

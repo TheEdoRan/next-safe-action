@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+
 import type { ValidationIssue } from "@typeschema/core";
 import type { Schema } from "@typeschema/main";
 import type {

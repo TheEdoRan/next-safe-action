@@ -32,12 +32,12 @@ export const action = createSafeActionClient({
 			actionName: z.string(),
 		});
 	},
-}).use(async ({ next, metadata, clientInput, bindArgsClientInputs }) => {
+}).use(async ({ next, metadata, clientInput, bindArgsClientInputs, ctx }) => {
 	// Here we use a logging middleware.
 	const start = Date.now();
 
 	// Here we await the next middleware.
-	const result = await next({ ctx: null });
+	const result = await next({ ctx });
 
 	const end = Date.now();
 

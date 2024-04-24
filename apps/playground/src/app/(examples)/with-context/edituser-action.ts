@@ -1,11 +1,11 @@
 "use server";
 
 import { authAction } from "@/lib/safe-action";
-import { maxLength, minLength, object, string } from "valibot";
+import { z } from "zod";
 
-const schema = object({
-	fullName: string([minLength(3, "Too short"), maxLength(20, "Too long")]),
-	age: string([minLength(2, "Too young"), maxLength(3, "Too old")]),
+const schema = z.object({
+	fullName: z.string().min(3).max(20),
+	age: z.string().min(2).max(3),
 });
 
 export const editUser = authAction

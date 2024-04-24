@@ -1,24 +1,22 @@
-module.exports = {
+// @ts-check
+const { defineConfig } = require("eslint-define-config");
+
+module.exports = defineConfig({
 	root: true,
+	extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended-type-checked", "prettier"],
+	plugins: ["@typescript-eslint", "react-hooks"],
 	parser: "@typescript-eslint/parser",
 	parserOptions: {
-		tsconfigRootDir: __dirname,
 		project: "./tsconfig.json",
-		ecmaVersion: "latest",
-		sourceType: "module",
+		tsconfigRootDir: __dirname,
 	},
-	plugins: ["@typescript-eslint", "react-hooks"],
-	extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+	ignorePatterns: ["**/*.js", "**/*.mjs", "**/*.cjs", "dist/**"],
 	rules: {
 		"@typescript-eslint/consistent-type-imports": "error",
+		"@typescript-eslint/consistent-type-exports": "error",
+		"@typescript-eslint/no-redundant-type-constituents": "off",
 		"@typescript-eslint/no-explicit-any": "off",
-		"@typescript-eslint/no-inferrable-types": "off",
-		"@typescript-eslint/no-non-null-assertion": "off",
-		"@typescript-eslint/no-floating-promises": "warn",
-		"@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/ban-types": "off",
-		"@typescript-eslint/no-this-alias": "off",
-		"no-mixed-spaces-and-tabs": "off",
 		"react-hooks/exhaustive-deps": "warn",
 	},
-};
+});

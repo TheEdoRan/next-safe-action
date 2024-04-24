@@ -2,6 +2,7 @@ import type { Infer, Schema } from "@typeschema/main";
 import { validate } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
+import type {} from "zod";
 import type {
 	MiddlewareFn,
 	MiddlewareResult,
@@ -30,18 +31,22 @@ import type {
 
 class SafeActionClient<const ServerError, const Ctx = null, const Metadata = null> {
 	readonly #handleServerErrorLog: NonNullable<
-		SafeActionClientOpts<any, any>["handleServerErrorLog"]
+		SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]
 	>;
 	readonly #handleReturnedServerError: NonNullable<
-		SafeActionClientOpts<any, any>["handleReturnedServerError"]
+		SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]
 	>;
 
 	#middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[];
 
 	constructor(
-		opts: { middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[] } & Omit<
-			Required<SafeActionClientOpts<any, any>>,
-			"defineMetadataSchema"
+		opts: {
+			middlewareFns: MiddlewareFn<ServerError, any, any, Metadata>[];
+		} & Required<
+			Pick<
+				SafeActionClientOpts<ServerError, any>,
+				"handleReturnedServerError" | "handleServerErrorLog"
+			>
 		>
 	) {
 		this.#middlewareFns = opts.middlewareFns;
@@ -223,7 +228,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 						await currentFn({
 							clientInput: clientInputs.at(-1), // pass raw client input
 							bindArgsClientInputs: args.bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
-							ctx: prevCtx,
+							ctx: prevCtx as unknown,
 							metadata: args.metadata as Metadata | null,
 							next: async ({ ctx }) => {
 								prevCtx = ctx;
@@ -303,7 +308,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 							(await args.serverCodeFn({
 								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
-								ctx: prevCtx,
+								ctx: prevCtx as Ctx,
 								metadata: args.metadata,
 							})) ?? null;
 
@@ -358,11 +363,11 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 			}
 
 			if (typeof middlewareResult.validationErrors !== "undefined") {
-				actionResult.validationErrors = middlewareResult.validationErrors;
+				actionResult.validationErrors = middlewareResult.validationErrors as FVE;
 			}
 
 			if (typeof middlewareResult.bindArgsValidationErrors !== "undefined") {
-				actionResult.bindArgsValidationErrors = middlewareResult.bindArgsValidationErrors;
+				actionResult.bindArgsValidationErrors = middlewareResult.bindArgsValidationErrors as FBAVE;
 			}
 
 			if (typeof middlewareResult.serverError !== "undefined") {
@@ -392,7 +397,7 @@ export const createSafeActionClient = <
 	const handleServerErrorLog =
 		createOpts?.handleServerErrorLog ||
 		((e) => {
-			console.error("Action error:", (e as Error).message);
+			console.error("Action error:", e.message);
 		});
 
 	// If `handleReturnedServerError` is provided, use it to handle server error

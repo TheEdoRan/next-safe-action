@@ -1,14 +1,15 @@
 # [next-safe-action](https://github.com/TheEdoRan/next-safe-action)
 
-> `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe actions on the server and call them from Client Components. 
+> `next-safe-action` is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using Zod, to let you define typesafe actions on the server and call them from Client Components.
 
 This is the documentation for version 2 of the library. If you want to check out the the 3.x.x documentation, [you can find it here](README_v3.md). If you want to check out documentation for version 4.x.x, [you can find it here](README.md).
 
 ## Features
+
 - ✅ Pretty simple
 - ✅ End to end type safety
 - ✅ Input validation
-- ✅ Direct or hook usage from client  
+- ✅ Direct or hook usage from client
 - ✅ Optimistic updates
 - ✅ Authenticated actions
 
@@ -35,9 +36,9 @@ In `next.config.js` (since Next.js 13.4.0):
 ```ts
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: true, // add this
-  },
+	experimental: {
+		serverActions: true, // add this
+	},
 };
 
 module.exports = nextConfig;
@@ -65,8 +66,8 @@ import { action } from "@/lib/safe-action";
 
 // This is used to validate input from client.
 const input = z.object({
-  username: z.string().min(3).max(10),
-  password: z.string().min(8).max(100),
+	username: z.string().min(3).max(10),
+	password: z.string().min(8).max(100),
 });
 
 // This is how a safe action is created.
@@ -77,27 +78,26 @@ const input = z.object({
 // called from the client.
 // In short, this is your backend code. It never runs on the client.
 export const loginUser = action({ input }, async ({ username, password }) => {
-    if (username === "johndoe") {
-      return {
-        failure: {
-          reason: "user_suspended",
-        },
-      };
-    }
+	if (username === "johndoe") {
+		return {
+			failure: {
+				reason: "user_suspended",
+			},
+		};
+	}
 
-    if (username === "user" && password === "password") {
-      return {
-        success: true,
-      };
-    }
+	if (username === "user" && password === "password") {
+		return {
+			success: true,
+		};
+	}
 
-    return {
-      failure: {
-        reason: "incorrect_credentials",
-      },
-    };
-  }
-);
+	return {
+		failure: {
+			reason: "incorrect_credentials",
+		},
+	};
+});
 ```
 
 `action` returns a new function (in this case `loginUser`). At this time, to make it actually work, we must pass the action to a Client Component as a prop, otherwise calling actions from hooks wouldn't work properly.
@@ -130,22 +130,23 @@ There are two ways to call safe actions from the client:
 import type { loginUser } from "./login-action";
 
 type Props = {
-  loginUser: typeof loginUser; // infer typings with `typeof`
-}
+	loginUser: typeof loginUser; // infer typings with `typeof`
+};
 
 export default function Login({ loginUser }: Props) {
-  return (
-    <button
-      onClick={async () => {
-        // Typesafe action called from client.
-        const res = await loginUser({ username: "user", password: "password" });
+	return (
+		<button
+			onClick={async () => {
+				// Typesafe action called from client.
+				const res = await loginUser({ username: "user", password: "password" });
 
-        // Res keys.
-        const { data, validationError, serverError } = res;
-      }}>
-      Log in
-    </button>
-  );
+				// Res keys.
+				const { data, validationError, serverError } = res;
+			}}
+		>
+			Log in
+		</button>
+	);
 }
 ```
 
@@ -157,9 +158,9 @@ On the client you get back a typesafe response object, with three optional keys:
 
 ```json
 {
-  "validationError": {
-    "fieldName": ["issue"],
-  }
+	"validationError": {
+		"fieldName": ["issue"]
+	}
 }
 ```
 
@@ -180,58 +181,54 @@ import { useAction } from "next-safe-action/hook";
 import { loginUser } from "./login-action";
 
 type Props = {
-  loginUser: typeof loginUser;
+	loginUser: typeof loginUser;
 };
 
 export default function Login({ loginUser }: Props) {
-  // Safe action (`loginUser`) and optional `onSuccess` and `onError` callbacks
-  // passed to `useAction` hook.
-  const {
-    execute,
-    res,
-    isExecuting,
-    hasExecuted,
-    hasSucceded,
-    hasErrored,
-    reset,
-  } = useAction(loginUser, {
-      onSuccess: (data, reset) => {
-        // Data from server action.
-        const { failure, success } = data;
+	// Safe action (`loginUser`) and optional `onSuccess` and `onError` callbacks
+	// passed to `useAction` hook.
+	const { execute, res, isExecuting, hasExecuted, hasSucceded, hasErrored, reset } = useAction(
+		loginUser,
+		{
+			onSuccess: (data, reset) => {
+				// Data from server action.
+				const { failure, success } = data;
 
-        // Reset response object.
-        reset();
-      },
-      onError: (error, reset) => {
-        // One of these errors.
-        const { fetchError, serverError, validationError } = error;
+				// Reset response object.
+				reset();
+			},
+			onError: (error, reset) => {
+				// One of these errors.
+				const { fetchError, serverError, validationError } = error;
 
-        // Reset response object.
-        reset();
-      },
-    }
-  );
+				// Reset response object.
+				reset();
+			},
+		}
+	);
 
-  return (
-    <>
-      <button
-        onClick={() => {
-          // Typesafe action called from client.
-          execute({ username: "user", password: "password" });
-        }}>
-        Log in
-      </button>
-      <button
-        onClick={() => {
-          // Reset response object programmatically.
-          reset();
-        }}>
-        Reset
-      </button>
-      <p>Is executing: {JSON.stringify(isExecuting)}</p>
-      <p>Res: {JSON.stringify(res)}</p>
-    </>
-  );
+	return (
+		<>
+			<button
+				onClick={() => {
+					// Typesafe action called from client.
+					execute({ username: "user", password: "password" });
+				}}
+			>
+				Log in
+			</button>
+			<button
+				onClick={() => {
+					// Reset response object programmatically.
+					reset();
+				}}
+			>
+				Reset
+			</button>
+			<p>Is executing: {JSON.stringify(isExecuting)}</p>
+			<p>Res: {JSON.stringify(res)}</p>
+		</>
+	);
 }
 ```
 
@@ -254,7 +251,6 @@ If you need optimistic UI in your Client Component, the lib also exports a hook 
 
 **Note: this React hook is not stable, use it at your own risk!**
 
-
 Here's how it works. First, define your server action as usual:
 
 ```ts
@@ -266,26 +262,23 @@ import { action } from "@/lib/safe-action";
 import { incrementLikes } from "./db";
 
 const inputValidator = z.object({
-  incrementBy: z.number(),
+	incrementBy: z.number(),
 });
 
-export const addLikes = action(
-  { input: inputValidator },
-  async ({ incrementBy }) => {
-    // Add delay to simulate db call.
-    await new Promise((res) => setTimeout(res, 2000));
+export const addLikes = action({ input: inputValidator }, async ({ incrementBy }) => {
+	// Add delay to simulate db call.
+	await new Promise((res) => setTimeout(res, 2000));
 
-    const likesCount = incrementLikes(incrementBy);
+	const likesCount = incrementLikes(incrementBy);
 
-    // This Next.js function revalidates the provided path.
-    // More info here: https://nextjs.org/docs/app/api-reference/functions/revalidatePath
-    revalidatePath("/optimistic-hook");
+	// This Next.js function revalidates the provided path.
+	// More info here: https://nextjs.org/docs/app/api-reference/functions/revalidatePath
+	revalidatePath("/optimistic-hook");
 
-    return {
-      likesCount,
-    };
-  }
-);
+	return {
+		likesCount,
+	};
+});
 ```
 
 Then, you need to pass the initial fetched data as prop (in this case `likesCount`) from Server Component to Client Component, and use the hook in it.
@@ -297,50 +290,40 @@ import { useOptimisticAction } from "next-safe-action/hook";
 import { addLikes } from "./addlikes-action";
 
 type Props = {
-  likesCount: number; // this is fetched initially from server
-  addLikes: typeof addLikes;
+	likesCount: number; // this is fetched initially from server
+	addLikes: typeof addLikes;
 };
 
 export default function AddLikes({ likesCount, addLikes }: Props) {
-  // Safe action (`addLikes`), initial data, and optional
-  // `onSuccess` and `onError` callbacks passed to `useOptimisticAction` hook.
-  const {
-    execute,
-    isExecuting,
-    res,
-    hasExecuted,
-    hasSucceded,
-    hasErrored,
-    reset,
-    optimisticData,
-  } = useOptimisticAction(
-    addLikes,
-    { likesCount }, // [1]
-    {
-      onSuccess: (data, reset) => {},
-      onError: (error, reset) => {},
-    }
-  );
+	// Safe action (`addLikes`), initial data, and optional
+	// `onSuccess` and `onError` callbacks passed to `useOptimisticAction` hook.
+	const { execute, isExecuting, res, hasExecuted, hasSucceded, hasErrored, reset, optimisticData } =
+		useOptimisticAction(
+			addLikes,
+			{ likesCount }, // [1]
+			{
+				onSuccess: (data, reset) => {},
+				onError: (error, reset) => {},
+			}
+		);
 
-  return (
-    <>
-      <button
-        onClick={() => {
-          const randomIncrement = Math.round(Math.random() * 100);
+	return (
+		<>
+			<button
+				onClick={() => {
+					const randomIncrement = Math.round(Math.random() * 100);
 
-          // Action call. Here we pass action input and expected (optimistic) data.
-          execute(
-            { incrementBy: randomIncrement },
-            { likesCount: likesCount + randomIncrement }
-          );
-        }}>
-        Add likes
-      </button>
-      <p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [2] */}
-      <p>Is executing: {JSON.stringify(isExecuting)}</p>
-      <p>Res: {JSON.stringify(res)}</p>
-    </>
-  );
+					// Action call. Here we pass action input and expected (optimistic) data.
+					execute({ incrementBy: randomIncrement }, { likesCount: likesCount + randomIncrement });
+				}}
+			>
+				Add likes
+			</button>
+			<p>Optimistic data: {JSON.stringify(optimisticData)}</p> {/* [2] */}
+			<p>Is executing: {JSON.stringify(isExecuting)}</p>
+			<p>Res: {JSON.stringify(res)}</p>
+		</>
+	);
 }
 ```
 
@@ -362,19 +345,19 @@ First, when creating the safe action client, you **must** provide an `async func
 import { createSafeActionClient } from "next-safe-action";
 
 export const action = createSafeActionClient({
-  // Here you can use functions such as `cookies()` or `headers()`
-  // from next/headers, or utilities like `getServerSession()` from NextAuth.
-  getAuthData: async () => {
-    const session = true;
+	// Here you can use functions such as `cookies()` or `headers()`
+	// from next/headers, or utilities like `getServerSession()` from NextAuth.
+	getAuthData: async () => {
+		const session = true;
 
-    if (!session) {
-      throw new Error("user is not authenticated!");
-    }
+		if (!session) {
+			throw new Error("user is not authenticated!");
+		}
 
-    return {
-      userId: "coolest_user_id",
-    };
-  },
+		return {
+			userId: "coolest_user_id",
+		};
+	},
 });
 ```
 
@@ -414,13 +397,14 @@ You can also provide a custom logger function for server errors. By default, the
 import { createSafeActionClient } from "next-safe-action";
 
 export const action = createSafeActionClient({
-  // You can also provide an empty function here (if you don't want server error
-  // logging), or a Promise. Return type is `void`.
-  serverErrorLogFunction: (e) => {
-    console.error("CUSTOM ERROR LOG FUNCTION:", e);
-  },
+	// You can also provide an empty function here (if you don't want server error
+	// logging), or a Promise. Return type is `void`.
+	serverErrorLogFunction: (e) => {
+		console.error("CUSTOM ERROR LOG FUNCTION:", e);
+	},
 });
 ```
+
 ## Credits
 
 - [Zod](https://github.com/colinhacks/zod) - without Zod, this library wouldn't exist.

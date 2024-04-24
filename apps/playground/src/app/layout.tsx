@@ -2,7 +2,7 @@ import GitHubLogo from "./github-logo";
 import "./globals.css";
 
 export const metadata = {
-	title: "Next Safe Action Example",
+	title: "Playground for next-safe-action",
 	description: "A basic implementation of next-safe-action library",
 };
 

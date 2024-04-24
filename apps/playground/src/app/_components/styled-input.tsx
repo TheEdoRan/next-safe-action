@@ -1,4 +1,4 @@
-import { ComponentProps, forwardRef } from "react";
+import { forwardRef, type ComponentProps } from "react";
 
 type Props = ComponentProps<"input">;
 

@@ -1,6 +1,6 @@
 import { Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 type Props = {
 	href: string;

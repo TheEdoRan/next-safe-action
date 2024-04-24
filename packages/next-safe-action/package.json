@@ -28,7 +28,7 @@
 		}
 	},
 	"scripts": {
-		"lint": "tsc && eslint --ext ts .",
+		"lint": "tsc && prettier --write . && eslint .",
 		"build": "tsup",
 		"deploy": "semantic-release"
 	},
@@ -46,24 +46,28 @@
 		"server actions"
 	],
 	"author": "Edoardo Ranghieri",
-	"license": "MIT",
+	"license": "BSD-3-Clause",
 	"engines": {
 		"node": ">=18.17"
 	},
 	"devDependencies": {
-		"@types/node": "^20.12.3",
-		"@types/react": "^18.2.74",
+		"@eslint/js": "^9.0.0",
+		"@types/node": "^20.12.7",
+		"@types/react": "^18.2.79",
+		"@typeschema/core": "^0.13.2",
 		"@typeschema/zod": "^0.13.3",
-		"@typescript-eslint/eslint-plugin": "^7.5.0",
-		"@typescript-eslint/parser": "^7.5.0",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
+		"eslint-define-config": "^2.1.0",
 		"eslint-plugin-react-hooks": "^4.6.0",
-		"next": "14.1.4",
+		"next": "14.2.2",
 		"prettier": "^3.2.5",
 		"react": "18.2.0",
+		"semantic-release": "^23.0.8",
 		"tsup": "^8.0.2",
-		"typescript": "^5.4.3"
+		"typescript": "^5.4.5",
+		"typescript-eslint": "^7.7.0",
+		"zod": "^3.23.4"
 	},
 	"peerDependencies": {
 		"next": ">= 14.0.0",
@@ -74,6 +78,6 @@
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"dependencies": {
-		"@typeschema/main": "^0.13.8"
+		"@typeschema/main": "^0.13.9"
 	}
 }
