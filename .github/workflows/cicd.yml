@@ -11,8 +11,6 @@ on:
   pull_request:
     paths:
       - "packages/**"
-    branches:
-      - "*"
 
 jobs:
   CI:
