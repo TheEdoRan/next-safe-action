@@ -36,9 +36,7 @@ You can find a basic working implementation of the library [here](https://github
 
 ## Contributing
 
-## Contributing
-
-If you want to contribute to next-safe-action, please check out the [contributing guide](https://github.com/TheEdoRan/next-safe-action/tree/main/CONTRIBUTING.md).
+If you want to contribute to next-safe-action, please check out the [contributing guide](https://github.com/TheEdoRan/next-safe-action/tree/next/CONTRIBUTING.md).
 
 If you found bugs or just want to ask a question, feel free to open an issue or a discussion by following the [issue templates](https://github.com/TheEdoRan/next-safe-action/issues/new/choose).
 
