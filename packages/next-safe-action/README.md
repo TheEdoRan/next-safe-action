@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/logo.png" alt="next-safe-action logo" width="36" height="36">
+  <img src="https://raw.githubusercontent.com/TheEdoRan/next-safe-action/main/assets/logo.png" alt="next-safe-action logo" width="36" height="36">
   <a href="https://github.com/TheEdoRan/next-safe-action"><h1>next-safe-action</h1></a>
 </div>
 
