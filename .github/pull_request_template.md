@@ -2,7 +2,7 @@
 
 Put your proposed changes here.
 
-## Related issue(s)
+## Related issue(s) or discussion(s)
 
 re #
 
