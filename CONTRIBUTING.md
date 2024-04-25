@@ -27,7 +27,7 @@ This is a monorepo, that uses:
 ### Repository structure
 
 - [`packages/next-safe-action`](../packages/next-safe-action): contains the source code of the library;
-- [`apps/playground`](../apps/playground): contains the source code of the Next.js playground app, which is a basic implementation of the library.
+- [`apps/playground`](../apps/playground): contains the source code of the Next.js playground app, which is a basic implementation of the library;
 - [`website`](../website): contains the source code of the [next-safe-action website](https://next-safe-action.dev).
 
 ## How to contribute
