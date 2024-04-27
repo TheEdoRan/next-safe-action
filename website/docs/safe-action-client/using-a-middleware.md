@@ -101,7 +101,7 @@ const schema = z.object({
   username: z.string(),
 })
 
-export const deleteUser = action(schema, async ({ username }, { userId }) => {
+export const deleteUser = authAction(schema, async ({ username }, { userId }) => {
     // Action server code here...
   },
   { middlewareData: { userRole: "admin" } } // type safe data
