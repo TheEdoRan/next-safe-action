@@ -5,7 +5,7 @@
 	"description": "next-safe-action monorepo",
 	"scripts": {
 		"prepare": "is-ci || husky",
-		"playground": "turbo run dev --filter=@apps/playground",
+		"pg": "turbo run dev --filter=@apps/playground",
 		"lint": "turbo run lint",
 		"build": "turbo run build",
 		"lint:lib": "turbo run lint --filter=next-safe-action",

@@ -50,7 +50,7 @@ pnpm install
 Then, you can run the `rebuild:lib` command to rebuild the library code, and then test it in the playground app:
 
 ```sh
-pnpm run rebuild:lib && pnpm run playground
+pnpm run rebuild:lib && pnpm run pg
 ```
 
 > [!TIP]
