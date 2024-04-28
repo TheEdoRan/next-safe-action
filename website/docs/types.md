@@ -125,7 +125,7 @@ Type of the returned object when input validation fails.
 ```typescript
 export type ValidationErrors<S extends Schema | undefined> = S extends Schema
 	? Infer<S> extends object
-		? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>>
+		? Prettify<ErrorList & SchemaErrors<Infer<S>>>
 		: ErrorList
 	: undefined;
 ```
@@ -288,14 +288,6 @@ Returns type or promise of type.
 export type MaybePromise<T> = Promise<T> | T;
 ```
 
-### `PrettyMerge`
-
-Merges an object without printing "&".
-
-```typescript
-type PrettyMerge<S> = S extends infer U ? { [K in keyof U]: U[K] } : never;
-```
-
 ### `InferArray`
 
 Infers output schema type in array of schemas.
@@ -333,7 +325,7 @@ Creates nested schema validation errors type using recursion. Used in [`Validati
 ```typescript
 type SchemaErrors<S> = {
 	[K in keyof S]?: S[K] extends object | null | undefined
-		? PrettyMerge<ErrorList & SchemaErrors<S[K]>>
+		? Prettify<ErrorList & SchemaErrors<S[K]>>
 		: ErrorList;
 } & {};
 ```
