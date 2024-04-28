@@ -121,8 +121,7 @@ export const useAction = <
 	callbacks?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] =
-		React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
 	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
@@ -196,15 +195,14 @@ export const useOptimisticAction = <
 	callbacks?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] =
-		React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
 	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
-	const [optimisticData, setOptimisticState] = React.useOptimistic<
-		Data,
-		S extends Schema ? InferIn<S> : undefined
-	>(initialOptimisticData, reducer);
+	const [optimisticData, setOptimisticState] = React.useOptimistic<Data, S extends Schema ? InferIn<S> : undefined>(
+		initialOptimisticData,
+		reducer
+	);
 
 	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result });
 

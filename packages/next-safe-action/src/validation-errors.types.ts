@@ -6,9 +6,7 @@ export type ErrorList = Prettify<{ _errors?: string[] }>;
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends object | null | undefined
-		? PrettyMerge<ErrorList & SchemaErrors<S[K]>>
-		: ErrorList;
+	[K in keyof S]?: S[K] extends object | null | undefined ? PrettyMerge<ErrorList & SchemaErrors<S[K]>> : ErrorList;
 } & {};
 
 /**

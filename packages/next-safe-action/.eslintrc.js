@@ -13,6 +13,7 @@ module.exports = defineConfig({
 	ignorePatterns: ["**/*.js", "**/*.mjs", "**/*.cjs", "dist/**"],
 	rules: {
 		"@typescript-eslint/consistent-type-imports": "error",
+		"@typescript-eslint/unbound-method": "off",
 		"@typescript-eslint/consistent-type-exports": "error",
 		"@typescript-eslint/no-redundant-type-constituents": "off",
 		"@typescript-eslint/no-explicit-any": "off",

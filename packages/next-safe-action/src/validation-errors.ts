@@ -10,9 +10,7 @@ import type {
 } from "./validation-errors.types";
 
 // This function is used internally to build the validation errors object from a list of validation issues.
-export const buildValidationErrors = <const S extends Schema | undefined>(
-	issues: ValidationIssue[]
-) => {
+export const buildValidationErrors = <const S extends Schema | undefined>(issues: ValidationIssue[]) => {
 	const ve: any = {};
 
 	for (const issue of issues) {
@@ -72,10 +70,7 @@ export class ServerValidationError<S extends Schema> extends Error {
  * @param validationErrors Validation errors object
  * @throws {ServerValidationError}
  */
-export function returnValidationErrors<S extends Schema>(
-	schema: S,
-	validationErrors: ValidationErrors<S>
-): never {
+export function returnValidationErrors<S extends Schema>(schema: S, validationErrors: ValidationErrors<S>): never {
 	throw new ServerValidationError<S>(validationErrors);
 }
 
@@ -87,17 +82,13 @@ export function returnValidationErrors<S extends Schema>(
  * @param {ValidationErrors} [validationErrors] Validation errors object
  * @returns {FlattenedValidationErrors} Flattened validation errors
  */
-export function flattenValidationErrors<const VE extends ValidationErrors<any>>(
-	validationErrors: VE
-) {
+export function flattenValidationErrors<const VE extends ValidationErrors<any>>(validationErrors: VE) {
 	const flattened: FlattenedValidationErrors<VE> = {
 		formErrors: [],
 		fieldErrors: {},
 	};
 
-	for (const [key, value] of Object.entries<string[] | { _errors: string[] }>(
-		validationErrors ?? {}
-	)) {
+	for (const [key, value] of Object.entries<string[] | { _errors: string[] }>(validationErrors ?? {})) {
 		if (key === "_errors" && Array.isArray(value)) {
 			flattened.formErrors = [...value];
 		} else {
@@ -118,10 +109,8 @@ export function flattenValidationErrors<const VE extends ValidationErrors<any>>(
  * @param {ValidationErrors[]} [bindArgsValidationErrors] Bind arguments validation errors object
  * @returns {FlattenedBindArgsValidationErrors} Flattened bind arguments validation errors
  */
-export function flattenBindArgsValidationErrors<
-	const BAVE extends readonly ValidationErrors<any>[],
->(bindArgsValidationErrors: BAVE) {
-	return bindArgsValidationErrors.map((ve) =>
-		flattenValidationErrors(ve)
-	) as FlattenedBindArgsValidationErrors<BAVE>;
+export function flattenBindArgsValidationErrors<const BAVE extends readonly ValidationErrors<any>[]>(
+	bindArgsValidationErrors: BAVE
+) {
+	return bindArgsValidationErrors.map((ve) => flattenValidationErrors(ve)) as FlattenedBindArgsValidationErrors<BAVE>;
 }
