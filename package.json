@@ -10,7 +10,6 @@
 		"build": "turbo run build",
 		"lint:lib": "turbo run lint --filter=next-safe-action",
 		"build:lib": "turbo run build --filter=next-safe-action",
-		"rebuild:lib": "turbo run build --filter=next-safe-action --force && pnpm install",
 		"deploy:lib": "turbo run deploy --filter=next-safe-action"
 	},
 	"author": "Edoardo Ranghieri",

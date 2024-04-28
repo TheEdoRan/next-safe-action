@@ -47,14 +47,14 @@ After forking, cloning the repository and optionally creating a new branch from 
 pnpm install
 ```
 
-Then, you can run the `rebuild:lib` command to rebuild the library code, and then test it in the playground app:
+Then, you can run the `build:lib` command to rebuild the library code, and then test it in the playground app:
 
 ```sh
-pnpm run rebuild:lib && pnpm run pg
+pnpm run build:lib && pnpm run pg
 ```
 
 > [!TIP]
-> If you see many type errors in the playground app after running the `rebuild:lib` command, try to restart the TS Server of VS Code. This should fix the errors.
+> If you see many type errors in the playground app after running the `build:lib` command, try to restart the TS Server of VS Code. This should fix the errors.
 
 If you updated user facing APIs of the library, you're **not required**, but **highly incouraged** to update [the documentation](../website/docs) of the library to reflect the changes you've made. This can be done in later stages of the PR too, for instance when a maintainer already approved your code updates.
 
