@@ -22,16 +22,16 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 const schema = zfd.formData({
-  email: zfd.text(z.string().email()),
-  password: zfd.text(z.string().min(8)),
+	email: zfd.text(z.string().email()),
+	password: zfd.text(z.string().min(8)),
 });
 
 export const signup = action
-  .schema(schema)
-  .action(async ({ email, password }) => {
-    console.log("Email:", email, "Password:", password);
-    // Do something useful here.
-  });
+	.schema(schema)
+	.action(async ({ email, password }) => {
+		console.log("Email:", email, "Password:", password);
+		// Do something useful here.
+	});
 ```
 
 2. Import it in a Server Component and use it as a Form Action.
@@ -40,13 +40,12 @@ export const signup = action
 import { signup } from "./signup-action";
 
 export default function SignUpPage() {
-  return (
-    <form action={signup}>
-      <input type="text" name="email" placeholder="name@example.com" />
-      <input type="password" name="password" placeholder="••••••••" />
-      <button type="submit">Signup</button>
-    </form>
-  );
+	return (
+		<form action={signup}>
+			<input type="text" name="email" placeholder="name@example.com" />
+			<input type="password" name="password" placeholder="••••••••" />
+			<button type="submit">Signup</button>
+		</form>
+	);
 }
 ```
-

@@ -10,10 +10,11 @@ This is the documentation for the current version of the library (7.x.x).
 :::
 
 :::info Requirements
+
 - Next.js >= 14.0.0
 - TypeScript >= 5.0.0
 - a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
-:::
+  :::
 
 **next-safe-action** provides a typesafe Server Actions implementation for Next.js App Router.
 
@@ -35,7 +36,7 @@ Find the adapter for your validation library of choice in the [TypeSchema docume
 
 ### 1. Instantiate a new client
 
- You can create a new client with the following code:
+You can create a new client with the following code:
 
 ```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
@@ -58,21 +59,21 @@ import { actionClient } from "@/lib/safe-action";
 
 // This schema is used to validate input from client.
 const schema = z.object({
-  username: z.string().min(3).max(10),
-  password: z.string().min(8).max(100),
+	username: z.string().min(3).max(10),
+	password: z.string().min(8).max(100),
 });
 
 export const loginUser = actionClient
-  .schema(schema)
-  .action(async ({ parsedInput: { username, password } }) => {
-    if (username === "johndoe" && password === "123456") {
-      return {
-        success: "Successfully logged in",
-      };
-    } 
-      
-    return { failure: "Incorrect credentials" };
-  });
+	.schema(schema)
+	.action(async ({ parsedInput: { username, password } }) => {
+		if (username === "johndoe" && password === "123456") {
+			return {
+				success: "Successfully logged in",
+			};
+		}
+
+		return { failure: "Incorrect credentials" };
+	});
 ```
 
 `action` returns a function that can be called from the client.
@@ -87,18 +88,26 @@ In this example, we're **directly** calling the Server Action from a Client Comp
 import { loginUser } from "./login-action";
 
 export default function Login() {
-  return (
-    <button
-      onClick={async () => {
-        // Typesafe action called from client.
-        const res = await loginUser({ username: "johndoe", password: "123456" });
+	return (
+		<button
+			onClick={async () => {
+				// Typesafe action called from client.
+				const res = await loginUser({
+					username: "johndoe",
+					password: "123456",
+				});
 
-        // Result keys.
-        const { data, validationErrors, bindArgsValidationErrors, serverError } = res;
-      }}>
-      Log in
-    </button>
-  );
+				// Result keys.
+				const {
+					data,
+					validationErrors,
+					bindArgsValidationErrors,
+					serverError,
+				} = res;
+			}}>
+			Log in
+		</button>
+	);
 }
 ```
 

@@ -18,28 +18,28 @@ import { actionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
 const schema = z.object({
-  username: z.string().min(3).max(30),
+	username: z.string().min(3).max(30),
 });
 
 export const onboardUser = actionClient
-  .schema(schema)
-  // We can pass a named tuple type here, to get named parameters in the final function.
-  .bindArgsSchemas<[userId: z.ZodString, age: z.ZodNumber]>([
-    z.string().uuid(),
-    z.number().min(18).max(150),
-  ])
-  .action(
-    async ({
-      parsedInput: { username },
-      bindArgsParsedInputs: [userId, age],
-    }) => {
-      await new Promise((res) => setTimeout(res, 1000));
+	.schema(schema)
+	// We can pass a named tuple type here, to get named parameters in the final function.
+	.bindArgsSchemas<[userId: z.ZodString, age: z.ZodNumber]>([
+		z.string().uuid(),
+		z.number().min(18).max(150),
+	])
+	.action(
+		async ({
+			parsedInput: { username },
+			bindArgsParsedInputs: [userId, age],
+		}) => {
+			await new Promise((res) => setTimeout(res, 1000));
 
-      return {
-        message: `Welcome on board, ${username}! (age = ${age}, user id = ${userId})`,
-      };
-    }
-  );
+			return {
+				message: `Welcome on board, ${username}! (age = ${age}, user id = ${userId})`,
+			};
+		}
+	);
 ```
 
 Then, we can use it like this inside a component:
@@ -51,11 +51,15 @@ import { useAction } from "next-safe-action/hooks";
 import { onboardUser } from "./onboard-action";
 
 export default function OnboardPage() {
-  // Here we bind `userId` and `age` to `onboardUser`.
-  // `boundOnboardUser` will have just `{ username: string }` as its argument, after this `bind` call.
-  const boundOnboardUser = onboardUser.bind(null, "d3a96f0f-e509-4f2f-b7d0-cdf50f0dc772", 30);
-  const { execute, result, status, reset } = useAction(boundOnboardUser);
+	// Here we bind `userId` and `age` to `onboardUser`.
+	// `boundOnboardUser` will have just `{ username: string }` as its argument, after this `bind` call.
+	const boundOnboardUser = onboardUser.bind(
+		null,
+		"d3a96f0f-e509-4f2f-b7d0-cdf50f0dc772",
+		30
+	);
+	const { execute, result, status, reset } = useAction(boundOnboardUser);
 
-  // ...
+	// ...
 }
 ```

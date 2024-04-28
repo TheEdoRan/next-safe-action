@@ -13,10 +13,10 @@ Here's a simple example, changing the default message for every error thrown on 
 
 ```typescript title=src/lib/safe-action.ts
 export const actionClient = createSafeActionClient({
-  // Can also be an async function.
-  handleReturnedServerError(e) {
-    return "Oh no, something went wrong!";
-  },
+	// Can also be an async function.
+	handleReturnedServerError(e) {
+		return "Oh no, something went wrong!";
+	},
 });
 ```
 
@@ -30,17 +30,17 @@ import { DEFAULT_SERVER_ERROR_MESSAGE } from "next-safe-action";
 class MyCustomError extends Error {}
 
 export const actionClient = createSafeActionClient({
-  // Can also be an async function.
-  handleReturnedServerError(e) {
-    // In this case, we can use the 'MyCustomError` class to unmask errors
-    // and return them with their actual messages to the client.
-    if (e instanceof MyCustomError) {
-      return e.message;
-    }
+	// Can also be an async function.
+	handleReturnedServerError(e) {
+		// In this case, we can use the 'MyCustomError` class to unmask errors
+		// and return them with their actual messages to the client.
+		if (e instanceof MyCustomError) {
+			return e.message;
+		}
 
-    // Every other error that occurs will be masked with the default message.
-    return DEFAULT_SERVER_ERROR_MESSAGE;
-  },
+		// Every other error that occurs will be masked with the default message.
+		return DEFAULT_SERVER_ERROR_MESSAGE;
+	},
 });
 ```
 
@@ -54,14 +54,14 @@ Here's a simple example, logging error to the console while also reporting it to
 
 ```typescript title=src/lib/safe-action.ts
 export const actionClient = createSafeActionClient({
-  // Can also be an async function.
-  handleServerErrorLog(e) {
-    // We can, for example, also send the error to a dedicated logging system.
-    reportToErrorHandlingSystem(e);
+	// Can also be an async function.
+	handleServerErrorLog(e) {
+		// We can, for example, also send the error to a dedicated logging system.
+		reportToErrorHandlingSystem(e);
 
-    // And also log it to the console.
-    console.error("Action error:", e.message);
-  }
+		// And also log it to the console.
+		console.error("Action error:", e.message);
+	},
 });
 ```
 
@@ -75,11 +75,11 @@ Here's an example defining a client with a metadata object containing `actionNam
 import { createSafeActionClient } from "next-safe-action";
 
 export const actionClient = createSafeActionClient({
-  defineMetadataSchema() {
-    return z.object({
-      actionName: z.string(),
-    });
-  },
+	defineMetadataSchema() {
+		return z.object({
+			actionName: z.string(),
+		});
+	},
 });
 ```
 

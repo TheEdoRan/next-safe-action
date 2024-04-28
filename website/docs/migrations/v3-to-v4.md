@@ -25,7 +25,7 @@ You can continue to use version 3 of the library if you want to. There are no se
 
 - `res` object is now called `result`.
 - Action status before was reported through returned `hasExecuted`, `isExecuting`, `hasSucceeded` and `hasErrored` properties. Now there's a single property of type string called `status` that contains the current action status, and it can be `"idle"`, `"executing"`, `"hasSucceeded"` or `"hasErrored"`.
-- Reorganized callbacks arguments for `onSuccess` and `onError`: 
+- Reorganized callbacks arguments for `onSuccess` and `onError`:
   - from `onSuccess(data, reset, input)` to `onSuccess(data, input, reset)`
   - from `onError(error, reset, input)` to `onError(error, input, reset)`
 - `useOptimisticAction` just required a safe action and an initial optimistic state before. Now it requires a `reducer` function too, that determines the behavior of the optimistic state update when the `execute` function is called. Also, now only one input argument is required by `execute`, instead of two. The same input passed to the actual safe action is now passed to the `reducer` function too, as the second argument (`input`). More information about this hook can be found [here](/docs/usage/client-components/hooks/useoptimisticaction).

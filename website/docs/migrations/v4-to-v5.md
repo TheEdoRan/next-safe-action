@@ -6,7 +6,7 @@ sidebar_label: v4 to v5
 
 # Migration from v4 to v5
 
-Version 5.x.x of `next-safe-action` is required for Next.js >= 14 applications. 
+Version 5.x.x of `next-safe-action` is required for Next.js >= 14 applications.
 
 :::note
 You can continue to use version 4 of the library, compatible with Next.js 13: `npm i next-safe-action@4`

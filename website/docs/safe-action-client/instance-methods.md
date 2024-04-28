@@ -54,7 +54,12 @@ When the action is executed, all middleware functions in the chain will be calle
 ### `serverCodeFn`
 
 ```typescript
-serverCodeFn<S, BAS, Data, Ctx, MD> = (args: { parsedInput: Infer<S>, bindArgsParsedInputs: InferArray<BAS>, ctx: Ctx, metadata: MD }) => Promise<Data>;
+serverCodeFn<S, BAS, Data, Ctx, MD> = (args: {
+	parsedInput: Infer<S>;
+	bindArgsParsedInputs: InferArray<BAS>;
+	ctx: Ctx;
+	metadata: MD;
+}) => Promise<Data>;
 ```
 
 `serverCodeFn` is the async function that will be executed on the **server side** when the action is invoked. If input validation fails, or execution gets halted in a middleware function, the server code function will not be called.
