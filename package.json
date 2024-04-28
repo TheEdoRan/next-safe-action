@@ -9,7 +9,7 @@
 		"lint": "turbo run lint",
 		"build": "turbo run build",
 		"lint:lib": "turbo run lint --filter=next-safe-action",
-		"build:lib": "turbo run build --filter=next-safe-action",
+		"build:lib": "turbo run build --filter=next-safe-action --force",
 		"deploy:lib": "turbo run deploy --filter=next-safe-action"
 	},
 	"author": "Edoardo Ranghieri",
