@@ -50,7 +50,7 @@ export type SafeStateActionFn<
 > = (
 	...clientInputs: [
 		...bindArgsInputs: InferInArray<BAS>,
-		prevState: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>,
+		prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>,
 		input: S extends Schema ? InferIn<S> : void,
 	]
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
@@ -118,5 +118,5 @@ export type StateServerCodeFn<
 		ctx: Ctx;
 		metadata: MD;
 	},
-	utils: { prevState: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> }
+	utils: { prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>> }
 ) => Promise<Data>;

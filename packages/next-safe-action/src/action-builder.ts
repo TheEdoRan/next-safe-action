@@ -65,13 +65,13 @@ export function actionBuilder<
 					let prevCtx: unknown = null;
 					let frameworkError: Error | undefined = undefined;
 					const middlewareResult: MiddlewareResult<ServerError, unknown> = { success: false };
-					type PrevState = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> | undefined;
-					let prevState: PrevState | undefined = undefined;
+					type PrevResult = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> | undefined;
+					let prevResult: PrevResult | undefined = undefined;
 
 					if (withState) {
 						// Previous state is placed between bind args and main arg inputs, so it's always at the index of
 						// the bind args schemas + 1. Get it and remove it from the client inputs array.
-						prevState = clientInputs.splice(bindArgsSchemas.length, 1)[0] as PrevState;
+						prevResult = clientInputs.splice(bindArgsSchemas.length, 1)[0] as PrevResult;
 					}
 
 					// If the number of bind args schemas + 1 (which is the optional main arg schema) is greater
@@ -177,7 +177,7 @@ export function actionBuilder<
 								};
 
 								if (withState) {
-									scfArgs[1] = { prevState: structuredClone(prevState!) };
+									scfArgs[1] = { prevResult: structuredClone(prevResult!) };
 								}
 
 								const data = (await serverCodeFn(...scfArgs)) ?? null;
