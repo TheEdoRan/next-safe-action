@@ -58,7 +58,7 @@ export type HookSafeActionFn<
 	FBAVE,
 	Data,
 > = (
-	clientInput: S extends Schema ? InferIn<S> : undefined
+	input: S extends Schema ? InferIn<S> : undefined
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
 /**

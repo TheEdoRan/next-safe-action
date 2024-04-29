@@ -20,7 +20,7 @@ export type SafeActionResult<
 	BAS extends readonly Schema[],
 	FVE = ValidationErrors<S>,
 	FBAVE = BindArgsValidationErrors<BAS>,
-	Data = null,
+	Data = unknown,
 	// eslint-disable-next-line
 	NextCtx = unknown,
 > = {
@@ -34,7 +34,7 @@ export type SafeActionResult<
  * Type of the function called from components with typesafe input data.
  */
 export type SafeActionFn<ServerError, S extends Schema | undefined, BAS extends readonly Schema[], FVE, FBAVE, Data> = (
-	...clientInputs: [...bindArgsClientInputs: InferInArray<BAS>, clientInput: S extends Schema ? InferIn<S> : void]
+	...clientInputs: [...bindArgsInputs: InferInArray<BAS>, input: S extends Schema ? InferIn<S> : void]
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
 /**
@@ -49,9 +49,9 @@ export type SafeStateActionFn<
 	Data,
 > = (
 	...clientInputs: [
-		...bindArgClientInputs: InferInArray<BAS>,
-		prevState: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>, // prevState
-		clientInput: S extends Schema ? InferIn<S> : void,
+		...bindArgsInputs: InferInArray<BAS>,
+		prevState: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>,
+		input: S extends Schema ? InferIn<S> : void,
 	]
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
@@ -92,17 +92,7 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Schema[], Data, Ctx, MD> = (args: {
-	parsedInput: S extends Schema ? Infer<S> : undefined;
-	bindArgsParsedInputs: InferArray<BAS>;
-	ctx: Ctx;
-	metadata: MD;
-}) => Promise<Data>;
-
-/**
- * Type of the function that executes server code when defining a new state safe action.
- */
-export type StateServerCodeFn<
+export type ServerCodeFn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
@@ -111,10 +101,18 @@ export type StateServerCodeFn<
 	Data,
 	Ctx,
 	MD,
-> = (args: {
-	parsedInput: S extends Schema ? Infer<S> : undefined;
-	bindArgsParsedInputs: InferArray<BAS>;
-	ctx: Ctx;
-	metadata: MD;
-	prevState: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>;
-}) => Promise<Data>;
+	WithState extends boolean,
+> = (
+	args: Prettify<
+		{
+			parsedInput: S extends Schema ? Infer<S> : undefined;
+			bindArgsParsedInputs: InferArray<BAS>;
+			ctx: Ctx;
+			metadata: MD;
+		} & (WithState extends true
+			? {
+					prevState: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+				}
+			: {})
+	>
+) => Promise<Data>;

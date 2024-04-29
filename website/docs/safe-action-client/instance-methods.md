@@ -44,7 +44,7 @@ bindArgsSchemas<const BAS extends Schema[], const FBAVE = BindArgsValidationErro
 ## `action`
 
 ```typescript
-action<const Data = null>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>) => SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>
+action<const Data = unknown>(serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>) => SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>
 ```
 
 `action` is the final method in the list. It accepts a [`serverCodeFn`](#servercodefn) of type [`ServerCodeFn`](/docs/types#servercodefn) and returns a new safe action function of type [`SafeActionFn`](/docs/types#safeactionfn), which can be called from your components. When an action doesn't need input arguments, you can directly use this method without passing a schema to [`schema`](#schema) method.

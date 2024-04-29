@@ -33,7 +33,7 @@ export type SafeActionResult<
 	BAS extends readonly Schema[],
 	FVE = ValidationErrors<S>,
 	FBAVE = BindArgsValidationErrors<BAS>,
-	Data = null,
+	Data = unknown,
 	NextCtx = unknown,
 > = {
 	data?: Data;

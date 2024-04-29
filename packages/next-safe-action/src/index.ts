@@ -6,7 +6,6 @@ export type {
 	SafeActionResult,
 	SafeStateActionFn,
 	ServerCodeFn,
-	StateServerCodeFn,
 } from "./index.types";
 
 export { createSafeActionClient } from "./safe-action-client";

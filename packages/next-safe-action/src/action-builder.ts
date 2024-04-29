@@ -11,7 +11,6 @@ import type {
 	SafeActionResult,
 	SafeStateActionFn,
 	ServerCodeFn,
-	StateServerCodeFn,
 } from "./index.types";
 import type { InferArray } from "./utils";
 import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
@@ -46,20 +45,18 @@ export function actionBuilder<
 
 	function buildAction({ withState }: { withState: false }): {
 		action: <const Data = unknown>(
-			serverCodeFn: ServerCodeFn<S, BAS, Data, Ctx, MD>
+			serverCodeFn: ServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD, false>
 		) => SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
 		action: <const Data = unknown>(
-			serverCodeFn: StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD>
+			serverCodeFn: ServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD, true>
 		) => SafeStateActionFn<ServerError, S, BAS, FVE, FBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
 		return {
 			action: <const Data = unknown>(
-				serverCodeFn:
-					| ServerCodeFn<S, BAS, Data, Ctx, MD>
-					| StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD>
+				serverCodeFn: ServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD, true>
 			) => {
 				return async (...clientInputs: unknown[]) => {
 					let prevCtx: any = null;
@@ -166,7 +163,7 @@ export function actionBuilder<
 									return;
 								}
 
-								const scfArgs: Parameters<ServerCodeFn<S, BAS, Data, Ctx, MD>>[0] = {
+								const scfArgs: Parameters<ServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD, false>>[0] = {
 									parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 									ctx: prevCtx as Ctx,
@@ -174,9 +171,7 @@ export function actionBuilder<
 								};
 
 								if (withState) {
-									(
-										scfArgs as Parameters<StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD>>[0]
-									).prevState = structuredClone(prevState!);
+									(scfArgs as typeof scfArgs & { prevState: PrevState }).prevState = structuredClone(prevState!);
 								}
 
 								// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
