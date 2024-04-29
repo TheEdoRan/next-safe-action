@@ -24,7 +24,7 @@ export type SafeActionResult<
 	// eslint-disable-next-line
 	NextCtx = unknown,
 > = {
-	data?: Data;
+	data?: Data extends void ? null : Data; // if function has no return, default to null
 	serverError?: ServerError;
 	validationErrors?: FVE;
 	bindArgsValidationErrors?: FBAVE;
@@ -63,8 +63,8 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 	ServerError,
 	any,
 	any,
-	any,
-	any,
+	unknown,
+	unknown,
 	unknown,
 	NextCtx
 > & {
@@ -92,27 +92,31 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<
+export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Schema[], Ctx, MD, Data = null> = (args: {
+	parsedInput: S extends Schema ? Infer<S> : undefined;
+	bindArgsParsedInputs: InferArray<BAS>;
+	ctx: Ctx;
+	metadata: MD;
+}) => Promise<Data>;
+
+/**
+ * Type of the function that executes server code when defining a new stateful safe action.
+ */
+export type StateServerCodeFn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	FVE,
 	FBAVE,
-	Data,
 	Ctx,
 	MD,
-	WithState extends boolean,
+	Data = null,
 > = (
-	args: Prettify<
-		{
-			parsedInput: S extends Schema ? Infer<S> : undefined;
-			bindArgsParsedInputs: InferArray<BAS>;
-			ctx: Ctx;
-			metadata: MD;
-		} & (WithState extends true
-			? {
-					prevState: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
-				}
-			: {})
-	>
+	args: {
+		parsedInput: S extends Schema ? Infer<S> : undefined;
+		bindArgsParsedInputs: InferArray<BAS>;
+		ctx: Ctx;
+		metadata: MD;
+	},
+	utils: { prevState: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> }
 ) => Promise<Data>;

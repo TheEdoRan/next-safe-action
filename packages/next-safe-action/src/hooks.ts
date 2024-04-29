@@ -24,7 +24,7 @@ const getActionStatus = <
 	const BAS extends readonly Schema[],
 	const FVE,
 	const FBAVE,
-	const Data,
+	Data,
 >({
 	isExecuting,
 	result,
@@ -54,7 +54,7 @@ const useActionCallbacks = <
 	const BAS extends readonly Schema[],
 	const FVE,
 	const FBAVE,
-	const Data,
+	Data,
 >({
 	result,
 	input,
@@ -115,7 +115,7 @@ export const useAction = <
 	const BAS extends readonly Schema[],
 	const FVE,
 	const FBAVE,
-	const Data,
+	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
 	callbacks?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
@@ -187,7 +187,7 @@ export const useOptimisticAction = <
 	const BAS extends readonly Schema[],
 	const FVE,
 	const FBAVE,
-	const Data,
+	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
 	initialOptimisticData: Data,

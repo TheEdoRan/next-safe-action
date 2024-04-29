@@ -11,6 +11,7 @@ import type {
 	SafeActionResult,
 	SafeStateActionFn,
 	ServerCodeFn,
+	StateServerCodeFn,
 } from "./index.types";
 import type { InferArray } from "./utils";
 import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
@@ -44,24 +45,26 @@ export function actionBuilder<
 	const bindArgsSchemas = (args.bindArgsSchemas ?? []) as BAS;
 
 	function buildAction({ withState }: { withState: false }): {
-		action: <const Data = unknown>(
-			serverCodeFn: ServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD, false>
+		action: <Data = null>(
+			serverCodeFn: ServerCodeFn<S, BAS, Ctx, MD, Data>
 		) => SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
-		action: <const Data = unknown>(
-			serverCodeFn: ServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD, true>
+		action: <Data = null>(
+			serverCodeFn: StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>
 		) => SafeStateActionFn<ServerError, S, BAS, FVE, FBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
 		return {
-			action: <const Data = unknown>(
-				serverCodeFn: ServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD, true>
+			action: <Data = null>(
+				serverCodeFn:
+					| ServerCodeFn<S, BAS, Ctx, MD, Data>
+					| StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
-					let prevCtx: any = null;
+					let prevCtx: unknown = null;
 					let frameworkError: Error | undefined = undefined;
-					const middlewareResult: MiddlewareResult<ServerError, any> = { success: false };
+					const middlewareResult: MiddlewareResult<ServerError, unknown> = { success: false };
 					type PrevState = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> | undefined;
 					let prevState: PrevState | undefined = undefined;
 
@@ -90,7 +93,7 @@ export function actionBuilder<
 								await currentFn({
 									clientInput: clientInputs.at(-1), // pass raw client input
 									bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
-									ctx: prevCtx as unknown,
+									ctx: prevCtx,
 									metadata: args.metadata,
 									next: async ({ ctx }) => {
 										prevCtx = ctx;
@@ -163,7 +166,10 @@ export function actionBuilder<
 									return;
 								}
 
-								const scfArgs: Parameters<ServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Data, Ctx, MD, false>>[0] = {
+								// @ts-expect-error
+								const scfArgs: Parameters<StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>> = [];
+
+								scfArgs[0] = {
 									parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 									ctx: prevCtx as Ctx,
@@ -171,11 +177,10 @@ export function actionBuilder<
 								};
 
 								if (withState) {
-									(scfArgs as typeof scfArgs & { prevState: PrevState }).prevState = structuredClone(prevState!);
+									scfArgs[1] = { prevState: structuredClone(prevState!) };
 								}
 
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-								const data = (await serverCodeFn(scfArgs as any)) ?? null;
+								const data = (await serverCodeFn(...scfArgs)) ?? null;
 
 								middlewareResult.success = true;
 								middlewareResult.data = data;
@@ -220,7 +225,7 @@ export function actionBuilder<
 					const actionResult: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> = {};
 
 					if (typeof middlewareResult.data !== "undefined") {
-						actionResult.data = middlewareResult.data as Data;
+						actionResult.data = middlewareResult.data as Data extends void ? null : Data;
 					}
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {

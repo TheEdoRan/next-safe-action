@@ -1,7 +1,7 @@
 import type { Infer, Schema } from "@typeschema/main";
 import type {} from "zod";
 import { actionBuilder } from "./action-builder";
-import type { MiddlewareFn, SafeActionClientOpts, ServerCodeFn } from "./index.types";
+import type { MiddlewareFn, SafeActionClientOpts, ServerCodeFn, StateServerCodeFn } from "./index.types";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 import type {
 	BindArgsValidationErrors,
@@ -112,9 +112,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	}
 
 	// directly calling the action method without schema, bindArgsSchemas and metadata
-	action<const Data>(
-		serverCodeFn: ServerCodeFn<ServerError, undefined, [], undefined, undefined, Data, Ctx, null, false>
-	) {
+	action<Data = null>(serverCodeFn: ServerCodeFn<undefined, [], Ctx, null, Data>) {
 		return actionBuilder({
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
@@ -124,8 +122,8 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 		}).action(serverCodeFn);
 	}
 	// directly calling the state action method without schema, bindArgsSchemas and metadata
-	stateAction<const Data>(
-		serverCodeFn: ServerCodeFn<ServerError, undefined, [], undefined, undefined, Data, Ctx, null, true>
+	stateAction<Data = null>(
+		serverCodeFn: StateServerCodeFn<ServerError, undefined, [], undefined, undefined, Ctx, null, Data>
 	) {
 		return actionBuilder({
 			handleReturnedServerError: this.#handleReturnedServerError,
