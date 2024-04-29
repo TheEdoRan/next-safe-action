@@ -24,13 +24,13 @@ import type {
 } from "./validation-errors.types";
 
 export function actionBuilder<
-	const ServerError,
-	const S extends Schema | undefined = undefined,
+	ServerError,
+	S extends Schema | undefined = undefined,
 	const BAS extends readonly Schema[] = [],
-	const FVE = undefined,
-	const FBAVE = undefined,
-	const MD = null,
-	const Ctx = null,
+	FVE = undefined,
+	FBAVE = undefined,
+	MD = null,
+	Ctx = null,
 >(args: {
 	schema?: S;
 	bindArgsSchemas?: BAS;

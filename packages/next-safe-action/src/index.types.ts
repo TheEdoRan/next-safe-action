@@ -84,7 +84,7 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 		ctx: Ctx;
 		metadata: MD | null;
 		next: {
-			<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
+			<NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
 		};
 	}): Promise<MiddlewareResult<ServerError, NextCtx>>;
 };

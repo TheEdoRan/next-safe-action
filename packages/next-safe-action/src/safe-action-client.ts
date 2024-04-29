@@ -10,7 +10,7 @@ import type {
 	ValidationErrors,
 } from "./validation-errors.types";
 
-class SafeActionClient<const ServerError, const Ctx = null, const Metadata = null> {
+class SafeActionClient<ServerError, Ctx = null, Metadata = null> {
 	readonly #handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
 	readonly #handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
 
@@ -32,7 +32,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	 * @param middlewareFn Middleware function
 	 * @returns SafeActionClient
 	 */
-	use<const NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadata>) {
+	use<NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadata>) {
 		return new SafeActionClient<ServerError, NextCtx, Metadata>({
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
@@ -42,7 +42,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 
 	metadata(data: Metadata) {
 		return {
-			schema: <const S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>>(
+			schema: <S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>>(
 				schema?: S,
 				utils?: {
 					formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
@@ -65,7 +65,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 		};
 	}
 
-	schema<const S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>>(
+	schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>>(
 		schema?: S,
 		utils?: {
 			formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
@@ -80,13 +80,13 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	}
 
 	// internal method that extends `schema` with metadata
-	#schema<const S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>, const MD = null>(args: {
+	#schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>, MD = null>(args: {
 		schema?: S;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 		metadata: MD;
 	}) {
 		return {
-			bindArgsSchemas: <const BAS extends readonly Schema[], const FBAVE = BindArgsValidationErrors<BAS>>(
+			bindArgsSchemas: <const BAS extends readonly Schema[], FBAVE = BindArgsValidationErrors<BAS>>(
 				bindArgsSchemas: BAS,
 				bindArgsUtils?: {
 					formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
@@ -134,13 +134,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 		}).stateAction(serverCodeFn);
 	}
 
-	#bindArgsSchemas<
-		const S extends Schema | undefined,
-		const BAS extends readonly Schema[],
-		const FVE,
-		const FBAVE,
-		const MD = null,
-	>(args: {
+	#bindArgsSchemas<S extends Schema | undefined, const BAS extends readonly Schema[], FVE, FBAVE, MD = null>(args: {
 		mainSchema?: S;
 		bindArgsSchemas: BAS;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
@@ -161,10 +155,7 @@ class SafeActionClient<const ServerError, const Ctx = null, const Metadata = nul
 	}
 }
 
-export const createSafeActionClient = <
-	const ServerError = string,
-	const MetadataSchema extends Schema | undefined = undefined,
->(
+export const createSafeActionClient = <ServerError = string, MetadataSchema extends Schema | undefined = undefined>(
 	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema>
 ) => {
 	// If server log function is not provided, default to `console.error` for logging

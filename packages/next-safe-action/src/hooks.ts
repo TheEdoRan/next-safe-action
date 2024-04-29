@@ -19,11 +19,11 @@ const DEFAULT_RESULT = {
 } satisfies HookResult<any, any, any, any, any, any>;
 
 const getActionStatus = <
-	const ServerError,
-	const S extends Schema | undefined,
+	ServerError,
+	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	const FVE,
-	const FBAVE,
+	FVE,
+	FBAVE,
 	Data,
 >({
 	isExecuting,
@@ -49,11 +49,11 @@ const getActionStatus = <
 };
 
 const useActionCallbacks = <
-	const ServerError,
-	const S extends Schema | undefined,
+	ServerError,
+	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	const FVE,
-	const FBAVE,
+	FVE,
+	FBAVE,
 	Data,
 >({
 	result,
@@ -110,11 +110,11 @@ const useActionCallbacks = <
  * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useaction See an example}
  */
 export const useAction = <
-	const ServerError,
-	const S extends Schema | undefined,
+	ServerError,
+	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	const FVE,
-	const FBAVE,
+	FVE,
+	FBAVE,
 	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
@@ -182,11 +182,11 @@ export const useAction = <
  * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useoptimisticaction See an example}
  */
 export const useOptimisticAction = <
-	const ServerError,
-	const S extends Schema | undefined,
+	ServerError,
+	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	const FVE,
-	const FBAVE,
+	FVE,
+	FBAVE,
 	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
