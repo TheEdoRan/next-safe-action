@@ -2,7 +2,7 @@ import type { Infer, Schema } from "@typeschema/main";
 import type { Prettify } from "./utils";
 
 // Object with an optional list of validation errors.
-export type VEList = Prettify<{ _errors?: string[] }>;
+type VEList = Prettify<{ _errors?: string[] }>;
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {

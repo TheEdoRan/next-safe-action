@@ -5,7 +5,6 @@ import type { Schema } from "@typeschema/main";
 import type {
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,
-	VEList,
 	ValidationErrors,
 } from "./validation-errors.types";
 
@@ -40,14 +39,12 @@ export const buildValidationErrors = <const S extends Schema | undefined>(issues
 		const key = path[path.length - 1]!;
 
 		// Set error for the current path. If `_errors` array exists, add the message to it.
-		ref[key] = (
-			ref[key]?._errors
-				? {
-						...structuredClone(ref[key]),
-						_errors: [...ref[key]._errors, message],
-					}
-				: { ...structuredClone(ref[key]), _errors: [message] }
-		) satisfies VEList;
+		ref[key] = ref[key]?._errors
+			? {
+					...structuredClone(ref[key]),
+					_errors: [...ref[key]._errors, message],
+				}
+			: { ...structuredClone(ref[key]), _errors: [message] };
 	}
 
 	return ve as ValidationErrors<S>;
