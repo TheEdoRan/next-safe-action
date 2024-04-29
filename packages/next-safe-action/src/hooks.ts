@@ -7,6 +7,7 @@ import * as React from "react";
 import {} from "react/experimental";
 import type {} from "zod";
 import type { HookActionStatus, HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
+import type { SafeActionResult } from "./index.types";
 import { isError } from "./utils";
 
 // UTILS
@@ -118,7 +119,7 @@ export const useAction = <
 	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
-	callbacks?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
+	utils?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
@@ -159,7 +160,7 @@ export const useAction = <
 		input: input as S extends Schema ? InferIn<S> : undefined,
 		status,
 		reset,
-		cb: callbacks,
+		cb: utils,
 	});
 
 	return {
@@ -188,21 +189,23 @@ export const useOptimisticAction = <
 	FVE,
 	FBAVE,
 	Data,
+	Result = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
-	initialOptimisticData: Data,
-	reducer: (state: Data, input: S extends Schema ? InferIn<S> : undefined) => Data,
-	callbacks?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
+	utils: {
+		initResult: Result;
+		updateFn: (prevResult: Result, input: S extends Schema ? InferIn<S> : undefined) => Result;
+	} & HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
 	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 
-	const [optimisticData, setOptimisticState] = React.useOptimistic<Data, S extends Schema ? InferIn<S> : undefined>(
-		initialOptimisticData,
-		reducer
-	);
+	const [optimisticResult, setOptimisticResult] = React.useOptimistic<
+		Result,
+		S extends Schema ? InferIn<S> : undefined
+	>(utils.initResult, utils.updateFn);
 
 	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result });
 
@@ -212,7 +215,7 @@ export const useOptimisticAction = <
 			setIsExecuting(true);
 
 			return startTransition(() => {
-				setOptimisticState(input as S extends Schema ? InferIn<S> : undefined);
+				setOptimisticResult(input as S extends Schema ? InferIn<S> : undefined);
 				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? DEFAULT_RESULT))
 					.catch((e) => {
@@ -227,7 +230,7 @@ export const useOptimisticAction = <
 					});
 			});
 		},
-		[setOptimisticState, safeActionFn]
+		[setOptimisticResult, safeActionFn]
 	);
 
 	const reset = React.useCallback(() => {
@@ -239,13 +242,18 @@ export const useOptimisticAction = <
 		input: input as S extends Schema ? InferIn<S> : undefined,
 		status,
 		reset,
-		cb: callbacks,
+		cb: {
+			onExecute: utils.onExecute,
+			onSuccess: utils.onSuccess,
+			onError: utils.onError,
+			onSettled: utils.onSettled,
+		},
 	});
 
 	return {
 		execute,
 		result,
-		optimisticData,
+		optimisticResult,
 		reset,
 		status,
 	};

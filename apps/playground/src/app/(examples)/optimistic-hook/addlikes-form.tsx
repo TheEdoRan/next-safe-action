@@ -12,37 +12,36 @@ type Props = {
 
 const AddLikesForm = ({ likesCount }: Props) => {
 	// Here we pass safe action (`addLikes`) and current server state to `useAction` hook.
-	const { execute, result, status, reset, optimisticData } =
-		useOptimisticAction(
-			addLikes,
-			{ likesCount },
-			({ likesCount }, { incrementBy }) => ({
-				likesCount: likesCount + incrementBy,
+	const { execute, result, status, reset, optimisticResult } =
+		useOptimisticAction(addLikes, {
+			initResult: { data: { likesCount } },
+			updateFn: ({ data: prevData }, { incrementBy }) => ({
+				data: {
+					likesCount: prevData.likesCount + incrementBy,
+				},
 			}),
-			{
-				onSuccess({ data, input, reset }) {
-					console.log("HELLO FROM ONSUCCESS", data, input);
+			onSuccess({ data, input, reset }) {
+				console.log("HELLO FROM ONSUCCESS", data, input);
 
-					// You can reset result object by calling `reset`.
-					// reset();
-				},
-				onError({ error, input, reset }) {
-					console.log("OH NO FROM ONERROR", error, input);
+				// You can reset result object by calling `reset`.
+				// reset();
+			},
+			onError({ error, input, reset }) {
+				console.log("OH NO FROM ONERROR", error, input);
 
-					// You can reset result object by calling `reset`.
-					// reset();
-				},
-				onSettled({ result, input, reset }) {
-					console.log("HELLO FROM ONSETTLED", result, input);
+				// You can reset result object by calling `reset`.
+				// reset();
+			},
+			onSettled({ result, input, reset }) {
+				console.log("HELLO FROM ONSETTLED", result, input);
 
-					// You can reset result object by calling `reset`.
-					// reset();
-				},
-				onExecute({ input }) {
-					console.log("HELLO FROM ONEXECUTE", input);
-				},
-			}
-		);
+				// You can reset result object by calling `reset`.
+				// reset();
+			},
+			onExecute({ input }) {
+				console.log("HELLO FROM ONEXECUTE", input);
+			},
+		});
 
 	console.log("status:", status);
 
@@ -75,7 +74,7 @@ const AddLikesForm = ({ likesCount }: Props) => {
 				</StyledButton>
 			</form>
 			<ResultBox
-				result={optimisticData}
+				result={optimisticResult}
 				status={status}
 				customTitle="Optimistic data:"
 			/>
