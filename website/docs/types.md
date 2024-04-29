@@ -125,8 +125,8 @@ Type of the returned object when input validation fails.
 ```typescript
 export type ValidationErrors<S extends Schema | undefined> = S extends Schema
 	? Infer<S> extends object
-		? Prettify<ErrorList & SchemaErrors<Infer<S>>>
-		: ErrorList
+		? Prettify<VEList & SchemaErrors<Infer<S>>>
+		: VEList
 	: undefined;
 ```
 
@@ -310,12 +310,12 @@ export type InferInArray<BAS extends readonly Schema[]> = {
 
 ## Internal validation errors types
 
-### `ErrorList`
+### `VEList`
 
 Object with an optional list of validation errors. Used in [`ValidationErrors`](#validationerrors) type.
 
 ```typescript
-export type ErrorList = Prettify<{ _errors?: string[] }>;
+export type VEList = Prettify<{ _errors?: string[] }>;
 ```
 
 ### `SchemaErrors`
@@ -325,8 +325,8 @@ Creates nested schema validation errors type using recursion. Used in [`Validati
 ```typescript
 type SchemaErrors<S> = {
 	[K in keyof S]?: S[K] extends object | null | undefined
-		? Prettify<ErrorList & SchemaErrors<S[K]>>
-		: ErrorList;
+		? Prettify<VEList & SchemaErrors<S[K]>>
+		: VEList;
 } & {};
 ```
 

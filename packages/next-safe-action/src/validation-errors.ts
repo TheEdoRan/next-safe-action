@@ -3,9 +3,9 @@
 import type { ValidationIssue } from "@typeschema/core";
 import type { Schema } from "@typeschema/main";
 import type {
-	ErrorList,
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,
+	VEList,
 	ValidationErrors,
 } from "./validation-errors.types";
 
@@ -47,7 +47,7 @@ export const buildValidationErrors = <const S extends Schema | undefined>(issues
 						_errors: [...ref[key]._errors, message],
 					}
 				: { ...structuredClone(ref[key]), _errors: [message] }
-		) satisfies ErrorList;
+		) satisfies VEList;
 	}
 
 	return ve as ValidationErrors<S>;
