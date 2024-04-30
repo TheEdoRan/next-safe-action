@@ -29,20 +29,14 @@ export type HookCallbacks<
 	Data,
 > = {
 	onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
-	onSuccess?: (args: {
-		data: Data;
-		input: S extends Schema ? InferIn<S> : undefined;
-		reset: () => void;
-	}) => MaybePromise<void>;
+	onSuccess?: (args: { data: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
 	onError?: (args: {
 		error: Omit<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>, "data">;
 		input: S extends Schema ? InferIn<S> : undefined;
-		reset: () => void;
 	}) => MaybePromise<void>;
 	onSettled?: (args: {
 		result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
 		input: S extends Schema ? InferIn<S> : undefined;
-		reset: () => void;
 	}) => MaybePromise<void>;
 };
 
@@ -58,6 +52,22 @@ export type HookSafeActionFn<
 	FBAVE,
 	Data,
 > = (
+	input: S extends Schema ? InferIn<S> : undefined
+) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+
+/**
+ * Type of the stateful safe action function passed to hooks. Same as `SafeStateActionFn` except it accepts
+ * just a single input, without bind arguments.
+ */
+export type HookStateSafeActionFn<
+	ServerError,
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	FVE,
+	FBAVE,
+	Data,
+> = (
+	prevResult: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>,
 	input: S extends Schema ? InferIn<S> : undefined
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
