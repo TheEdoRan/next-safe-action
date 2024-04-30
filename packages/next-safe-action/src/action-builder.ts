@@ -45,18 +45,18 @@ export function actionBuilder<
 	const bindArgsSchemas = (args.bindArgsSchemas ?? []) as BAS;
 
 	function buildAction({ withState }: { withState: false }): {
-		action: <Data = null>(
+		action: <Data>(
 			serverCodeFn: ServerCodeFn<S, BAS, Ctx, MD, Data>
 		) => SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
-		action: <Data = null>(
+		action: <Data>(
 			serverCodeFn: StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>
 		) => SafeStateActionFn<ServerError, S, BAS, FVE, FBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
 		return {
-			action: <Data = null>(
+			action: <Data>(
 				serverCodeFn:
 					| ServerCodeFn<S, BAS, Ctx, MD, Data>
 					| StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>
@@ -180,7 +180,7 @@ export function actionBuilder<
 									scfArgs[1] = { prevResult: structuredClone(prevResult!) };
 								}
 
-								const data = (await serverCodeFn(...scfArgs)) ?? null;
+								const data = await serverCodeFn(...scfArgs);
 
 								middlewareResult.success = true;
 								middlewareResult.data = data;
@@ -199,9 +199,7 @@ export function actionBuilder<
 							// If error is ServerValidationError, return validationErrors as if schema validation would fail.
 							if (e instanceof ServerValidationError) {
 								const ve = e.validationErrors as ValidationErrors<S>;
-
 								middlewareResult.validationErrors = await Promise.resolve(args.formatValidationErrors?.(ve) ?? ve);
-
 								return;
 							}
 
@@ -225,7 +223,7 @@ export function actionBuilder<
 					const actionResult: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> = {};
 
 					if (typeof middlewareResult.data !== "undefined") {
-						actionResult.data = middlewareResult.data as Data extends void ? null : Data;
+						actionResult.data = middlewareResult.data as Data;
 					}
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {

@@ -24,7 +24,7 @@ export type SafeActionResult<
 	// eslint-disable-next-line
 	NextCtx = unknown,
 > = {
-	data?: Data extends void ? null : Data; // if function has no return, default to null
+	data?: Data;
 	serverError?: ServerError;
 	validationErrors?: FVE;
 	bindArgsValidationErrors?: FBAVE;
@@ -92,7 +92,7 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Schema[], Ctx, MD, Data = null> = (args: {
+export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Schema[], Ctx, MD, Data> = (args: {
 	parsedInput: S extends Schema ? Infer<S> : undefined;
 	bindArgsParsedInputs: InferArray<BAS>;
 	ctx: Ctx;
@@ -110,7 +110,7 @@ export type StateServerCodeFn<
 	FBAVE,
 	Ctx,
 	MD,
-	Data = null,
+	Data,
 > = (
 	args: {
 		parsedInput: S extends Schema ? Infer<S> : undefined;

@@ -112,7 +112,7 @@ class SafeActionClient<ServerError, Ctx = null, Metadata = null> {
 	}
 
 	// directly calling the action method without schema, bindArgsSchemas and metadata
-	action<Data = null>(serverCodeFn: ServerCodeFn<undefined, [], Ctx, null, Data>) {
+	action<Data>(serverCodeFn: ServerCodeFn<undefined, [], Ctx, null, Data>) {
 		return actionBuilder({
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
@@ -122,7 +122,7 @@ class SafeActionClient<ServerError, Ctx = null, Metadata = null> {
 		}).action(serverCodeFn);
 	}
 	// directly calling the state action method without schema, bindArgsSchemas and metadata
-	stateAction<Data = null>(
+	stateAction<Data>(
 		serverCodeFn: StateServerCodeFn<ServerError, undefined, [], undefined, undefined, Ctx, null, Data>
 	) {
 		return actionBuilder({
