@@ -29,8 +29,8 @@ export function actionBuilder<
 	const BAS extends readonly Schema[] = [],
 	FVE = undefined,
 	FBAVE = undefined,
-	MD = null,
-	Ctx = null,
+	MD = undefined,
+	Ctx = undefined,
 >(args: {
 	schema?: S;
 	bindArgsSchemas?: BAS;
@@ -62,7 +62,7 @@ export function actionBuilder<
 					| StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
-					let prevCtx: unknown = null;
+					let prevCtx: unknown = undefined;
 					let frameworkError: Error | undefined = undefined;
 					const middlewareResult: MiddlewareResult<ServerError, unknown> = { success: false };
 					type PrevResult = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> | undefined;

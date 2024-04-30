@@ -82,7 +82,7 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 		clientInput: unknown;
 		bindArgsClientInputs: unknown[];
 		ctx: Ctx;
-		metadata: MD | null;
+		metadata: MD | undefined;
 		next: {
 			<NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
 		};

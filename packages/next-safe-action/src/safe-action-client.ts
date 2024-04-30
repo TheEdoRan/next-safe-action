@@ -10,12 +10,12 @@ import type {
 	ValidationErrors,
 } from "./validation-errors.types";
 
-class SafeActionClient<ServerError, Ctx = null, Metadata = null> {
+class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	readonly #handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
 	readonly #handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
 
 	#middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
-	#ctxType = null as Ctx;
+	#ctxType = undefined as Ctx;
 
 	constructor(
 		opts: {
@@ -72,15 +72,15 @@ class SafeActionClient<ServerError, Ctx = null, Metadata = null> {
 		}
 	) {
 		// schema with no metadata
-		return this.#schema<S, FVE, null>({
+		return this.#schema<S, FVE, undefined>({
 			schema,
 			formatValidationErrors: utils?.formatValidationErrors,
-			metadata: null,
+			metadata: undefined,
 		});
 	}
 
 	// internal method that extends `schema` with metadata
-	#schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>, MD = null>(args: {
+	#schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>, MD = undefined>(args: {
 		schema?: S;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
 		metadata: MD;
@@ -112,29 +112,35 @@ class SafeActionClient<ServerError, Ctx = null, Metadata = null> {
 	}
 
 	// directly calling the action method without schema, bindArgsSchemas and metadata
-	action<Data>(serverCodeFn: ServerCodeFn<undefined, [], Ctx, null, Data>) {
+	action<Data>(serverCodeFn: ServerCodeFn<undefined, [], Ctx, undefined, Data>) {
 		return actionBuilder({
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: this.#middlewareFns,
-			metadata: null,
+			metadata: undefined,
 			ctxType: this.#ctxType,
 		}).action(serverCodeFn);
 	}
 	// directly calling the state action method without schema, bindArgsSchemas and metadata
 	stateAction<Data>(
-		serverCodeFn: StateServerCodeFn<ServerError, undefined, [], undefined, undefined, Ctx, null, Data>
+		serverCodeFn: StateServerCodeFn<ServerError, undefined, [], undefined, undefined, Ctx, undefined, Data>
 	) {
 		return actionBuilder({
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: this.#middlewareFns,
-			metadata: null,
+			metadata: undefined,
 			ctxType: this.#ctxType,
 		}).stateAction(serverCodeFn);
 	}
 
-	#bindArgsSchemas<S extends Schema | undefined, const BAS extends readonly Schema[], FVE, FBAVE, MD = null>(args: {
+	#bindArgsSchemas<
+		S extends Schema | undefined,
+		const BAS extends readonly Schema[],
+		FVE,
+		FBAVE,
+		MD = undefined,
+	>(args: {
 		mainSchema?: S;
 		bindArgsSchemas: BAS;
 		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
@@ -174,8 +180,12 @@ export const createSafeActionClient = <ServerError = string, MetadataSchema exte
 		SafeActionClientOpts<ServerError, MetadataSchema>["handleReturnedServerError"]
 	>;
 
-	return new SafeActionClient<ServerError, null, MetadataSchema extends Schema ? Infer<MetadataSchema> : null>({
-		middlewareFns: [async ({ next }) => next({ ctx: null })],
+	return new SafeActionClient<
+		ServerError,
+		undefined,
+		MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined
+	>({
+		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
 		handleServerErrorLog,
 		handleReturnedServerError,
 	});
