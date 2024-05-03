@@ -59,21 +59,21 @@ import { actionClient } from "@/lib/safe-action";
 
 // This schema is used to validate input from client.
 const schema = z.object({
-	username: z.string().min(3).max(10),
-	password: z.string().min(8).max(100),
+  username: z.string().min(3).max(10),
+  password: z.string().min(8).max(100),
 });
 
 export const loginUser = actionClient
-	.schema(schema)
-	.action(async ({ parsedInput: { username, password } }) => {
-		if (username === "johndoe" && password === "123456") {
-			return {
-				success: "Successfully logged in",
-			};
-		}
+  .schema(schema)
+  .action(async ({ parsedInput: { username, password } }) => {
+    if (username === "johndoe" && password === "123456") {
+      return {
+        success: "Successfully logged in",
+      };
+    }
 
-		return { failure: "Incorrect credentials" };
-	});
+    return { failure: "Incorrect credentials" };
+  });
 ```
 
 `action` returns a function that can be called from the client.
@@ -88,27 +88,27 @@ In this example, we're **directly** calling the Server Action from a Client Comp
 import { loginUser } from "./login-action";
 
 export default function Login() {
-	return (
-		<button
-			onClick={async () => {
-				// Typesafe action called from client.
-				const res = await loginUser({
-					username: "johndoe",
-					password: "123456",
-				});
+  return (
+    <button
+      onClick={async () => {
+        // Typesafe action called from client.
+        const res = await loginUser({
+          username: "johndoe",
+          password: "123456",
+        });
 
-				// Result keys.
-				const {
-					data,
-					validationErrors,
-					bindArgsValidationErrors,
-					serverError,
-				} = res;
-			}}>
-			Log in
-		</button>
-	);
+        // Result keys.
+        const {
+          data,
+          validationErrors,
+          bindArgsValidationErrors,
+          serverError,
+        } = res;
+      }}>
+      Log in
+    </button>
+  );
 }
 ```
 
-You also can execute Server Actions with hooks, which are a more powerful way to handle mutations. For more information about these, check out the [`useAction`](/docs/usage/client-components/hooks/useaction) and [`useOptimisticAction`](/docs/usage/client-components/hooks/useoptimisticaction) hooks sections.
+You also can execute Server Actions with hooks, which are a more powerful way to handle mutations. For more information about these, check out the [`useAction`](/docs/usage/hooks/useaction), [`useOptimisticAction`](/docs/usage/hooks/useoptimisticaction) and [`useStateAction`](/docs/usage/hooks/useStateAction) hooks sections.

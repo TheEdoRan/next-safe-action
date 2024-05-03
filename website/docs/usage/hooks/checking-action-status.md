@@ -1,11 +1,11 @@
 ---
 sidebar_position: 4
-description: Learn how to check the current action status.
+description: Learn how to check the current action status when using hooks.
 ---
 
 # Checking action status
 
-There are two ways to get the current action status:
+There are two ways to get the current action status when using hooks:
 
 1. Directly via the `status` property returned by `useAction` and `useOptimisticAction` hooks.
 2. Using utility functions imported from `next-safe-action/status`.

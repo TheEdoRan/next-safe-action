@@ -9,10 +9,10 @@ Hook callbacks are a way to perform custom logic based on the current action exe
 
 ```tsx
 const action = useAction(testAction, {
-	onExecute: ({ input }) => {},
-	onSuccess: ({ data, input, reset }) => {},
-	onError: ({ error, input, reset }) => {},
-	onSettled: ({ result, input, reset }) => {},
+  onExecute: ({ input }) => {},
+  onSuccess: ({ data, input, reset }) => {},
+  onError: ({ error, input, reset }) => {},
+  onSettled: ({ result, input, reset }) => {},
 });
 ```
 

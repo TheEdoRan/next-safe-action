@@ -21,7 +21,7 @@ First of all, we need to define the validation schema. We'll use Zod in this cas
 import { z } from "zod";
 
 export const schema = z.object({
-	productId: z.string(),
+  productId: z.string(),
 });
 ```
 
@@ -36,13 +36,13 @@ import { actionClient } from "@/lib/safe-action";
 import { schema } from "./validation";
 
 export const buyProduct = actionClient
-	.schema(schema)
-	.action(async ({ parsedInput: { productId } }) => {
-		// We're just returning the productId passed to the action here.
-		return {
-			productId,
-		};
-	});
+  .schema(schema)
+  .action(async ({ parsedInput: { productId } }) => {
+    // We're just returning the productId passed to the action here.
+    return {
+      productId,
+    };
+  });
 ```
 
 ## 3. Define the form

@@ -55,10 +55,10 @@ When the action is executed, all middleware functions in the chain will be calle
 
 ```typescript
 serverCodeFn<S, BAS, Data, Ctx, MD> = (args: {
-	parsedInput: Infer<S>;
-	bindArgsParsedInputs: InferArray<BAS>;
-	ctx: Ctx;
-	metadata: MD;
+  parsedInput: Infer<S>;
+  bindArgsParsedInputs: InferArray<BAS>;
+  ctx: Ctx;
+  metadata: MD;
 }) => Promise<Data>;
 ```
 

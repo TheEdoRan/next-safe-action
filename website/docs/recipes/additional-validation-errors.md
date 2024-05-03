@@ -19,15 +19,15 @@ First of all, we must check if the password and confirm password fields match. U
 import { z } from "zod";
 
 const schema = z
-	.object({
-		email: z.string().email(),
-		password: z.string().min(8).max(100),
-		confirmPassword: z.string().min(8).max(100),
-	})
-	.refine(({ password, confirmPassword }) => password === confirmPassword, {
-		path: ["confirmPassword"],
-		message: "Passwords do not match",
-	});
+  .object({
+    email: z.string().email(),
+    password: z.string().min(8).max(100),
+    confirmPassword: z.string().min(8).max(100),
+  })
+  .refine(({ password, confirmPassword }) => password === confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
 ```
 
 If the two fields don't match, a custom validation error will be set for the `confirmPassword` field. This is the perfect place to make this check, because verifying that two fields are the same should be a schema job.

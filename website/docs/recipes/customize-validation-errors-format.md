@@ -16,32 +16,32 @@ For example, if you want to flatten the validation errors (emulation of Zod's [`
 
 import { actionClient } from "@/lib/safe-action";
 import {
-	flattenValidationErrors,
-	flattenBindArgsValidationErrors,
+  flattenValidationErrors,
+  flattenBindArgsValidationErrors,
 } from "next-safe-action";
 import { z } from "zod";
 
 const schema = z.object({
-	username: z.string().min(3).max(10),
-	password: z.string().min(8).max(100),
+  username: z.string().min(3).max(10),
+  password: z.string().min(8).max(100),
 });
 
 const bindArgsSchemas = [z.string().uuid()] as const;
 
 export const loginUser = actionClient
-	.schema(schema, {
-		// Here we use the `flattenValidationErrors` function to customize the returned validation errors
-		// object to the client.
-		formatValidationErrors: (ve) => flattenValidationErrors(ve).fieldErrors,
-	})
-	.bindArgs(bindArgsSchemas, {
-		// Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
-		// validation errors object array to the client.
-		formatBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve),
-	})
-	.action(async ({ parsedInput: { username, password } }) => {
-		// Your code here...
-	});
+  .schema(schema, {
+    // Here we use the `flattenValidationErrors` function to customize the returned validation errors
+    // object to the client.
+    formatValidationErrors: (ve) => flattenValidationErrors(ve).fieldErrors,
+  })
+  .bindArgs(bindArgsSchemas, {
+    // Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
+    // validation errors object array to the client.
+    formatBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve),
+  })
+  .action(async ({ parsedInput: { username, password } }) => {
+    // Your code here...
+  });
 ```
 
 ### `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions
@@ -52,13 +52,13 @@ So, for instance, a formatted (default) validation errors object like this:
 
 ```typescript
 validationErrors = {
-	_errors: ["A global error"],
-	username: {
-		_errors: ["Username format is invalid", "Username is too short"],
-	},
-	password: {
-		_errors: ["Password must be at least 8 characters long"],
-	},
+  _errors: ["A global error"],
+  username: {
+    _errors: ["Username format is invalid", "Username is too short"],
+  },
+  password: {
+    _errors: ["Password must be at least 8 characters long"],
+  },
 };
 ```
 
@@ -69,11 +69,11 @@ const flattenedErrors = flattenValidationErrors(validationErrors);
 
 // `flattenedErrors` will be:
 flattenedErrors = {
-	formErrors: ["A global error"],
-	fieldErrors: {
-		username: ["Username format is invalid", "Username is too short"],
-		password: ["Password must be at least 8 characters long"],
-	},
+  formErrors: ["A global error"],
+  fieldErrors: {
+    username: ["Username format is invalid", "Username is too short"],
+    password: ["Password must be at least 8 characters long"],
+  },
 };
 ```
 
@@ -87,23 +87,23 @@ If you need or want to flatten validation errors often, though, you can define a
 
 ```typescript title="src/lib/safe-action.ts"
 function fve<const S extends z.ZodTypeAny>(
-	schema: S
+  schema: S
 ): [
-	S,
-	{
-		formatValidationErrors: FormatValidationErrorsFn<
-			S,
-			FlattenedValidationErrors<ValidationErrors<S>>
-		>;
-	},
+  S,
+  {
+    formatValidationErrors: FormatValidationErrorsFn<
+      S,
+      FlattenedValidationErrors<ValidationErrors<S>>
+    >;
+  },
 ] {
-	return [
-		schema,
-		{
-			formatValidationErrors: (ve: ValidationErrors<S>) =>
-				flattenValidationErrors(ve),
-		},
-	];
+  return [
+    schema,
+    {
+      formatValidationErrors: (ve: ValidationErrors<S>) =>
+        flattenValidationErrors(ve),
+    },
+  ];
 }
 ```
 
@@ -114,16 +114,16 @@ import { actionClient, fve } from "@/lib/safe-action";
 import { z } from "zod";
 
 const schema = z.object({
-	username: z.string().min(3).max(30),
+  username: z.string().min(3).max(30),
 });
 
 // Spread `fve` utility function in the `schema` method. Type safety is preserved.
 //                                     \\\\\\\\\\\\\\
 const loginUser = actionClient
-	.schema(...fve(schema))
-	.action(async ({ parsedInput: { username } }) => {
-		return {
-			greeting: `Welcome back, ${username}!`,
-		};
-	});
+  .schema(...fve(schema))
+  .action(async ({ parsedInput: { username } }) => {
+    return {
+      greeting: `Welcome back, ${username}!`,
+    };
+  });
 ```

@@ -21,8 +21,8 @@ Here we'll use a logging middleware in the base client and then extend it with a
 
 ```typescript title="src/lib/safe-action.ts"
 import {
-	createSafeActionClient,
-	DEFAULT_SERVER_ERROR_MESSAGE,
+  createSafeActionClient,
+  DEFAULT_SERVER_ERROR_MESSAGE,
 } from "next-safe-action";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -32,54 +32,54 @@ class ActionError extends Error {}
 
 // Base client.
 const actionClient = createSafeActionClient({
-	handleReturnedServerError(e) {
-		if (e instanceof ActionError) {
-			return e.message;
-		}
+  handleReturnedServerError(e) {
+    if (e instanceof ActionError) {
+      return e.message;
+    }
 
-		return DEFAULT_SERVER_ERROR_MESSAGE;
-	},
-	defineMetadataSchema() {
-		return z.object({
-			actionName: z.string(),
-		});
-	},
-	// Define logging middleware.
+    return DEFAULT_SERVER_ERROR_MESSAGE;
+  },
+  defineMetadataSchema() {
+    return z.object({
+      actionName: z.string(),
+    });
+  },
+  // Define logging middleware.
 }).use(async ({ next, clientInput, metadata }) => {
-	console.log("LOGGING MIDDLEWARE");
+  console.log("LOGGING MIDDLEWARE");
 
-	// Here we await the action execution.
-	const result = await next({ ctx: null });
+  // Here we await the action execution.
+  const result = await next({ ctx: null });
 
-	console.log("Result ->", result);
-	console.log("Client input ->", clientInput);
-	console.log("Metadata ->", metadata);
+  console.log("Result ->", result);
+  console.log("Client input ->", clientInput);
+  console.log("Metadata ->", metadata);
 
-	// And then return the result of the awaited action.
-	return result;
+  // And then return the result of the awaited action.
+  return result;
 });
 
 // Auth client defined by extending the base one.
 // Note that the same initialization options and middleware functions of the base client
 // will also be used for this one.
 const authActionClient = actionClient
-	// Define authorization middleware.
-	.use(async ({ next }) => {
-		const session = cookies().get("session")?.value;
+  // Define authorization middleware.
+  .use(async ({ next }) => {
+    const session = cookies().get("session")?.value;
 
-		if (!session) {
-			throw new Error("Session not found!");
-		}
+    if (!session) {
+      throw new Error("Session not found!");
+    }
 
-		const userId = await getUserIdFromSessionId(session);
+    const userId = await getUserIdFromSessionId(session);
 
-		if (!userId) {
-			throw new Error("Session is not valid!");
-		}
+    if (!userId) {
+      throw new Error("Session is not valid!");
+    }
 
-		// Return the next middleware with `userId` value in the context
-		return next({ ctx: { userId } });
-	});
+    // Return the next middleware with `userId` value in the context
+    return next({ ctx: { userId } });
+  });
 ```
 
 Here we import `authActionClient` in the action's file:
@@ -91,18 +91,18 @@ import { authActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
 const editProfile = authActionClient
-	// We can pass the action name inside `metadata()`.
-	.metadata({ actionName: "editProfile" })
-	// Here we pass the input schema.
-	.schema(z.object({ newUsername: z.string() }))
-	// Here we get `userId` from the middleware defined in `authActionClient`.
-	.action(async ({ parsedInput: { newUsername }, ctx: { userId } }) => {
-		await saveNewUsernameInDb(userId, newUsername);
+  // We can pass the action name inside `metadata()`.
+  .metadata({ actionName: "editProfile" })
+  // Here we pass the input schema.
+  .schema(z.object({ newUsername: z.string() }))
+  // Here we get `userId` from the middleware defined in `authActionClient`.
+  .action(async ({ parsedInput: { newUsername }, ctx: { userId } }) => {
+    await saveNewUsernameInDb(userId, newUsername);
 
-		return {
-			updated: true,
-		};
-	});
+    return {
+      updated: true,
+    };
+  });
 ```
 
 Calling `editProfile` will produce this console output, thanks to the two middleware functions passed to the clients above:
@@ -134,24 +134,24 @@ import { authActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
 const deleteUser = authActionClient
-	.use(async ({ next, ctx }) => {
-		// `userId` comes from the context set in the previous middleware function.
-		const userRole = await getUserRole(ctx.userId);
+  .use(async ({ next, ctx }) => {
+    // `userId` comes from the context set in the previous middleware function.
+    const userRole = await getUserRole(ctx.userId);
 
-		if (userRole !== "admin") {
-			throw new ActionError("Only admins can delete users.");
-		}
+    if (userRole !== "admin") {
+      throw new ActionError("Only admins can delete users.");
+    }
 
-		// Here we pass the same untouched context (`userId`) to the next function, since we don't need
-		// to add data to the context here.
-		return next({ ctx });
-	})
-	.metadata({ actionName: "deleteUser" })
-	.schema(z.void())
-	.action(async ({ ctx: { userId } }) => {
-		// Here we're sure that the user that is performing this operation is an admin.
-		await deleteUserFromDb(userId);
-	});
+    // Here we pass the same untouched context (`userId`) to the next function, since we don't need
+    // to add data to the context here.
+    return next({ ctx });
+  })
+  .metadata({ actionName: "deleteUser" })
+  .schema(z.void())
+  .action(async ({ ctx: { userId } }) => {
+    // Here we're sure that the user that is performing this operation is an admin.
+    await deleteUserFromDb(userId);
+  });
 ```
 
 This is the console output when an admin executes this action:

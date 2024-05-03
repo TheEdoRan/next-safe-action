@@ -6,7 +6,7 @@ description: Learn how to use the `useAction` hook.
 # `useAction`
 
 :::info
-`useAction` **waits** for the action to finish execution before returning the result. If you need to perform optimistic updates, use [`useOptimisticAction`](/docs/usage/client-components/hooks/useoptimisticaction) instead.
+`useAction` **waits** for the action to finish execution before returning the result. If you need to perform optimistic updates, use [`useOptimisticAction`](/docs/usage/hooks/useoptimisticaction) instead.
 :::
 
 With this hook, you get full control of the action execution flow.
@@ -18,14 +18,14 @@ Let's say, for instance, you want to change what's displayed by a component when
 
 ```typescript title=src/app/greet-action.ts
 const schema = z.object({
-	name: z.string(),
+  name: z.string(),
 });
 
 export const greetUser = actionClient
-	.schema(schema)
-	.action(async ({ parsedInput: { name } }) => {
-		return { message: `Hello ${name}!` };
-	});
+  .schema(schema)
+  .action(async ({ parsedInput: { name } }) => {
+    return { message: `Hello ${name}!` };
+  });
 ```
 
 2. In your Client Component, you can use it like this:
@@ -35,21 +35,21 @@ import { useAction } from "next-safe-action/hooks";
 import { greetUser } from "@/app/greet-action";
 
 export default function Greet() {
-	const [name, setName] = useState("");
-	const { execute, result } = useAction(greetUser);
+  const [name, setName] = useState("");
+  const { execute, result } = useAction(greetUser);
 
-	return (
-		<div>
-			<input type="text" onChange={(e) => setName(e.target.value)} />
-			<button
-				onClick={() => {
-					execute({ name });
-				}}>
-				Greet user
-			</button>
-			{result.data?.message ? <p>{result.data.message}</p> : null}
-		</div>
-	);
+  return (
+    <div>
+      <input type="text" onChange={(e) => setName(e.target.value)} />
+      <button
+        onClick={() => {
+          execute({ name });
+        }}>
+        Greet user
+      </button>
+      {result.data?.message ? <p>{result.data.message}</p> : null}
+    </div>
+  );
 }
 ```
 
@@ -62,7 +62,7 @@ As you can see, here we display a greet message after the action is performed, i
 | Name           | Type                                       | Purpose                                                                                                |
 | -------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
 | `safeActionFn` | [SafeActionFn](/docs/types#safeactionfn)   | This is the action that will be called when you use `execute` from hook's return object.               |
-| `callbacks?`   | [HookCallbacks](/docs/types#hookcallbacks) | Optional callbacks. More information about them [here](/docs/usage/client-components/hooks/callbacks). |
+| `utils?`   | [HookCallbacks](/docs/types#hookcallbacks) | Optional callbacks. More information about them [here](/docs/usage/hooks/callbacks). |
 
 ### `useAction` return object
 
