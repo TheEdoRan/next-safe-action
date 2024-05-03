@@ -105,7 +105,7 @@ const useActionCallbacks = <
  * @param safeActionFn The action function
  * @param utils Optional callbacks
  *
- * {@link https://next-safe-action.dev/docs/usage/useaction-hook See docs for more information}
+ * {@link https://next-safe-action.dev/docs/usage/hooks/useaction See docs for more information}
  */
 export const useAction = <
 	ServerError,
@@ -175,7 +175,7 @@ export const useAction = <
  * @param safeActionFn The action function
  * @param utils Required `initResult` and `updateFn` and optional callbacks
  *
- * {@link https://next-safe-action.dev/docs/usage/useoptimisticaction-hook See docs for more information}
+ * {@link https://next-safe-action.dev/docs/usage/hooks/useoptimisticaction See docs for more information}
  */
 export const useOptimisticAction = <
 	ServerError,
@@ -261,7 +261,7 @@ export const useOptimisticAction = <
  * @param safeActionFn The action function
  * @param utils Required `initResult` and `updateFn` and optional callbacks
  *
- * {@link https://next-safe-action.dev/docs/usage/usestateaction-hook See docs for more information}
+ * {@link https://next-safe-action.dev/docs/usage/hooks/usestateaction See docs for more information}
  */
 export const useStateAction = <
 	ServerError,
