@@ -14,7 +14,7 @@ import type {
 	HookStateSafeActionFn,
 } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
-import { EMPTY_RESULT, isError } from "./utils";
+import { EMPTY_HOOK_RESULT, isError } from "./utils";
 
 const getActionStatus = <
 	ServerError,
@@ -102,6 +102,10 @@ const useActionCallbacks = <
 
 /**
  * Use the action from a Client Component via hook.
+ * @param safeActionFn The action function
+ * @param utils Optional callbacks
+ *
+ * {@link https://next-safe-action.dev/docs/usage/useaction-hook See docs for more information}
  */
 export const useAction = <
 	ServerError,
@@ -115,7 +119,7 @@ export const useAction = <
 	utils?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(EMPTY_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(EMPTY_HOOK_RESULT);
 	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
@@ -130,7 +134,7 @@ export const useAction = <
 
 			return startTransition(() => {
 				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
-					.then((res) => setResult(res ?? EMPTY_RESULT))
+					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
 							throw e;
@@ -148,7 +152,7 @@ export const useAction = <
 
 	const reset = () => {
 		setIsIdle(true);
-		setResult(EMPTY_RESULT);
+		setResult(EMPTY_HOOK_RESULT);
 	};
 
 	useActionCallbacks({
@@ -168,9 +172,10 @@ export const useAction = <
 
 /**
  * Use the action from a Client Component via hook, with optimistic data update.
+ * @param safeActionFn The action function
+ * @param utils Required `initResult` and `updateFn` and optional callbacks
  *
- * **NOTE: This hook uses an experimental React feature.**
- * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useoptimisticaction See an example}
+ * {@link https://next-safe-action.dev/docs/usage/useoptimisticaction-hook See docs for more information}
  */
 export const useOptimisticAction = <
 	ServerError,
@@ -188,7 +193,7 @@ export const useOptimisticAction = <
 	} & HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(EMPTY_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(EMPTY_HOOK_RESULT);
 	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
@@ -209,7 +214,7 @@ export const useOptimisticAction = <
 			return startTransition(() => {
 				setOptimisticResult(input as S extends Schema ? InferIn<S> : undefined);
 				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
-					.then((res) => setResult(res ?? EMPTY_RESULT))
+					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
 							throw e;
@@ -227,7 +232,7 @@ export const useOptimisticAction = <
 
 	const reset = () => {
 		setIsIdle(true);
-		setResult(EMPTY_RESULT);
+		setResult(EMPTY_HOOK_RESULT);
 	};
 
 	useActionCallbacks({
@@ -252,12 +257,11 @@ export const useOptimisticAction = <
 };
 
 /**
- * Use the stateful action from a Client Component via hook.
+ * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/safe-action-client/instance-methods#action).
+ * @param safeActionFn The action function
+ * @param utils Required `initResult` and `updateFn` and optional callbacks
  *
- * **NOTE: This hook uses an experimental React feature.**
- * @param safeActionFn The typesafe action.
- *
- * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useoptimisticaction See an example}
+ * {@link https://next-safe-action.dev/docs/usage/usestateaction-hook See docs for more information}
  */
 export const useStateAction = <
 	ServerError,
@@ -275,7 +279,7 @@ export const useStateAction = <
 ) => {
 	const [result, dispatcher, isExecuting] = React.useActionState(
 		safeActionFn,
-		utils?.initResult ?? EMPTY_RESULT,
+		utils?.initResult ?? EMPTY_HOOK_RESULT,
 		utils?.permalink
 	);
 	const [isIdle, setIsIdle] = React.useState(true);
@@ -314,4 +318,4 @@ export const useStateAction = <
 	};
 };
 
-export type { HookActionStatus, HookCallbacks, HookResult, HookSafeActionFn, HookStateSafeActionFn };
+export type * from "./hooks.types";

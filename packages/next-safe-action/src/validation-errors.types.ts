@@ -19,7 +19,7 @@ export type ValidationErrors<S extends Schema | undefined> = S extends Schema
 	: undefined;
 
 /**
- * Type of the array of validation errors of bind arguments.
+ * Type of the array of bind arguments validation errors.
  */
 export type BindArgsValidationErrors<BAS extends readonly Schema[]> = {
 	[K in keyof BAS]: ValidationErrors<BAS[K]>;

@@ -30,7 +30,8 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	/**
 	 * Use a middleware function.
 	 * @param middlewareFn Middleware function
-	 * @returns SafeActionClient
+	 *
+	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#use See docs for more information}
 	 */
 	use<NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadata>) {
 		return new SafeActionClient<ServerError, NextCtx, Metadata>({
@@ -40,8 +41,21 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 		});
 	}
 
+	/**
+	 * Define metadata for the action.
+	 * @param data Metadata with the same type as the return value of the [`defineMetadataSchema`](https://next-safe-action.dev/docs/safe-action-client/initialization-options#definemetadataschema) optional initialization function
+	 *
+	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#metadata See docs for more information}
+	 */
 	metadata(data: Metadata) {
 		return {
+			/**
+			 * Define the input validation schema for the action.
+			 * @param schema Input validation schema
+			 * @param utils Optional utils object
+			 *
+			 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#schema See docs for more information}
+			 */
 			schema: <S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>>(
 				schema?: S,
 				utils?: {
@@ -65,6 +79,12 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 		};
 	}
 
+	/**
+	 * Define the input validation schema for the action.
+	 * @param schema Input validation schema
+	 * @param utils Optional utils object
+	 * @returns
+	 */
 	schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>>(
 		schema?: S,
 		utils?: {
@@ -86,6 +106,13 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 		metadata: MD;
 	}) {
 		return {
+			/**
+			 * Define the bind arguments input validation schemas for the action.
+			 * @param bindArgsSchemas Bind arguments input validation schemas
+			 * @param bindArgsUtils Optional utils object
+			 *
+			 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#bindargsschemas See docs for more information}
+			 */
 			bindArgsSchemas: <const BAS extends readonly Schema[], FBAVE = BindArgsValidationErrors<BAS>>(
 				bindArgsSchemas: BAS,
 				bindArgsUtils?: {
@@ -111,7 +138,12 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 		};
 	}
 
-	// directly calling the action method without schema, bindArgsSchemas and metadata
+	/**
+	 * Define the action (without input validation schema, bind arguments validation schemas or metadata).
+	 * @param serverCodeFn Code that will be executed on the **server side**
+	 *
+	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action See docs for more information}
+	 */
 	action<Data>(serverCodeFn: ServerCodeFn<undefined, [], Ctx, undefined, Data>) {
 		return actionBuilder({
 			handleReturnedServerError: this.#handleReturnedServerError,
@@ -121,7 +153,14 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 			ctxType: this.#ctxType,
 		}).action(serverCodeFn);
 	}
-	// directly calling the state action method without schema, bindArgsSchemas and metadata
+
+	/**
+	 * Define the stateful action (without input validation schema, bind arguments validation schemas or metadata).
+	 * To be used with the [`useStateAction`](https://next-safe-action.dev/docs/usage/usestateaction-hook) hook.
+	 * @param serverCodeFn Code that will be executed on the **server side**
+	 *
+	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action See docs for more information}
+	 */
 	stateAction<Data>(
 		serverCodeFn: StateServerCodeFn<ServerError, undefined, [], undefined, undefined, Ctx, undefined, Data>
 	) {
@@ -161,6 +200,12 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	}
 }
 
+/**
+ * Create a new safe action client.
+ * @param createOpts Optional initialization options
+ *
+ * {@link https://next-safe-action.dev/docs/safe-action-client/initialization-options See docs for more information}
+ */
 export const createSafeActionClient = <ServerError = string, MetadataSchema extends Schema | undefined = undefined>(
 	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema>
 ) => {

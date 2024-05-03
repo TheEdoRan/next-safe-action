@@ -31,14 +31,14 @@ export type SafeActionResult<
 };
 
 /**
- * Type of the function called from components with typesafe input data.
+ * Type of the function called from components with type safe input data.
  */
 export type SafeActionFn<ServerError, S extends Schema | undefined, BAS extends readonly Schema[], FVE, FBAVE, Data> = (
 	...clientInputs: [...bindArgsInputs: InferInArray<BAS>, input: S extends Schema ? InferIn<S> : void]
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
 /**
- * Type of the stateful function called from components with typesafe input data.
+ * Type of the stateful function called from components with type safe input data.
  */
 export type SafeStateActionFn<
 	ServerError,

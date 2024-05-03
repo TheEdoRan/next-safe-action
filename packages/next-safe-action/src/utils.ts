@@ -25,7 +25,10 @@ export type InferInArray<BAS extends readonly Schema[]> = {
 	[K in keyof BAS]: InferIn<BAS[K]>;
 };
 
-export const EMPTY_RESULT = {
+/**
+ * Default value for `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
+ */
+export const EMPTY_HOOK_RESULT = {
 	data: undefined,
 	fetchError: undefined,
 	serverError: undefined,
