@@ -4,5 +4,8 @@
 		"source.organizeImports": "explicit",
 		"source.fixAll.eslint": "explicit"
 	},
-	"editor.rulers": [120]
+	"editor.rulers": [120],
+	"[markdown]": {
+		"editor.formatOnSave": false
+	}
 }
