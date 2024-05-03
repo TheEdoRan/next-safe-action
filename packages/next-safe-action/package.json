@@ -27,6 +27,16 @@
 			]
 		}
 	},
+	"funding": [
+		{
+			"type": "github",
+			"url": "https://github.com/sponsors/TheEdoRan"
+		},
+		{
+			"type": "paypal",
+			"url": "https://www.paypal.com/donate/?hosted_button_id=ES9JRPSC66XKW"
+		}
+	],
 	"scripts": {
 		"lint": "tsc && prettier --write . && eslint .",
 		"build": "tsup",
