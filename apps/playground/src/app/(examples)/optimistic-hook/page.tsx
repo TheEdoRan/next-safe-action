@@ -9,7 +9,7 @@ export default async function OptimisticHookPage() {
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>Action using optimistic hook</StyledHeading>
 			<pre className="mt-4 text-center">
-				Server state: {JSON.stringify(likesCount)}
+				Server data: {JSON.stringify(likesCount)}
 			</pre>
 			{/* Pass the server state to Client Component */}
 			<AddLikeForm likesCount={likesCount} />

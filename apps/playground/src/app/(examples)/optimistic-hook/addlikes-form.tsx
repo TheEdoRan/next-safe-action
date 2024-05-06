@@ -11,14 +11,12 @@ type Props = {
 };
 
 const AddLikesForm = ({ likesCount }: Props) => {
-	// Here we pass safe action (`addLikes`) and current server state to `useAction` hook.
-	const { execute, result, status, reset, optimisticResult } =
+	// Here we pass safe action (`addLikes`) and current server data to `useOptimisticAction` hook.
+	const { execute, result, status, reset, optimisticData } =
 		useOptimisticAction(addLikes, {
-			initResult: { data: { likesCount } },
-			updateFn: ({ data: prevData }, { incrementBy }) => ({
-				data: {
-					likesCount: prevData.likesCount + incrementBy,
-				},
+			currentData: { likesCount },
+			updateFn: (prevData, { incrementBy }) => ({
+				likesCount: prevData.likesCount + incrementBy,
 			}),
 			onSuccess({ data, input }) {
 				console.log("HELLO FROM ONSUCCESS", data, input);
@@ -65,10 +63,11 @@ const AddLikesForm = ({ likesCount }: Props) => {
 				</StyledButton>
 			</form>
 			<ResultBox
-				result={optimisticResult}
+				result={optimisticData}
 				status={status}
 				customTitle="Optimistic data:"
 			/>
+			<ResultBox result={result} customTitle="Actual result:" />
 		</>
 	);
 };

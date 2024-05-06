@@ -5,11 +5,11 @@ import { StyledButton } from "@/app/_components/styled-button";
 import { StyledHeading } from "@/app/_components/styled-heading";
 import { StyledInput } from "@/app/_components/styled-input";
 import { useStateAction } from "next-safe-action/hooks";
-import { lotteryAction } from "./lottery-action";
+import { statefulAction } from "./stateful-action";
 
-export default function LotteryPage() {
-	const { execute, result, status } = useStateAction(lotteryAction, {
-		initResult: { data: { nums: [42] } }, // pass initial state
+export default function StatefulFormPage() {
+	const { execute, result, status } = useStateAction(statefulAction, {
+		initResult: { data: { newName: "jane" } }, // optionally pass initial state
 		onSuccess({ data, input }) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
 		},
@@ -30,8 +30,8 @@ export default function LotteryPage() {
 				Stateful form action using <pre>useStateAction()</pre>
 			</StyledHeading>
 			<form action={execute} className="flex flex-col mt-8 space-y-4">
-				<StyledInput type="number" name="num" placeholder="1 - 90" />
-				<StyledButton type="submit">Add your number</StyledButton>
+				<StyledInput type="text" name="name" placeholder="Name" />
+				<StyledButton type="submit">Submit</StyledButton>
 			</form>
 			<ResultBox result={result} status={status} />
 		</main>

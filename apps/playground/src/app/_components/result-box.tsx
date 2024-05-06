@@ -1,7 +1,7 @@
 import type { HookActionStatus } from "next-safe-action/hooks";
 
 type Props = {
-	result: any;
+	result?: any;
 	status?: HookActionStatus;
 	customTitle?: string;
 };
