@@ -13,7 +13,6 @@ import type {
 	HookSafeActionFn,
 	HookStateSafeActionFn,
 } from "./hooks.types";
-import type { SafeActionResult } from "./index.types";
 import { EMPTY_HOOK_RESULT, isError } from "./utils";
 
 const getActionStatus = <
@@ -173,7 +172,7 @@ export const useAction = <
 /**
  * Use the action from a Client Component via hook, with optimistic data update.
  * @param safeActionFn The action function
- * @param utils Required `initResult` and `updateFn` and optional callbacks
+ * @param utils Required `currentData` and `updateFn` and optional callbacks
  *
  * {@link https://next-safe-action.dev/docs/usage/hooks/useoptimisticaction See docs for more information}
  */
@@ -184,12 +183,11 @@ export const useOptimisticAction = <
 	FVE,
 	FBAVE,
 	Data,
-	Result = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
 	utils: {
-		initResult: Result;
-		updateFn: (prevResult: Result, input: S extends Schema ? InferIn<S> : undefined) => Result;
+		currentData: Data;
+		updateFn: (prevData: Data, input: S extends Schema ? InferIn<S> : undefined) => Data;
 	} & HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
@@ -198,10 +196,10 @@ export const useOptimisticAction = <
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
 
-	const [optimisticResult, setOptimisticResult] = React.useOptimistic<
-		Result,
-		S extends Schema ? InferIn<S> : undefined
-	>(utils.initResult, utils.updateFn);
+	const [optimisticData, setOptimisticData] = React.useOptimistic<Data, S extends Schema ? InferIn<S> : undefined>(
+		utils.currentData,
+		utils.updateFn
+	);
 
 	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result, isIdle });
 
@@ -212,7 +210,7 @@ export const useOptimisticAction = <
 			setIsExecuting(true);
 
 			return startTransition(() => {
-				setOptimisticResult(input as S extends Schema ? InferIn<S> : undefined);
+				setOptimisticData(input as S extends Schema ? InferIn<S> : undefined);
 				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
@@ -227,7 +225,7 @@ export const useOptimisticAction = <
 					});
 			});
 		},
-		[safeActionFn, setOptimisticResult]
+		[safeActionFn, setOptimisticData]
 	);
 
 	const reset = () => {
@@ -250,16 +248,16 @@ export const useOptimisticAction = <
 	return {
 		execute,
 		result,
-		optimisticResult,
+		optimisticData,
 		reset,
 		status,
 	};
 };
 
 /**
- * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/safe-action-client/instance-methods#action).
+ * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction).
  * @param safeActionFn The action function
- * @param utils Required `initResult` and `updateFn` and optional callbacks
+ * @param utils Optional `initResult`, `permalink` and callbacks
  *
  * {@link https://next-safe-action.dev/docs/usage/hooks/usestateaction See docs for more information}
  */
