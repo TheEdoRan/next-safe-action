@@ -111,4 +111,4 @@ export default function Login() {
 }
 ```
 
-You also can execute Server Actions with hooks, which are a more powerful way to handle mutations. For more information about these, check out the [`useAction`](/docs/usage/hooks/useaction), [`useOptimisticAction`](/docs/usage/hooks/useoptimisticaction) and [`useStateAction`](/docs/usage/hooks/useStateAction) hooks sections.
+You also can execute Server Actions with hooks, which are a more powerful way to handle mutations. For more information about these, check out the [`useAction`](/docs/usage/hooks/useaction), [`useOptimisticAction`](/docs/usage/hooks/useoptimisticaction) and [`useStateAction`](/docs/usage/hooks/usestateaction) hooks sections.
