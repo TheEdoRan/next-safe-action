@@ -70,7 +70,7 @@
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-define-config": "^2.1.0",
 		"eslint-plugin-react-hooks": "^4.6.0",
-		"next": "14.3.0-canary.40",
+		"next": "14.3.0-canary.42",
 		"prettier": "^3.2.5",
 		"react": "18.2.0",
 		"semantic-release": "^23.0.8",
@@ -80,7 +80,7 @@
 		"zod": "^3.23.4"
 	},
 	"peerDependencies": {
-		"next": ">= 14.3.0-canary.40",
+		"next": ">= 14.3.0-canary.42",
 		"react": ">= 18.2.0"
 	},
 	"repository": {
