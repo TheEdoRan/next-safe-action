@@ -85,7 +85,7 @@ export default function StatefulFormPage() {
 | `safeActionFn`          | [`HookStateSafeActionFn`](/docs/types#hookstatesafeactionfn)                              | This is the action that will be passed to React's `useActionState` hook. You can then all it with `execute` function from the hook's return object, that has the same signature as `safeActionFn`, minus the first argument (`prevResult`).                                                               |
 | `utils`            | `{ initResult: Awaited<ReturnType<typeof safeActionFn>>; permalink?: string }` `&` [`HookCallbacks`](/docs/types#hookcallbacks)                            | Object with required `initResult` property and optional [`permalink`] and callbacks. Permalink usage is [explained in React docs](https://react.dev/reference/react/useActionState#parameters) for `useActionState` hook.                                                                                                                                            |
 
-You can pass an optional initial result to `useStateAction`, with the `initResult` argument. If not passed, the init result will default to `HOOK_EMPTY_RESULT` (every property typed `undefined`).
+You can pass an optional initial result to `useStateAction`, with the `initResult` argument. If not passed, the init result will default to `EMPTY_HOOK_RESULT` (every property typed `undefined`).
 
 
 ### `useOptimisticAction` return object
