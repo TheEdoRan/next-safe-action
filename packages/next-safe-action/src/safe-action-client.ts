@@ -142,7 +142,7 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	 * Define the action (without input validation schema, bind arguments validation schemas or metadata).
 	 * @param serverCodeFn Code that will be executed on the **server side**
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
 	 */
 	action<Data>(serverCodeFn: ServerCodeFn<undefined, [], Ctx, undefined, Data>) {
 		return actionBuilder({
@@ -159,7 +159,7 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	 * To be used with the [`useStateAction`](https://next-safe-action.dev/docs/usage/hooks/usestateaction) hook.
 	 * @param serverCodeFn Code that will be executed on the **server side**
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
 	 */
 	stateAction<Data>(
 		serverCodeFn: StateServerCodeFn<ServerError, undefined, [], undefined, undefined, Ctx, undefined, Data>
