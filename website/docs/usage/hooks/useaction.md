@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-description: Learn how to use the `useAction` hook.
+description: Learn how to use the useAction hook.
 ---
 
 # `useAction`
@@ -17,6 +17,8 @@ Let's say, for instance, you want to change what's displayed by a component when
 1. Define a new action called `greetUser`, that takes a name as input and returns a greeting:
 
 ```typescript title=src/app/greet-action.ts
+"use server";
+
 const schema = z.object({
   name: z.string(),
 });
@@ -31,6 +33,8 @@ export const greetUser = actionClient
 2. In your Client Component, you can use it like this:
 
 ```tsx title=src/app/greet.tsx
+"use client";
+
 import { useAction } from "next-safe-action/hooks";
 import { greetUser } from "@/app/greet-action";
 
@@ -61,7 +65,7 @@ As you can see, here we display a greet message after the action is performed, i
 
 | Name           | Type                                       | Purpose                                                                                                |
 | -------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `safeActionFn` | [SafeActionFn](/docs/types#safeactionfn)   | This is the action that will be called when you use `execute` from hook's return object.               |
+| `safeActionFn` | [HookSafeActionFn](/docs/types#hooksafeactionfn)   | This is the action that will be called when you use `execute` from hook's return object.               |
 | `utils?`   | [HookCallbacks](/docs/types#hookcallbacks) | Optional callbacks. More information about them [here](/docs/usage/hooks/callbacks). |
 
 ### `useAction` return object

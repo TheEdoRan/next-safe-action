@@ -12,10 +12,7 @@ description: List of next-safe-action types.
 Type of options when creating a new safe action client.
 
 ```typescript
-export type SafeActionClientOpts<
-  ServerError,
-  MetadataSchema extends Schema | undefined,
-> = {
+export type SafeActionClientOpts<ServerError, MetadataSchema extends Schema | undefined> = {
   handleServerErrorLog?: (e: Error) => MaybePromise<void>;
   handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
   defineMetadataSchema?: () => MetadataSchema;
@@ -34,6 +31,7 @@ export type SafeActionResult<
   FVE = ValidationErrors<S>,
   FBAVE = BindArgsValidationErrors<BAS>,
   Data = unknown,
+  // eslint-disable-next-line
   NextCtx = unknown,
 > = {
   data?: Data;
@@ -54,9 +52,30 @@ export type SafeActionFn<
   BAS extends readonly Schema[],
   FVE,
   FBAVE,
+  Data
+> = (
+  ...clientInputs: [...bindArgsInputs: InferInArray<BAS>, input: S extends Schema ? InferIn<S> : void]
+) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+```
+
+### `SafeStateActionFn`
+
+Type of the stateful function called from components with type safe input data.
+
+```typescript
+export type SafeStateActionFn<
+  ServerError,
+  S extends Schema | undefined,
+  BAS extends readonly Schema[],
+  FVE,
+  FBAVE,
   Data,
 > = (
-  ...clientInputs: [...InferInArray<BAS>, S extends Schema ? InferIn<S> : void]
+  ...clientInputs: [
+    ...bindArgsInputs: InferInArray<BAS>,
+    prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>,
+    input: S extends Schema ? InferIn<S> : void,
+  ]
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 ```
 
@@ -69,8 +88,8 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
   ServerError,
   any,
   any,
-  any,
-  any,
+  unknown,
+  unknown,
   unknown,
   NextCtx
 > & {
@@ -91,9 +110,9 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
     clientInput: unknown;
     bindArgsClientInputs: unknown[];
     ctx: Ctx;
-    metadata: MD | null;
+    metadata: MD | undefined;
     next: {
-      <const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
+      <NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
     };
   }): Promise<MiddlewareResult<ServerError, NextCtx>>;
 };
@@ -104,18 +123,37 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 Type of the function that executes server code when defining a new safe action.
 
 ```typescript
-export type ServerCodeFn<
-  S extends Schema | undefined,
-  BAS extends readonly Schema[],
-  Data,
-  Ctx,
-  MD,
-> = (args: {
+export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Schema[], Ctx, MD, Data> = (args: {
   parsedInput: S extends Schema ? Infer<S> : undefined;
   bindArgsParsedInputs: InferArray<BAS>;
   ctx: Ctx;
   metadata: MD;
 }) => Promise<Data>;
+```
+
+### `StateServerCodeFn`
+
+Type of the function that executes server code when defining a new stateful safe action.
+
+```typescript
+export type StateServerCodeFn<
+  ServerError,
+  S extends Schema | undefined,
+  BAS extends readonly Schema[],
+  FVE,
+  FBAVE,
+  Ctx,
+  MD,
+  Data,
+> = (
+  args: {
+    parsedInput: S extends Schema ? Infer<S> : undefined;
+    bindArgsParsedInputs: InferArray<BAS>;
+    ctx: Ctx;
+    metadata: MD;
+  },
+  utils: { prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>> }
+) => Promise<Data>;
 ```
 
 ### `ValidationErrors`
@@ -144,13 +182,12 @@ export type BindArgsValidationErrors<BAS extends readonly Schema[]> = {
 Type of flattened validation errors. `formErrors` contains global errors, and `fieldErrors` contains errors for each field, one level deep.
 
 ```typescript
-export type FlattenedValidationErrors<VE extends ValidationErrors<any>> =
-  Prettify<{
-    formErrors: string[];
-    fieldErrors: {
-      [K in keyof Omit<VE, "_errors">]?: string[];
-    };
-  }>;
+export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = Prettify<{
+  formErrors: string[];
+  fieldErrors: {
+    [K in keyof Omit<VE, "_errors">]?: string[];
+  };
+}>;
 ```
 
 ### `FlattenedBindArgsValidationErrors`
@@ -158,9 +195,7 @@ export type FlattenedValidationErrors<VE extends ValidationErrors<any>> =
 Type of flattened bind arguments validation errors.
 
 ```typescript
-export type FlattenedBindArgsValidationErrors<
-  BAVE extends readonly ValidationErrors<any>[],
-> = {
+export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]> = {
   [K in keyof BAVE]: FlattenedValidationErrors<BAVE[K]>;
 };
 ```
@@ -180,17 +215,16 @@ export type FormatValidationErrorsFn<S extends Schema | undefined, FVE> = (
 Type of the function used to format bind arguments validation errors.
 
 ```typescript
-export type FormatBindArgsValidationErrorsFn<
-  BAS extends readonly Schema[],
-  FBAVE,
-> = (bindArgsValidationErrors: BindArgsValidationErrors<BAS>) => FBAVE;
+export type FormatBindArgsValidationErrorsFn<BAS extends readonly Schema[], FBAVE> = (
+  bindArgsValidationErrors: BindArgsValidationErrors<BAS>
+) => FBAVE;
 ```
 
 ## /hooks
 
 ### `HookResult`
 
-Type of `result` object returned by `useAction` and `useOptimisticAction` hooks.
+Type of `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
 
 If a server-client communication error occurs, `fetchError` will be set to the error message.
 
@@ -220,23 +254,15 @@ export type HookCallbacks<
   FBAVE,
   Data,
 > = {
-  onExecute?: (args: {
-    input: S extends Schema ? InferIn<S> : undefined;
-  }) => MaybePromise<void>;
-  onSuccess?: (args: {
-    data: Data;
-    input: S extends Schema ? InferIn<S> : undefined;
-    reset: () => void;
-  }) => MaybePromise<void>;
+  onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
+  onSuccess?: (args: { data: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
   onError?: (args: {
     error: Omit<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>, "data">;
     input: S extends Schema ? InferIn<S> : undefined;
-    reset: () => void;
   }) => MaybePromise<void>;
   onSettled?: (args: {
     result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
     input: S extends Schema ? InferIn<S> : undefined;
-    reset: () => void;
   }) => MaybePromise<void>;
 };
 ```
@@ -254,7 +280,25 @@ export type HookSafeActionFn<
   FBAVE,
   Data,
 > = (
-  clientInput: S extends Schema ? InferIn<S> : undefined
+  input: S extends Schema ? InferIn<S> : undefined
+) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+```
+
+### `HookSafeStateActionFn`
+
+Type of the stateful safe action function passed to hooks. Same as `SafeStateActionFn` except it accepts just a single input, without bind arguments.
+
+```typescript
+export type HookStateSafeActionFn<
+  ServerError,
+  S extends Schema | undefined,
+  BAS extends readonly Schema[],
+  FVE,
+  FBAVE,
+  Data,
+> = (
+  prevResult: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>,
+  input: S extends Schema ? InferIn<S> : undefined
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 ```
 
@@ -324,9 +368,7 @@ Creates nested schema validation errors type using recursion. Used in [`Validati
 
 ```typescript
 type SchemaErrors<S> = {
-  [K in keyof S]?: S[K] extends object | null | undefined
-    ? Prettify<VEList & SchemaErrors<S[K]>>
-    : VEList;
+  [K in keyof S]?: S[K] extends object | null | undefined ? Prettify<VEList & SchemaErrors<S[K]>> : VEList;
 } & {};
 ```
 

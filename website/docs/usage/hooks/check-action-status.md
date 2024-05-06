@@ -1,9 +1,9 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 description: Learn how to check the current action status when using hooks.
 ---
 
-# Checking action status
+# Check action status
 
 There are two ways to get the current action status when using hooks:
 

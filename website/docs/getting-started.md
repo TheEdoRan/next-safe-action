@@ -49,7 +49,7 @@ This is a basic client, without any options or middleware functions. If you want
 ### 2. Define a new action
 
 This is how a safe action is created. Providing a validation input schema to the function via [`schema()`](/docs/safe-action-client/instance-methods#schema), we're sure that data that comes in is type safe and validated.
-The [`action()`](/docs/safe-action-client/instance-methods#action) method lets you define what happens on the server when the action is called from client, via an async function that receives the parsed input and context as arguments. In short, this is your _server code_. **It never runs on the client**:
+The [`action()`](/docs/safe-action-client/instance-methods#action--stateaction) method lets you define what happens on the server when the action is called from client, via an async function that receives the parsed input and context as arguments. In short, this is your _server code_. **It never runs on the client**:
 
 ```typescript title="src/app/login-action.ts"
 "use server"; // don't forget to add this!

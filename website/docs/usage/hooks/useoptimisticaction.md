@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-description: Learn how to use the `useOptimisticAction` hook.
+description: Learn how to use the useOptimisticAction hook.
 ---
 
 # `useOptimisticAction`
@@ -16,6 +16,8 @@ Let's say you want to update the number of likes of a post in your application, 
 1. Define a new action called `addLikes`, that takes an amount as input and returns the updated number of likes:
 
 ```typescript title=src/app/add-likes-action.ts
+"use server";
+
 const schema = z.object({
   incrementBy: z.number().positive(),
 });
@@ -59,6 +61,8 @@ export default function Home() {
 3. Finally, in your Client Component, you can use it like this:
 
 ```tsx title=src/app/add-likes.tsx
+"use client";
+
 import { useOptimisticAction } from "next-safe-action/hooks";
 import { addLikes } from "@/app/add-likes-action";
 
@@ -67,15 +71,15 @@ type Props = {
 };
 
 export default function AddLikes({ likesCount }: Props) {
-  const { execute, result, optimisticResult } = useOptimisticAction(
+  const { execute, result, optimisticData } = useOptimisticAction(
     addLikes,
-    initResult: { likesCount },
-    updateFn: (prevResult, { incrementBy }) => {
-      return { 
-        data: {
-          likesCount: prevResult.data.numOfLikes + amount
-        }
-      };
+    {
+      currentData: { likesCount }, // gets passed from Server Component
+      updateFn: (prevData, { incrementBy }) => {
+        return { 
+          likesCount: prevData.numOfLikes + amount
+        };
+      }
     }
   );
 
@@ -88,7 +92,7 @@ export default function AddLikes({ likesCount }: Props) {
         Add 3 likes
       </button>
       {/* Optimistic state gets updated immediately, it doesn't wait for the server to respond. */}
-      <pre>Optimistic result: {optimisticResult}</pre>
+      <pre>Optimistic data: {optimisticData}</pre>
 
       {/* Here's the actual server response. */}
       <pre>Result: {JSON.stringify(result, null, 2)}</pre>
@@ -99,23 +103,20 @@ export default function AddLikes({ likesCount }: Props) {
 
 ### `useOptimisticAction` arguments
 
-TODO: finish this
-
 `useOptimisticAction` has the following arguments:
 
 | Name                    | Type                                                                    | Purpose                                                                                                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `safeActionFn`          | [`SafeActionFn`](/docs/types#safeactionfn)                              | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                             |
-| `utils`            |  [`HookCallbacks`](/docs/types#hookcallbacks)                            | Object with `initResult`, `updateFn` and optional callbacks.                                                                                                                                               |
+| `safeActionFn`          | [`HookSafeActionFn`](/docs/types#hooksafeactionfn)                              | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                             |
+| `utils`            | `{ initData: Data; updateFn: (prevData: Data, input: InferIn<S>) => Data }` `&` [`HookCallbacks`](/docs/types#hookcallbacks)                            | Object with required `initData`, `updateFn` and optional callbacks. See below for more information.                                                                                                                                              |
 
-`utils` object has the following properties:
+`utils` properties in detail:
 
 | Name                    | Type                                                                    | Purpose                                                                                                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `safeActionFn`          | [`SafeActionFn`](/docs/types#safeactionfn)                              | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                             |
-| `initialOptimisticData` | `Data` (return type of the `safeActionFn` you passed as first argument) | An initializer for the optimistic state. Usually this value comes from the parent Server Component.                                                                                                                                                  |
-| `reducer`               | `(state: Data, input: InferIn<S>) => Data`                              | When you call the action via `execute`, this function determines how the optimistic update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server. |
-| `callbacks?`            | [`HookCallbacks`](/docs/types#hookcallbacks)                            | Optional callbacks. More information about them [here](/docs/usage/hooks/callbacks).                                                                                                                                               |
+| `currentData` | `Data` (return type of the `safeActionFn` you passed as first argument) | An optimistic data setter. Usually this value comes from the parent Server Component.                                                                                                                                                  |
+| `updateFn`               | `(prevData: Data, input: InferIn<S>) => Data`                              | When you call the action via `execute`, this function determines how the optimistic data update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server. |
+| `{ onExecute?, onSuccess?, onError?, onSettled? }`            | [`HookCallbacks`](/docs/types#hookcallbacks)                            | Optional callbacks. More information about them [here](/docs/usage/hooks/callbacks).                                                                                                                                               |
 
 ### `useOptimisticAction` return object
 
