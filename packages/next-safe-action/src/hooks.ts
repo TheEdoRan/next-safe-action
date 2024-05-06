@@ -316,4 +316,6 @@ export const useStateAction = <
 	};
 };
 
+export { EMPTY_HOOK_RESULT };
+
 export type * from "./hooks.types";
