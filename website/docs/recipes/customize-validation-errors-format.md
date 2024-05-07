@@ -62,7 +62,7 @@ validationErrors = {
 };
 ```
 
-When passed to `formatValidationErrors`, the function will return a flattened version of it:
+When passed to `flattenValidationErrors`, the function will return a flattened version of it:
 
 ```typescript
 const flattenedErrors = flattenValidationErrors(validationErrors);
@@ -86,9 +86,11 @@ next-safe-action, by default, uses the formatted validation errors structure, so
 If you need or want to flatten validation errors often, though, you can define an utility function like this one (assuming you're using Zod, but you can adapt it to your needs):
 
 ```typescript title="src/lib/safe-action.ts"
-function fve<const S extends z.ZodTypeAny>(
-  schema: S
-): [
+import { flattenValidationErrors } from "next-safe-action";
+
+// ...
+
+export function fve<S extends z.ZodTypeAny>(schema: S): [
   S,
   {
     formatValidationErrors: FormatValidationErrorsFn<
@@ -117,9 +119,8 @@ const schema = z.object({
   username: z.string().min(3).max(30),
 });
 
-// Spread `fve` utility function in the `schema` method. Type safety is preserved.
-//                                     \\\\\\\\\\\\\\
 const loginUser = actionClient
+  // Spread `fve` utility function in the `schema` method. Type safety is preserved.
   .schema(...fve(schema))
   .action(async ({ parsedInput: { username } }) => {
     return {

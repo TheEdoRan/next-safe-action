@@ -13,7 +13,7 @@ description: List of methods of the safe action client.
 use<NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadata>) => new SafeActionClient()
 ```
 
-`use` accepts a middleware function of type [`MiddlewareFn`](/docs/types#middlewarefn) as argument and returns a new instance of the safe action client with that middleware function added to the stack, that will be executed after the last one, if any. Check out how to `use` middleware in [the related section](/docs/usage/middleware) of the usage guide.
+`use` accepts a middleware function of type [`MiddlewareFn`](/docs/types#middlewarefn) as argument and returns a new instance of the safe action client with that middleware function added to the stack, that will be executed after the last one, if any. Check out how to `use` middleware in [the related section](/docs/safe-action-client/middleware).
 
 ## `metadata`
 
@@ -23,7 +23,7 @@ metadata(data: Metadata) => { schema() }
 
 `metadata` expects an argument of the same type as the return value of the [`defineMetadataSchema`](/docs/safe-action-client/initialization-options#definemetadataschema) optional initialization function. If you don't provide this function to the action client when you initialize it, `metadata` will be `undefined`.
 
-`metadata` lets you specify useful data about the safe action you're executing. If you don't use this method before defining your action (using [`action`](#action) method), `metadata` will be `undefined` inside [`serverCodeFn`](#servercodefn). It returns the [`schema`](#schema) method, since metadata is action specific and not shared with other actions. You can then access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`](#action).
+`metadata` lets you specify useful data about the safe action you're executing. If you don't use this method before defining your action (using [`action`/`stateAction`](#action--stateaction) method), `metadata` will be `undefined` inside [`serverCodeFn`](#servercodefn). It returns the [`schema`](#schema) method, since metadata is action specific and not shared with other actions. You can then access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`/`stateAction`](#action--stateaction).
 
 ## `schema`
 
@@ -31,7 +31,7 @@ metadata(data: Metadata) => { schema() }
 schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>, MD = null>(schema: S, { utils?: { formatValidationErrors?: FormatValidationErrorsFn<S, FVE> } }) => { action(), bindArgsSchemas() }
 ```
 
-`schema` accepts an **optional** input schema of type `Schema` (from TypeSchema) and an optional `utils` object that accepts a [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns the [`action`](#action) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
+`schema` accepts an **optional** input schema of type `Schema` (from TypeSchema) and an optional `utils` object that accepts a [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns the [`action`/`stateAction`](#action--stateaction) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
 
 ## `bindArgsSchemas`
 
@@ -39,7 +39,7 @@ schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>, MD =
 bindArgsSchemas<const BAS extends Schema[], FBAVE = BindArgsValidationErrors<BAS>>(bindArgsSchemas: BAS, bindArgsUtils?: { formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE> }) => { action() }
 ```
 
-`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` (from TypeSchema) and an optional `bindArgsUtils` object that accepts a `formatBindArgsValidationErrors` function. The schema is used to define the bind arguments that the safe action will receive, the optional `formatBindArgsValidationErrors` function is used to [return a custom format for bind arguments validation errors](/docs/recipes/customize-validation-errors-format). It returns the [`action`](#action) method, which allows you, to define a new action using the input and bind inputs schemas.
+`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` (from TypeSchema) and an optional `bindArgsUtils` object that accepts a `formatBindArgsValidationErrors` function. The schema is used to define the bind arguments that the safe action will receive, the optional `formatBindArgsValidationErrors` function is used to [return a custom format for bind arguments validation errors](/docs/recipes/customize-validation-errors-format). It returns the [`action`/`stateAction`](#action--stateaction) method, which allows you, to define a new action using the input and bind inputs schemas.
 
 ## `action` / `stateAction`
 
@@ -57,9 +57,9 @@ When the action is executed, all middleware functions in the chain will be calle
 
 ### When to use `action` or `stateAction`
 
-The only difference between `action` and `stateAction` is that [`useStateAction`](/docs/usage/hooks/usestateaction) hook **requires** you to use `stateAction` when defining a new Server Action function. Using `stateAction` changes the function signature: the first argument of the safe action will be `prevResult`, and the second one the client input, if a validation schema was passed to [`schema`](#schema) method. 
+The only difference between `action` and `stateAction` is that [`useStateAction`](/docs/execution/hooks/usestateaction) hook **requires** you to use `stateAction` when defining a new Server Action function. Using `stateAction` changes the function signature: the first argument of the safe action will be `prevResult`, and the second one the client input, if a validation schema was passed to [`schema`](#schema) method. 
 
-Note that when you use `stateAction`, and you also want to access `prevResult` in `serverCodeFn`, you **must** type the returned data type of the function, since it can't be inferred, due to TypeScript limitations. You can see an example of this in the `useStateAction` [usage example](/docs/usage/hooks/usestateaction#example) section.
+Note that when you use `stateAction`, and you also want to access `prevResult` in `serverCodeFn`, you **must** type the returned data type of the function, since it can't be inferred, due to TypeScript limitations. You can see an example of this in the [`useStateAction` usage](/docs/execution/hooks/usestateaction#example) section.
 
 ### `serverCodeFn`
 
@@ -86,4 +86,4 @@ serverCodeFn<ServerError, S extends Schema | undefined, BAS extends readonly Sch
 
 `serverCodeFn` is the async function that will be executed on the **server side** when the action is invoked. If input validation fails, or execution gets halted in a middleware function, the server code function will not be called.
 
-In the case of a stateful safe action, `serverCodeFn` will also receive the `prevResult` as a property of the second argument (`utils` object) from the previous action execution, thanks to the [`useStateAction`](/docs/usage/hooks/usestateaction) hook (that uses React's [`useActionState`](https://react.dev/reference/react/useActionState) hook under the hood).
+In the case of a stateful safe action, `serverCodeFn` will also receive the `prevResult` as a property of the second argument (`utils` object) from the previous action execution, thanks to the [`useStateAction`](/docs/execution/hooks/usestateaction) hook (that uses React's [`useActionState`](https://react.dev/reference/react/useActionState) hook under the hood).

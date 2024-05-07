@@ -6,7 +6,7 @@ description: Learn how to use the useAction hook.
 # `useAction`
 
 :::info
-`useAction` **waits** for the action to finish execution before returning the result. If you need to perform optimistic updates, use [`useOptimisticAction`](/docs/usage/hooks/useoptimisticaction) instead.
+`useAction` **waits** for the action to finish execution before returning the result. If you need to perform optimistic updates, use [`useOptimisticAction`](/docs/execution/hooks/useoptimisticaction) instead.
 :::
 
 With this hook, you get full control of the action execution flow.
@@ -66,7 +66,7 @@ As you can see, here we display a greet message after the action is performed, i
 | Name           | Type                                       | Purpose                                                                                                |
 | -------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
 | `safeActionFn` | [HookSafeActionFn](/docs/types#hooksafeactionfn)   | This is the action that will be called when you use `execute` from hook's return object.               |
-| `utils?`   | [HookCallbacks](/docs/types#hookcallbacks) | Optional callbacks. More information about them [here](/docs/usage/hooks/callbacks). |
+| `utils?`   | [HookCallbacks](/docs/types#hookcallbacks) | Optional callbacks. More information about them [here](/docs/execution/hooks/callbacks). |
 
 ### `useAction` return object
 

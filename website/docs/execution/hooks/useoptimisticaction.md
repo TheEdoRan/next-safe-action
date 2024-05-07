@@ -6,7 +6,7 @@ description: Learn how to use the useOptimisticAction hook.
 # `useOptimisticAction`
 
 :::info
-`useOptimisticAction` **does not wait** for the action to finish execution before returning the optimistic data. It is then synced with the real result from server when the action has finished its execution. If you need to perform normal mutations, use [`useAction`](/docs/usage/hooks/useaction) instead.
+`useOptimisticAction` **does not wait** for the action to finish execution before returning the optimistic data. It is then synced with the real result from server when the action has finished its execution. If you need to perform normal mutations, use [`useAction`](/docs/execution/hooks/useaction) instead.
 :::
 
 Let's say you want to update the number of likes of a post in your application, mutating directly the database.
@@ -116,7 +116,7 @@ export default function AddLikes({ likesCount }: Props) {
 | ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `currentData` | `Data` (return type of the `safeActionFn` you passed as first argument) | An optimistic data setter. Usually this value comes from the parent Server Component.                                                                                                                                                  |
 | `updateFn`               | `(prevData: Data, input: InferIn<S>) => Data`                              | When you call the action via `execute`, this function determines how the optimistic data update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server. |
-| `{ onExecute?, onSuccess?, onError?, onSettled? }`            | [`HookCallbacks`](/docs/types#hookcallbacks)                            | Optional callbacks. More information about them [here](/docs/usage/hooks/callbacks).                                                                                                                                               |
+| `{ onExecute?, onSuccess?, onError?, onSettled? }`            | [`HookCallbacks`](/docs/types#hookcallbacks)                            | Optional callbacks. More information about them [here](/docs/execution/hooks/callbacks).                                                                                                                                               |
 
 ### `useOptimisticAction` return object
 

@@ -57,6 +57,6 @@ export default function Login() {
 
 ### Action result object
 
-Every action you execute returns an object with the same structure. This is described in the [action result object](/docs/usage/action-result-object) section.
+Every action you execute returns an object with the same structure. This is described in the [action result object](/docs/execution/action-result-object) section.
 
 Explore a working example [here](<https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)/direct>).

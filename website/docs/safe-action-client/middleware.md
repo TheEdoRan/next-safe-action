@@ -147,7 +147,6 @@ const deleteUser = authActionClient
     return next({ ctx });
   })
   .metadata({ actionName: "deleteUser" })
-  .schema(z.void())
   .action(async ({ ctx: { userId } }) => {
     // Here we're sure that the user that is performing this operation is an admin.
     await deleteUserFromDb(userId);
@@ -161,7 +160,7 @@ LOGGING MIDDLEWARE
 Result -> {
   success: true,
   ctx: { userId: '9af18417-524e-4f04-9621-b5934b09f2c9' },
-  data: null,
+  data: undefined,
   parsedInput: undefined
 }
 Client input -> undefined
@@ -196,7 +195,7 @@ Note that the second line comes from the default `handleServerErrorLog` function
 | `bindArgsClientInputs` | `unknown[]`                                                    | The raw array of bind arguments inputs (not parsed).                                                                                                                                |
 | `ctx`                  | `Ctx`                                                | Type safe context value from previous middleware function(s).                                                                                                                       |
 | `metadata`             | `MD \| undefined`                                         | Metadata for the safe action execution.                                                                                                                                             |
-| `next`                 | `<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<NC>>` | Function that will execute the next function in the middleware stack or the server code function. It expects, as argument, the next `ctx` value for the next function in the chain. |
+| `next`                 | `<NC>(opts: { ctx: NC }): Promise<MiddlewareResult<NC>>` | Function that will execute the next function in the middleware stack or the server code function. It expects, as argument, the next `ctx` value for the next function in the chain. |
 
 ## `middlewareFn` return value
 
