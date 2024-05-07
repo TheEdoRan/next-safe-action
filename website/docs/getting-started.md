@@ -18,6 +18,10 @@ description: Getting started with next-safe-action version 7.
 
 We will use Zod as our validation library in this documentation, but since version 6 of next-safe-action, you can use your validation library of choice, or even multiple and custom ones at the same time, thanks to the **TypeSchema** library. Note that we also need to install the related TypeSchema adapter for our validation library of choice. You can find supported libraries and related adapters [here](https://typeschema.com/#coverage).
 
+:::info
+If you experience an issue related to TypeSchema, check out the ["Errors with TypeSchema"](/docs/troubleshooting/errors-with-typeschema) section of the troubleshooting page to see how to fix it.
+:::
+
 ## Installation
 
 For Next.js >= 14, assuming you want to use Zod as your validation library, use the following command:
