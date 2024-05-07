@@ -59,7 +59,7 @@ export type HookSafeActionFn<
  * Type of the stateful safe action function passed to hooks. Same as `SafeStateActionFn` except it accepts
  * just a single input, without bind arguments.
  */
-export type HookStateSafeActionFn<
+export type HookSafeStateActionFn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
