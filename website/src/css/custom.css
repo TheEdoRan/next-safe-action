@@ -36,6 +36,10 @@ body {
 	font-size: 90%;
 }
 
+div[role="banner"] > button > svg {
+	color: #ffffff;
+}
+
 :root {
 	--ifm-color-primary: #da6f0c;
 	--ifm-color-primary-dark: #c4640b;
