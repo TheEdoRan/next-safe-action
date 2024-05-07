@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import {
 	DEFAULT_SERVER_ERROR_MESSAGE,
 	createSafeActionClient,
@@ -58,13 +57,13 @@ export const action = createSafeActionClient({
 });
 
 async function getSessionId() {
-	return randomUUID();
+	return crypto.randomUUID();
 }
 
 export const authAction = action
 	// In this case, context is used for (fake) auth purposes.
 	.use(async ({ next }) => {
-		const userId = randomUUID();
+		const userId = crypto.randomUUID();
 
 		console.log("HELLO FROM FIRST AUTH ACTION MIDDLEWARE, USER ID:", userId);
 
