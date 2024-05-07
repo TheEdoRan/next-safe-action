@@ -1,14 +1,12 @@
 import type { Infer, Schema } from "@typeschema/main";
-import type { Prettify, PrettyMerge } from "./utils";
+import type { Prettify } from "./utils";
 
 // Object with an optional list of validation errors.
-export type ErrorList = Prettify<{ _errors?: string[] }>;
+type VEList = Prettify<{ _errors?: string[] }>;
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends object | null | undefined
-		? PrettyMerge<ErrorList & SchemaErrors<S[K]>>
-		: ErrorList;
+	[K in keyof S]?: S[K] extends object | null | undefined ? Prettify<VEList & SchemaErrors<S[K]>> : VEList;
 } & {};
 
 /**
@@ -16,12 +14,12 @@ type SchemaErrors<S> = {
  */
 export type ValidationErrors<S extends Schema | undefined> = S extends Schema
 	? Infer<S> extends object
-		? PrettyMerge<ErrorList & SchemaErrors<Infer<S>>>
-		: ErrorList
+		? Prettify<VEList & SchemaErrors<Infer<S>>>
+		: VEList
 	: undefined;
 
 /**
- * Type of the array of validation errors of bind arguments.
+ * Type of the array of bind arguments validation errors.
  */
 export type BindArgsValidationErrors<BAS extends readonly Schema[]> = {
 	[K in keyof BAS]: ValidationErrors<BAS[K]>;

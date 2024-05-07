@@ -3,7 +3,6 @@ sidebar_position: 4
 description: Learn how to customize validation errors format returned to the client.
 ---
 
-
 # Customize validation errors format
 
 next-safe-action, by default, emulates Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method for building both validation and bind args validation errors and return them to the client.
@@ -38,7 +37,7 @@ export const loginUser = actionClient
   .bindArgs(bindArgsSchemas, {
     // Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
     // validation errors object array to the client.
-    formatBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve)
+    formatBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve),
   })
   .action(async ({ parsedInput: { username, password } }) => {
     // Your code here...
@@ -59,8 +58,8 @@ validationErrors = {
   },
   password: {
     _errors: ["Password must be at least 8 characters long"],
-  }
-}
+  },
+};
 ```
 
 When passed to `formatValidationErrors`, the function will return a flattened version of it:
@@ -75,8 +74,7 @@ flattenedErrors = {
     username: ["Username format is invalid", "Username is too short"],
     password: ["Password must be at least 8 characters long"],
   },
-}
-
+};
 ```
 
 `flattenBindArgsValidationErrors` works the same way, but with bind args (in [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) method), to build the validation errors array.
@@ -88,7 +86,11 @@ next-safe-action, by default, uses the formatted validation errors structure, so
 If you need or want to flatten validation errors often, though, you can define an utility function like this one (assuming you're using Zod, but you can adapt it to your needs):
 
 ```typescript title="src/lib/safe-action.ts"
-function fve<const S extends z.ZodTypeAny>(schema: S): [S, {
+function fve<const S extends z.ZodTypeAny>(
+  schema: S
+): [
+  S,
+  {
     formatValidationErrors: FormatValidationErrorsFn<
       S,
       FlattenedValidationErrors<ValidationErrors<S>>
@@ -97,7 +99,10 @@ function fve<const S extends z.ZodTypeAny>(schema: S): [S, {
 ] {
   return [
     schema,
-    { formatValidationErrors: (ve: ValidationErrors<S>) => flattenValidationErrors(ve) },
+    {
+      formatValidationErrors: (ve: ValidationErrors<S>) =>
+        flattenValidationErrors(ve),
+    },
   ];
 }
 ```
@@ -114,9 +119,11 @@ const schema = z.object({
 
 // Spread `fve` utility function in the `schema` method. Type safety is preserved.
 //                                     \\\\\\\\\\\\\\
-const loginUser = actionClient.schema(...fve(schema)).action(async ({ parsedInput: { username } }) => {
-  return {
-    greeting: `Welcome back, ${username}!`,
-  };
-});
+const loginUser = actionClient
+  .schema(...fve(schema))
+  .action(async ({ parsedInput: { username } }) => {
+    return {
+      greeting: `Welcome back, ${username}!`,
+    };
+  });
 ```

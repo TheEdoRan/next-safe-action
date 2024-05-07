@@ -11,38 +11,26 @@ type Props = {
 };
 
 const AddLikesForm = ({ likesCount }: Props) => {
-	// Here we pass safe action (`addLikes`) and current server state to `useAction` hook.
+	// Here we pass safe action (`addLikes`) and current server data to `useOptimisticAction` hook.
 	const { execute, result, status, reset, optimisticData } =
-		useOptimisticAction(
-			addLikes,
-			{ likesCount },
-			({ likesCount }, { incrementBy }) => ({
-				likesCount: likesCount + incrementBy,
+		useOptimisticAction(addLikes, {
+			currentData: { likesCount },
+			updateFn: (prevData, { incrementBy }) => ({
+				likesCount: prevData.likesCount + incrementBy,
 			}),
-			{
-				onSuccess({ data, input, reset }) {
-					console.log("HELLO FROM ONSUCCESS", data, input);
-
-					// You can reset result object by calling `reset`.
-					// reset();
-				},
-				onError({ error, input, reset }) {
-					console.log("OH NO FROM ONERROR", error, input);
-
-					// You can reset result object by calling `reset`.
-					// reset();
-				},
-				onSettled({ result, input, reset }) {
-					console.log("HELLO FROM ONSETTLED", result, input);
-
-					// You can reset result object by calling `reset`.
-					// reset();
-				},
-				onExecute({ input }) {
-					console.log("HELLO FROM ONEXECUTE", input);
-				},
-			}
-		);
+			onSuccess({ data, input }) {
+				console.log("HELLO FROM ONSUCCESS", data, input);
+			},
+			onError({ error, input }) {
+				console.log("OH NO FROM ONERROR", error, input);
+			},
+			onSettled({ result, input }) {
+				console.log("HELLO FROM ONSETTLED", result, input);
+			},
+			onExecute({ input }) {
+				console.log("HELLO FROM ONEXECUTE", input);
+			},
+		});
 
 	console.log("status:", status);
 
@@ -79,6 +67,7 @@ const AddLikesForm = ({ likesCount }: Props) => {
 				status={status}
 				customTitle="Optimistic data:"
 			/>
+			<ResultBox result={result} customTitle="Actual result:" />
 		</>
 	);
 };

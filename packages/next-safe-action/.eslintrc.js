@@ -14,6 +14,8 @@ module.exports = defineConfig({
 	rules: {
 		"@typescript-eslint/consistent-type-imports": "error",
 		"@typescript-eslint/consistent-type-exports": "error",
+		"@typescript-eslint/unbound-method": "off",
+		"@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/no-redundant-type-constituents": "off",
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/ban-types": "off",

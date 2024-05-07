@@ -1,4 +1,4 @@
-import type { HookActionStatus } from "./hooks";
+import type { HookActionStatus } from "./hooks.types";
 
 /**
  * Returns true if the action is idle.

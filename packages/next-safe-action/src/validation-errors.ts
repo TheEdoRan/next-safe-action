@@ -3,16 +3,13 @@
 import type { ValidationIssue } from "@typeschema/core";
 import type { Schema } from "@typeschema/main";
 import type {
-	ErrorList,
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,
 	ValidationErrors,
 } from "./validation-errors.types";
 
 // This function is used internally to build the validation errors object from a list of validation issues.
-export const buildValidationErrors = <const S extends Schema | undefined>(
-	issues: ValidationIssue[]
-) => {
+export const buildValidationErrors = <S extends Schema | undefined>(issues: ValidationIssue[]) => {
 	const ve: any = {};
 
 	for (const issue of issues) {
@@ -42,14 +39,12 @@ export const buildValidationErrors = <const S extends Schema | undefined>(
 		const key = path[path.length - 1]!;
 
 		// Set error for the current path. If `_errors` array exists, add the message to it.
-		ref[key] = (
-			ref[key]?._errors
-				? {
-						...structuredClone(ref[key]),
-						_errors: [...ref[key]._errors, message],
-					}
-				: { ...structuredClone(ref[key]), _errors: [message] }
-		) satisfies ErrorList;
+		ref[key] = ref[key]?._errors
+			? {
+					...structuredClone(ref[key]),
+					_errors: [...ref[key]._errors, message],
+				}
+			: { ...structuredClone(ref[key]), _errors: [message] };
 	}
 
 	return ve as ValidationErrors<S>;
@@ -70,12 +65,10 @@ export class ServerValidationError<S extends Schema> extends Error {
  * Code declared after this function invocation will not be executed.
  * @param schema Input schema
  * @param validationErrors Validation errors object
- * @throws {ServerValidationError}
+ *
+ * {@link https://next-safe-action.dev/docs/recipes/additional-validation-errors#returnvalidationerrors See docs for more information}
  */
-export function returnValidationErrors<S extends Schema>(
-	schema: S,
-	validationErrors: ValidationErrors<S>
-): never {
+export function returnValidationErrors<S extends Schema>(schema: S, validationErrors: ValidationErrors<S>): never {
 	throw new ServerValidationError<S>(validationErrors);
 }
 
@@ -85,19 +78,16 @@ export function returnValidationErrors<S extends Schema>(
  * one level deep. It discards errors for nested fields.
  * Emulation of `zod`'s [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) function.
  * @param {ValidationErrors} [validationErrors] Validation errors object
- * @returns {FlattenedValidationErrors} Flattened validation errors
+ *
+ * {@link https://next-safe-action.dev/docs/recipes/customize-validation-errors-format#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
  */
-export function flattenValidationErrors<const VE extends ValidationErrors<any>>(
-	validationErrors: VE
-) {
+export function flattenValidationErrors<VE extends ValidationErrors<any>>(validationErrors: VE) {
 	const flattened: FlattenedValidationErrors<VE> = {
 		formErrors: [],
 		fieldErrors: {},
 	};
 
-	for (const [key, value] of Object.entries<string[] | { _errors: string[] }>(
-		validationErrors ?? {}
-	)) {
+	for (const [key, value] of Object.entries<string[] | { _errors: string[] }>(validationErrors ?? {})) {
 		if (key === "_errors" && Array.isArray(value)) {
 			flattened.formErrors = [...value];
 		} else {
@@ -116,12 +106,11 @@ export function flattenValidationErrors<const VE extends ValidationErrors<any>>(
  * one level deep. It discards errors for nested fields.
  * Emulation of `zod`'s [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) function.
  * @param {ValidationErrors[]} [bindArgsValidationErrors] Bind arguments validation errors object
- * @returns {FlattenedBindArgsValidationErrors} Flattened bind arguments validation errors
+ *
+ * {@link https://next-safe-action.dev/docs/recipes/customize-validation-errors-format#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
  */
-export function flattenBindArgsValidationErrors<
-	const BAVE extends readonly ValidationErrors<any>[],
->(bindArgsValidationErrors: BAVE) {
-	return bindArgsValidationErrors.map((ve) =>
-		flattenValidationErrors(ve)
-	) as FlattenedBindArgsValidationErrors<BAVE>;
+export function flattenBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]>(
+	bindArgsValidationErrors: BAVE
+) {
+	return bindArgsValidationErrors.map((ve) => flattenValidationErrors(ve)) as FlattenedBindArgsValidationErrors<BAVE>;
 }

@@ -10,8 +10,6 @@ type Props = {
 export function ExampleGithubLink({ className }: Props) {
 	const pathname = usePathname();
 
-	console.log(pathname);
-
 	return (
 		<a
 			href={`https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)${pathname}`}
@@ -19,8 +17,8 @@ export function ExampleGithubLink({ className }: Props) {
 			rel="noopener noreferrer"
 			aria-label="Example link to GitHub"
 			className={className}>
-			<span>View on GitHub</span>
 			<Link className="w-4 h-4" />
+			<span>View on GitHub</span>
 		</a>
 	);
 }

@@ -2,11 +2,9 @@
 
 import { action } from "@/lib/safe-action";
 
-export const emptyAction = action
-	.metadata({ actionName: "onboardUser" })
-	.action(async (obj) => {
-		console.log("OBJ ->", obj);
-
+export const noargsAction = action
+	.metadata({ actionName: "noargsAction" })
+	.action(async () => {
 		await new Promise((res) => setTimeout(res, 500));
 
 		return {

@@ -2,14 +2,12 @@
 
 import { StyledButton } from "@/app/_components/styled-button";
 import { StyledHeading } from "@/app/_components/styled-heading";
-import { StyledInput } from "@/app/_components/styled-input";
 import { useAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
-import { deleteUser } from "./deleteuser-action";
+import { noargsAction } from "./noargs-action";
 
-export default function Hook() {
-	// Safe action (`deleteUser`) and optional callbacks passed to `useAction` hook.
-	const { execute, result, status, reset } = useAction(deleteUser, {
+export default function EmptySchema() {
+	const { execute, result, status, reset } = useAction(noargsAction, {
 		onSuccess({ data, input }) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
 		},
@@ -28,26 +26,15 @@ export default function Hook() {
 
 	return (
 		<main className="w-96 max-w-full px-4">
-			<StyledHeading>Action using hook</StyledHeading>
+			<StyledHeading>Action without arguments</StyledHeading>
 			<form
 				className="flex flex-col mt-8 space-y-4"
 				onSubmit={(e) => {
 					e.preventDefault();
-					const formData = new FormData(e.currentTarget);
-					const input = Object.fromEntries(formData) as {
-						userId: string;
-					};
-
 					// Action call.
-					execute(input);
+					execute();
 				}}>
-				<StyledInput
-					type="text"
-					name="userId"
-					id="userId"
-					placeholder="User ID"
-				/>
-				<StyledButton type="submit">Delete user</StyledButton>
+				<StyledButton type="submit">Execute action</StyledButton>
 				<StyledButton type="button" onClick={reset}>
 					Reset
 				</StyledButton>

@@ -3,7 +3,7 @@ sidebar_position: 9
 description: Learn how to contribute to next-safe-action via GitHub.
 ---
 
-## Contributing
+# Contributing
 
 If you want to contribute to next-safe-action, please check out the [contributing guide](https://github.com/TheEdoRan/next-safe-action/tree/next/CONTRIBUTING.md).
 

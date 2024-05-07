@@ -6,36 +6,35 @@ import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
 import {} from "react/experimental";
 import type {} from "zod";
-import type { HookActionStatus, HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
-import { isError } from "./utils";
-
-// UTILS
-
-const DEFAULT_RESULT = {
-	data: undefined,
-	fetchError: undefined,
-	serverError: undefined,
-	validationErrors: undefined,
-} satisfies HookResult<any, any, any, any, any, any>;
+import type {
+	HookActionStatus,
+	HookCallbacks,
+	HookResult,
+	HookSafeActionFn,
+	HookStateSafeActionFn,
+} from "./hooks.types";
+import { EMPTY_HOOK_RESULT, isError } from "./utils";
 
 const getActionStatus = <
-	const ServerError,
-	const S extends Schema | undefined,
+	ServerError,
+	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	const FVE,
-	const FBAVE,
-	const Data,
+	FVE,
+	FBAVE,
+	Data,
 >({
+	isIdle,
 	isExecuting,
 	result,
 }: {
+	isIdle: boolean;
 	isExecuting: boolean;
 	result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
 }): HookActionStatus => {
-	if (isExecuting) {
+	if (isIdle) {
+		return "idle";
+	} else if (isExecuting) {
 		return "executing";
-	} else if (typeof result.data !== "undefined") {
-		return "hasSucceeded";
 	} else if (
 		typeof result.validationErrors !== "undefined" ||
 		typeof result.bindArgsValidationErrors !== "undefined" ||
@@ -43,29 +42,27 @@ const getActionStatus = <
 		typeof result.fetchError !== "undefined"
 	) {
 		return "hasErrored";
+	} else {
+		return "hasSucceeded";
 	}
-
-	return "idle";
 };
 
 const useActionCallbacks = <
-	const ServerError,
-	const S extends Schema | undefined,
+	ServerError,
+	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	const FVE,
-	const FBAVE,
-	const Data,
+	FVE,
+	FBAVE,
+	Data,
 >({
 	result,
 	input,
 	status,
-	reset,
 	cb,
 }: {
 	result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
 	input: S extends Schema ? InferIn<S> : undefined;
 	status: HookActionStatus;
-	reset: () => void;
 	cb?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>;
 }) => {
 	const onExecuteRef = React.useRef(cb?.onExecute);
@@ -86,56 +83,57 @@ const useActionCallbacks = <
 					await Promise.resolve(onExecute?.({ input }));
 					break;
 				case "hasSucceeded":
-					await Promise.resolve(onSuccess?.({ data: result.data!, input, reset }));
-					await Promise.resolve(onSettled?.({ result, input, reset }));
+					await Promise.resolve(onSuccess?.({ data: result.data!, input }));
+					await Promise.resolve(onSettled?.({ result, input }));
 					break;
 				case "hasErrored":
-					await Promise.resolve(onError?.({ error: result, input, reset }));
-					await Promise.resolve(onSettled?.({ result, input, reset }));
+					await Promise.resolve(onError?.({ error: result, input }));
+					await Promise.resolve(onSettled?.({ result, input }));
 					break;
 			}
 		};
 
 		executeCallbacks().catch(console.error);
-	}, [status, result, reset, input]);
+	}, [status, result, input]);
 };
 
 // HOOKS
 
 /**
  * Use the action from a Client Component via hook.
- * @param safeActionFn The typesafe action.
- * @param callbacks Optional callbacks executed based on the action status.
+ * @param safeActionFn The action function
+ * @param utils Optional callbacks
  *
- * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useaction See an example}
+ * {@link https://next-safe-action.dev/docs/usage/hooks/useaction See docs for more information}
  */
 export const useAction = <
-	const ServerError,
-	const S extends Schema | undefined,
+	ServerError,
+	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	const FVE,
-	const FBAVE,
-	const Data,
+	FVE,
+	FBAVE,
+	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
-	callbacks?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
+	utils?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] =
-		React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(EMPTY_HOOK_RESULT);
 	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
+	const [isIdle, setIsIdle] = React.useState(true);
 
-	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result });
+	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result, isIdle });
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
+			setIsIdle(false);
 			setInput(input);
 			setIsExecuting(true);
 
 			return startTransition(() => {
 				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
-					.then((res) => setResult(res ?? DEFAULT_RESULT))
+					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
 							throw e;
@@ -151,16 +149,16 @@ export const useAction = <
 		[safeActionFn]
 	);
 
-	const reset = React.useCallback(() => {
-		setResult(DEFAULT_RESULT);
-	}, []);
+	const reset = () => {
+		setIsIdle(true);
+		setResult(EMPTY_HOOK_RESULT);
+	};
 
 	useActionCallbacks({
 		result,
 		input: input as S extends Schema ? InferIn<S> : undefined,
 		status,
-		reset,
-		cb: callbacks,
+		cb: utils,
 	});
 
 	return {
@@ -173,50 +171,48 @@ export const useAction = <
 
 /**
  * Use the action from a Client Component via hook, with optimistic data update.
+ * @param safeActionFn The action function
+ * @param utils Required `currentData` and `updateFn` and optional callbacks
  *
- * **NOTE: This hook uses an experimental React feature.**
- * @param safeActionFn The typesafe action.
- * @param initialOptimisticData Initial optimistic data.
- * @param reducer Optimistic state reducer.
- * @param callbacks Optional callbacks executed based on the action status.
- *
- * {@link https://next-safe-action.dev/docs/usage/client-components/hooks/useoptimisticaction See an example}
+ * {@link https://next-safe-action.dev/docs/usage/hooks/useoptimisticaction See docs for more information}
  */
 export const useOptimisticAction = <
-	const ServerError,
-	const S extends Schema | undefined,
+	ServerError,
+	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	const FVE,
-	const FBAVE,
-	const Data,
+	FVE,
+	FBAVE,
+	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
-	initialOptimisticData: Data,
-	reducer: (state: Data, input: S extends Schema ? InferIn<S> : undefined) => Data,
-	callbacks?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
+	utils: {
+		currentData: Data;
+		updateFn: (prevData: Data, input: S extends Schema ? InferIn<S> : undefined) => Data;
+	} & HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] =
-		React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(DEFAULT_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(EMPTY_HOOK_RESULT);
 	const [input, setInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
+	const [isIdle, setIsIdle] = React.useState(true);
 
-	const [optimisticData, setOptimisticState] = React.useOptimistic<
-		Data,
-		S extends Schema ? InferIn<S> : undefined
-	>(initialOptimisticData, reducer);
+	const [optimisticData, setOptimisticData] = React.useOptimistic<Data, S extends Schema ? InferIn<S> : undefined>(
+		utils.currentData,
+		utils.updateFn
+	);
 
-	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result });
+	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result, isIdle });
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
+			setIsIdle(false);
 			setInput(input);
 			setIsExecuting(true);
 
 			return startTransition(() => {
-				setOptimisticState(input as S extends Schema ? InferIn<S> : undefined);
+				setOptimisticData(input as S extends Schema ? InferIn<S> : undefined);
 				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
-					.then((res) => setResult(res ?? DEFAULT_RESULT))
+					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
 							throw e;
@@ -229,19 +225,24 @@ export const useOptimisticAction = <
 					});
 			});
 		},
-		[setOptimisticState, safeActionFn]
+		[safeActionFn, setOptimisticData]
 	);
 
-	const reset = React.useCallback(() => {
-		setResult(DEFAULT_RESULT);
-	}, []);
+	const reset = () => {
+		setIsIdle(true);
+		setResult(EMPTY_HOOK_RESULT);
+	};
 
 	useActionCallbacks({
 		result,
 		input: input as S extends Schema ? InferIn<S> : undefined,
 		status,
-		reset,
-		cb: callbacks,
+		cb: {
+			onExecute: utils.onExecute,
+			onSuccess: utils.onSuccess,
+			onError: utils.onError,
+			onSettled: utils.onSettled,
+		},
 	});
 
 	return {
@@ -253,4 +254,68 @@ export const useOptimisticAction = <
 	};
 };
 
-export type { HookActionStatus, HookCallbacks, HookResult, HookSafeActionFn };
+/**
+ * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction).
+ * @param safeActionFn The action function
+ * @param utils Optional `initResult`, `permalink` and callbacks
+ *
+ * {@link https://next-safe-action.dev/docs/usage/hooks/usestateaction See docs for more information}
+ */
+export const useStateAction = <
+	ServerError,
+	S extends Schema | undefined,
+	const BAS extends readonly Schema[],
+	FVE,
+	FBAVE,
+	Data,
+>(
+	safeActionFn: HookStateSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
+	utils?: {
+		initResult?: Awaited<ReturnType<typeof safeActionFn>>;
+		permalink?: string;
+	} & HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
+) => {
+	const [result, dispatcher, isExecuting] = React.useActionState(
+		safeActionFn,
+		utils?.initResult ?? EMPTY_HOOK_RESULT,
+		utils?.permalink
+	);
+	const [isIdle, setIsIdle] = React.useState(true);
+
+	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
+
+	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result, isIdle });
+
+	const execute = React.useCallback(
+		(input: S extends Schema ? InferIn<S> : void) => {
+			setTimeout(() => {
+				setIsIdle(false);
+				setClientInput(input);
+				dispatcher(input as S extends Schema ? InferIn<S> : undefined);
+			}, 0);
+		},
+		[dispatcher]
+	);
+
+	useActionCallbacks({
+		result,
+		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		status,
+		cb: {
+			onExecute: utils?.onExecute,
+			onSuccess: utils?.onSuccess,
+			onError: utils?.onError,
+			onSettled: utils?.onSettled,
+		},
+	});
+
+	return {
+		execute,
+		result,
+		status,
+	};
+};
+
+export { EMPTY_HOOK_RESULT };
+
+export type * from "./hooks.types";

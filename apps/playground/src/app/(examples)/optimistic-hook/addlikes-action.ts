@@ -1,6 +1,6 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
+import { ActionError, action } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -21,7 +21,13 @@ export const addLikes = action
 	.metadata({ actionName: "addLikes" })
 	.schema(schema)
 	.action(async ({ parsedInput: { incrementBy } }) => {
-		await new Promise((res) => setTimeout(res, 2000));
+		await new Promise((res) => setTimeout(res, 500));
+
+		if (Math.random() > 0.5) {
+			throw new ActionError(
+				"Could not update likes right now, please try again later."
+			);
+		}
 
 		const likesCount = incrementLikes(incrementBy);
 

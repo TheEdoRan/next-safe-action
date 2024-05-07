@@ -6,25 +6,16 @@ import { useAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
 import { emptyAction } from "./empty-action";
 
-export default function EmptySchema() {
+export default function EmptyResponse() {
 	const { execute, result, status, reset } = useAction(emptyAction, {
-		onSuccess({ data, input, reset }) {
+		onSuccess({ data, input }) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
-
-			// You can reset result object by calling `reset`.
-			// reset();
 		},
-		onError({ error, input, reset }) {
+		onError({ error, input }) {
 			console.log("OH NO FROM ONERROR", error, input);
-
-			// You can reset result object by calling `reset`.
-			// reset();
 		},
-		onSettled({ result, input, reset }) {
+		onSettled({ result, input }) {
 			console.log("HELLO FROM ONSETTLED", result, input);
-
-			// You can reset result object by calling `reset`.
-			// reset();
 		},
 		onExecute({ input }) {
 			console.log("HELLO FROM ONEXECUTE", input);
@@ -35,21 +26,18 @@ export default function EmptySchema() {
 
 	return (
 		<main className="w-96 max-w-full px-4">
-			<StyledHeading>Action without arguments</StyledHeading>
-			<form
-				className="flex flex-col mt-8 space-y-4"
-				onSubmit={(e) => {
-					e.preventDefault();
-					const formData = new FormData(e.currentTarget);
-
-					// Action call.
-					execute();
+			<StyledHeading>Action without response data</StyledHeading>
+			<StyledButton
+				type="button"
+				className="mt-4"
+				onClick={() => {
+					execute({ userId: crypto.randomUUID() });
 				}}>
-				<StyledButton type="submit">Execute action</StyledButton>
-				<StyledButton type="button" onClick={reset}>
-					Reset
-				</StyledButton>
-			</form>
+				Execute action
+			</StyledButton>
+			<StyledButton className="mt-4" type="button" onClick={reset}>
+				Reset
+			</StyledButton>
 			<ResultBox result={result} status={status} />
 		</main>
 	);

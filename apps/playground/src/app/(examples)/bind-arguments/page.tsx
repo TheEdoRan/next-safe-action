@@ -15,23 +15,14 @@ export default function BindArguments() {
 	);
 
 	const { execute, result, status, reset } = useAction(boundOnboardUser, {
-		onSuccess({ data, input, reset }) {
+		onSuccess({ data, input }) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
-
-			// You can reset result object by calling `reset`.
-			// reset();
 		},
-		onError({ error, input, reset }) {
+		onError({ error, input }) {
 			console.log("OH NO FROM ONERROR", error, input);
-
-			// You can reset result object by calling `reset`.
-			// reset();
 		},
-		onSettled({ result, input, reset }) {
+		onSettled({ result, input }) {
 			console.log("HELLO FROM ONSETTLED", result, input);
-
-			// You can reset result object by calling `reset`.
-			// reset();
 		},
 		onExecute({ input }) {
 			console.log("HELLO FROM ONEXECUTE", input);

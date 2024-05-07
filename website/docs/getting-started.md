@@ -10,10 +10,11 @@ This is the documentation for the current version of the library (7.x.x).
 :::
 
 :::info Requirements
-- Next.js >= 14.0.0
+
+- Next.js >= 14.3.0
 - TypeScript >= 5.0.0
 - a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
-:::
+  :::
 
 **next-safe-action** provides a typesafe Server Actions implementation for Next.js App Router.
 
@@ -35,7 +36,7 @@ Find the adapter for your validation library of choice in the [TypeSchema docume
 
 ### 1. Instantiate a new client
 
- You can create a new client with the following code:
+You can create a new client with the following code:
 
 ```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
@@ -48,7 +49,7 @@ This is a basic client, without any options or middleware functions. If you want
 ### 2. Define a new action
 
 This is how a safe action is created. Providing a validation input schema to the function via [`schema()`](/docs/safe-action-client/instance-methods#schema), we're sure that data that comes in is type safe and validated.
-The [`action()`](/docs/safe-action-client/instance-methods#action) method lets you define what happens on the server when the action is called from client, via an async function that receives the parsed input and context as arguments. In short, this is your _server code_. **It never runs on the client**:
+The [`action()`](/docs/safe-action-client/instance-methods#action--stateaction) method lets you define what happens on the server when the action is called from client, via an async function that receives the parsed input and context as arguments. In short, this is your _server code_. **It never runs on the client**:
 
 ```typescript title="src/app/login-action.ts"
 "use server"; // don't forget to add this!
@@ -69,8 +70,8 @@ export const loginUser = actionClient
       return {
         success: "Successfully logged in",
       };
-    } 
-      
+    }
+
     return { failure: "Incorrect credentials" };
   });
 ```
@@ -91,10 +92,18 @@ export default function Login() {
     <button
       onClick={async () => {
         // Typesafe action called from client.
-        const res = await loginUser({ username: "johndoe", password: "123456" });
+        const res = await loginUser({
+          username: "johndoe",
+          password: "123456",
+        });
 
         // Result keys.
-        const { data, validationErrors, bindArgsValidationErrors, serverError } = res;
+        const {
+          data,
+          validationErrors,
+          bindArgsValidationErrors,
+          serverError,
+        } = res;
       }}>
       Log in
     </button>
@@ -102,4 +111,4 @@ export default function Login() {
 }
 ```
 
-You also can execute Server Actions with hooks, which are a more powerful way to handle mutations. For more information about these, check out the [`useAction`](/docs/usage/client-components/hooks/useaction) and [`useOptimisticAction`](/docs/usage/client-components/hooks/useoptimisticaction) hooks sections.
+You also can execute Server Actions with hooks, which are a more powerful way to handle mutations. For more information about these, check out the [`useAction`](/docs/usage/hooks/useaction), [`useOptimisticAction`](/docs/usage/hooks/useoptimisticaction) and [`useStateAction`](/docs/usage/hooks/usestateaction) hooks sections.

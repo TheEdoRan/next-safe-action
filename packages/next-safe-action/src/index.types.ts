@@ -1,5 +1,5 @@
 import type { Infer, InferIn, Schema } from "@typeschema/main";
-import type { InferArray, InferInArray, MaybePromise } from "./utils";
+import type { InferArray, InferInArray, MaybePromise, Prettify } from "./utils";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 
 /**
@@ -20,7 +20,7 @@ export type SafeActionResult<
 	BAS extends readonly Schema[],
 	FVE = ValidationErrors<S>,
 	FBAVE = BindArgsValidationErrors<BAS>,
-	Data = null,
+	Data = unknown,
 	// eslint-disable-next-line
 	NextCtx = unknown,
 > = {
@@ -31,9 +31,16 @@ export type SafeActionResult<
 };
 
 /**
- * Type of the function called from components with typesafe input data.
+ * Type of the function called from components with type safe input data.
  */
-export type SafeActionFn<
+export type SafeActionFn<ServerError, S extends Schema | undefined, BAS extends readonly Schema[], FVE, FBAVE, Data> = (
+	...clientInputs: [...bindArgsInputs: InferInArray<BAS>, input: S extends Schema ? InferIn<S> : void]
+) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+
+/**
+ * Type of the stateful function called from components with type safe input data.
+ */
+export type SafeStateActionFn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
@@ -41,7 +48,11 @@ export type SafeActionFn<
 	FBAVE,
 	Data,
 > = (
-	...clientInputs: [...InferInArray<BAS>, S extends Schema ? InferIn<S> : void]
+	...clientInputs: [
+		...bindArgsInputs: InferInArray<BAS>,
+		prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>,
+		input: S extends Schema ? InferIn<S> : void,
+	]
 ) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
 
 /**
@@ -52,8 +63,8 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 	ServerError,
 	any,
 	any,
-	any,
-	any,
+	unknown,
+	unknown,
 	unknown,
 	NextCtx
 > & {
@@ -71,9 +82,9 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 		clientInput: unknown;
 		bindArgsClientInputs: unknown[];
 		ctx: Ctx;
-		metadata: MD | null;
+		metadata: MD | undefined;
 		next: {
-			<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
+			<NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
 		};
 	}): Promise<MiddlewareResult<ServerError, NextCtx>>;
 };
@@ -81,15 +92,31 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
-	Data,
-	Ctx,
-	MD,
-> = (args: {
+export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Schema[], Ctx, MD, Data> = (args: {
 	parsedInput: S extends Schema ? Infer<S> : undefined;
 	bindArgsParsedInputs: InferArray<BAS>;
 	ctx: Ctx;
 	metadata: MD;
 }) => Promise<Data>;
+
+/**
+ * Type of the function that executes server code when defining a new stateful safe action.
+ */
+export type StateServerCodeFn<
+	ServerError,
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	FVE,
+	FBAVE,
+	Ctx,
+	MD,
+	Data,
+> = (
+	args: {
+		parsedInput: S extends Schema ? Infer<S> : undefined;
+		bindArgsParsedInputs: InferArray<BAS>;
+		ctx: Ctx;
+		metadata: MD;
+	},
+	utils: { prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>> }
+) => Promise<Data>;

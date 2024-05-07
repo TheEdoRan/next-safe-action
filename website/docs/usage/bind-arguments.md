@@ -53,7 +53,11 @@ import { onboardUser } from "./onboard-action";
 export default function OnboardPage() {
   // Here we bind `userId` and `age` to `onboardUser`.
   // `boundOnboardUser` will have just `{ username: string }` as its argument, after this `bind` call.
-  const boundOnboardUser = onboardUser.bind(null, "d3a96f0f-e509-4f2f-b7d0-cdf50f0dc772", 30);
+  const boundOnboardUser = onboardUser.bind(
+    null,
+    "d3a96f0f-e509-4f2f-b7d0-cdf50f0dc772",
+    30
+  );
   const { execute, result, status, reset } = useAction(boundOnboardUser);
 
   // ...

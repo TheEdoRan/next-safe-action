@@ -20,7 +20,10 @@ Instance level is the right place when you want to share middleware behavior for
 Here we'll use a logging middleware in the base client and then extend it with an authorization middleware in `authActionClient`. We'll also define a safe action called `editProfile`, that will use `authActionClient` as its client. Note that the `handleReturnedServerError` function passed to the base client will also be used for `authActionClient`:
 
 ```typescript title="src/lib/safe-action.ts"
-import { createSafeActionClient, DEFAULT_SERVER_ERROR_MESSAGE } from "next-safe-action";
+import {
+  createSafeActionClient,
+  DEFAULT_SERVER_ERROR_MESSAGE,
+} from "next-safe-action";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { getUserIdFromSessionId } from "./db";
@@ -41,7 +44,7 @@ const actionClient = createSafeActionClient({
       actionName: z.string(),
     });
   },
-// Define logging middleware.
+  // Define logging middleware.
 }).use(async ({ next, clientInput, metadata }) => {
   console.log("LOGGING MIDDLEWARE");
 
@@ -89,11 +92,11 @@ import { z } from "zod";
 
 const editProfile = authActionClient
   // We can pass the action name inside `metadata()`.
-  .metadata({ actionName: "editProfile" }) 
+  .metadata({ actionName: "editProfile" })
   // Here we pass the input schema.
   .schema(z.object({ newUsername: z.string() }))
   // Here we get `userId` from the middleware defined in `authActionClient`.
-  .action(async ({ parsedInput: { newUsername }, ctx: { userId } }) => { 
+  .action(async ({ parsedInput: { newUsername }, ctx: { userId } }) => {
     await saveNewUsernameInDb(userId, newUsername);
 
     return {
@@ -141,7 +144,7 @@ const deleteUser = authActionClient
 
     // Here we pass the same untouched context (`userId`) to the next function, since we don't need
     // to add data to the context here.
-    return next({ ctx }); 
+    return next({ ctx });
   })
   .metadata({ actionName: "deleteUser" })
   .schema(z.void())
@@ -187,13 +190,13 @@ Note that the second line comes from the default `handleServerErrorLog` function
 
 `middlewareFn` has the following arguments:
 
-| Name          | Type                                                           | Purpose                                                                                                                                                                      |
-|---------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `clientInput` | `unknown`                                        | The raw input (not parsed) passed from client.                                                                                                                               |
-| `bindArgsClientInputs` | `unknown[]`                                        | The raw array of bind arguments inputs (not parsed).
-| `ctx`         | `Ctx` (generic)                                                | Type safe context value from previous middleware function(s).                                                                                                                |
-| `metadata`    | `MD \| null` (generic)                | Metadata for the safe action execution.                                                                                                                                    |
-| `next`        | `<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<NC>>` | Function that will execute the next function in the middleware stack or the server code function. It expects, as argument, the next `ctx` value for the next function in the chain. |
+| Name                   | Type                                                           | Purpose                                                                                                                                                                             |
+| ---------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `clientInput`          | `unknown`                                                      | The raw input (not parsed) passed from client.                                                                                                                                      |
+| `bindArgsClientInputs` | `unknown[]`                                                    | The raw array of bind arguments inputs (not parsed).                                                                                                                                |
+| `ctx`                  | `Ctx`                                                | Type safe context value from previous middleware function(s).                                                                                                                       |
+| `metadata`             | `MD \| undefined`                                         | Metadata for the safe action execution.                                                                                                                                             |
+| `next`                 | `<const NC>(opts: { ctx: NC }): Promise<MiddlewareResult<NC>>` | Function that will execute the next function in the middleware stack or the server code function. It expects, as argument, the next `ctx` value for the next function in the chain. |
 
 ## `middlewareFn` return value
 
