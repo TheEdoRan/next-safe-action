@@ -13,6 +13,7 @@ import type {
 class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	readonly #handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
 	readonly #handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
+	readonly #validationStrategy: "typeschema" | "zod";
 
 	#middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	#ctxType = undefined as Ctx;
@@ -20,11 +21,13 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	constructor(
 		opts: {
 			middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
+			validationStrategy: "typeschema" | "zod";
 		} & Required<Pick<SafeActionClientOpts<ServerError, any>, "handleReturnedServerError" | "handleServerErrorLog">>
 	) {
 		this.#middlewareFns = opts.middlewareFns;
 		this.#handleServerErrorLog = opts.handleServerErrorLog;
 		this.#handleReturnedServerError = opts.handleReturnedServerError;
+		this.#validationStrategy = opts.validationStrategy;
 	}
 
 	/**
@@ -38,6 +41,7 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
+			validationStrategy: this.#validationStrategy,
 		});
 	}
 
@@ -75,6 +79,7 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 				middlewareFns: this.#middlewareFns,
 				metadata: data,
 				ctxType: this.#ctxType,
+				validationStrategy: this.#validationStrategy,
 			}),
 		};
 	}
@@ -134,6 +139,7 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 				formatValidationErrors: args.formatValidationErrors,
 				metadata: args.metadata,
 				ctxType: this.#ctxType,
+				validationStrategy: this.#validationStrategy,
 			}),
 		};
 	}
@@ -151,6 +157,7 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 			middlewareFns: this.#middlewareFns,
 			metadata: undefined,
 			ctxType: this.#ctxType,
+			validationStrategy: this.#validationStrategy,
 		}).action(serverCodeFn);
 	}
 
@@ -170,6 +177,7 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 			middlewareFns: this.#middlewareFns,
 			metadata: undefined,
 			ctxType: this.#ctxType,
+			validationStrategy: this.#validationStrategy,
 		}).stateAction(serverCodeFn);
 	}
 
@@ -196,17 +204,13 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 			formatBindArgsValidationErrors: args.formatBindArgsValidationErrors,
 			metadata: args.metadata,
 			ctxType: this.#ctxType,
+			validationStrategy: this.#validationStrategy,
 		});
 	}
 }
 
-/**
- * Create a new safe action client.
- * @param createOpts Optional initialization options
- *
- * {@link https://next-safe-action.dev/docs/safe-action-client/initialization-options See docs for more information}
- */
-export const createSafeActionClient = <ServerError = string, MetadataSchema extends Schema | undefined = undefined>(
+export const createClientWithStrategy = <ServerError = string, MetadataSchema extends Schema | undefined = undefined>(
+	validationStrategy: "typeschema" | "zod",
 	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema>
 ) => {
 	// If server log function is not provided, default to `console.error` for logging
@@ -233,5 +237,6 @@ export const createSafeActionClient = <ServerError = string, MetadataSchema exte
 		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
 		handleServerErrorLog,
 		handleReturnedServerError,
+		validationStrategy,
 	});
 };

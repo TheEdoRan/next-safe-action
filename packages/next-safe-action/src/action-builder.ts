@@ -1,5 +1,5 @@
-import type { Infer } from "@typeschema/main";
-import { validate, type Schema } from "@typeschema/main";
+import { validate, type Infer, type Schema } from "@typeschema/main";
+import { validate as zodValidate } from "@typeschema/zod";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {} from "zod";
@@ -41,6 +41,7 @@ export function actionBuilder<
 	handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
 	middlewareFns: MiddlewareFn<ServerError, any, any, MD>[];
 	ctxType: Ctx;
+	validationStrategy: "typeschema" | "zod";
 }) {
 	const bindArgsSchemas = (args.bindArgsSchemas ?? []) as BAS;
 
@@ -116,11 +117,15 @@ export function actionBuilder<
 											}
 
 											// Otherwise, parse input with the schema.
-											return validate(args.schema, input);
+											return args.validationStrategy === "zod"
+												? zodValidate(args.schema, input)
+												: validate(args.schema, input);
 										}
 
 										// Otherwise, we're processing bind args client inputs.
-										return validate(bindArgsSchemas[i]!, input);
+										return args.validationStrategy === "zod"
+											? zodValidate(bindArgsSchemas[i]!, input)
+											: validate(bindArgsSchemas[i]!, input);
 									})
 								);
 
