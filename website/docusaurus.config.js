@@ -60,6 +60,14 @@ export default {
 			apiKey: "87b638e133658cdec7cc633e6c4986c3",
 			indexName: "next-safe-action",
 		},
+		announcementBar: {
+			id: "banner_version_6",
+			content:
+				"You are viewing documentation for version 6 of the library. To access current stable version docs, visit the <a href='https://next-safe-action.dev'>main website</a>.",
+			backgroundColor: "#1f252e",
+			textColor: "#ffffff",
+			isCloseable: true,
+		},
 		navbar: {
 			title: "next-safe-action",
 			logo: {
