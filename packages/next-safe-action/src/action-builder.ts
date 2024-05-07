@@ -254,7 +254,7 @@ export function actionBuilder<
 		action: buildAction({ withState: false }).action,
 
 		/**
-		 * Define the stateful action. To be used with the [`useStateAction`](https://next-safe-action.dev/docs/usage/hooks/usestateaction) hook.
+		 * Define the stateful action. To be used with the [`useStateAction`](https://next-safe-action.dev/docs/execution/hooks/usestateaction) hook.
 		 * @param serverCodeFn Code that will be executed on the **server side**
 		 *
 		 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}

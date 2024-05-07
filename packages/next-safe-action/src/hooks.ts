@@ -11,7 +11,7 @@ import type {
 	HookCallbacks,
 	HookResult,
 	HookSafeActionFn,
-	HookStateSafeActionFn,
+	HookSafeStateActionFn,
 } from "./hooks.types";
 import { EMPTY_HOOK_RESULT, isError } from "./utils";
 
@@ -104,7 +104,7 @@ const useActionCallbacks = <
  * @param safeActionFn The action function
  * @param utils Optional callbacks
  *
- * {@link https://next-safe-action.dev/docs/usage/hooks/useaction See docs for more information}
+ * {@link https://next-safe-action.dev/docs/execution/hooks/useaction See docs for more information}
  */
 export const useAction = <
 	ServerError,
@@ -174,7 +174,7 @@ export const useAction = <
  * @param safeActionFn The action function
  * @param utils Required `currentData` and `updateFn` and optional callbacks
  *
- * {@link https://next-safe-action.dev/docs/usage/hooks/useoptimisticaction See docs for more information}
+ * {@link https://next-safe-action.dev/docs/execution/hooks/useoptimisticaction See docs for more information}
  */
 export const useOptimisticAction = <
 	ServerError,
@@ -259,7 +259,7 @@ export const useOptimisticAction = <
  * @param safeActionFn The action function
  * @param utils Optional `initResult`, `permalink` and callbacks
  *
- * {@link https://next-safe-action.dev/docs/usage/hooks/usestateaction See docs for more information}
+ * {@link https://next-safe-action.dev/docs/execution/hooks/usestateaction See docs for more information}
  */
 export const useStateAction = <
 	ServerError,
@@ -269,7 +269,7 @@ export const useStateAction = <
 	FBAVE,
 	Data,
 >(
-	safeActionFn: HookStateSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
+	safeActionFn: HookSafeStateActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
 	utils?: {
 		initResult?: Awaited<ReturnType<typeof safeActionFn>>;
 		permalink?: string;
