@@ -15,20 +15,20 @@
 		"typecheck": "tsc"
 	},
 	"dependencies": {
-		"@docusaurus/core": "3.2.1",
-		"@docusaurus/preset-classic": "3.2.1",
-		"@docusaurus/remark-plugin-npm2yarn": "^3.2.1",
+		"@docusaurus/core": "3.3.2",
+		"@docusaurus/preset-classic": "3.3.2",
+		"@docusaurus/remark-plugin-npm2yarn": "^3.3.2",
 		"@mdx-js/react": "^3.0.1",
 		"acorn": "8.11.3",
 		"clsx": "^2.1.1",
-		"lucide-react": "^0.372.0",
+		"lucide-react": "^0.378.0",
 		"prism-react-renderer": "^2.3.1",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1"
 	},
 	"devDependencies": {
-		"@docusaurus/module-type-aliases": "3.2.1",
-		"@docusaurus/tsconfig": "^3.2.1",
+		"@docusaurus/module-type-aliases": "3.3.2",
+		"@docusaurus/tsconfig": "^3.3.2",
 		"autoprefixer": "^10.4.19",
 		"postcss": "^8.4.38",
 		"postcss-nested": "^6.0.1",

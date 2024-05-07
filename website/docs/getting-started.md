@@ -5,16 +5,12 @@ description: Getting started with next-safe-action version 7.
 
 # Getting started
 
-:::note
-This is the documentation for the current version of the library (7.x.x).
-:::
-
 :::info Requirements
 
 - Next.js >= 14.3.0
 - TypeScript >= 5.0.0
 - a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
-  :::
+:::
 
 **next-safe-action** provides a typesafe Server Actions implementation for Next.js App Router.
 
