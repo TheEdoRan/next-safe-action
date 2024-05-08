@@ -9,7 +9,7 @@
 
 Like magic. 🪄
 
-https://github.com/TheEdoRan/next-safe-action/assets/1337629/7ebc398e-6c7d-49b2-8d03-e85e17d2ae32
+https://github.com/TheEdoRan/next-safe-action/assets/1337629/664eb3ee-92f3-4d4a-ba1b-a3b1c13fff04
 
 ## Features
 

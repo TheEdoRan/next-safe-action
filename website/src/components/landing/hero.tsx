@@ -33,7 +33,7 @@ export function Hero() {
 						</div>
 					</div>
 					<div className="cursor-pointer relative z-20 flex items-center justify-center mb-8">
-						<video width="1280" height="720" controls autoPlay>
+						<video width="1280" height="720" controls muted autoPlay>
 							<source src="/vid/demo.mp4" type="video/mp4" />
 							Your browser does not support the video tag.
 						</video>
