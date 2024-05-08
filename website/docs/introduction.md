@@ -20,6 +20,7 @@ Your browser does not support the video tag.
 
 - ✅ Pretty simple
 - ✅ End-to-end type safety
+- ✅ Form Actions support
 - ✅ Powerful middleware system
 - ✅ Input validation using multiple validation libraries
 - ✅ Advanced server error handling

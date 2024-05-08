@@ -15,6 +15,7 @@ https://github.com/TheEdoRan/next-safe-action/assets/1337629/664eb3ee-92f3-4d4a-
 
 - ✅ Pretty simple
 - ✅ End-to-end type safety
+- ✅ Form Actions support
 - ✅ Powerful middleware system
 - ✅ Input validation using multiple validation libraries
 - ✅ Advanced server error handling

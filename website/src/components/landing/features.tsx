@@ -5,12 +5,17 @@ const features: { title: string; description: string }[] = [
 	{
 		title: "Pretty simple",
 		description:
-			"No need to overcomplicate things. next-safe-action API is pretty simple, targeted for fast development.",
+			"No need to overcomplicate things. next-safe-action API is pretty simple, designed with fast development in mind.",
 	},
 	{
 		title: "End-to-end type safety",
 		description:
 			"With next-safe-action you get full type safety between server and client code.",
+	},
+	{
+		title: "Form Actions support",
+		description:
+			"next-safe-action supports Form Actions via stateful `useStateAction` hook.",
 	},
 	{
 		title: "Powerful middleware system",
