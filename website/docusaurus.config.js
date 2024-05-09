@@ -63,7 +63,7 @@ export default {
 		announcementBar: {
 			id: "banner_version_7",
 			content:
-				"You are viewing documentation for version 7 of the library. To access previous version docs, visit the <a href='https://v6.next-safe-action.dev'>v6 website</a>.",
+				"You are viewing documentation for version 7 (beta) of the library. To access current stable version docs, visit the <a href='https://v6.next-safe-action.dev'>v6 website</a>.",
 			backgroundColor: "#1f252e",
 			textColor: "#ffffff",
 			isCloseable: true,
