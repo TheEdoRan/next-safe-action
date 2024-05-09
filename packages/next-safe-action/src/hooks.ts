@@ -13,7 +13,17 @@ import type {
 	HookSafeActionFn,
 	HookSafeStateActionFn,
 } from "./hooks.types";
-import { EMPTY_HOOK_RESULT, isError } from "./utils";
+import { isError } from "./utils";
+
+/**
+ * Default value for `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
+ */
+export const EMPTY_HOOK_RESULT = {
+	data: undefined,
+	fetchError: undefined,
+	serverError: undefined,
+	validationErrors: undefined,
+} satisfies HookResult<any, any, any, any, any, any>;
 
 const getActionStatus = <
 	ServerError,
@@ -317,7 +327,5 @@ export const useStateAction = <
 		status,
 	};
 };
-
-export { EMPTY_HOOK_RESULT };
 
 export type * from "./hooks.types";
