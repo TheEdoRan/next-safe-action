@@ -64,26 +64,18 @@ Note that when you use `stateAction`, and also want to access `prevResult` in `s
 ### `serverCodeFn`
 
 ```typescript title="Stateless action"
-serverCodeFn<S, BAS, Data, Ctx, MD> = (args: {
-  parsedInput: S extends Schema ? Infer<S> : undefined;
-  bindArgsParsedInputs: InferArray<BAS>;
-  ctx: Ctx;
-  metadata: MD;
-}) => Promise<Data>;
-```
-
-```typescript title="Stateful action"
-serverCodeFn<ServerError, S extends Schema | undefined, BAS extends readonly Schema[], FVE, FBAVE, Ctx, MD, Data> = (
-  args: {
-    parsedInput: S extends Schema ? Infer<S> : undefined;
-    bindArgsParsedInputs: InferArray<BAS>;
-    ctx: Ctx;
-    metadata: MD;
-  },
-  utils: { prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>> }
+serverCodeFn(
+  args: { parsedInput, bindArgsParsedInputs, ctx, metadata }
 ) => Promise<Data>;
 ```
 
-`serverCodeFn` is the async function that will be executed on the **server side** when the action is invoked. If input validation fails, or execution gets halted in a middleware function, the server code function will not be called.
+```typescript title="Stateful action"
+serverCodeFn = (
+  args: { parsedInput, bindArgsParsedInputs, ctx, metadata },
+  utils: { prevResult }
+) => Promise<Data>;
+```
+
+`serverCodeFn` is the async function of type [`ServerCodeFn`](/docs/types#servercodefn)/[`StateServerCodeFn`](/docs/types#stateservercodefn) that will be executed on the **server side** when the action is invoked. If input validation fails, or execution gets halted in a middleware function, the server code function will not be called.
 
 In the case of a stateful safe action, `serverCodeFn` will also receive the `prevResult` as a property of the second argument (`utils` object) from the previous action execution, thanks to the [`useStateAction`](/docs/execution/hooks/usestateaction) hook (that uses React's [`useActionState`](https://react.dev/reference/react/useActionState) hook under the hood).
