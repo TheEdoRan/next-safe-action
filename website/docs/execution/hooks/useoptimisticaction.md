@@ -77,7 +77,7 @@ export default function AddLikes({ likesCount }: Props) {
       currentData: { likesCount }, // gets passed from Server Component
       updateFn: (prevData, { incrementBy }) => {
         return { 
-          likesCount: prevData.numOfLikes + amount
+          likesCount: prevData.likesCount + amount
         };
       }
     }

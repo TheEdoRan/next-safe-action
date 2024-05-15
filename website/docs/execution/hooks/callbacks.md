@@ -5,7 +5,7 @@ description: Hook callbacks are a way to perform custom logic based on the curre
 
 # Callbacks
 
-Hook callbacks are a way to perform custom logic based on the current action execution status. You can provide them both to `useAction` and `useOptimisticAction` in the last optional argument, which is an object. All of them are optional:
+Hook callbacks are a way to perform custom logic based on the current action execution status. You can provide them to the three hooks in the `utils` object, which is the second argument. All of them are optional:
 
 ```tsx
 const action = useAction(testAction, {
