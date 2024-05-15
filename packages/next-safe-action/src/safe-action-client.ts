@@ -88,7 +88,8 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	 * Define the input validation schema for the action.
 	 * @param schema Input validation schema
 	 * @param utils Optional utils object
-	 * @returns
+	 *
+	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#schema See docs for more information}
 	 */
 	schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>>(
 		schema?: S,

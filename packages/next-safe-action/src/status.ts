@@ -3,7 +3,8 @@ import type { HookActionStatus } from "./hooks.types";
 /**
  * Returns true if the action is idle.
  * @param status
- * @returns
+ *
+ * {@link https://next-safe-action.dev/docs/execution/hooks/check-action-status#utility-functions See docs for more information}
  */
 export function isIdle(status: HookActionStatus): status is "idle" {
 	return status === "idle";
@@ -12,7 +13,8 @@ export function isIdle(status: HookActionStatus): status is "idle" {
 /**
  * Returns true if the action is executing.
  * @param status
- * @returns
+ *
+ * {@link https://next-safe-action.dev/docs/execution/hooks/check-action-status#utility-functions See docs for more information}
  */
 export function isExecuting(status: HookActionStatus): status is "executing" {
 	return status === "executing";
@@ -21,7 +23,8 @@ export function isExecuting(status: HookActionStatus): status is "executing" {
 /**
  * Returns true if the action has succeeded.
  * @param status
- * @returns
+ *
+ * {@link https://next-safe-action.dev/docs/execution/hooks/check-action-status#utility-functions See docs for more information}
  */
 export function hasSucceeded(status: HookActionStatus): status is "hasSucceeded" {
 	return status === "hasSucceeded";
@@ -30,7 +33,8 @@ export function hasSucceeded(status: HookActionStatus): status is "hasSucceeded"
 /**
  * Returns true if the action has errored.
  * @param status
- * @returns
+ *
+ * {@link https://next-safe-action.dev/docs/execution/hooks/check-action-status#utility-functions See docs for more information}
  */
 export function hasErrored(status: HookActionStatus): status is "hasErrored" {
 	return status === "hasErrored";
