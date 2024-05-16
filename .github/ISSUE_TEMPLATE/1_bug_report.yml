@@ -45,8 +45,8 @@ body:
       required: true
   - type: input
     attributes:
-      label: Reproduction example
-      description: Link to an example that reproduces the bug. Could be, for example, a GitHub repo or a CodeSandbox link.
+      label: Minimal reproduction example
+      description: Link to a minimal example that reproduces the bug. Please provide a GitHub/CodeSandbox link with as little code as possible to reproduce the bug.
       placeholder: https://github.com/...
     validations:
       required: true
@@ -63,6 +63,12 @@ body:
     attributes:
       label: Library version
       placeholder: 6.0.0
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Next.js version
+      placeholder: 14.x.x
     validations:
       required: true
   - type: textarea
