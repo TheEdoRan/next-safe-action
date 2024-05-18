@@ -1,8 +1,7 @@
-import type { Infer, Schema } from "@typeschema/main";
+import type { Schema } from "@typeschema/main";
 import type {} from "zod";
 import { actionBuilder } from "./action-builder";
 import type { MiddlewareFn, SafeActionClientOpts, ServerCodeFn, StateServerCodeFn } from "./index.types";
-import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 import type {
 	BindArgsValidationErrors,
 	FormatBindArgsValidationErrorsFn,
@@ -10,7 +9,7 @@ import type {
 	ValidationErrors,
 } from "./validation-errors.types";
 
-class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
+export class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 	readonly #handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
 	readonly #handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
 	readonly #validationStrategy: "typeschema" | "zod";
@@ -209,35 +208,3 @@ class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
 		});
 	}
 }
-
-export const createClientWithStrategy = <ServerError = string, MetadataSchema extends Schema | undefined = undefined>(
-	validationStrategy: "typeschema" | "zod",
-	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema>
-) => {
-	// If server log function is not provided, default to `console.error` for logging
-	// server error messages.
-	const handleServerErrorLog =
-		createOpts?.handleServerErrorLog ||
-		((e) => {
-			console.error("Action error:", e.message);
-		});
-
-	// If `handleReturnedServerError` is provided, use it to handle server error
-	// messages returned on the client.
-	// Otherwise mask the error and use a generic message.
-	const handleReturnedServerError = ((e: Error) =>
-		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR_MESSAGE) as NonNullable<
-		SafeActionClientOpts<ServerError, MetadataSchema>["handleReturnedServerError"]
-	>;
-
-	return new SafeActionClient<
-		ServerError,
-		undefined,
-		MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined
-	>({
-		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
-		handleServerErrorLog,
-		handleReturnedServerError,
-		validationStrategy,
-	});
-};
