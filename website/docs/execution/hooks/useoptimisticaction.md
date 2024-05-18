@@ -9,50 +9,61 @@ description: Learn how to use the useOptimisticAction hook.
 `useOptimisticAction` **does not wait** for the action to finish execution before returning the optimistic data. It is then synced with the real result from server when the action has finished its execution. If you need to perform normal mutations, use [`useAction`](/docs/execution/hooks/useaction) instead.
 :::
 
-Let's say you want to update the number of likes of a post in your application, mutating directly the database.
+Let's say you have some todos in your database and want to add a new one. The following example shows how you can use `useOptimisticAction` to add a new todo item optimistically.
 
 ### Example
 
-1. Define a new action called `addLikes`, that takes an amount as input and returns the updated number of likes:
+1. Define a new action called `addTodo`, that takes a `Todo` object as input:
 
-```typescript title=src/app/add-likes-action.ts
+```typescript title=src/app/addtodo-action.ts
 "use server";
 
+import { ActionError, action } from "@/lib/safe-action";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
 const schema = z.object({
-  incrementBy: z.number().positive(),
+  id: z.string().uuid(),
+  body: z.string().min(1),
+  completed: z.boolean(),
 });
 
-// Fake database.
-let likes = 42;
-export const getLikes = () => likes;
+export type Todo = z.infer<typeof schema>;
 
-export const addLikes = actionClient
+let todos: Todo[] = [];
+export const getTodos = async () => todos;
+
+export const addTodo = action
+  .metadata({ actionName: "" })
   .schema(schema)
-  .action(async ({ parsedInput: { incrementBy } }) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  .action(async ({ parsedInput }) => {
+    await new Promise((res) => setTimeout(res, 500));
 
-    // Mutate data in fake db. This would be a database call in the real world.
-    likes += incrementBy;
+    todos.push(parsedInput);
 
-    // We use this function to revalidate server state.
-    // More information about it here:
-    // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
-    revalidatePath("/");
+    // This Next.js function revalidates the provided path.
+    // More info here: https://nextjs.org/docs/app/api-reference/functions/revalidatePath
+    revalidatePath("/optimistic-hook");
 
-    return { likesCount: likes };
+    return {
+      newTodo: parsedInput,
+    };
   });
+
 ```
 
-2. Then, in your Server Component, you need to pass the current number of likes to the Client Component:
+2. Then, in the parent Server Component, you need to pass the current todos state to the Client Component:
 
 ```tsx title=src/app/page.tsx
+import { getTodos } from "./addtodo-action";
+
 export default function Home() {
   return (
     <main>
-      {/* Here we pass current number of likes to the Client Component.
+      {/* Here we pass current todos to the Client Component.
       This is updated on the server every time the action is executed, since we
       used `revalidatePath()` inside action's server code. */}
-      <AddLikes likesCount={getLikes()} />
+      <TodosBox todos={getTodos()} />
     </main>
   );
 }
@@ -60,24 +71,24 @@ export default function Home() {
 
 3. Finally, in your Client Component, you can use it like this:
 
-```tsx title=src/app/add-likes.tsx
+```tsx title=src/app/todos-box.tsx
 "use client";
 
 import { useOptimisticAction } from "next-safe-action/hooks";
-import { addLikes } from "@/app/add-likes-action";
+import { addTodo, type Todo } from "@/app/addtodo-action";
 
 type Props = {
-  likesCount: number;
+  todos: Todo[];
 };
 
-export default function AddLikes({ likesCount }: Props) {
-  const { execute, result, optimisticData } = useOptimisticAction(
-    addLikes,
+export default function TodosBox({ todos }: Props) {
+  const { execute, result, optimisticState } = useOptimisticAction(
+    addTodo,
     {
-      currentData: { likesCount }, // gets passed from Server Component
-      updateFn: (prevData, { incrementBy }) => {
+      currentState: { todos }, // gets passed from Server Component
+      updateFn: (prevState, newTodo) => {
         return { 
-          likesCount: prevData.likesCount + amount
+          todos: [...prevState.todos, newTodo] 
         };
       }
     }
@@ -87,15 +98,12 @@ export default function AddLikes({ likesCount }: Props) {
     <div>
       <button
         onClick={() => {
-          execute({ incrementBy: 3 });
+          execute({ id: crypto.randomUUID(), body: "New Todo", completed: false });
         }}>
-        Add 3 likes
+        Add todo
       </button>
       {/* Optimistic state gets updated immediately, it doesn't wait for the server to respond. */}
-      <pre>Optimistic data: {optimisticData}</pre>
-
-      {/* Here's the actual server response. */}
-      <pre>Result: {JSON.stringify(result, null, 2)}</pre>
+      <pre>Optimistic state: {optimisticState}</pre>
     </div>
   );
 }
@@ -108,14 +116,14 @@ export default function AddLikes({ likesCount }: Props) {
 | Name                    | Type                                                                    | Purpose                                                                                                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `safeActionFn`          | [`HookSafeActionFn`](/docs/types#hooksafeactionfn)                              | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                             |
-| `utils`            | `{ initData: Data; updateFn: (prevData: Data, input: InferIn<S>) => Data }` `&` [`HookCallbacks`](/docs/types#hookcallbacks)                            | Object with required `initData`, `updateFn` and optional callbacks. See below for more information.                                                                                                                                              |
+| `utils`            | `{ currentState: State; updateFn: (prevState: State, input: InferIn<S>) => State }` `&` [`HookCallbacks`](/docs/types#hookcallbacks)                            | Object with required `currentState`, `updateFn` and optional callbacks. See below for more information.                                                                                                                                              |
 
 `utils` properties in detail:
 
 | Name                    | Type                                                                    | Purpose                                                                                                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `currentData` | `Data` (return type of the `safeActionFn` you passed as first argument) | An optimistic data setter. Usually this value comes from the parent Server Component.                                                                                                                                                  |
-| `updateFn`               | `(prevData: Data, input: InferIn<S>) => Data`                              | When you call the action via `execute`, this function determines how the optimistic data update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server. |
+| `currentState` | `State` (generic) | An optimistic state setter. This value should come from the parent Server Component.                                                                                                                                                  |
+| `updateFn`               | `(prevState: State, input: InferIn<S>) => State`                              | When you call the action via `execute`, this function determines how the optimistic state update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server (after revalidation). |
 | `{ onExecute?, onSuccess?, onError?, onSettled? }`            | [`HookCallbacks`](/docs/types#hookcallbacks)                            | Optional callbacks. More information about them [here](/docs/execution/hooks/callbacks).                                                                                                                                               |
 
 ### `useOptimisticAction` return object
@@ -127,7 +135,7 @@ export default function AddLikes({ likesCount }: Props) {
 | `execute`        | `(input: InferIn<S>) => void`                                           | An action caller with no return. The input is the same as the safe action you passed to the hook.                                                                                                                                         |
 | `input`  | `InferIn<S> \| undefined`       | The input passed to the `execute` function.                             |
 | `result`         | [`HookResult`](/docs/types#hookresult)                                  | When the action gets called via `execute`, this is the result object.                                                                                                                                                                     |
-| `optimisticData` | `Data` (return type of the `safeActionFn` you passed as first argument) | This is the data that gets updated immediately after `execute` is called, with the behavior you defined in the `reducer` function hook argument. The initial state is what you provided to the hook via `initialOptimisticData` argument. |
+| `optimisticState` | `State` | This contains the state that gets updated immediately after `execute` is called, with the behavior you defined in the `updateFn` function. The initial state is what you provided to the hook via `currentState` argument. If an error occurs during action execution, the `optimisticState` reverts to the state that it had pre-last-last  action execution. |
 | `reset`   | `() => void`                                 | Programmatically reset `input` and `result` object with this function.                            |
 | `status`         | [`HookActionStatus`](/docs/types#hookresult)                            | The action current status.                                                                                                                                                                                                                |
 | `isIdle`  | `boolean` | True if the action status is `idle`.                                                                        |
