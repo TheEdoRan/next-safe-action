@@ -12,8 +12,7 @@
 	"exports": {
 		".": "./dist/index.mjs",
 		"./zod": "./dist/zod.mjs",
-		"./hooks": "./dist/hooks.mjs",
-		"./status": "./dist/status.mjs"
+		"./hooks": "./dist/hooks.mjs"
 	},
 	"typesVersions": {
 		"*": {
@@ -25,9 +24,6 @@
 			],
 			"hooks": [
 				"./dist/hooks.d.mts"
-			],
-			"status": [
-				"./dist/status.d.mts"
 			]
 		}
 	},
