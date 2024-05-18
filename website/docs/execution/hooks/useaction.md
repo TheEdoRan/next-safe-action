@@ -77,7 +77,11 @@ As you can see, here we display a greet message after the action is performed, i
 | `execute` | `(input: InferIn<S>) => void`                | An action caller with no return. The input is the same as the safe action you passed to the hook. |
 | `input`  | `InferIn<S> \| undefined`       | The input passed to the `execute` function.                             |
 | `result`  | [`HookResult`](/docs/types#hookresult)       | When the action gets called via `execute`, this is the result object.                             |
-| `status`  | [`HookActionStatus`](/docs/types#hookresult) | The action current status.                                                                        |
 | `reset`   | `() => void`                                 | Programmatically reset `input` and `result` object with this function.                            |
+| `status`  | [`HookActionStatus`](/docs/types#hookresult) | The action current status.                                                                        |
+| `isIdle`  | `boolean` | True if the action status is `idle`.                                                                        |
+| `isExecuting`  | `boolean` | True if the action status is `executing`.                                                                        |
+| `hasSucceeded`  | `boolean` | True if the action status is `hasSucceeded`.                                                                        |
+| `hasErrored`  | `boolean` | True if the action status is `hasErrored`.                                                                        |
 
 Explore a working example [here](<https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)/hook>).

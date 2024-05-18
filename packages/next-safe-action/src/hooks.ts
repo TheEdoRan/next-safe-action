@@ -57,6 +57,15 @@ const getActionStatus = <
 	}
 };
 
+const getActionShorthandStatusObject = (status: HookActionStatus) => {
+	return {
+		isIdle: status === "idle",
+		isExecuting: status === "executing",
+		hasSucceeded: status === "hasSucceeded",
+		hasErrored: status === "hasErrored",
+	};
+};
+
 const useActionCallbacks = <
 	ServerError,
 	S extends Schema | undefined,
@@ -178,6 +187,7 @@ export const useAction = <
 		result,
 		reset,
 		status,
+		...getActionShorthandStatusObject(status),
 	};
 };
 
@@ -264,6 +274,7 @@ export const useOptimisticAction = <
 		optimisticData,
 		reset,
 		status,
+		...getActionShorthandStatusObject(status),
 	};
 };
 
@@ -325,6 +336,7 @@ export const useStateAction = <
 		input: clientInput,
 		result,
 		status,
+		...getActionShorthandStatusObject(status),
 	};
 };
 

@@ -9,7 +9,16 @@ import { deleteUser } from "./deleteuser-action";
 
 export default function Hook() {
 	// Safe action (`deleteUser`) and optional callbacks passed to `useAction` hook.
-	const { execute, result, status, reset } = useAction(deleteUser, {
+	const {
+		execute,
+		result,
+		status,
+		reset,
+		isIdle,
+		isExecuting,
+		hasSucceeded,
+		hasErrored,
+	} = useAction(deleteUser, {
 		onSuccess({ data, input }) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
 		},
@@ -24,7 +33,7 @@ export default function Hook() {
 		},
 	});
 
-	console.log("status:", status);
+	console.dir({ status, isIdle, isExecuting, hasSucceeded, hasErrored });
 
 	return (
 		<main className="w-96 max-w-full px-4">
