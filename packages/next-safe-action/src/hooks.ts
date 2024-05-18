@@ -205,11 +205,12 @@ export const useOptimisticAction = <
 	FVE,
 	FBAVE,
 	Data,
+	State,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
 	utils: {
-		currentData: Data;
-		updateFn: (prevData: Data, input: S extends Schema ? InferIn<S> : undefined) => Data;
+		currentState: State;
+		updateFn: (prevState: State, input: S extends Schema ? InferIn<S> : undefined) => State;
 	} & HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
@@ -217,8 +218,8 @@ export const useOptimisticAction = <
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
-	const [optimisticData, setOptimisticData] = React.useOptimistic<Data, S extends Schema ? InferIn<S> : undefined>(
-		utils.currentData,
+	const [optimisticState, setOptimisticState] = React.useOptimistic<State, S extends Schema ? InferIn<S> : undefined>(
+		utils.currentState,
 		utils.updateFn
 	);
 
@@ -231,7 +232,7 @@ export const useOptimisticAction = <
 			setIsExecuting(true);
 
 			return startTransition(() => {
-				setOptimisticData(input as S extends Schema ? InferIn<S> : undefined);
+				setOptimisticState(input as S extends Schema ? InferIn<S> : undefined);
 				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
@@ -246,7 +247,7 @@ export const useOptimisticAction = <
 					});
 			});
 		},
-		[safeActionFn, setOptimisticData]
+		[safeActionFn, setOptimisticState]
 	);
 
 	const reset = () => {
@@ -271,7 +272,7 @@ export const useOptimisticAction = <
 		execute,
 		input: clientInput,
 		result,
-		optimisticData,
+		optimisticState,
 		reset,
 		status,
 		...getActionShorthandStatusObject(status),
