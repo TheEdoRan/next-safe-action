@@ -4,19 +4,19 @@ import { StyledButton } from "@/app/_components/styled-button";
 import { StyledInput } from "@/app/_components/styled-input";
 import { useOptimisticAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
-import { addLikes } from "./addlikes-action";
+import { Todo, addTodo } from "./addtodo-action";
 
 type Props = {
-	likesCount: number;
+	todos: Todo[];
 };
 
-const AddLikesForm = ({ likesCount }: Props) => {
-	// Here we pass safe action (`addLikes`) and current server data to `useOptimisticAction` hook.
-	const { execute, result, status, reset, optimisticData } =
-		useOptimisticAction(addLikes, {
-			currentData: { likesCount },
-			updateFn: (prevData, { incrementBy }) => ({
-				likesCount: prevData.likesCount + incrementBy,
+const AddTodoForm = ({ todos }: Props) => {
+	// Here we pass safe action (`addTodo`) and current server data to `useOptimisticAction` hook.
+	const { execute, result, status, reset, optimisticState } =
+		useOptimisticAction(addTodo, {
+			currentState: { todos },
+			updateFn: (prevState, newTodo) => ({
+				todos: [...prevState.todos, newTodo],
 			}),
 			onSuccess({ data, input }) {
 				console.log("HELLO FROM ONSUCCESS", data, input);
@@ -41,35 +41,25 @@ const AddLikesForm = ({ likesCount }: Props) => {
 				onSubmit={(e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);
-					const input = Object.fromEntries(formData) as {
-						incrementBy: string;
-					};
-
-					const intIncrementBy = parseInt(input.incrementBy);
+					const body = formData.get("body") as string;
 
 					// Action call. Here we pass action input and expected (optimistic)
 					// data.
-					execute({ incrementBy: intIncrementBy });
+					execute({ id: crypto.randomUUID(), body, completed: false });
 				}}>
-				<StyledInput
-					type="text"
-					name="incrementBy"
-					id="incrementBy"
-					placeholder="Increment by"
-				/>
-				<StyledButton type="submit">Add likes</StyledButton>
+				<StyledInput type="text" name="body" placeholder="Todo body" />
+				<StyledButton type="submit">Add todo</StyledButton>
 				<StyledButton type="button" onClick={reset}>
 					Reset
 				</StyledButton>
 			</form>
 			<ResultBox
-				result={optimisticData}
+				result={optimisticState}
 				status={status}
 				customTitle="Optimistic data:"
 			/>
-			<ResultBox result={result} customTitle="Actual result:" />
 		</>
 	);
 };
 
-export default AddLikesForm;
+export default AddTodoForm;
