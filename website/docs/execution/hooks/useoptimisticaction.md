@@ -18,7 +18,7 @@ Let's say you have some todos in your database and want to add a new one. The fo
 ```typescript title=src/app/addtodo-action.ts
 "use server";
 
-import { ActionError, action } from "@/lib/safe-action";
+import { action } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -46,7 +46,7 @@ export const addTodo = action
     revalidatePath("/optimistic-hook");
 
     return {
-      newTodo: parsedInput,
+      createdTodo: parsedInput,
     };
   });
 
@@ -98,6 +98,8 @@ export default function TodosBox({ todos }: Props) {
     <div>
       <button
         onClick={() => {
+          // Here we execute the action. The input is also passed to `updateFn` as the second argument,
+          // in this case `newTodo`.
           execute({ id: crypto.randomUUID(), body: "New Todo", completed: false });
         }}>
         Add todo
