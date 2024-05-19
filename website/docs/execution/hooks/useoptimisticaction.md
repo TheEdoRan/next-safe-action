@@ -86,9 +86,9 @@ export default function TodosBox({ todos }: Props) {
     addTodo,
     {
       currentState: { todos }, // gets passed from Server Component
-      updateFn: (prevState, newTodo) => {
+      updateFn: (state, newTodo) => {
         return { 
-          todos: [...prevState.todos, newTodo] 
+          todos: [...state.todos, newTodo] 
         };
       }
     }
@@ -118,14 +118,14 @@ export default function TodosBox({ todos }: Props) {
 | Name                    | Type                                                                    | Purpose                                                                                                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `safeActionFn`          | [`HookSafeActionFn`](/docs/types#hooksafeactionfn)                              | This is the action that will be called when you use `execute` from hook's return object.                                                                                                                                                             |
-| `utils`            | `{ currentState: State; updateFn: (prevState: State, input: InferIn<S>) => State }` `&` [`HookCallbacks`](/docs/types#hookcallbacks)                            | Object with required `currentState`, `updateFn` and optional callbacks. See below for more information.                                                                                                                                              |
+| `utils`            | `{ currentState: State; updateFn: (state: State, input: InferIn<S>) => State }` `&` [`HookCallbacks`](/docs/types#hookcallbacks)                            | Object with required `currentState`, `updateFn` and optional callbacks. See below for more information.                                                                                                                                              |
 
 `utils` properties in detail:
 
 | Name                    | Type                                                                    | Purpose                                                                                                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `currentState` | `State` (generic) | An optimistic state setter. This value should come from the parent Server Component.                                                                                                                                                  |
-| `updateFn`               | `(prevState: State, input: InferIn<S>) => State`                              | When you call the action via `execute`, this function determines how the optimistic state update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server (after revalidation). |
+| `updateFn`               | `(state: State, input: InferIn<S>) => State`                              | When you call the action via `execute`, this function determines how the optimistic state update is performed. Basically, here you define what happens **immediately** after `execute` is called, and before the actual result comes back from the server (after revalidation). |
 | `{ onExecute?, onSuccess?, onError?, onSettled? }`            | [`HookCallbacks`](/docs/types#hookcallbacks)                            | Optional callbacks. More information about them [here](/docs/execution/hooks/callbacks).                                                                                                                                               |
 
 ### `useOptimisticAction` return object

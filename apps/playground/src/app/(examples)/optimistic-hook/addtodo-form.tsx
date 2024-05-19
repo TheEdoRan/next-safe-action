@@ -15,8 +15,8 @@ const AddTodoForm = ({ todos }: Props) => {
 	const { execute, result, status, reset, optimisticState } =
 		useOptimisticAction(addTodo, {
 			currentState: { todos },
-			updateFn: (prevState, newTodo) => ({
-				todos: [...prevState.todos, newTodo],
+			updateFn: (state, newTodo) => ({
+				todos: [...state.todos, newTodo],
 			}),
 			onSuccess({ data, input }) {
 				console.log("HELLO FROM ONSUCCESS", data, input);
