@@ -12,6 +12,8 @@ You can provide this optional function to the safe action client. It is used to 
 Here's a simple example, changing the default message for every error thrown on the server:
 
 ```typescript title=src/lib/safe-action.ts
+import { createSafeActionClient } from "next-safe-action";
+
 export const actionClient = createSafeActionClient({
   // Can also be an async function.
   handleReturnedServerError(e) {
@@ -25,7 +27,7 @@ export const actionClient = createSafeActionClient({
 A more useful one would be to customize the message based on the error type. We can, for instance, create a custom error class and check the error type inside this function:
 
 ```typescript title=src/lib/safe-action.ts
-import { DEFAULT_SERVER_ERROR_MESSAGE } from "next-safe-action";
+import { createSafeActionClient, DEFAULT_SERVER_ERROR_MESSAGE } from "next-safe-action";
 
 class MyCustomError extends Error {}
 
@@ -44,6 +46,22 @@ export const actionClient = createSafeActionClient({
 });
 ```
 
+You can also easily rethrow all occurred server errors, if you prefer that behavior. This way, `serverError` in the [action result object](/docs/execution/action-result-object) will always be undefined and the action called from the client will throw the server error:
+
+```typescript title=src/lib/safe-action.ts
+import { createSafeActionClient } from "next-safe-action";
+
+class MyCustomError extends Error {}
+
+export const actionClient = createSafeActionClient({
+  // Can also be an async function.
+  handleReturnedServerError(e) {
+    // Rethrow all server errors:
+    throw e;
+  },
+});
+```
+
 Note that the return type of this function will determine the type of the server error that will be returned to the client. By default it is a string with the `DEFAULT_SERVER_ERROR_MESSAGE` for all errors.
 
 ## `handleServerErrorLog?`
@@ -53,6 +71,8 @@ You can provide this optional function to the safe action client. This is used t
 Here's a simple example, logging error to the console while also reporting it to an error handling system:
 
 ```typescript title=src/lib/safe-action.ts
+import { createSafeActionClient } from "next-safe-action";
+
 export const actionClient = createSafeActionClient({
   // Can also be an async function.
   handleServerErrorLog(e) {
@@ -73,6 +93,7 @@ Here's an example defining a client with a metadata object containing `actionNam
 
 ```typescript title="src/app/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
+import { z } from "zod";
 
 export const actionClient = createSafeActionClient({
   defineMetadataSchema() {
