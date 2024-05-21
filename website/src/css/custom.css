@@ -8,9 +8,6 @@
 @tailwind utilities;
 
 /* You can override the default Infima variables here. */
-body {
-	font-size: 105%;
-}
 
 .header-github-link::before {
 	display: flex;
