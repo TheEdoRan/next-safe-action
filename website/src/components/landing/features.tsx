@@ -15,7 +15,7 @@ const features: { title: string; description: string }[] = [
 	{
 		title: "Form Actions support",
 		description:
-			"next-safe-action supports Form Actions via stateful `useStateAction` hook.",
+			"next-safe-action supports Form Actions out of the box, with stateful and stateless actions.",
 	},
 	{
 		title: "Powerful middleware system",
