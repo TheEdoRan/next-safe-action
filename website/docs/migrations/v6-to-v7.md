@@ -52,7 +52,7 @@ export const authActionClient = createSafeActionClient({
 import { authActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
-const editProfile = authActionClient(z.object({ username: z.string() }), async ({ username }, { ctx: { userId } }) => {
+export const editProfile = authActionClient(z.object({ username: z.string() }), async ({ username }, { ctx: { userId } }) => {
   await saveNewUsernameInDb(userId, username);
 
   return {
@@ -68,10 +68,10 @@ import { createSafeActionClient } from "next-safe-action";
 import { cookies } from "next/headers";
 
 // Base client
-const actionClient = createSafeActionClient();
+export const actionClient = createSafeActionClient();
 
 // Auth client
-const authActionClient = actionClient.use(async ({ next, ctx }) => {
+export const authActionClient = actionClient.use(async ({ next, ctx }) => {
   const session = cookies().get("session")?.value;
 
   if (!session) {
@@ -94,7 +94,7 @@ const authActionClient = actionClient.use(async ({ next, ctx }) => {
 import { authActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
-const editProfile = authActionClient
+export const editProfile = authActionClient
   .schema(z.object({ username: z.string() }))
   .action(async ({ parsedInput: { username }, ctx: { userId } }) => {
     await saveNewusernameInDb(userId, username)
