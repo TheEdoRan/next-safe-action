@@ -59,7 +59,7 @@ const signupAction = actionClient
 
 Note that:
 
-- You're required to pass a schema as the first argument of `returnValidationErrors`. This is used to infer the type of the validation errors to set via the second argument.
+- You're required to pass a schema as the first argument of `returnValidationErrors`. This is used to infer the type of the validation errors set via the second argument.
 - Errors set using `returnValidationErrors` will not be merged with the schema ones. If schema validation fails, the execution stops before reaching action's server code function. Otherwise, the action's backend code would receive invalid parsed input.
 - `returnValidationErrors` returns `never`. This means that internally it throws an error that gets caught and processed by next-safe-action, so code declared below the `returnValidationErrors` invocation will not be executed.
 - Since it returns `never`, you don't need to use `return` before this function call, and you can call it only once per execution path (it works the same way as Next.js `redirect` and `notFound` functions).
