@@ -11,7 +11,6 @@
 	"author": "Edoardo Ranghieri",
 	"dependencies": {
 		"@hookform/resolvers": "^3.3.4",
-		"@typeschema/zod": "^0.13.3",
 		"lucide-react": "^0.378.0",
 		"next": "14.3.0-canary.42",
 		"next-safe-action": "workspace:*",

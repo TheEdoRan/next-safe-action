@@ -11,6 +11,8 @@ export type * from "./validation-errors.types";
 
 /**
  * Create a new safe action client.
+ * Note: this client only works with Zod as the validation library.
+ * If you want to use a validation library supported by [TypeSchema](https://typeschema.com), import this client from `/typeschema` path.
  * @param createOpts Optional initialization options
  *
  * {@link https://next-safe-action.dev/docs/safe-action-client/initialization-options See docs for more information}
@@ -42,6 +44,6 @@ export const createSafeActionClient = <ServerError = string, MetadataSchema exte
 		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
 		handleServerErrorLog,
 		handleReturnedServerError,
-		validationStrategy: "typeschema",
+		validationStrategy: "zod",
 	});
 };

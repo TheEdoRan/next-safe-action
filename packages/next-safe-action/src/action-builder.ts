@@ -1,5 +1,4 @@
 import { validate, type Infer, type Schema } from "@typeschema/main";
-import { validate as zodValidate } from "@typeschema/zod";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {} from "zod";
@@ -22,6 +21,22 @@ import type {
 	FormatValidationErrorsFn,
 	ValidationErrors,
 } from "./validation-errors.types";
+
+async function zodValidate<S extends Schema>(s: S, data: unknown) {
+	const result = await s.safeParseAsync(data);
+
+	if (result.success) {
+		return {
+			success: true,
+			data: result.data as Infer<S>,
+		} as const;
+	}
+
+	return {
+		success: false,
+		issues: result.error.issues.map(({ message, path }) => ({ message, path })),
+	} as const;
+}
 
 export function actionBuilder<
 	ServerError,
