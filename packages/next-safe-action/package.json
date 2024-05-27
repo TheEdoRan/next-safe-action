@@ -11,7 +11,7 @@
 	],
 	"exports": {
 		".": "./dist/index.mjs",
-		"./zod": "./dist/zod.mjs",
+		"./typeschema": "./dist/typeschema.mjs",
 		"./hooks": "./dist/hooks.mjs"
 	},
 	"typesVersions": {
@@ -19,8 +19,8 @@
 			".": [
 				"./dist/index.d.mts"
 			],
-			"zod": [
-				"./dist/zod.d.mts"
+			"typeschema": [
+				"./dist/typeschema.d.mts"
 			],
 			"hooks": [
 				"./dist/hooks.d.mts"
@@ -80,14 +80,10 @@
 	"peerDependencies": {
 		"next": ">= 14.3.0-canary.42",
 		"react": ">= 18.3.1",
-		"@typeschema/zod": "^0.13.3",
 		"zod": "^3.23.6"
 	},
 	"peerDependenciesMeta": {
 		"zod": {
-			"optional": true
-		},
-		"@typeschema/zod": {
 			"optional": true
 		}
 	},
@@ -96,6 +92,7 @@
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"dependencies": {
+		"@typeschema/zod": "^0.13.3",
 		"@typeschema/main": "^0.13.9"
 	}
 }
