@@ -14,8 +14,6 @@ Well, pretty much everything. Version 7 now works using methods; you might be fa
 
 _But please still read this migration guide carefully before upgrading to v7._
 
-First, install the [TypeSchema adapter](https://typeschema.com/#coverage) for the validation library of your choice to use next-safe-action v7.
-
 Assuming you're using Zod, in previous versions, you'd define an auth action client and then an action like this:
 
 ```typescript title="action-client-v6.ts"
@@ -185,7 +183,7 @@ In version 6, you could pass metadata to actions via the third argument of the s
 
 ### TypeSchema update
 
-TypeSchema was updated to v0.13, so now you need to install the [TypeSchema adapter](https://typeschema.com/#coverage) for the validation library of your choice to use next-safe-action.
+TypeSchema was updated to v0.13, so now, if you want to use a validation library other than Zod, you also need to install the related [TypeSchema adapter](https://typeschema.com/#coverage).
 
 ## Requirements
 

@@ -9,28 +9,35 @@ description: Getting started with next-safe-action version 7.
 
 - Next.js >= 14.3.0-canary.40
 - TypeScript >= 5.0.0
-- a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
+- Zod or a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
 :::
 
 **next-safe-action** provides a typesafe Server Actions implementation for Next.js App Router.
-
-## Validation libraries support
-
-We will use Zod as our validation library in this documentation, but since version 6 of next-safe-action, you can use your validation library of choice, or even multiple and custom ones at the same time, thanks to the **TypeSchema** library. Note that we also need to install the related TypeSchema adapter for our validation library of choice. You can find supported libraries and related adapters [here](https://typeschema.com/#coverage).
-
-:::info
-If you experience an issue related to TypeSchema, check out the ["Errors with TypeSchema"](/docs/troubleshooting/errors-with-typeschema) section of the troubleshooting page to see how to fix it.
-:::
 
 ## Installation
 
 For Next.js >= 14, assuming you want to use Zod as your validation library, use the following command:
 
 ```bash npm2yarn
-npm i next-safe-action@next zod @typeschema/zod
+npm i next-safe-action@next zod
 ```
 
-Find the adapter for your validation library of choice in the [TypeSchema documentation](https://typeschema.com/#coverage).
+:::note
+Zod is the default validation library for next-safe-action, because TypeSchema can cause some issues with deployments, so this documentation uses it for that reason. If you know what you're doing, though, you can use your validation library of choice, or even multiple ones at the same time, thanks to the **TypeSchema** package.
+
+To use this feature, you just need to update the import path for the safe client initialization function from:
+```typescript
+import { createSafeActionClient } from "next-safe-action";
+```
+
+to:
+
+```typescript
+import { createSafeActionClient } from "next-safe-action/typeschema";
+```
+
+and install the related [TypeSchema adapter](https://typeschema.com/#coverage).
+:::
 
 ## Usage
 
