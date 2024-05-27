@@ -5,7 +5,7 @@ description: Learn how to use the useStateAction hook.
 
 # `useStateAction`
 
-`useStateAction` keeps track of the previous action execution result(s), thanks to the [`useActionState`](https://react.dev/reference/react/useActionState) hook from React that is used under the hood. This hook works with actions declared with the `stateAction` instance method, that changes the function signature, placing a `prevResult` argument in the first position, and an input (if a validation schema was provided) in the second one. When a stateful action is passed to `useStateAction` hook, the returned `execute` function will be a function that accepts just the (optional) input and returns the action result, as the normal `useAction` hook does.
+`useStateAction` keeps track of the previous action execution result(s), thanks to the [`useActionState`](https://react.dev/reference/react/useActionState) hook from React that is used under the hood. This hook works with actions declared with the [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) instance method, that changes the function signature, placing a `prevResult` argument in the first position, and an input (if a validation schema was provided) in the second one. When a stateful action is passed to `useStateAction` hook, the returned `execute` function will accept just the (optional) input and returns the action result, as the normal `useAction` hook does.
 
 :::note
 React's `useActionState` hook has replaced the previous `useFormState` hook, that is now deprecated. You can explore the documentation for it in the [React docs](https://react.dev/reference/react/useActionState).
