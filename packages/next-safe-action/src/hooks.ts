@@ -168,6 +168,36 @@ export const useAction = <
 		[safeActionFn]
 	);
 
+	const executeAsync = React.useCallback(
+		(input: S extends Schema ? InferIn<S> : void) => {
+			setIsIdle(false);
+			setClientInput(input);
+			setIsExecuting(true);
+
+			return new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
+				startTransition(() => {
+					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
+						.then((res) => {
+							setResult(res ?? EMPTY_HOOK_RESULT);
+							resolve(res);
+						})
+						.catch((e) => {
+							if (isRedirectError(e) || isNotFoundError(e)) {
+								throw e;
+							}
+
+							setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
+							reject(e);
+						})
+						.finally(() => {
+							setIsExecuting(false);
+						});
+				});
+			});
+		},
+		[safeActionFn]
+	);
+
 	const reset = () => {
 		setIsIdle(true);
 		setClientInput(undefined);
@@ -183,6 +213,7 @@ export const useAction = <
 
 	return {
 		execute,
+		executeAsync,
 		input: clientInput,
 		result,
 		reset,
@@ -250,6 +281,37 @@ export const useOptimisticAction = <
 		[safeActionFn, setOptimisticValue]
 	);
 
+	const executeAsync = React.useCallback(
+		(input: S extends Schema ? InferIn<S> : void) => {
+			setIsIdle(false);
+			setClientInput(input);
+			setIsExecuting(true);
+
+			return new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
+				startTransition(() => {
+					setOptimisticValue(input as S extends Schema ? InferIn<S> : undefined);
+					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
+						.then((res) => {
+							setResult(res ?? EMPTY_HOOK_RESULT);
+							resolve(res);
+						})
+						.catch((e) => {
+							if (isRedirectError(e) || isNotFoundError(e)) {
+								throw e;
+							}
+
+							setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
+							reject(e);
+						})
+						.finally(() => {
+							setIsExecuting(false);
+						});
+				});
+			});
+		},
+		[safeActionFn, setOptimisticValue]
+	);
+
 	const reset = () => {
 		setIsIdle(true);
 		setClientInput(undefined);
@@ -270,6 +332,7 @@ export const useOptimisticAction = <
 
 	return {
 		execute,
+		executeAsync,
 		input: clientInput,
 		result,
 		optimisticState,

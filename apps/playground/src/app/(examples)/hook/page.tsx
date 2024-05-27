@@ -10,7 +10,7 @@ import { deleteUser } from "./deleteuser-action";
 export default function Hook() {
 	// Safe action (`deleteUser`) and optional callbacks passed to `useAction` hook.
 	const {
-		execute,
+		executeAsync,
 		result,
 		status,
 		reset,
@@ -40,15 +40,17 @@ export default function Hook() {
 			<StyledHeading>Action using hook</StyledHeading>
 			<form
 				className="flex flex-col mt-8 space-y-4"
-				onSubmit={(e) => {
+				onSubmit={async (e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);
 					const input = Object.fromEntries(formData) as {
 						userId: string;
 					};
 
-					// Action call.
-					execute(input);
+					// Action call. Here we use `executeAsync` that lets us await the result. You can also use the `execute` function,
+					// which is synchronous.
+					const r = await executeAsync(input);
+					console.log("r", r);
 				}}>
 				<StyledInput
 					type="text"
