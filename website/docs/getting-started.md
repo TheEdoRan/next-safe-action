@@ -26,7 +26,7 @@ We will use Zod as our validation library in this documentation, but since versi
 For Next.js >= 14, use the following command:
 
 ```bash npm2yarn
-npm i next-safe-action
+npm i next-safe-action@v6 zod
 ```
 
 For Next.js 13, use the following command:
