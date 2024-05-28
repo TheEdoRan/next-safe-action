@@ -159,7 +159,7 @@ Starting from version 7, `isIdle`, `isExecuting`, `hasSucceeded` and `hasErrored
 
 ### [Return `executeAsync` from `useAction` and `useOptimisticAction` hooks](https://github.com/TheEdoRan/next-safe-action/issues/146)
 
-Sometimes it's useful to await the result of an action execution. Starting from version 7, `executeAsync` is returned from `useAction` and `useOptimisticAction` hooks. It's essentially the same as the original safe action function, with the added benefits from the hooks. It's currently not possible to add this function to the `useStateAction` hook, due to internal React limitations.
+Sometimes it's useful to await the result of an action execution when using actions via hooks. Starting from version 7, `executeAsync` is returned from `useAction` and `useOptimisticAction` hooks. It's essentially the same as the original safe action function, with the added benefits from the hooks. It's currently not possible to add this function to the `useStateAction` hook, due to internal React limitations.
 
 ## Refactors
 

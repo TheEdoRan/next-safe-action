@@ -119,7 +119,7 @@ Client input -> { newUsername: 'johndoe' }
 Metadata -> { actionName: 'editProfile' }
 ```
 
-Note that `userId` in `ctx` comes from the `authActionClient` middleware, and console output comes from the logging middleware defined in the based client.
+Note that `userId` in `ctx` comes from the `authActionClient` middleware, and console output comes from the logging middleware defined in the base client.
 
 ### Action level middleware
 
