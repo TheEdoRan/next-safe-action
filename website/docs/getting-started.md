@@ -7,7 +7,7 @@ description: Getting started with next-safe-action version 7.
 
 :::info Requirements
 
-- Next.js >= 14.3.0-canary.40
+- Next.js >= 15
 - TypeScript >= 5.0.0
 - Zod or a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
 :::
@@ -16,7 +16,7 @@ description: Getting started with next-safe-action version 7.
 
 ## Installation
 
-For Next.js >= 14, assuming you want to use Zod as your validation library, use the following command:
+Assuming you want to use Zod as your validation library, use the following command:
 
 ```bash npm2yarn
 npm i next-safe-action@next zod

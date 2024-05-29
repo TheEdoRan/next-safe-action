@@ -191,7 +191,7 @@ TypeSchema was updated to v0.13, so now, if you want to use a validation library
 
 ## Requirements
 
-next-safe-action version 7 requires Next.js 14.3.0 and React 19 or later to work.
+next-safe-action version 7 requires Next.js 15 and React 19 or later to work.
 
 ## What about v6?
 
