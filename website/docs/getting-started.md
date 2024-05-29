@@ -8,7 +8,7 @@ description: Getting started with next-safe-action version 7.
 :::info Requirements
 
 - Next.js >= 15
-- TypeScript >= 5.0.0
+- TypeScript >= 5
 - Zod or a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
 :::
 
