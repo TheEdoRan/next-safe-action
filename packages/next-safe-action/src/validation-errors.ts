@@ -52,7 +52,7 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Vali
 
 // This class is internally used to throw validation errors in action's server code function, using
 // `returnValidationErrors`.
-export class ServerValidationError<S extends Schema> extends Error {
+export class ActionServerValidationError<S extends Schema> extends Error {
 	public validationErrors: ValidationErrors<S>;
 	constructor(validationErrors: ValidationErrors<S>) {
 		super("Server Validation Error");
@@ -69,7 +69,7 @@ export class ServerValidationError<S extends Schema> extends Error {
  * {@link https://next-safe-action.dev/docs/recipes/additional-validation-errors#returnvalidationerrors See docs for more information}
  */
 export function returnValidationErrors<S extends Schema>(schema: S, validationErrors: ValidationErrors<S>): never {
-	throw new ServerValidationError<S>(validationErrors);
+	throw new ActionServerValidationError<S>(validationErrors);
 }
 
 /**

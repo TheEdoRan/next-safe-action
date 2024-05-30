@@ -14,7 +14,7 @@ import type {
 } from "./index.types";
 import type { InferArray } from "./utils";
 import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
-import { ServerValidationError, buildValidationErrors } from "./validation-errors";
+import { ActionServerValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
 	FormatBindArgsValidationErrorsFn,
@@ -223,8 +223,8 @@ export function actionBuilder<
 							throw e;
 						}
 
-						// If error is ServerValidationError, return validationErrors as if schema validation would fail.
-						if (e instanceof ServerValidationError) {
+						// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
+						if (e instanceof ActionServerValidationError) {
 							const ve = e.validationErrors as ValidationErrors<S>;
 							middlewareResult.validationErrors = await Promise.resolve(args.formatValidationErrors?.(ve) ?? ve);
 						} else {
