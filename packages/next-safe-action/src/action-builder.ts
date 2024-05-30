@@ -79,7 +79,6 @@ export function actionBuilder<
 			) => {
 				return async (...clientInputs: unknown[]) => {
 					let prevCtx: unknown = undefined;
-					let frameworkError: Error | undefined = undefined;
 					const middlewareResult: MiddlewareResult<ServerError, unknown> = { success: false };
 					type PrevResult = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
@@ -99,145 +98,142 @@ export function actionBuilder<
 					}
 
 					// Execute the middleware stack.
-					const executeMiddlewareChain = async (idx = 0) => {
-						const currentFn = args.middlewareFns[idx];
+					const executeMiddlewareStack = async (idx = 0) => {
+						const middlewareFn = args.middlewareFns[idx];
 
 						middlewareResult.ctx = prevCtx;
 
-						try {
-							if (currentFn) {
-								await currentFn({
-									clientInput: clientInputs.at(-1), // pass raw client input
-									bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
-									ctx: prevCtx,
-									metadata: args.metadata,
-									next: async ({ ctx }) => {
-										prevCtx = ctx;
-										await executeMiddlewareChain(idx + 1);
-										return middlewareResult;
-									},
-								});
-							} else {
-								// Validate the client inputs in parallel.
-								const parsedInputs = await Promise.all(
-									clientInputs.map((input, i) => {
-										// Last client input in the array, main argument (no bind arg).
-										if (i === clientInputs.length - 1) {
-											// If schema is undefined, set parsed data to undefined.
-											if (typeof args.schema === "undefined") {
-												return {
-													success: true,
-													data: undefined,
-												} as const;
-											}
-
-											// Otherwise, parse input with the schema.
-											return args.validationStrategy === "zod"
-												? zodValidate(args.schema, input)
-												: validate(args.schema, input);
+						// Middleware function.
+						if (middlewareFn) {
+							await middlewareFn({
+								clientInput: clientInputs.at(-1), // pass raw client input
+								bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
+								ctx: prevCtx,
+								metadata: args.metadata,
+								next: async ({ ctx }) => {
+									prevCtx = ctx;
+									await executeMiddlewareStack(idx + 1);
+									return middlewareResult;
+								},
+							});
+							// Action function.
+						} else {
+							// Validate the client inputs in parallel.
+							const parsedInputs = await Promise.all(
+								clientInputs.map((input, i) => {
+									// Last client input in the array, main argument (no bind arg).
+									if (i === clientInputs.length - 1) {
+										// If schema is undefined, set parsed data to undefined.
+										if (typeof args.schema === "undefined") {
+											return {
+												success: true,
+												data: undefined,
+											} as const;
 										}
 
-										// Otherwise, we're processing bind args client inputs.
+										// Otherwise, parse input with the schema.
 										return args.validationStrategy === "zod"
-											? zodValidate(bindArgsSchemas[i]!, input)
-											: validate(bindArgsSchemas[i]!, input);
-									})
-								);
+											? zodValidate(args.schema, input)
+											: validate(args.schema, input);
+									}
 
-								let hasBindValidationErrors = false;
+									// Otherwise, we're processing bind args client inputs.
+									return args.validationStrategy === "zod"
+										? zodValidate(bindArgsSchemas[i]!, input)
+										: validate(bindArgsSchemas[i]!, input);
+								})
+							);
 
-								// Initialize the bind args validation errors array with null values.
-								// It has the same length as the number of bind arguments (parsedInputs - 1).
-								const bindArgsValidationErrors = Array(parsedInputs.length - 1).fill({});
-								const parsedInputDatas = [];
+							let hasBindValidationErrors = false;
 
-								for (let i = 0; i < parsedInputs.length; i++) {
-									const parsedInput = parsedInputs[i]!;
+							// Initialize the bind args validation errors array with null values.
+							// It has the same length as the number of bind arguments (parsedInputs - 1).
+							const bindArgsValidationErrors = Array(parsedInputs.length - 1).fill({});
+							const parsedInputDatas = [];
 
-									if (parsedInput.success) {
-										parsedInputDatas.push(parsedInput.data);
+							for (let i = 0; i < parsedInputs.length; i++) {
+								const parsedInput = parsedInputs[i]!;
+
+								if (parsedInput.success) {
+									parsedInputDatas.push(parsedInput.data);
+								} else {
+									// If we're processing a bind argument and there are validation errors for this one,
+									// we need to store them in the bind args validation errors array at this index.
+									if (i < parsedInputs.length - 1) {
+										bindArgsValidationErrors[i] = buildValidationErrors<BAS[number]>(parsedInput.issues);
+										hasBindValidationErrors = true;
 									} else {
-										// If we're processing a bind argument and there are validation errors for this one,
-										// we need to store them in the bind args validation errors array at this index.
-										if (i < parsedInputs.length - 1) {
-											bindArgsValidationErrors[i] = buildValidationErrors<BAS[number]>(parsedInput.issues);
+										// Otherwise, we're processing the non-bind argument (the last one) in the array.
+										const validationErrors = buildValidationErrors<S>(parsedInput.issues);
 
-											hasBindValidationErrors = true;
-										} else {
-											// Otherwise, we're processing the non-bind argument (the last one) in the array.
-											const validationErrors = buildValidationErrors<S>(parsedInput.issues);
-
-											middlewareResult.validationErrors = await Promise.resolve(
-												args.formatValidationErrors?.(validationErrors) ?? validationErrors
-											);
-										}
+										middlewareResult.validationErrors = await Promise.resolve(
+											args.formatValidationErrors?.(validationErrors) ?? validationErrors
+										);
 									}
 								}
-
-								// If there are bind args validation errors, format them and store them in the middleware result.
-								if (hasBindValidationErrors) {
-									middlewareResult.bindArgsValidationErrors = await Promise.resolve(
-										args.formatBindArgsValidationErrors?.(bindArgsValidationErrors as BindArgsValidationErrors<BAS>) ??
-											bindArgsValidationErrors
-									);
-								}
-
-								if (middlewareResult.validationErrors || middlewareResult.bindArgsValidationErrors) {
-									return;
-								}
-
-								// @ts-expect-error
-								const scfArgs: Parameters<StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>> = [];
-
-								scfArgs[0] = {
-									parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
-									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
-									ctx: prevCtx as Ctx,
-									metadata: args.metadata,
-								};
-
-								if (withState) {
-									scfArgs[1] = { prevResult: structuredClone(prevResult!) };
-								}
-
-								const data = await serverCodeFn(...scfArgs);
-
-								middlewareResult.success = true;
-								middlewareResult.data = data;
-								middlewareResult.parsedInput = parsedInputDatas.at(-1);
-								middlewareResult.bindArgsParsedInputs = parsedInputDatas.slice(0, -1);
 							}
-						} catch (e: unknown) {
-							// next/navigation functions work by throwing an error that will be
-							// processed internally by Next.js.
-							if (isRedirectError(e) || isNotFoundError(e)) {
-								middlewareResult.success = true;
-								frameworkError = e;
+
+							// If there are bind args validation errors, format them and store them in the middleware result.
+							if (hasBindValidationErrors) {
+								middlewareResult.bindArgsValidationErrors = await Promise.resolve(
+									args.formatBindArgsValidationErrors?.(bindArgsValidationErrors as BindArgsValidationErrors<BAS>) ??
+										bindArgsValidationErrors
+								);
+							}
+
+							if (middlewareResult.validationErrors || middlewareResult.bindArgsValidationErrors) {
 								return;
 							}
 
-							// If error is ServerValidationError, return validationErrors as if schema validation would fail.
-							if (e instanceof ServerValidationError) {
-								const ve = e.validationErrors as ValidationErrors<S>;
-								middlewareResult.validationErrors = await Promise.resolve(args.formatValidationErrors?.(ve) ?? ve);
-								return;
+							// @ts-expect-error
+							const scfArgs: Parameters<StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>> = [];
+
+							// Server code function always has this object as the first argument.
+							scfArgs[0] = {
+								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
+								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
+								ctx: prevCtx as Ctx,
+								metadata: args.metadata,
+							};
+
+							// If this action is stateful, server code function also has a `prevResult` property inside the second
+							// argument object.
+							if (withState) {
+								scfArgs[1] = { prevResult: structuredClone(prevResult!) };
 							}
 
-							// If error is not an instance of Error, wrap it in an Error object with
-							// the default message.
-							const error = isError(e) ? e : new Error(DEFAULT_SERVER_ERROR_MESSAGE);
+							const data = await serverCodeFn(...scfArgs);
 
-							await Promise.resolve(args.handleServerErrorLog(error));
-
-							middlewareResult.serverError = await Promise.resolve(args.handleReturnedServerError(error));
+							middlewareResult.success = true;
+							middlewareResult.data = data;
+							middlewareResult.parsedInput = parsedInputDatas.at(-1);
+							middlewareResult.bindArgsParsedInputs = parsedInputDatas.slice(0, -1);
 						}
 					};
 
-					await executeMiddlewareChain();
+					try {
+						// Execute middleware chain + action function.
+						await executeMiddlewareStack();
+					} catch (e: unknown) {
+						// next/navigation functions work by throwing an error that will be
+						// processed internally by Next.js.
+						if (isRedirectError(e) || isNotFoundError(e)) {
+							middlewareResult.success = true;
+							// If an internal framework error occurred, throw it, so it will be processed by Next.js.
+							throw e;
+						}
 
-					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
-					if (frameworkError) {
-						throw frameworkError;
+						// If error is ServerValidationError, return validationErrors as if schema validation would fail.
+						if (e instanceof ServerValidationError) {
+							const ve = e.validationErrors as ValidationErrors<S>;
+							middlewareResult.validationErrors = await Promise.resolve(args.formatValidationErrors?.(ve) ?? ve);
+						} else {
+							// If error is not an instance of Error, wrap it in an Error object with
+							// the default message.
+							const error = isError(e) ? e : new Error(DEFAULT_SERVER_ERROR_MESSAGE);
+							await Promise.resolve(args.handleServerErrorLog(error));
+							middlewareResult.serverError = await Promise.resolve(args.handleReturnedServerError(error));
+						}
 					}
 
 					const actionResult: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> = {};
