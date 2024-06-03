@@ -18,24 +18,24 @@ export type SafeActionResult<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
-	FVE = ValidationErrors<S>,
-	FBAVE = BindArgsValidationErrors<BAS>,
+	CVE = ValidationErrors<S>,
+	CBAVE = BindArgsValidationErrors<BAS>,
 	Data = unknown,
 	// eslint-disable-next-line
 	NextCtx = unknown,
 > = {
 	data?: Data;
 	serverError?: ServerError;
-	validationErrors?: FVE;
-	bindArgsValidationErrors?: FBAVE;
+	validationErrors?: CVE;
+	bindArgsValidationErrors?: CBAVE;
 };
 
 /**
  * Type of the function called from components with type safe input data.
  */
-export type SafeActionFn<ServerError, S extends Schema | undefined, BAS extends readonly Schema[], FVE, FBAVE, Data> = (
+export type SafeActionFn<ServerError, S extends Schema | undefined, BAS extends readonly Schema[], CVE, CBAVE, Data> = (
 	...clientInputs: [...bindArgsInputs: InferInArray<BAS>, input: S extends Schema ? InferIn<S> : void]
-) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 
 /**
  * Type of the stateful function called from components with type safe input data.
@@ -44,16 +44,16 @@ export type SafeStateActionFn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 > = (
 	...clientInputs: [
 		...bindArgsInputs: InferInArray<BAS>,
-		prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>,
+		prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>,
 		input: S extends Schema ? InferIn<S> : void,
 	]
-) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 
 /**
  * Type of the result of a middleware function. It extends the result of a safe action with
@@ -106,8 +106,8 @@ export type StateServerCodeFn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Ctx,
 	MD,
 	Data,
@@ -118,5 +118,5 @@ export type StateServerCodeFn<
 		ctx: Ctx;
 		metadata: MD;
 	},
-	utils: { prevResult: Prettify<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>> }
+	utils: { prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>> }
 ) => Promise<Data>;

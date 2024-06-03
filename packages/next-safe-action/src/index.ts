@@ -2,6 +2,7 @@ import type { Infer, Schema } from "@typeschema/main";
 import type { SafeActionClientOpts } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
+import { formatBindArgsValidationErrors, formatValidationErrors } from "./validation-errors";
 
 export { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export { flattenBindArgsValidationErrors, flattenValidationErrors, returnValidationErrors } from "./validation-errors";
@@ -36,14 +37,16 @@ export const createSafeActionClient = <ServerError = string, MetadataSchema exte
 		SafeActionClientOpts<ServerError, MetadataSchema>["handleReturnedServerError"]
 	>;
 
-	return new SafeActionClient<
-		ServerError,
-		undefined,
-		MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined
-	>({
+	return new SafeActionClient({
 		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
 		handleServerErrorLog,
 		handleReturnedServerError,
 		validationStrategy: "zod",
+		schema: undefined,
+		bindArgsSchemas: [],
+		ctxType: undefined,
+		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+		formatValidationErrorsFn: formatValidationErrors,
+		formatBindArgsValidationErrorsFn: formatBindArgsValidationErrors,
 	});
 };

@@ -13,7 +13,7 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import type { InferArray } from "./utils";
-import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import { DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
 import { ActionServerValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
@@ -22,35 +22,19 @@ import type {
 	ValidationErrors,
 } from "./validation-errors.types";
 
-async function zodValidate<S extends Schema>(s: S, data: unknown) {
-	const result = await s.safeParseAsync(data);
-
-	if (result.success) {
-		return {
-			success: true,
-			data: result.data as Infer<S>,
-		} as const;
-	}
-
-	return {
-		success: false,
-		issues: result.error.issues.map(({ message, path }) => ({ message, path })),
-	} as const;
-}
-
 export function actionBuilder<
 	ServerError,
 	S extends Schema | undefined = undefined,
 	const BAS extends readonly Schema[] = [],
-	FVE = undefined,
-	FBAVE = undefined,
+	CVE = undefined,
+	CBAVE = undefined,
 	MD = undefined,
 	Ctx = undefined,
 >(args: {
 	schema?: S;
 	bindArgsSchemas?: BAS;
-	formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
-	formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
+	formatValidationErrors: FormatValidationErrorsFn<S, CVE>;
+	formatBindArgsValidationErrors: FormatBindArgsValidationErrorsFn<BAS, CBAVE>;
 	metadata: MD;
 	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
 	handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
@@ -63,24 +47,24 @@ export function actionBuilder<
 	function buildAction({ withState }: { withState: false }): {
 		action: <Data>(
 			serverCodeFn: ServerCodeFn<S, BAS, Ctx, MD, Data>
-		) => SafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>;
+		) => SafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
 		action: <Data>(
-			serverCodeFn: StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>
-		) => SafeStateActionFn<ServerError, S, BAS, FVE, FBAVE, Data>;
+			serverCodeFn: StateServerCodeFn<ServerError, S, BAS, CVE, CBAVE, Ctx, MD, Data>
+		) => SafeStateActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
 		return {
 			action: <Data>(
 				serverCodeFn:
 					| ServerCodeFn<S, BAS, Ctx, MD, Data>
-					| StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>
+					| StateServerCodeFn<ServerError, S, BAS, CVE, CBAVE, Ctx, MD, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
 					let prevCtx: unknown = undefined;
 					const middlewareResult: MiddlewareResult<ServerError, unknown> = { success: false };
-					type PrevResult = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> | undefined;
+					type PrevResult = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
 
 					if (withState) {
@@ -167,7 +151,7 @@ export function actionBuilder<
 										const validationErrors = buildValidationErrors<S>(parsedInput.issues);
 
 										middlewareResult.validationErrors = await Promise.resolve(
-											args.formatValidationErrors?.(validationErrors) ?? validationErrors
+											args.formatValidationErrors(validationErrors)
 										);
 									}
 								}
@@ -176,8 +160,7 @@ export function actionBuilder<
 							// If there are bind args validation errors, format them and store them in the middleware result.
 							if (hasBindValidationErrors) {
 								middlewareResult.bindArgsValidationErrors = await Promise.resolve(
-									args.formatBindArgsValidationErrors?.(bindArgsValidationErrors as BindArgsValidationErrors<BAS>) ??
-										bindArgsValidationErrors
+									args.formatBindArgsValidationErrors(bindArgsValidationErrors as BindArgsValidationErrors<BAS>)
 								);
 							}
 
@@ -186,7 +169,7 @@ export function actionBuilder<
 							}
 
 							// @ts-expect-error
-							const scfArgs: Parameters<StateServerCodeFn<ServerError, S, BAS, FVE, FBAVE, Ctx, MD, Data>> = [];
+							const scfArgs: Parameters<StateServerCodeFn<ServerError, S, BAS, CVE, CBAVE, Ctx, MD, Data>> = [];
 
 							// Server code function always has this object as the first argument.
 							scfArgs[0] = {
@@ -226,7 +209,7 @@ export function actionBuilder<
 						// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
 						if (e instanceof ActionServerValidationError) {
 							const ve = e.validationErrors as ValidationErrors<S>;
-							middlewareResult.validationErrors = await Promise.resolve(args.formatValidationErrors?.(ve) ?? ve);
+							middlewareResult.validationErrors = await Promise.resolve(args.formatValidationErrors(ve));
 						} else {
 							// If error is not an instance of Error, wrap it in an Error object with
 							// the default message.
@@ -236,18 +219,18 @@ export function actionBuilder<
 						}
 					}
 
-					const actionResult: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> = {};
+					const actionResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> = {};
 
 					if (typeof middlewareResult.data !== "undefined") {
 						actionResult.data = middlewareResult.data as Data;
 					}
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
-						actionResult.validationErrors = middlewareResult.validationErrors as FVE;
+						actionResult.validationErrors = middlewareResult.validationErrors as CVE;
 					}
 
 					if (typeof middlewareResult.bindArgsValidationErrors !== "undefined") {
-						actionResult.bindArgsValidationErrors = middlewareResult.bindArgsValidationErrors as FBAVE;
+						actionResult.bindArgsValidationErrors = middlewareResult.bindArgsValidationErrors as CBAVE;
 					}
 
 					if (typeof middlewareResult.serverError !== "undefined") {

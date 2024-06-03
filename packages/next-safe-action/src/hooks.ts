@@ -29,8 +29,8 @@ const getActionStatus = <
 	ServerError,
 	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 >({
 	isIdle,
@@ -39,7 +39,7 @@ const getActionStatus = <
 }: {
 	isIdle: boolean;
 	isExecuting: boolean;
-	result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
+	result: HookResult<ServerError, S, BAS, CVE, CBAVE, Data>;
 }): HookActionStatus => {
 	if (isIdle) {
 		return "idle";
@@ -70,8 +70,8 @@ const useActionCallbacks = <
 	ServerError,
 	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 >({
 	result,
@@ -79,10 +79,10 @@ const useActionCallbacks = <
 	status,
 	cb,
 }: {
-	result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
+	result: HookResult<ServerError, S, BAS, CVE, CBAVE, Data>;
 	input: S extends Schema ? InferIn<S> : undefined;
 	status: HookActionStatus;
-	cb?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>;
+	cb?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>;
 }) => {
 	const onExecuteRef = React.useRef(cb?.onExecute);
 	const onSuccessRef = React.useRef(cb?.onSuccess);
@@ -129,20 +129,20 @@ export const useAction = <
 	ServerError,
 	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 >(
-	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
-	utils?: HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
+	safeActionFn: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
+	utils?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(EMPTY_HOOK_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>(EMPTY_HOOK_RESULT);
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
 
-	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result, isIdle });
+	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
@@ -233,19 +233,19 @@ export const useOptimisticAction = <
 	ServerError,
 	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 	State,
 >(
-	safeActionFn: HookSafeActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
+	safeActionFn: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
 	utils: {
 		currentState: State;
 		updateFn: (state: State, input: S extends Schema ? InferIn<S> : undefined) => State;
-	} & HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
+	} & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>>(EMPTY_HOOK_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>(EMPTY_HOOK_RESULT);
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
@@ -254,7 +254,7 @@ export const useOptimisticAction = <
 		utils.updateFn
 	);
 
-	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result, isIdle });
+	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
@@ -353,15 +353,15 @@ export const useStateAction = <
 	ServerError,
 	S extends Schema | undefined,
 	const BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 >(
-	safeActionFn: HookSafeStateActionFn<ServerError, S, BAS, FVE, FBAVE, Data>,
+	safeActionFn: HookSafeStateActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
 	utils?: {
 		initResult?: Awaited<ReturnType<typeof safeActionFn>>;
 		permalink?: string;
-	} & HookCallbacks<ServerError, S, BAS, FVE, FBAVE, Data>
+	} & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
 	const [result, dispatcher, isExecuting] = React.useActionState(
 		safeActionFn,
@@ -370,7 +370,7 @@ export const useStateAction = <
 	);
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
-	const status = getActionStatus<ServerError, S, BAS, FVE, FBAVE, Data>({ isExecuting, result, isIdle });
+	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {

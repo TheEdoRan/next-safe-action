@@ -23,3 +23,20 @@ export type InferArray<BAS extends readonly Schema[]> = {
 export type InferInArray<BAS extends readonly Schema[]> = {
 	[K in keyof BAS]: InferIn<BAS[K]>;
 };
+
+// Validate with Zod.
+export async function zodValidate<S extends Schema>(s: S, data: unknown) {
+	const result = await s.safeParseAsync(data);
+
+	if (result.success) {
+		return {
+			success: true,
+			data: result.data as Infer<S>,
+		} as const;
+	}
+
+	return {
+		success: false,
+		issues: result.error.issues.map(({ message, path }) => ({ message, path })),
+	} as const;
+}
