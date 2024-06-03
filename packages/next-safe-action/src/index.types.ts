@@ -59,15 +59,7 @@ export type SafeStateActionFn<
  * Type of the result of a middleware function. It extends the result of a safe action with
  * information about the action execution.
  */
-export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
-	ServerError,
-	any,
-	any,
-	unknown,
-	unknown,
-	unknown,
-	NextCtx
-> & {
+export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<ServerError, any, any, any, any, any, NextCtx> & {
 	parsedInput?: unknown;
 	bindArgsParsedInputs?: unknown[];
 	ctx?: unknown;
@@ -77,12 +69,12 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 /**
  * Type of the middleware function passed to a safe action client.
  */
-export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
+export type MiddlewareFn<ServerError, MD, Ctx, NextCtx> = {
 	(opts: {
 		clientInput: unknown;
 		bindArgsClientInputs: unknown[];
 		ctx: Ctx;
-		metadata: MD | undefined;
+		metadata: MD;
 		next: {
 			<NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
 		};
@@ -92,7 +84,7 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Schema[], Ctx, MD, Data> = (args: {
+export type ServerCodeFn<MD, Ctx, S extends Schema | undefined, BAS extends readonly Schema[], Data> = (args: {
 	parsedInput: S extends Schema ? Infer<S> : undefined;
 	bindArgsParsedInputs: InferArray<BAS>;
 	ctx: Ctx;
@@ -104,12 +96,12 @@ export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Sche
  */
 export type StateServerCodeFn<
 	ServerError,
+	MD,
+	Ctx,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	CVE,
 	CBAVE,
-	Ctx,
-	MD,
 	Data,
 > = (
 	args: {

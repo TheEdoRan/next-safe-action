@@ -11,8 +11,9 @@ import type {
 
 export class SafeActionClient<
 	ServerError,
-	Ctx = undefined,
 	MetadataSchema extends Schema | undefined = undefined,
+	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
+	Ctx = undefined,
 	S extends Schema | undefined = undefined,
 	const BAS extends readonly Schema[] = [],
 	CVE = ValidationErrors<S>,
@@ -24,7 +25,8 @@ export class SafeActionClient<
 
 	#middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	#ctxType = undefined as Ctx;
-	#metadata: MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined;
+	#metadataSchema: MetadataSchema;
+	#metadata: MD;
 	#schema: S;
 	#bindArgsSchemas: BAS;
 	#formatValidationErrorsFn: FormatValidationErrorsFn<S, CVE>;
@@ -34,7 +36,8 @@ export class SafeActionClient<
 		opts: {
 			middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 			validationStrategy: "typeschema" | "zod";
-			metadata: MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined;
+			metadataSchema: MetadataSchema;
+			metadata: MD;
 			schema: S;
 			bindArgsSchemas: BAS;
 			formatValidationErrorsFn: FormatValidationErrorsFn<S, CVE>;
@@ -46,7 +49,8 @@ export class SafeActionClient<
 		this.#handleServerErrorLog = opts.handleServerErrorLog;
 		this.#handleReturnedServerError = opts.handleReturnedServerError;
 		this.#validationStrategy = opts.validationStrategy;
-		this.#metadata = (opts.metadata ?? undefined) as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined;
+		this.#metadataSchema = opts.metadataSchema;
+		this.#metadata = opts.metadata;
 		this.#schema = (opts.schema ?? undefined) as S;
 		this.#bindArgsSchemas = opts.bindArgsSchemas ?? [];
 		this.#formatValidationErrorsFn = opts.formatValidationErrorsFn;
@@ -59,12 +63,13 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#use See docs for more information}
 	 */
-	use<NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, MetadataSchema>) {
+	use<NextCtx>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, NextCtx>) {
 		return new SafeActionClient({
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			schema: this.#schema,
 			bindArgsSchemas: this.#bindArgsSchemas,
@@ -80,13 +85,14 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#metadata See docs for more information}
 	 */
-	metadata(data: MetadataSchema extends Schema ? Infer<MetadataSchema> : void) {
+	metadata(data: MD) {
 		return new SafeActionClient({
 			middlewareFns: this.#middlewareFns,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			validationStrategy: this.#validationStrategy,
-			metadata: (data ?? undefined) as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+			metadataSchema: this.#metadataSchema,
+			metadata: data,
 			schema: this.#schema,
 			bindArgsSchemas: this.#bindArgsSchemas,
 			formatValidationErrorsFn: this.#formatValidationErrorsFn,
@@ -113,6 +119,7 @@ export class SafeActionClient<
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			schema,
 			bindArgsSchemas: this.#bindArgsSchemas,
@@ -139,6 +146,7 @@ export class SafeActionClient<
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			schema: this.#schema,
 			bindArgsSchemas,
@@ -155,15 +163,14 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
 	 */
-	action<Data>(
-		serverCodeFn: ServerCodeFn<S, BAS, Ctx, MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined, Data>
-	) {
+	action<Data>(serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>) {
 		return actionBuilder({
 			validationStrategy: this.#validationStrategy,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: this.#middlewareFns,
 			ctxType: this.#ctxType,
+			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			schema: this.#schema,
 			bindArgsSchemas: this.#bindArgsSchemas,
@@ -179,24 +186,14 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
 	 */
-	stateAction<Data>(
-		serverCodeFn: StateServerCodeFn<
-			ServerError,
-			S,
-			BAS,
-			CVE,
-			CBAVE,
-			Ctx,
-			MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
-			Data
-		>
-	) {
+	stateAction<Data>(serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>) {
 		return actionBuilder({
 			validationStrategy: this.#validationStrategy,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: this.#middlewareFns,
 			ctxType: this.#ctxType,
+			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			schema: this.#schema,
 			bindArgsSchemas: this.#bindArgsSchemas,

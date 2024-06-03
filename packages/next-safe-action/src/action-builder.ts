@@ -13,7 +13,7 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import type { InferArray } from "./utils";
-import { DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
+import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
 import { ActionServerValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
@@ -24,21 +24,23 @@ import type {
 
 export function actionBuilder<
 	ServerError,
+	MetadataSchema extends Schema | undefined = undefined,
+	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
+	Ctx = undefined,
 	S extends Schema | undefined = undefined,
 	const BAS extends readonly Schema[] = [],
 	CVE = undefined,
 	CBAVE = undefined,
-	MD = undefined,
-	Ctx = undefined,
 >(args: {
 	schema?: S;
 	bindArgsSchemas?: BAS;
 	formatValidationErrors: FormatValidationErrorsFn<S, CVE>;
 	formatBindArgsValidationErrors: FormatBindArgsValidationErrorsFn<BAS, CBAVE>;
+	metadataSchema: MetadataSchema;
 	metadata: MD;
 	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
 	handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
-	middlewareFns: MiddlewareFn<ServerError, any, any, MD>[];
+	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	ctxType: Ctx;
 	validationStrategy: "typeschema" | "zod";
 }) {
@@ -46,20 +48,20 @@ export function actionBuilder<
 
 	function buildAction({ withState }: { withState: false }): {
 		action: <Data>(
-			serverCodeFn: ServerCodeFn<S, BAS, Ctx, MD, Data>
+			serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>
 		) => SafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
 		action: <Data>(
-			serverCodeFn: StateServerCodeFn<ServerError, S, BAS, CVE, CBAVE, Ctx, MD, Data>
+			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 		) => SafeStateActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
 		return {
 			action: <Data>(
 				serverCodeFn:
-					| ServerCodeFn<S, BAS, Ctx, MD, Data>
-					| StateServerCodeFn<ServerError, S, BAS, CVE, CBAVE, Ctx, MD, Data>
+					| ServerCodeFn<MD, Ctx, S, BAS, Data>
+					| StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
 					let prevCtx: unknown = undefined;
@@ -84,7 +86,6 @@ export function actionBuilder<
 					// Execute the middleware stack.
 					const executeMiddlewareStack = async (idx = 0) => {
 						const middlewareFn = args.middlewareFns[idx];
-
 						middlewareResult.ctx = prevCtx;
 
 						// Middleware function.
@@ -169,7 +170,7 @@ export function actionBuilder<
 							}
 
 							// @ts-expect-error
-							const scfArgs: Parameters<StateServerCodeFn<ServerError, S, BAS, CVE, CBAVE, Ctx, MD, Data>> = [];
+							const scfArgs: Parameters<StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>> = [];
 
 							// Server code function always has this object as the first argument.
 							scfArgs[0] = {
@@ -195,6 +196,16 @@ export function actionBuilder<
 					};
 
 					try {
+						// Validate metadata input.
+						if (args.metadataSchema) {
+							const v = args.validationStrategy === "zod" ? zodValidate : validate;
+							if (!(await v(args.metadataSchema, args.metadata)).success) {
+								throw new ActionMetadataError(
+									"Invalid metadata input. Please be sure to pass metadata via `metadata` method before defining the action."
+								);
+							}
+						}
+
 						// Execute middleware chain + action function.
 						await executeMiddlewareStack();
 					} catch (e: unknown) {

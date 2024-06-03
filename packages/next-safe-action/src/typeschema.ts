@@ -4,7 +4,7 @@ import { SafeActionClient } from "./safe-action-client";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 import { formatBindArgsValidationErrors, formatValidationErrors } from "./validation-errors";
 
-export { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
+export { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export { flattenBindArgsValidationErrors, flattenValidationErrors, returnValidationErrors } from "./validation-errors";
 
 export type * from "./index.types";
@@ -45,6 +45,7 @@ export const createSafeActionClient = <ServerError = string, MetadataSchema exte
 		schema: undefined,
 		bindArgsSchemas: [],
 		ctxType: undefined,
+		metadataSchema: createOpts?.defineMetadataSchema?.(),
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 		formatValidationErrorsFn: formatValidationErrors,
 		formatBindArgsValidationErrorsFn: formatBindArgsValidationErrors,
