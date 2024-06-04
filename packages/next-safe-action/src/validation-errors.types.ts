@@ -46,13 +46,13 @@ export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationEr
 /**
  * Type of the function used to format validation errors.
  */
-export type FormatValidationErrorsFn<S extends Schema | undefined, CVE> = (
+export type HandleValidationErrorsShapeFn<S extends Schema | undefined, CVE> = (
 	validationErrors: ValidationErrors<S>
 ) => CVE;
 
 /**
  * Type of the function used to format bind arguments validation errors.
  */
-export type FormatBindArgsValidationErrorsFn<BAS extends readonly Schema[], CBAVE> = (
+export type HandleBindArgsValidationErrorsShapeFn<BAS extends readonly Schema[], CBAVE> = (
 	bindArgsValidationErrors: BindArgsValidationErrors<BAS>
 ) => CBAVE;

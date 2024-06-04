@@ -200,22 +200,22 @@ export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationEr
 };
 ```
 
-### `FormatValidationErrorsFn`
+### `HandleValidationErrorsShapeFn`
 
-Type of the function used to format validation errors.
+Type of the function used to format validation errors to custom shape.
 
 ```typescript
-export type FormatValidationErrorsFn<S extends Schema | undefined, CVE> = (
+export type HandleValidationErrorsShapeFn<S extends Schema | undefined, CVE> = (
   validationErrors: ValidationErrors<S>
 ) => CVE;
 ```
 
-### `FormatBindArgsValidationErrorsFn`
+### `HandleBindArgsValidationErrorsShapeFn`
 
-Type of the function used to format bind arguments validation errors.
+Type of the function used to format bind arguments validation errors to custom shape.
 
 ```typescript
-export type FormatBindArgsValidationErrorsFn<BAS extends readonly Schema[], FBAVE> = (
+export type HandleBindArgsValidationErrorsShapeFn<BAS extends readonly Schema[], FBAVE> = (
   bindArgsValidationErrors: BindArgsValidationErrors<BAS>
 ) => FBAVE;
 ```

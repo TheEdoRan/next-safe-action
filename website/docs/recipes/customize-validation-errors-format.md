@@ -7,9 +7,9 @@ description: Learn how to customize validation errors format returned to the cli
 
 next-safe-action, by default, emulates Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method for building both validation and bind args validation errors and return them to the client.
 
-This can be customized by using `formatValidationErrors` and `formatBindArgsValidationErrors` optional functions in [`schema`](/docs/safe-action-client/instance-methods#schema) and [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) methods.
+This can be customized by using `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in [`schema`](/docs/safe-action-client/instance-methods#schema) and [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) methods.
 
-For example, if you want to flatten the validation errors (emulation of Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method), you can (but not required to) use the `flattenValidationErrors` utility function exported from the library, combining it with `formatValidationErrors` inside `schema` method:
+For example, if you want to flatten the validation errors (emulation of Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method), you can (but not required to) use the `flattenValidationErrors` utility function exported from the library, combining it with `handleValidationErrorsShape` inside `schema` method:
 
 ```typescript src="src/app/login-action.ts"
 "use server";
@@ -32,12 +32,12 @@ export const loginUser = actionClient
   .schema(schema, {
     // Here we use the `flattenValidationErrors` function to customize the returned validation errors
     // object to the client.
-    formatValidationErrors: (ve) => flattenValidationErrors(ve).fieldErrors,
+    handleValidationErrorsShape: (ve) => flattenValidationErrors(ve).fieldErrors,
   })
   .bindArgs(bindArgsSchemas, {
     // Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
     // validation errors object array to the client.
-    formatBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve),
+    handleBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve),
   })
   .action(async ({ parsedInput: { username, password } }) => {
     // Your code here...
@@ -86,14 +86,14 @@ next-safe-action, by default, uses the formatted validation errors structure, so
 If you need or want to flatten validation errors often, though, you can define an utility function like this one (assuming you're using Zod, but you can adapt it to your needs):
 
 ```typescript title="src/lib/safe-action.ts"
-import { flattenValidationErrors } from "next-safe-action";
+import { flattenValidationErrors, type HandleValidationErrorsShapeFn } from "next-safe-action";
 
 // ...
 
 export function fve<S extends z.ZodTypeAny>(schema: S): [
   S,
   {
-    formatValidationErrors: FormatValidationErrorsFn<
+    handleValidationErrorsShape: HandleValidationErrorsShapeFn<
       S,
       FlattenedValidationErrors<ValidationErrors<S>>
     >;
@@ -102,7 +102,7 @@ export function fve<S extends z.ZodTypeAny>(schema: S): [
   return [
     schema,
     {
-      formatValidationErrors: (ve: ValidationErrors<S>) =>
+      handleValidationErrorsShape: (ve: ValidationErrors<S>) =>
         flattenValidationErrors(ve),
     },
   ];

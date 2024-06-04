@@ -2,13 +2,16 @@ import type { Infer, InferIn, Schema } from "@typeschema/main";
 import type { InferArray, InferInArray, MaybePromise, Prettify } from "./utils";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 
+export type DVES = "formatted" | "flattened";
+
 /**
  * Type of options when creating a new safe action client.
  */
-export type SafeActionClientOpts<ServerError, MetadataSchema extends Schema | undefined> = {
+export type SafeActionClientOpts<ServerError, MetadataSchema extends Schema | undefined, ODVES extends DVES> = {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
 	defineMetadataSchema?: () => MetadataSchema;
+	defaultValidationErrorsShape?: ODVES;
 };
 
 /**

@@ -1,11 +1,22 @@
 import type { Infer, Schema } from "@typeschema/main";
-import type { SafeActionClientOpts } from "./index.types";
+import type { DVES, SafeActionClientOpts } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
-import { formatBindArgsValidationErrors, formatValidationErrors } from "./validation-errors";
+import {
+	flattenBindArgsValidationErrors,
+	flattenValidationErrors,
+	formatBindArgsValidationErrors,
+	formatValidationErrors,
+} from "./validation-errors";
 
 export { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
-export { flattenBindArgsValidationErrors, flattenValidationErrors, returnValidationErrors } from "./validation-errors";
+export {
+	flattenBindArgsValidationErrors,
+	flattenValidationErrors,
+	formatBindArgsValidationErrors,
+	formatValidationErrors,
+	returnValidationErrors,
+} from "./validation-errors";
 
 export type * from "./index.types";
 export type * from "./validation-errors.types";
@@ -18,8 +29,12 @@ export type * from "./validation-errors.types";
  *
  * {@link https://next-safe-action.dev/docs/safe-action-client/initialization-options See docs for more information}
  */
-export const createSafeActionClient = <ServerError = string, MetadataSchema extends Schema | undefined = undefined>(
-	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema>
+export const createSafeActionClient = <
+	const ODVES extends DVES,
+	ServerError = string,
+	MetadataSchema extends Schema | undefined = undefined,
+>(
+	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
 ) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
@@ -34,7 +49,7 @@ export const createSafeActionClient = <ServerError = string, MetadataSchema exte
 	// Otherwise mask the error and use a generic message.
 	const handleReturnedServerError = ((e: Error) =>
 		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR_MESSAGE) as NonNullable<
-		SafeActionClientOpts<ServerError, MetadataSchema>["handleReturnedServerError"]
+		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
 	>;
 
 	return new SafeActionClient({
@@ -47,7 +62,12 @@ export const createSafeActionClient = <ServerError = string, MetadataSchema exte
 		ctxType: undefined,
 		metadataSchema: createOpts?.defineMetadataSchema?.(),
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
-		formatValidationErrorsFn: formatValidationErrors,
-		formatBindArgsValidationErrorsFn: formatBindArgsValidationErrors,
+		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
+		handleValidationErrorsShape:
+			createOpts?.defaultValidationErrorsShape === "flattened" ? flattenValidationErrors : formatValidationErrors,
+		handleBindArgsValidationErrorsShape:
+			createOpts?.defaultValidationErrorsShape === "flattened"
+				? flattenBindArgsValidationErrors
+				: formatBindArgsValidationErrors,
 	});
 };
