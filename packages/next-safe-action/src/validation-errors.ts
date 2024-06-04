@@ -73,6 +73,24 @@ export function returnValidationErrors<S extends Schema>(schema: S, validationEr
 }
 
 /**
+ * Default validation errors format.
+ * Emulation of `zod`'s [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) function.
+ */
+export function formatValidationErrors<VE extends ValidationErrors<any>>(validationErrors: VE) {
+	return validationErrors;
+}
+
+/**
+ * Default bind args validation errors format.
+ * Emulation of `zod`'s [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) function.
+ */
+export function formatBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]>(
+	bindArgsValidationErrors: BAVE
+) {
+	return bindArgsValidationErrors;
+}
+
+/**
  * Transform default formatted validation errors into flattened structure.
  * `formErrors` contains global errors, and `fieldErrors` contains errors for each field,
  * one level deep. It discards errors for nested fields.

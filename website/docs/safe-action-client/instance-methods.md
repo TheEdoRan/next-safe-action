@@ -18,28 +18,28 @@ use(middlewareFn: MiddlewareFn) => new SafeActionClient()
 ## `metadata`
 
 ```typescript
-metadata(data: Metadata) => { schema() }
+metadata(data: Metadata) => new SafeActionClient()
 ```
 
 `metadata` expects an argument of the same type as the return value of the [`defineMetadataSchema`](/docs/safe-action-client/initialization-options#definemetadataschema) optional initialization function. If you don't provide this function to the action client when you initialize it, `metadata` will be `undefined`.
 
-`metadata` lets you specify useful data about the safe action you're executing. If you don't use this method before defining your action (using [`action`/`stateAction`](#action--stateaction) method), `metadata` will be `undefined` inside [`serverCodeFn`](#servercodefn). It returns the [`schema`](#schema) method, since metadata is action specific and not shared with other actions. You can then access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`/`stateAction`](#action--stateaction).
+`metadata` lets you specify useful data about the safe action you're executing. You can access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`/`stateAction`](#action--stateaction). If there's a mismatch between the metadata schema and the data you pass to `metadata`, the action will throw an error during execution. It returns a new instance of the safe action client.
 
 ## `schema`
 
 ```typescript
-schema(schema: S, utils?: { formatValidationErrors?: FormatValidationErrorsFn } }) => { action(), stateAction(), bindArgsSchemas() }
+schema(schema: S, utils?: { formatValidationErrors?: FormatValidationErrorsFn } }) => new SafeActionClient()
 ```
 
-`schema` accepts an **optional** input schema of type `Schema` (from TypeSchema) and an optional `utils` object that accepts a [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns the [`action`/`stateAction`](#action--stateaction) and [`bindArgsSchemas`](#bindargsschemas) methods, which allows you, respectively, to define a new action using that input schema or extend the arguments with additional bound ones.
+`schema` accepts an **optional** input schema of type `Schema` (from TypeSchema) and an optional `utils` object that accepts a [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`formatValidationErrors`](/docs/recipes/customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns a new instance of the safe action client.
 
 ## `bindArgsSchemas`
 
 ```typescript
-bindArgsSchemas(bindArgsSchemas: BAS, bindArgsUtils?: { formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn }) => { action(), stateAction() }
+bindArgsSchemas(bindArgsSchemas: BAS, bindArgsUtils?: { formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn }) => new SafeActionClient()
 ```
 
-`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` (from TypeSchema) and an optional `bindArgsUtils` object that accepts a `formatBindArgsValidationErrors` function. The schema is used to define the bind arguments that the safe action will receive, the optional `formatBindArgsValidationErrors` function is used to [return a custom format for bind arguments validation errors](/docs/recipes/customize-validation-errors-format). It returns the [`action`/`stateAction`](#action--stateaction) method, which allows you, to define a new action using the input and bind inputs schemas.
+`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` (from TypeSchema) and an optional `bindArgsUtils` object that accepts a `formatBindArgsValidationErrors` function. The schema is used to define the bind arguments that the safe action will receive, the optional `formatBindArgsValidationErrors` function is used to [return a custom format for bind arguments validation errors](/docs/recipes/customize-validation-errors-format). It returns a new instance of the safe action client.
 
 ## `action` / `stateAction`
 

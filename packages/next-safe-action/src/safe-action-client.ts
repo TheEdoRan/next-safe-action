@@ -1,4 +1,4 @@
-import type { Schema } from "@typeschema/main";
+import type { Infer, Schema } from "@typeschema/main";
 import type {} from "zod";
 import { actionBuilder } from "./action-builder";
 import type { MiddlewareFn, SafeActionClientOpts, ServerCodeFn, StateServerCodeFn } from "./index.types";
@@ -9,24 +9,52 @@ import type {
 	ValidationErrors,
 } from "./validation-errors.types";
 
-export class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined> {
+export class SafeActionClient<
+	ServerError,
+	MetadataSchema extends Schema | undefined = undefined,
+	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
+	Ctx = undefined,
+	S extends Schema | undefined = undefined,
+	const BAS extends readonly Schema[] = [],
+	CVE = ValidationErrors<S>,
+	const CBAVE = BindArgsValidationErrors<BAS>,
+> {
 	readonly #handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
 	readonly #handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
 	readonly #validationStrategy: "typeschema" | "zod";
 
 	#middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	#ctxType = undefined as Ctx;
+	#metadataSchema: MetadataSchema;
+	#metadata: MD;
+	#schema: S;
+	#bindArgsSchemas: BAS;
+	#formatValidationErrorsFn: FormatValidationErrorsFn<S, CVE>;
+	#formatBindArgsValidationErrorsFn: FormatBindArgsValidationErrorsFn<BAS, CBAVE>;
 
 	constructor(
 		opts: {
 			middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 			validationStrategy: "typeschema" | "zod";
+			metadataSchema: MetadataSchema;
+			metadata: MD;
+			schema: S;
+			bindArgsSchemas: BAS;
+			formatValidationErrorsFn: FormatValidationErrorsFn<S, CVE>;
+			formatBindArgsValidationErrorsFn: FormatBindArgsValidationErrorsFn<BAS, CBAVE>;
+			ctxType: Ctx;
 		} & Required<Pick<SafeActionClientOpts<ServerError, any>, "handleReturnedServerError" | "handleServerErrorLog">>
 	) {
 		this.#middlewareFns = opts.middlewareFns;
 		this.#handleServerErrorLog = opts.handleServerErrorLog;
 		this.#handleReturnedServerError = opts.handleReturnedServerError;
 		this.#validationStrategy = opts.validationStrategy;
+		this.#metadataSchema = opts.metadataSchema;
+		this.#metadata = opts.metadata;
+		this.#schema = (opts.schema ?? undefined) as S;
+		this.#bindArgsSchemas = opts.bindArgsSchemas ?? [];
+		this.#formatValidationErrorsFn = opts.formatValidationErrorsFn;
+		this.#formatBindArgsValidationErrorsFn = opts.formatBindArgsValidationErrorsFn;
 	}
 
 	/**
@@ -35,12 +63,19 @@ export class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#use See docs for more information}
 	 */
-	use<NextCtx>(middlewareFn: MiddlewareFn<ServerError, Ctx, NextCtx, Metadata>) {
-		return new SafeActionClient<ServerError, NextCtx, Metadata>({
+	use<NextCtx>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, NextCtx>) {
+		return new SafeActionClient({
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
+			metadata: this.#metadata,
+			schema: this.#schema,
+			bindArgsSchemas: this.#bindArgsSchemas,
+			formatValidationErrorsFn: this.#formatValidationErrorsFn,
+			formatBindArgsValidationErrorsFn: this.#formatBindArgsValidationErrorsFn,
+			ctxType: undefined as NextCtx,
 		});
 	}
 
@@ -50,37 +85,20 @@ export class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#metadata See docs for more information}
 	 */
-	metadata(data: Metadata) {
-		return {
-			/**
-			 * Define the input validation schema for the action.
-			 * @param schema Input validation schema
-			 * @param utils Optional utils object
-			 *
-			 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#schema See docs for more information}
-			 */
-			schema: <S extends Schema | undefined = undefined, const FVE = ValidationErrors<S>>(
-				schema?: S,
-				utils?: {
-					formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
-				}
-			) =>
-				// schema with metadata
-				this.#schema<S, FVE, Metadata>({
-					schema,
-					formatValidationErrors: utils?.formatValidationErrors,
-					metadata: data,
-				}),
-			// or action with metadata and no inputs
-			...actionBuilder({
-				handleReturnedServerError: this.#handleReturnedServerError,
-				handleServerErrorLog: this.#handleServerErrorLog,
-				middlewareFns: this.#middlewareFns,
-				metadata: data,
-				ctxType: this.#ctxType,
-				validationStrategy: this.#validationStrategy,
-			}),
-		};
+	metadata(data: MD) {
+		return new SafeActionClient({
+			middlewareFns: this.#middlewareFns,
+			handleReturnedServerError: this.#handleReturnedServerError,
+			handleServerErrorLog: this.#handleServerErrorLog,
+			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
+			metadata: data,
+			schema: this.#schema,
+			bindArgsSchemas: this.#bindArgsSchemas,
+			formatValidationErrorsFn: this.#formatValidationErrorsFn,
+			formatBindArgsValidationErrorsFn: this.#formatBindArgsValidationErrorsFn,
+			ctxType: undefined as Ctx,
+		});
 	}
 
 	/**
@@ -90,74 +108,74 @@ export class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#schema See docs for more information}
 	 */
-	schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>>(
-		schema?: S,
+	schema<OS extends Schema, OCVE = ValidationErrors<OS>>(
+		schema: OS,
 		utils?: {
-			formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
+			formatValidationErrors?: FormatValidationErrorsFn<OS, OCVE>;
 		}
 	) {
-		// schema with no metadata
-		return this.#schema<S, FVE, undefined>({
+		return new SafeActionClient({
+			middlewareFns: this.#middlewareFns,
+			handleReturnedServerError: this.#handleReturnedServerError,
+			handleServerErrorLog: this.#handleServerErrorLog,
+			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
+			metadata: this.#metadata,
 			schema,
-			formatValidationErrors: utils?.formatValidationErrors,
-			metadata: undefined,
+			bindArgsSchemas: this.#bindArgsSchemas,
+			formatValidationErrorsFn: (utils?.formatValidationErrors ??
+				this.#formatValidationErrorsFn) as FormatValidationErrorsFn<OS, OCVE>,
+			formatBindArgsValidationErrorsFn: this.#formatBindArgsValidationErrorsFn,
+			ctxType: undefined as Ctx,
 		});
 	}
 
-	// internal method that extends `schema` with metadata
-	#schema<S extends Schema | undefined = undefined, FVE = ValidationErrors<S>, MD = undefined>(args: {
-		schema?: S;
-		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
-		metadata: MD;
-	}) {
-		return {
-			/**
-			 * Define the bind arguments input validation schemas for the action.
-			 * @param bindArgsSchemas Bind arguments input validation schemas
-			 * @param bindArgsUtils Optional utils object
-			 *
-			 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#bindargsschemas See docs for more information}
-			 */
-			bindArgsSchemas: <const BAS extends readonly Schema[], FBAVE = BindArgsValidationErrors<BAS>>(
-				bindArgsSchemas: BAS,
-				bindArgsUtils?: {
-					formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
-				}
-			) =>
-				this.#bindArgsSchemas<S, BAS, FVE, FBAVE, MD>({
-					mainSchema: args.schema,
-					bindArgsSchemas,
-					formatValidationErrors: args.formatValidationErrors,
-					formatBindArgsValidationErrors: bindArgsUtils?.formatBindArgsValidationErrors,
-					metadata: args.metadata,
-				}),
-			...actionBuilder({
-				handleReturnedServerError: this.#handleReturnedServerError,
-				handleServerErrorLog: this.#handleServerErrorLog,
-				middlewareFns: this.#middlewareFns,
-				schema: args.schema,
-				formatValidationErrors: args.formatValidationErrors,
-				metadata: args.metadata,
-				ctxType: this.#ctxType,
-				validationStrategy: this.#validationStrategy,
-			}),
-		};
+	/**
+	 * Define the bind args input validation schema for the action.
+	 * @param bindArgsSchemas Bind args input validation schemas
+	 * @param utils Optional utils object
+	 *
+	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#schema See docs for more information}
+	 */
+	bindArgsSchemas<const OBAS extends readonly Schema[], OCBAVE = BindArgsValidationErrors<OBAS>>(
+		bindArgsSchemas: OBAS,
+		utils?: { formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<OBAS, OCBAVE> }
+	) {
+		return new SafeActionClient({
+			middlewareFns: this.#middlewareFns,
+			handleReturnedServerError: this.#handleReturnedServerError,
+			handleServerErrorLog: this.#handleServerErrorLog,
+			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
+			metadata: this.#metadata,
+			schema: this.#schema,
+			bindArgsSchemas,
+			formatValidationErrorsFn: this.#formatValidationErrorsFn,
+			formatBindArgsValidationErrorsFn: (utils?.formatBindArgsValidationErrors ??
+				this.#formatBindArgsValidationErrorsFn) as FormatBindArgsValidationErrorsFn<OBAS, OCBAVE>,
+			ctxType: undefined as Ctx,
+		});
 	}
 
 	/**
-	 * Define the action (without input validation schema, bind arguments validation schemas or metadata).
+	 * Define the action.
 	 * @param serverCodeFn Code that will be executed on the **server side**
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
 	 */
-	action<Data>(serverCodeFn: ServerCodeFn<undefined, [], Ctx, undefined, Data>) {
+	action<Data>(serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>) {
 		return actionBuilder({
+			validationStrategy: this.#validationStrategy,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: this.#middlewareFns,
-			metadata: undefined,
 			ctxType: this.#ctxType,
-			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
+			metadata: this.#metadata,
+			schema: this.#schema,
+			bindArgsSchemas: this.#bindArgsSchemas,
+			formatValidationErrors: this.#formatValidationErrorsFn,
+			formatBindArgsValidationErrors: this.#formatBindArgsValidationErrorsFn,
 		}).action(serverCodeFn);
 	}
 
@@ -168,43 +186,19 @@ export class SafeActionClient<ServerError, Ctx = undefined, Metadata = undefined
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
 	 */
-	stateAction<Data>(
-		serverCodeFn: StateServerCodeFn<ServerError, undefined, [], undefined, undefined, Ctx, undefined, Data>
-	) {
+	stateAction<Data>(serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>) {
 		return actionBuilder({
+			validationStrategy: this.#validationStrategy,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: this.#middlewareFns,
-			metadata: undefined,
 			ctxType: this.#ctxType,
-			validationStrategy: this.#validationStrategy,
+			metadataSchema: this.#metadataSchema,
+			metadata: this.#metadata,
+			schema: this.#schema,
+			bindArgsSchemas: this.#bindArgsSchemas,
+			formatValidationErrors: this.#formatValidationErrorsFn,
+			formatBindArgsValidationErrors: this.#formatBindArgsValidationErrorsFn,
 		}).stateAction(serverCodeFn);
-	}
-
-	#bindArgsSchemas<
-		S extends Schema | undefined,
-		const BAS extends readonly Schema[],
-		FVE,
-		FBAVE,
-		MD = undefined,
-	>(args: {
-		mainSchema?: S;
-		bindArgsSchemas: BAS;
-		formatValidationErrors?: FormatValidationErrorsFn<S, FVE>;
-		formatBindArgsValidationErrors?: FormatBindArgsValidationErrorsFn<BAS, FBAVE>;
-		metadata: MD;
-	}) {
-		return actionBuilder({
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
-			middlewareFns: this.#middlewareFns,
-			schema: args.mainSchema,
-			bindArgsSchemas: args.bindArgsSchemas,
-			formatValidationErrors: args.formatValidationErrors,
-			formatBindArgsValidationErrors: args.formatBindArgsValidationErrors,
-			metadata: args.metadata,
-			ctxType: this.#ctxType,
-			validationStrategy: this.#validationStrategy,
-		});
 	}
 }

@@ -135,10 +135,6 @@ As already said above, by default version 7 now returns validation errors in the
 
 This is customizable using the `formatValidationErrors`/`formatBindArgsValidationErrors` optional functions in `schema`/`bindArgsSchemas` methods. Check out [this page](/docs/recipes/customize-validation-errors-format) for more information. For instance, if you need to work with flattened errors (just like pre-v7), next-safe-action conveniently provides two functions to do that: [`flattenValidationErrors` and `flattenBindArgsValidationErrors`](/docs/recipes/customize-validation-errors-format#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions).
 
-### [Allow omitting schema argument in `schema` method](https://github.com/TheEdoRan/next-safe-action/issues/103)
-
-In previous versions, you always had to pass a schema for your action, even if it was empty (in the case of Zod, `z.void()`). Starting from v7, you can omit the `schema` argument in the [`schema`](/docs/safe-action-client/instance-methods#schema) method.
-
 ### [Allow calling `action` method without `schema`](https://github.com/TheEdoRan/next-safe-action/issues/107)
 
 Sometimes it's not necessary to define an action with input. In this case, you can omit the [`schema`](/docs/safe-action-client/instance-methods#schema) method and use directly the [`action`/`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method.

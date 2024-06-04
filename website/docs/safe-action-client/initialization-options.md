@@ -87,7 +87,7 @@ export const actionClient = createSafeActionClient({
 
 ## `defineMetadataSchema?`
 
-You can provide this optional function to the safe action client. This is used to define the type of the metadata for safe actions. If not provided, `metadata` will default to `undefined` value. You can find more information about metadata in the [`metadata` instance method section](/docs/safe-action-client/instance-methods#metadata).
+You can provide this optional function to the safe action client. This is used to define the type of the metadata for safe actions. If not provided, `metadata` will default to `undefined` value. You can find more information about metadata in the [`metadata` instance method section](/docs/safe-action-client/instance-methods#metadata). If you define a metadata schema and you don't call the `metadata` method before defining an action, an error will be thrown.
 
 Here's an example defining a client with a metadata object containing `actionName` as a string, using a Zod schema:
 
@@ -103,5 +103,3 @@ export const actionClient = createSafeActionClient({
   },
 });
 ```
-
-Note that the schema is used just to infer the type of the metadata, and not to validate it.

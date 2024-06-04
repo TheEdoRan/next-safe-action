@@ -10,10 +10,10 @@ export type HookResult<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
-> = SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data> & {
+> = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> & {
 	fetchError?: string;
 };
 
@@ -24,18 +24,18 @@ export type HookCallbacks<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 > = {
 	onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
 	onSuccess?: (args: { data: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
 	onError?: (args: {
-		error: Omit<HookResult<ServerError, S, BAS, FVE, FBAVE, Data>, "data">;
+		error: Omit<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">;
 		input: S extends Schema ? InferIn<S> : undefined;
 	}) => MaybePromise<void>;
 	onSettled?: (args: {
-		result: HookResult<ServerError, S, BAS, FVE, FBAVE, Data>;
+		result: HookResult<ServerError, S, BAS, CVE, CBAVE, Data>;
 		input: S extends Schema ? InferIn<S> : undefined;
 	}) => MaybePromise<void>;
 };
@@ -48,12 +48,12 @@ export type HookSafeActionFn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 > = (
 	input: S extends Schema ? InferIn<S> : undefined
-) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 
 /**
  * Type of the stateful safe action function passed to hooks. Same as `SafeStateActionFn` except it accepts
@@ -63,13 +63,13 @@ export type HookSafeStateActionFn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
-	FVE,
-	FBAVE,
+	CVE,
+	CBAVE,
 	Data,
 > = (
-	prevResult: SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>,
+	prevResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>,
 	input: S extends Schema ? InferIn<S> : undefined
-) => Promise<SafeActionResult<ServerError, S, BAS, FVE, FBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 
 /**
  * Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
