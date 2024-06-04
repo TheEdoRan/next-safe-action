@@ -7,7 +7,11 @@ description: Learn how to customize validation errors format returned to the cli
 
 next-safe-action, by default, emulates Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method for building both validation and bind args validation errors and return them to the client.
 
-This can be customized by using `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in [`schema`](/docs/safe-action-client/instance-methods#schema) and [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) methods.
+This can be customized both at the safe action client level and at the action level by:
+- using [`defaultValidationErrorsShape`](/docs/safe-action-client/initialization-options#defaultvalidationerrorsshape) optional property in `createSafeActionClient`;
+- using `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in [`schema`](/docs/safe-action-client/instance-methods#schema) and [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) methods.
+
+The second way overrides the shape set at the instance level, per action. More information below.
 
 For example, if you want to flatten the validation errors (emulation of Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method), you can (but not required to) use the `flattenValidationErrors` utility function exported from the library, combining it with `handleValidationErrorsShape` inside `schema` method:
 
@@ -78,53 +82,3 @@ flattenedErrors = {
 ```
 
 `flattenBindArgsValidationErrors` works the same way, but with bind args (in [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) method), to build the validation errors array.
-
-### Flatten function for `schema` method
-
-next-safe-action, by default, uses the formatted validation errors structure, so errors for nested fields don't get discarded.
-
-If you need or want to flatten validation errors often, though, you can define an utility function like this one (assuming you're using Zod, but you can adapt it to your needs):
-
-```typescript title="src/lib/safe-action.ts"
-import { flattenValidationErrors, type HandleValidationErrorsShapeFn } from "next-safe-action";
-
-// ...
-
-export function fve<S extends z.ZodTypeAny>(schema: S): [
-  S,
-  {
-    handleValidationErrorsShape: HandleValidationErrorsShapeFn<
-      S,
-      FlattenedValidationErrors<ValidationErrors<S>>
-    >;
-  },
-] {
-  return [
-    schema,
-    {
-      handleValidationErrorsShape: (ve: ValidationErrors<S>) =>
-        flattenValidationErrors(ve),
-    },
-  ];
-}
-```
-
-That can then be used in [`schema`](/docs/safe-action-client/instance-methods#schema) method:
-
-```typescript src="src/app/login-action.ts"
-import { actionClient, fve } from "@/lib/safe-action";
-import { z } from "zod";
-
-const schema = z.object({
-  username: z.string().min(3).max(30),
-});
-
-const loginUser = actionClient
-  // Spread `fve` utility function in the `schema` method. Type safety is preserved.
-  .schema(...fve(schema))
-  .action(async ({ parsedInput: { username } }) => {
-    return {
-      greeting: `Welcome back, ${username}!`,
-    };
-  });
-```
