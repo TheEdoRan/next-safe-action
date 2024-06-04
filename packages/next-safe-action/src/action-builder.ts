@@ -38,8 +38,8 @@ export function actionBuilder<
 	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	metadataSchema: MetadataSchema;
 	metadata: MD;
-	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
-	handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
+	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any, any>["handleServerErrorLog"]>;
+	handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any, any>["handleReturnedServerError"]>;
 	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	ctxType: Ctx;
 	validationStrategy: "typeschema" | "zod";
