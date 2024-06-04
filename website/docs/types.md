@@ -88,9 +88,9 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
   ServerError,
   any,
   any,
-  unknown,
-  unknown,
-  unknown,
+  any,
+  any,
+  any,
   NextCtx
 > & {
   parsedInput?: unknown;
@@ -105,7 +105,7 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 Type of the middleware function passed to a safe action client.
 
 ```typescript
-export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
+export type MiddlewareFn<ServerError, MD, Ctx, NextCtx> = {
   (opts: {
     clientInput: unknown;
     bindArgsClientInputs: unknown[];
@@ -123,7 +123,7 @@ export type MiddlewareFn<ServerError, Ctx, NextCtx, MD> = {
 Type of the function that executes server code when defining a new safe action.
 
 ```typescript
-export type ServerCodeFn<S extends Schema | undefined, BAS extends readonly Schema[], Ctx, MD, Data> = (args: {
+export type ServerCodeFn<MD, Ctx, S extends Schema | undefined, BAS extends readonly Schema[], Data> = (args: {
   parsedInput: S extends Schema ? Infer<S> : undefined;
   bindArgsParsedInputs: InferArray<BAS>;
   ctx: Ctx;
@@ -138,12 +138,12 @@ Type of the function that executes server code when defining a new stateful safe
 ```typescript
 export type StateServerCodeFn<
   ServerError,
+  MD,
+  Ctx
   S extends Schema | undefined,
   BAS extends readonly Schema[],
   CVE,
   CBAVE,
-  Ctx,
-  MD,
   Data,
 > = (
   args: {
