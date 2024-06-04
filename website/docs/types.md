@@ -7,6 +7,14 @@ description: List of next-safe-action types.
 
 ## /
 
+### `DVES`
+
+Type of the default validation errors shape passed to `createSafeActionClient` via `defaultValidationErrorsShape` property.
+
+```typescript
+export type DVES = "flattened" | "formatted";
+```
+
 ### `SafeActionClientOpts`
 
 Type of options when creating a new safe action client.

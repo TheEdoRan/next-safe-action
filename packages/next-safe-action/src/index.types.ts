@@ -2,6 +2,10 @@ import type { Infer, InferIn, Schema } from "@typeschema/main";
 import type { InferArray, InferInArray, MaybePromise, Prettify } from "./utils";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 
+/**
+ * Type of the default validation errors shape passed to `createSafeActionClient` via `defaultValidationErrorsShape`
+ * property.
+ */
 export type DVES = "formatted" | "flattened";
 
 /**
