@@ -53,10 +53,12 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Vali
 // This class is internally used to throw validation errors in action's server code function, using
 // `returnValidationErrors`.
 export class ActionServerValidationError<S extends Schema> extends Error {
+	public kind: string;
 	public validationErrors: ValidationErrors<S>;
 	constructor(validationErrors: ValidationErrors<S>) {
-		super("Server Validation Error");
+		super("Action server validation error");
 		this.validationErrors = validationErrors;
+		this.kind = "__actionServerValidationError";
 	}
 }
 

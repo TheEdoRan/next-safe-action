@@ -14,7 +14,7 @@ import type {
 } from "./index.types";
 import type { InferArray } from "./utils";
 import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
-import { ActionServerValidationError, buildValidationErrors } from "./validation-errors";
+import { buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
 	HandleBindArgsValidationErrorsShapeFn,
@@ -212,7 +212,15 @@ export function actionBuilder<
 							}
 
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
-							if (e instanceof ActionServerValidationError) {
+							// Shouldn't be this difficult to check for `ActionServerValidationError`, but /typeschema clients fail
+							// if it's not done this way.
+							if (
+								e instanceof Error &&
+								"kind" in e &&
+								"validationErrors" in e &&
+								typeof e.kind === "string" &&
+								e.kind === "__actionServerValidationError"
+							) {
 								const ve = e.validationErrors as ValidationErrors<S>;
 								middlewareResult.validationErrors = await Promise.resolve(args.handleValidationErrorsShape(ve));
 							} else {
