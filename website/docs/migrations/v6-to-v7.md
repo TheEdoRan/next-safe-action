@@ -143,6 +143,10 @@ This is customizable by using the `handleValidationErrorsShape`/`handleBindArgsV
 
 Sometimes it's not necessary to define an action with input. In this case, you can omit the [`schema`](/docs/safe-action-client/instance-methods#schema) method and use directly the [`action`/`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method.
 
+### [Support passing schema via async function](https://github.com/TheEdoRan/next-safe-action/issues/155)
+
+When working with i18n solutions, often you'll find implementations that require awaiting a `getTranslations` function in order to get the translations, that then get passed to the schema. Starting from version 7, next-safe-action allows you to pass an async function to the [`schema`](/docs/safe-action-client/instance-methods#schema) method, that returns a promise of type `Schema`. More information about this feature can be found in [this discussion](https://github.com/TheEdoRan/next-safe-action/discussions/111) on GitHub and in the [i18n](/docs/recipes/i18n) recipe.
+
 ### [Support stateful actions using React `useActionState` hook](https://github.com/TheEdoRan/next-safe-action/issues/91)
 
 React added a hook called `useActionState` that replaces the previous `useFormState` hook and improves it. next-safe-action v7 uses it under the hood in the exported [`useStateAction`](/docs/execution/hooks/usestateaction) hook, that keeps track of the state of the action execution.
