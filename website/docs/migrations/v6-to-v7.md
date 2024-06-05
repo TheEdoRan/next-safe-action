@@ -129,11 +129,15 @@ Next.js allows you to [pass additional arguments to the action](https://nextjs.o
 
 next-safe-action v7 supports bind arguments via the [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) method.
 
+### [Support setting default validation errors shape per instance](https://github.com/TheEdoRan/next-safe-action/issues/153)
+
+By default, next-safe-action v7 returns validation errors in an object of the same shape as Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. You can override this behavior globally by setting the [`defaultValidationErrorsShape`](/docs/safe-action-client/initialization-options#defaultvalidationerrorsshape) optional property to `flattened` in `createSafeActionClient` method. Doing so, the validation errors are returned in the shape of the Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. If you need a custom format for a specific action, you can override the default shape using the `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in `schema` and `bindArgsSchemas` methods, as explained below.
+
 ### [Support custom validation errors format](https://github.com/TheEdoRan/next-safe-action/issues/98)
 
 As already said above, by default version 7 now returns validation errors in the same format of the Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method.
 
-This is customizable using the `formatValidationErrors`/`formatBindArgsValidationErrors` optional functions in `schema`/`bindArgsSchemas` methods. Check out [this page](/docs/recipes/customize-validation-errors-format) for more information. For instance, if you need to work with flattened errors (just like pre-v7), next-safe-action conveniently provides two functions to do that: [`flattenValidationErrors` and `flattenBindArgsValidationErrors`](/docs/recipes/customize-validation-errors-format#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions).
+This is customizable by using the `handleValidationErrorsShape`/`handleBindArgsValidationErrorsShape` optional functions in `schema`/`bindArgsSchemas` methods. Check out [this page](/docs/recipes/customize-validation-errors-format) for more information. For example, if you need to work with flattened errors for a specific action, next-safe-action conveniently provides two functions to do that: [`flattenValidationErrors` and `flattenBindArgsValidationErrors`](/docs/recipes/customize-validation-errors-format#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions).
 
 ### [Allow calling `action` method without `schema`](https://github.com/TheEdoRan/next-safe-action/issues/107)
 

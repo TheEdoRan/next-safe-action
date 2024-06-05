@@ -3,12 +3,23 @@ import type { InferArray, InferInArray, MaybePromise, Prettify } from "./utils";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 
 /**
+ * Type of the default validation errors shape passed to `createSafeActionClient` via `defaultValidationErrorsShape`
+ * property.
+ */
+export type DVES = "formatted" | "flattened";
+
+/**
  * Type of options when creating a new safe action client.
  */
-export type SafeActionClientOpts<ServerError, MetadataSchema extends Schema | undefined> = {
+export type SafeActionClientOpts<
+	ServerError,
+	MetadataSchema extends Schema | undefined,
+	ODVES extends DVES | undefined,
+> = {
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
 	defineMetadataSchema?: () => MetadataSchema;
+	defaultValidationErrorsShape?: ODVES;
 };
 
 /**

@@ -17,8 +17,8 @@ import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate
 import { ActionServerValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
-	FormatBindArgsValidationErrorsFn,
-	FormatValidationErrorsFn,
+	HandleBindArgsValidationErrorsShapeFn,
+	HandleValidationErrorsShapeFn,
 	ValidationErrors,
 } from "./validation-errors.types";
 
@@ -34,12 +34,12 @@ export function actionBuilder<
 >(args: {
 	schema?: S;
 	bindArgsSchemas?: BAS;
-	formatValidationErrors: FormatValidationErrorsFn<S, CVE>;
-	formatBindArgsValidationErrors: FormatBindArgsValidationErrorsFn<BAS, CBAVE>;
+	handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
+	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	metadataSchema: MetadataSchema;
 	metadata: MD;
-	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any>["handleServerErrorLog"]>;
-	handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any>["handleReturnedServerError"]>;
+	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any, any>["handleServerErrorLog"]>;
+	handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any, any>["handleReturnedServerError"]>;
 	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	ctxType: Ctx;
 	validationStrategy: "typeschema" | "zod";
@@ -161,7 +161,7 @@ export function actionBuilder<
 											const validationErrors = buildValidationErrors<S>(parsedInput.issues);
 
 											middlewareResult.validationErrors = await Promise.resolve(
-												args.formatValidationErrors(validationErrors)
+												args.handleValidationErrorsShape(validationErrors)
 											);
 										}
 									}
@@ -170,7 +170,7 @@ export function actionBuilder<
 								// If there are bind args validation errors, format them and store them in the middleware result.
 								if (hasBindValidationErrors) {
 									middlewareResult.bindArgsValidationErrors = await Promise.resolve(
-										args.formatBindArgsValidationErrors(bindArgsValidationErrors as BindArgsValidationErrors<BAS>)
+										args.handleBindArgsValidationErrorsShape(bindArgsValidationErrors as BindArgsValidationErrors<BAS>)
 									);
 								}
 
@@ -214,7 +214,7 @@ export function actionBuilder<
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
 							if (e instanceof ActionServerValidationError) {
 								const ve = e.validationErrors as ValidationErrors<S>;
-								middlewareResult.validationErrors = await Promise.resolve(args.formatValidationErrors(ve));
+								middlewareResult.validationErrors = await Promise.resolve(args.handleValidationErrorsShape(ve));
 							} else {
 								// If error is not an instance of Error, wrap it in an Error object with
 								// the default message.

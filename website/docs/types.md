@@ -7,15 +7,28 @@ description: List of next-safe-action types.
 
 ## /
 
+### `DVES`
+
+Type of the default validation errors shape passed to `createSafeActionClient` via `defaultValidationErrorsShape` property.
+
+```typescript
+export type DVES = "flattened" | "formatted";
+```
+
 ### `SafeActionClientOpts`
 
 Type of options when creating a new safe action client.
 
 ```typescript
-export type SafeActionClientOpts<ServerError, MetadataSchema extends Schema | undefined> = {
+export type SafeActionClientOpts<
+  ServerError,
+  MetadataSchema extends Schema | undefined,
+  ODVES extends DVES | undefined
+> = {
   handleServerErrorLog?: (e: Error) => MaybePromise<void>;
   handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
   defineMetadataSchema?: () => MetadataSchema;
+  defaultValidationErrorsShape?: ODVES;
 };
 ```
 
@@ -200,22 +213,22 @@ export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationEr
 };
 ```
 
-### `FormatValidationErrorsFn`
+### `HandleValidationErrorsShapeFn`
 
-Type of the function used to format validation errors.
+Type of the function used to format validation errors to custom shape.
 
 ```typescript
-export type FormatValidationErrorsFn<S extends Schema | undefined, CVE> = (
+export type HandleValidationErrorsShapeFn<S extends Schema | undefined, CVE> = (
   validationErrors: ValidationErrors<S>
 ) => CVE;
 ```
 
-### `FormatBindArgsValidationErrorsFn`
+### `HandleBindArgsValidationErrorsShapeFn`
 
-Type of the function used to format bind arguments validation errors.
+Type of the function used to format bind arguments validation errors to custom shape.
 
 ```typescript
-export type FormatBindArgsValidationErrorsFn<BAS extends readonly Schema[], FBAVE> = (
+export type HandleBindArgsValidationErrorsShapeFn<BAS extends readonly Schema[], FBAVE> = (
   bindArgsValidationErrors: BindArgsValidationErrors<BAS>
 ) => FBAVE;
 ```
