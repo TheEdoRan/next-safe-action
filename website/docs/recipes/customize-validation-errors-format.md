@@ -82,3 +82,7 @@ flattenedErrors = {
 ```
 
 `flattenBindArgsValidationErrors` works the same way, but with bind args (in [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) method), to build the validation errors array.
+
+### `formatValidationErrors` and `formatBindArgsValidationErrors` utility functions
+
+These functions emulate Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method for building validation and bind args validation errors and return them to the client. You can use them, for instance, if you set the [`defaultValidationErrorsShape`](/docs/safe-action-client/initialization-options#defaultvalidationerrorsshape) to `flattened` in `createSafeActionClient`.

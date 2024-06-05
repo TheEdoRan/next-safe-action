@@ -30,7 +30,7 @@ export type * from "./validation-errors.types";
  * {@link https://next-safe-action.dev/docs/safe-action-client/initialization-options See docs for more information}
  */
 export const createSafeActionClient = <
-	const ODVES extends DVES,
+	ODVES extends DVES | undefined = undefined,
 	ServerError = string,
 	MetadataSchema extends Schema | undefined = undefined,
 >(

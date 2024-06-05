@@ -13,7 +13,7 @@ import type {
 
 export class SafeActionClient<
 	ServerError,
-	const ODVES extends DVES,
+	ODVES extends DVES | undefined,
 	MetadataSchema extends Schema | undefined = undefined,
 	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
 	Ctx = undefined,
@@ -23,9 +23,9 @@ export class SafeActionClient<
 	const CBAVE = undefined,
 > {
 	readonly #validationStrategy: "typeschema" | "zod";
-	readonly #handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any, ODVES>["handleServerErrorLog"]>;
+	readonly #handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any, any>["handleServerErrorLog"]>;
 	readonly #handleReturnedServerError: NonNullable<
-		SafeActionClientOpts<ServerError, any, ODVES>["handleReturnedServerError"]
+		SafeActionClientOpts<ServerError, any, any>["handleReturnedServerError"]
 	>;
 	readonly #middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	readonly #ctxType = undefined as Ctx;
@@ -48,9 +48,11 @@ export class SafeActionClient<
 			handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
 			handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 			ctxType: Ctx;
-			defaultValidationErrorsShape: ODVES;
 		} & Required<
-			Pick<SafeActionClientOpts<ServerError, any, ODVES>, "handleReturnedServerError" | "handleServerErrorLog">
+			Pick<
+				SafeActionClientOpts<ServerError, any, ODVES>,
+				"handleReturnedServerError" | "handleServerErrorLog" | "defaultValidationErrorsShape"
+			>
 		>
 	) {
 		this.#middlewareFns = opts.middlewareFns;

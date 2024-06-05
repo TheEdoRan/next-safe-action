@@ -106,7 +106,7 @@ export const actionClient = createSafeActionClient({
 
 ## `defaultValidationErrorsShape?`
 
-You can provide this optional property to `createSafeActionClient` to specify the default shape of the validation errors. The two possible values are `flattened` and `formatted`. The first one emulates Zod [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method, the second one emulates Zod [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method, both for `validationErrors` and `bindArgsValidationErrors`. You can override the default shape in `schema` and `bindArgsSchemas` methods, more information about that [here](/docs/recipes/customize-validation-errors-format). If this property is not provided, the default shape is `formatted`, as it catches errors even in nested objects.
+You can provide this optional property to `createSafeActionClient` to specify the default shape of the validation errors. The two possible values are `flattened` and `formatted`. The first one emulates Zod [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method, the second one emulates Zod [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method, both for `validationErrors` and `bindArgsValidationErrors`. You can override the default shape in `schema` and `bindArgsSchemas` methods, more information about that [here](/docs/recipes/customize-validation-errors-format). If this property is not provided, the default shape is `formatted`, as it also catches errors for nested schema objects.
 
 ```typescript
 import { createSafeActionClient } from "next-safe-action";

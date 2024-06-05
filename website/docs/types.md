@@ -20,10 +20,15 @@ export type DVES = "flattened" | "formatted";
 Type of options when creating a new safe action client.
 
 ```typescript
-export type SafeActionClientOpts<ServerError, MetadataSchema extends Schema | undefined> = {
+export type SafeActionClientOpts<
+  ServerError,
+  MetadataSchema extends Schema | undefined,
+  ODVES extends DVES | undefined
+> = {
   handleServerErrorLog?: (e: Error) => MaybePromise<void>;
   handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
   defineMetadataSchema?: () => MetadataSchema;
+  defaultValidationErrorsShape?: ODVES;
 };
 ```
 
