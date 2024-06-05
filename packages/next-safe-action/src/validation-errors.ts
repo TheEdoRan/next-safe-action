@@ -70,8 +70,11 @@ export class ActionServerValidationError<S extends Schema> extends Error {
  *
  * {@link https://next-safe-action.dev/docs/recipes/additional-validation-errors#returnvalidationerrors See docs for more information}
  */
-export function returnValidationErrors<S extends Schema>(schema: S, validationErrors: ValidationErrors<S>): never {
-	throw new ActionServerValidationError<S>(validationErrors);
+export function returnValidationErrors<
+	S extends Schema | (() => Promise<Schema>),
+	AS extends Schema = S extends () => Promise<Schema> ? Awaited<ReturnType<S>> : S, // actual schema
+>(schema: S, validationErrors: ValidationErrors<AS>): never {
+	throw new ActionServerValidationError<AS>(validationErrors);
 }
 
 /**

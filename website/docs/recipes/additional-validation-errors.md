@@ -38,7 +38,7 @@ When registering a new user, we also need to check if the email is already store
 
 ```typescript
 import { returnValidationErrors } from "next-safe-action";
-import { action } from "@/lib/safe-action";
+import { actionClient } from "@/lib/safe-action";
 
 // Here we're using the same schema declared above.
 const signupAction = actionClient

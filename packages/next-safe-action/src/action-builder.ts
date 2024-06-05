@@ -27,12 +27,13 @@ export function actionBuilder<
 	MetadataSchema extends Schema | undefined = undefined,
 	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
 	Ctx = undefined,
-	S extends Schema | undefined = undefined,
+	SF extends (() => Promise<Schema>) | undefined = undefined, // schema function
+	S extends Schema | undefined = SF extends Function ? Awaited<ReturnType<SF>> : undefined,
 	const BAS extends readonly Schema[] = [],
 	CVE = undefined,
 	CBAVE = undefined,
 >(args: {
-	schema?: S;
+	schemaFn?: SF;
 	bindArgsSchemas?: BAS;
 	handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
 	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
@@ -118,11 +119,11 @@ export function actionBuilder<
 							} else {
 								// Validate the client inputs in parallel.
 								const parsedInputs = await Promise.all(
-									clientInputs.map((input, i) => {
+									clientInputs.map(async (input, i) => {
 										// Last client input in the array, main argument (no bind arg).
 										if (i === clientInputs.length - 1) {
 											// If schema is undefined, set parsed data to undefined.
-											if (typeof args.schema === "undefined") {
+											if (typeof args.schemaFn === "undefined") {
 												return {
 													success: true,
 													data: undefined,
@@ -130,7 +131,7 @@ export function actionBuilder<
 											}
 
 											// Otherwise, parse input with the schema.
-											return valFn(args.schema, input);
+											return valFn(await args.schemaFn(), input);
 										}
 
 										// Otherwise, we're processing bind args client inputs.

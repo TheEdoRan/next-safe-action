@@ -57,7 +57,7 @@ export const createSafeActionClient = <
 		handleServerErrorLog,
 		handleReturnedServerError,
 		validationStrategy: "typeschema",
-		schema: undefined,
+		schemaFn: undefined,
 		bindArgsSchemas: [],
 		ctxType: undefined,
 		metadataSchema: createOpts?.defineMetadataSchema?.(),
