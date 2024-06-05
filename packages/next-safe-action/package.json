@@ -39,6 +39,7 @@
 	],
 	"scripts": {
 		"lint": "tsc && prettier --write . && eslint .",
+		"test": "node --import tsx --test ./src/__tests__/*.test.ts",
 		"build": "tsup",
 		"deploy": "semantic-release"
 	},
@@ -74,6 +75,7 @@
 		"react": "18.3.1",
 		"semantic-release": "^23.0.8",
 		"tsup": "^8.0.2",
+		"tsx": "^4.11.2",
 		"typescript": "^5.4.5",
 		"typescript-eslint": "^7.8.0"
 	},
@@ -92,7 +94,7 @@
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"dependencies": {
-		"@typeschema/zod": "^0.13.3",
-		"@typeschema/main": "^0.13.9"
+		"@typeschema/main": "^0.13.9",
+		"@typeschema/zod": "^0.13.3"
 	}
 }
