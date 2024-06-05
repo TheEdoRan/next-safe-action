@@ -85,4 +85,4 @@ flattenedErrors = {
 
 ### `formatValidationErrors` and `formatBindArgsValidationErrors` utility functions
 
-These functions emulate Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method for building validation and bind args validation errors and return them to the client. You can use them, for instance, if you set the [`defaultValidationErrorsShape`](/docs/safe-action-client/initialization-options#defaultvalidationerrorsshape) to `flattened` in `createSafeActionClient`.
+These functions emulate Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method for building validation and bind args validation errors and return them to the client. You can use them, for instance, if you set the [`defaultValidationErrorsShape`](/docs/safe-action-client/initialization-options#defaultvalidationerrorsshape) to `flattened` in `createSafeActionClient` and need the formatted shape for a specific action.
