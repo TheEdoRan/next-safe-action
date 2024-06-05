@@ -133,7 +133,7 @@ next-safe-action v7 supports bind arguments via the [`bindArgsSchemas`](/docs/sa
 
 By default, next-safe-action v7 returns validation errors in an object of the same shape as Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. You can override this behavior globally by setting the [`defaultValidationErrorsShape`](/docs/safe-action-client/initialization-options#defaultvalidationerrorsshape) optional property to `flattened` in `createSafeActionClient` method. Doing so, the validation errors are returned in the shape of the Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. If you need a custom format for a specific action, you can override the default shape using the `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in `schema` and `bindArgsSchemas` methods, as explained below.
 
-### [Support custom validation errors format](https://github.com/TheEdoRan/next-safe-action/issues/98)
+### [Support custom validation errors shape](https://github.com/TheEdoRan/next-safe-action/issues/98)
 
 As already said above, by default version 7 now returns validation errors in the same format of the Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method.
 
