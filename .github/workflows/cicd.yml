@@ -6,6 +6,7 @@ on:
       - "packages/**"
     branches:
       - main
+      - beta
       - next
       - 4.x
   pull_request:
@@ -31,7 +32,7 @@ jobs:
       - run: pnpm run lint:lib
 
   CD:
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/next'|| github.ref == 'refs/heads/4.x' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/next'|| github.ref == 'refs/heads/4.x' }}
     runs-on: ubuntu-latest
     needs: [CI]
     steps:
