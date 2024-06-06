@@ -3,7 +3,12 @@
 import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
-import { createSafeActionClient, formatBindArgsValidationErrors, formatValidationErrors } from "..";
+import {
+	createSafeActionClient,
+	formatBindArgsValidationErrors,
+	formatValidationErrors,
+	returnValidationErrors,
+} from "..";
 
 const ac = createSafeActionClient({
 	handleServerErrorLog() {}, // disable server errors logging for these tests
@@ -237,6 +242,48 @@ test("validation errors in execution result from middleware are correct", async 
 				},
 			},
 		],
+	};
+
+	assert.deepStrictEqual(middlewareResult, expectedResult);
+});
+
+test("server validation errors in execution result from middleware are correct", async () => {
+	let middlewareResult = {};
+
+	const schema = z.object({
+		username: z.string(),
+	});
+
+	const action = ac
+		.schema(schema)
+		.bindArgsSchemas([z.object({ age: z.number().positive() })])
+		.use(async ({ next, ctx }) => {
+			// Await action execution.
+			const res = await next({ ctx });
+			middlewareResult = res;
+			return res;
+		})
+		.action(async () => {
+			returnValidationErrors(schema, {
+				username: {
+					_errors: ["User suspended"],
+				},
+			});
+		});
+
+	const inputs = [{ age: 30 }, { username: "johndoe" }] as const;
+	await action(...inputs);
+
+	const expectedResult = {
+		success: false,
+		ctx: {
+			foo: "bar",
+		},
+		validationErrors: {
+			username: {
+				_errors: ["User suspended"],
+			},
+		},
 	};
 
 	assert.deepStrictEqual(middlewareResult, expectedResult);
