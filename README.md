@@ -51,4 +51,4 @@ Made with [contrib.rocks](https://contrib.rocks).
 
 ## License
 
-next-safe-action is released under the [BSD-3-Clause License](https://opensource.org/license/bsd-3-clause).
+next-safe-action is released under the [MIT License](./LICENSE).
