@@ -39,7 +39,7 @@
 	],
 	"scripts": {
 		"lint": "tsc && prettier --write . && eslint .",
-		"test": "node --import tsx --test ./src/__tests__/*.test.ts",
+		"test": "node --import tsx --test ./src/__tests__/*.test.ts ./src/__tests__/typeschema/*.test.ts",
 		"build": "tsup",
 		"deploy": "semantic-release"
 	},
