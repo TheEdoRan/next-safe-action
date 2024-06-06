@@ -30,6 +30,7 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint:lib
+      - run: pnpm run test:lib
 
   CD:
     if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/next'|| github.ref == 'refs/heads/4.x' }}

@@ -5,6 +5,7 @@
 			"dependsOn": ["^build"],
 			"outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
 		},
+		"test": {},
 		"lint": {},
 		"deploy": {
 			"dependsOn": ["build", "lint"]
