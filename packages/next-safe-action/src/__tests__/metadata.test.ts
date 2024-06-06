@@ -6,6 +6,7 @@ import { z } from "zod";
 import { DEFAULT_SERVER_ERROR_MESSAGE, createSafeActionClient } from "..";
 
 const ac = createSafeActionClient({
+	handleServerErrorLog() {}, // disable server errors logging for these tests
 	defineMetadataSchema() {
 		return z.object({
 			actionName: z.string(),
