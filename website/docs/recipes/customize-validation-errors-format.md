@@ -38,7 +38,7 @@ export const loginUser = actionClient
     // object to the client.
     handleValidationErrorsShape: (ve) => flattenValidationErrors(ve).fieldErrors,
   })
-  .bindArgs(bindArgsSchemas, {
+  .bindArgsSchemas(bindArgsSchemas, {
     // Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
     // validation errors object array to the client.
     handleBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve),
