@@ -139,6 +139,8 @@ export type SafeActionCallbacks<
 		data: Data;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
+		parsedInput: S extends Schema ? Infer<S> : undefined;
+		bindArgsParsedInputs: InferArray<BAS>;
 	}) => MaybePromise<void>;
 	onError?: (args: {
 		error: Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">;

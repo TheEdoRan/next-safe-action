@@ -75,6 +75,7 @@ export function actionBuilder<
 					type PrevResult = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
 					const valFn = args.validationStrategy === "zod" ? zodValidate : validate;
+					const parsedInputDatas: any[] = [];
 
 					if (withState) {
 						// Previous state is placed between bind args and main arg inputs, so it's always at the index of
@@ -149,7 +150,6 @@ export function actionBuilder<
 								// Initialize the bind args validation errors array with null values.
 								// It has the same length as the number of bind arguments (parsedInputs - 1).
 								const bindArgsValidationErrors = Array(parsedInputs.length - 1).fill({});
-								const parsedInputDatas = [];
 
 								for (let i = 0; i < parsedInputs.length; i++) {
 									const parsedInput = parsedInputs[i]!;
@@ -244,30 +244,24 @@ export function actionBuilder<
 
 					const actionResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> = {};
 
-					if (typeof middlewareResult.data !== "undefined") {
-						actionResult.data = middlewareResult.data as Data;
-						await Promise.resolve(
-							cb?.onSuccess?.({
-								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
-								data: actionResult.data,
-							})
-						);
-					}
+					// This flag is needed because `onSuccess` callback is triggered even when there's no result data.
+					let hasError = true;
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
 						actionResult.validationErrors = middlewareResult.validationErrors as CVE;
-						await Promise.resolve(
-							cb?.onError?.({
-								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
-								error: actionResult,
-							})
-						);
 					}
 
 					if (typeof middlewareResult.bindArgsValidationErrors !== "undefined") {
 						actionResult.bindArgsValidationErrors = middlewareResult.bindArgsValidationErrors as CBAVE;
+					}
+
+					if (typeof middlewareResult.serverError !== "undefined") {
+						actionResult.serverError = middlewareResult.serverError;
+					}
+
+					hasError = false;
+
+					if (hasError) {
 						await Promise.resolve(
 							cb?.onError?.({
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
@@ -275,15 +269,18 @@ export function actionBuilder<
 								error: actionResult,
 							})
 						);
-					}
+					} else {
+						if (typeof middlewareResult.data !== "undefined") {
+							actionResult.data = middlewareResult.data as Data;
+						}
 
-					if (typeof middlewareResult.serverError !== "undefined") {
-						actionResult.serverError = middlewareResult.serverError;
 						await Promise.resolve(
-							cb?.onError?.({
+							cb?.onSuccess?.({
+								data: actionResult.data as Data,
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
-								error: actionResult,
+								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
+								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 							})
 						);
 					}
