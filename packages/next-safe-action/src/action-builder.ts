@@ -1,3 +1,4 @@
+import type { InferIn } from "@typeschema/main";
 import { validate, type Infer, type Schema } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
@@ -5,6 +6,7 @@ import type {} from "zod";
 import type {
 	MiddlewareFn,
 	MiddlewareResult,
+	SafeActionCallbacks,
 	SafeActionClientOpts,
 	SafeActionFn,
 	SafeActionResult,
@@ -12,7 +14,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import type { InferArray } from "./utils";
+import type { InferArray, InferInArray } from "./utils";
 import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
 import { buildValidationErrors } from "./validation-errors";
 import type {
@@ -49,12 +51,14 @@ export function actionBuilder<
 
 	function buildAction({ withState }: { withState: false }): {
 		action: <Data>(
-			serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>
+			serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>,
+			cb?: SafeActionCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 		) => SafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
 		action: <Data>(
-			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
+			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
+			cb?: SafeActionCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 		) => SafeStateActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
@@ -62,7 +66,8 @@ export function actionBuilder<
 			action: <Data>(
 				serverCodeFn:
 					| ServerCodeFn<MD, Ctx, S, BAS, Data>
-					| StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
+					| StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
+				cb?: SafeActionCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
 					let prevCtx: unknown = undefined;
@@ -241,19 +246,56 @@ export function actionBuilder<
 
 					if (typeof middlewareResult.data !== "undefined") {
 						actionResult.data = middlewareResult.data as Data;
+						await Promise.resolve(
+							cb?.onSuccess?.({
+								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								data: actionResult.data,
+							})
+						);
 					}
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
 						actionResult.validationErrors = middlewareResult.validationErrors as CVE;
+						await Promise.resolve(
+							cb?.onError?.({
+								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								error: actionResult,
+							})
+						);
 					}
 
 					if (typeof middlewareResult.bindArgsValidationErrors !== "undefined") {
 						actionResult.bindArgsValidationErrors = middlewareResult.bindArgsValidationErrors as CBAVE;
+						await Promise.resolve(
+							cb?.onError?.({
+								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								error: actionResult,
+							})
+						);
 					}
 
 					if (typeof middlewareResult.serverError !== "undefined") {
 						actionResult.serverError = middlewareResult.serverError;
+						await Promise.resolve(
+							cb?.onError?.({
+								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								error: actionResult,
+							})
+						);
 					}
+
+					// onSettled, if provided, is always executed.
+					await Promise.resolve(
+						cb?.onSettled?.({
+							clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+							bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+							result: actionResult,
+						})
+					);
 
 					return actionResult;
 				};
