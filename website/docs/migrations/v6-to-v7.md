@@ -145,7 +145,7 @@ Sometimes it's not necessary to define an action with input. In this case, you c
 
 ### [Support passing schema via async function](https://github.com/TheEdoRan/next-safe-action/issues/155)
 
-When working with i18n solutions, often you'll find implementations that require awaiting a `getTranslations` function in order to get the translations, that then get passed to the schema. Starting from version 7, next-safe-action allows you to pass an async function to the [`schema`](/docs/safe-action-client/instance-methods#schema) method, that returns a promise of type `Schema`. More information about this feature can be found in [this discussion](https://github.com/TheEdoRan/next-safe-action/discussions/111) on GitHub and in the [i18n](/docs/recipes/i18n) recipe.
+When working with i18n solutions, often you'll find implementations that require awaiting a `getTranslations` function in order to get the translations, that then get passed to the schema. Starting from version 7, next-safe-action allows you to pass an async function to the [`schema`](/docs/safe-action-client/instance-methods#schema) method, that returns a promise of type `Schema`. More information about this feature can be found in [this discussion](https://github.com/TheEdoRan/next-safe-action/discussions/111) on GitHub and in the [i18n](/docs/recipes/i18n) recipe page.
 
 ### [Support action execution callbacks](https://github.com/TheEdoRan/next-safe-action/issues/162)
 
@@ -157,6 +157,10 @@ React added a hook called `useActionState` that replaces the previous `useFormSt
 
 Note that this hook expects as argument actions defined using the `stateAction` method, and not the usual `action` method. Find more information about these two methods [here](/docs/safe-action-client/instance-methods#action--stateaction).
 
+:::warning important
+The `useActionState` hook requires Next.js >= 15 to work, because previous versions do not support the React's [`useActionState`](https://react.dev/reference/react/useActionState) hook that is used under the hood. In the meantime, you can use the [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method manually with React 18's `useFormState` hook.
+:::
+
 ### [Return input from hooks](https://github.com/TheEdoRan/next-safe-action/issues/117)
 
 Sometimes it's useful to access the input passed to an action when using hooks. Starting from version 7, `input` property is returned from hooks.
@@ -167,7 +171,7 @@ Starting from version 7, `isIdle`, `isExecuting`, `hasSucceeded` and `hasErrored
 
 ### [Return `executeAsync` from `useAction` and `useOptimisticAction` hooks](https://github.com/TheEdoRan/next-safe-action/issues/146)
 
-Sometimes it's useful to await the result of an action execution when using actions via hooks. Starting from version 7, `executeAsync` is returned from `useAction` and `useOptimisticAction` hooks. It's essentially the same as the original safe action function, with the added benefits from the hooks. It's currently not possible to add this function to the `useStateAction` hook, due to internal React limitations.
+Sometimes it's useful to await the result of an action execution when using actions via hooks. Starting from version 7, `executeAsync` is returned from `useAction` and `useOptimisticAction` hooks. It's essentially the same as the original safe action function, with the added benefits of the hooks execution behavior. Note that it's currently not possible to return this function from the `useStateAction` hook, due to internal React limitations.
 
 ## Refactors
 

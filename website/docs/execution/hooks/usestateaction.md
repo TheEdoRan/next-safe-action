@@ -12,7 +12,7 @@ React's `useActionState` hook has replaced the previous `useFormState` hook, tha
 :::
 
 :::warning important
-This hook requires Next.js >= 15 to work, because previous versions do not support the React's `useActionState` hook that is used under the hood.
+The `useActionState` hook requires Next.js >= 15 to work, because previous versions do not support the React's [`useActionState`](https://react.dev/reference/react/useActionState) hook that is used under the hood. In the meantime, you can use the [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method manually with React 18's `useFormState` hook.
 :::
 
 Let's say you want to update the number of likes of a post in your application, mutating directly the database.
