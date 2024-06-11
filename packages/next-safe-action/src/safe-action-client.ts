@@ -1,7 +1,14 @@
 import type { Infer, Schema } from "@typeschema/main";
 import type {} from "zod";
 import { actionBuilder } from "./action-builder";
-import type { DVES, MiddlewareFn, SafeActionClientOpts, ServerCodeFn, StateServerCodeFn } from "./index.types";
+import type {
+	DVES,
+	MiddlewareFn,
+	SafeActionCallbacks,
+	SafeActionClientOpts,
+	ServerCodeFn,
+	StateServerCodeFn,
+} from "./index.types";
 import type {
 	BindArgsValidationErrors,
 	FlattenedBindArgsValidationErrors,
@@ -186,10 +193,14 @@ export class SafeActionClient<
 	/**
 	 * Define the action.
 	 * @param serverCodeFn Code that will be executed on the **server side**
+	 * @param [cb] Optional callbacks that will be called after action execution, on the server.
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
 	 */
-	action<Data>(serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>) {
+	action<Data>(
+		serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>,
+		cb?: SafeActionCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+	) {
 		return actionBuilder({
 			validationStrategy: this.#validationStrategy,
 			handleReturnedServerError: this.#handleReturnedServerError,
@@ -202,17 +213,21 @@ export class SafeActionClient<
 			bindArgsSchemas: this.#bindArgsSchemas,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
-		}).action(serverCodeFn);
+		}).action(serverCodeFn, cb);
 	}
 
 	/**
 	 * Define the stateful action (without input validation schema, bind arguments validation schemas or metadata).
 	 * To be used with the [`useStateAction`](https://next-safe-action.dev/docs/execution/hooks/usestateaction) hook.
 	 * @param serverCodeFn Code that will be executed on the **server side**
+	 * @param [cb] Optional callbacks that will be called after action execution, on the server.
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
 	 */
-	stateAction<Data>(serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>) {
+	stateAction<Data>(
+		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
+		cb?: SafeActionCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+	) {
 		return actionBuilder({
 			validationStrategy: this.#validationStrategy,
 			handleReturnedServerError: this.#handleReturnedServerError,
@@ -225,6 +240,6 @@ export class SafeActionClient<
 			bindArgsSchemas: this.#bindArgsSchemas,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
-		}).stateAction(serverCodeFn);
+		}).stateAction(serverCodeFn, cb);
 	}
 }

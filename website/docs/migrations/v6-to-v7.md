@@ -147,6 +147,10 @@ Sometimes it's not necessary to define an action with input. In this case, you c
 
 When working with i18n solutions, often you'll find implementations that require awaiting a `getTranslations` function in order to get the translations, that then get passed to the schema. Starting from version 7, next-safe-action allows you to pass an async function to the [`schema`](/docs/safe-action-client/instance-methods#schema) method, that returns a promise of type `Schema`. More information about this feature can be found in [this discussion](https://github.com/TheEdoRan/next-safe-action/discussions/111) on GitHub and in the [i18n](/docs/recipes/i18n) recipe.
 
+### [Support action execution callbacks](https://github.com/TheEdoRan/next-safe-action/issues/162)
+
+It's sometimes useful to be able to execute custom logic on the server side after an action succeeds or fails. Starting from version 7, next-safe-action allows you to pass action callbacks when defining an action. More information about this feature can be found [here](/docs/safe-action-client/action-callbacks).
+
 ### [Support stateful actions using React `useActionState` hook](https://github.com/TheEdoRan/next-safe-action/issues/91)
 
 React added a hook called `useActionState` that replaces the previous `useFormState` hook and improves it. next-safe-action v7 uses it under the hood in the exported [`useStateAction`](/docs/execution/hooks/usestateaction) hook, that keeps track of the state of the action execution.
@@ -181,7 +185,7 @@ Find more information about the updated `useOptimisticAction` hook [here](/docs/
 
 ### Hook callbacks arguments
 
-Previously, there were multiple arguments in hook callbacks. Now, metadata is passed inside a single object that is the first argument of each function. Find more information about the updated callbacks [here](/docs/execution/hooks/callbacks).
+Previously, there were multiple arguments in hook callbacks. Now, metadata is passed inside a single object that is the first argument of each function. Find more information about the updated callbacks [here](/docs/execution/hooks/hook-callbacks).
 
 ### Action metadata
 
