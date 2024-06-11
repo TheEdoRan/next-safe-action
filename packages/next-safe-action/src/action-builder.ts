@@ -76,6 +76,7 @@ export function actionBuilder<
 					let prevResult: PrevResult | undefined = undefined;
 					const valFn = args.validationStrategy === "zod" ? zodValidate : validate;
 					const parsedInputDatas: any[] = [];
+					let frameworkError: Error | null = null;
 
 					if (withState) {
 						// Previous state is placed between bind args and main arg inputs, so it's always at the index of
@@ -93,6 +94,10 @@ export function actionBuilder<
 
 					// Execute the middleware stack.
 					const executeMiddlewareStack = async (idx = 0) => {
+						if (frameworkError) {
+							return;
+						}
+
 						const middlewareFn = args.middlewareFns[idx];
 						middlewareResult.ctx = prevCtx;
 
@@ -213,8 +218,8 @@ export function actionBuilder<
 							// processed internally by Next.js.
 							if (isRedirectError(e) || isNotFoundError(e)) {
 								middlewareResult.success = true;
-								// If an internal framework error occurred, throw it, so it will be processed by Next.js.
-								throw e;
+								frameworkError = e;
+								return;
 							}
 
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
@@ -242,10 +247,30 @@ export function actionBuilder<
 					// Execute middleware chain + action function.
 					await executeMiddlewareStack();
 
-					const actionResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> = {};
+					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
+					if (frameworkError) {
+						await Promise.resolve(
+							cb?.onSuccess?.({
+								data: undefined,
+								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
+								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
+							})
+						);
 
-					// This flag is needed because `onSuccess` callback is triggered even when there's no result data.
-					let hasError = true;
+						await Promise.resolve(
+							cb?.onSettled?.({
+								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								result: {},
+							})
+						);
+
+						throw frameworkError;
+					}
+
+					const actionResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> = {};
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
 						actionResult.validationErrors = middlewareResult.validationErrors as CVE;
@@ -259,17 +284,7 @@ export function actionBuilder<
 						actionResult.serverError = middlewareResult.serverError;
 					}
 
-					hasError = false;
-
-					if (hasError) {
-						await Promise.resolve(
-							cb?.onError?.({
-								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
-								error: actionResult,
-							})
-						);
-					} else {
+					if (middlewareResult.success) {
 						if (typeof middlewareResult.data !== "undefined") {
 							actionResult.data = middlewareResult.data as Data;
 						}
@@ -281,6 +296,14 @@ export function actionBuilder<
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
+							})
+						);
+					} else {
+						await Promise.resolve(
+							cb?.onError?.({
+								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								error: actionResult,
 							})
 						);
 					}
