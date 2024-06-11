@@ -183,7 +183,7 @@ export type SafeActionCallbacks<
 	Data,
 > = {
 	onSuccess?: (args: {
-		data: Data;
+		data?: Data;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
 		parsedInput: S extends Schema ? Infer<S> : undefined;

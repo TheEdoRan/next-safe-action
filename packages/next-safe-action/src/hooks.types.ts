@@ -1,6 +1,6 @@
 import type { InferIn, Schema } from "@typeschema/main";
 import type { SafeActionResult } from "./index.types";
-import type { MaybePromise } from "./utils";
+import type { MaybePromise, Prettify } from "./utils";
 
 /**
  * Type of `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
@@ -29,13 +29,13 @@ export type HookCallbacks<
 	Data,
 > = {
 	onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
-	onSuccess?: (args: { data: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
+	onSuccess?: (args: { data?: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
 	onError?: (args: {
-		error: Omit<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">;
+		error: Prettify<Omit<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
 		input: S extends Schema ? InferIn<S> : undefined;
 	}) => MaybePromise<void>;
 	onSettled?: (args: {
-		result: HookResult<ServerError, S, BAS, CVE, CBAVE, Data>;
+		result: Prettify<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 		input: S extends Schema ? InferIn<S> : undefined;
 	}) => MaybePromise<void>;
 };

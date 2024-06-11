@@ -102,7 +102,7 @@ const useActionCallbacks = <
 					await Promise.resolve(onExecute?.({ input }));
 					break;
 				case "hasSucceeded":
-					await Promise.resolve(onSuccess?.({ data: result.data!, input }));
+					await Promise.resolve(onSuccess?.({ data: result?.data, input }));
 					await Promise.resolve(onSettled?.({ result, input }));
 					break;
 				case "hasErrored":
@@ -155,6 +155,7 @@ export const useAction = <
 					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
+							setResult(EMPTY_HOOK_RESULT);
 							throw e;
 						}
 
@@ -183,6 +184,7 @@ export const useAction = <
 						})
 						.catch((e) => {
 							if (isRedirectError(e) || isNotFoundError(e)) {
+								setResult(EMPTY_HOOK_RESULT);
 								throw e;
 							}
 
@@ -205,7 +207,7 @@ export const useAction = <
 	};
 
 	useActionCallbacks({
-		result,
+		result: result ?? EMPTY_HOOK_RESULT,
 		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		status,
 		cb: utils,
@@ -268,6 +270,7 @@ export const useOptimisticAction = <
 					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
+							setResult(EMPTY_HOOK_RESULT);
 							throw e;
 						}
 
@@ -297,6 +300,7 @@ export const useOptimisticAction = <
 						})
 						.catch((e) => {
 							if (isRedirectError(e) || isNotFoundError(e)) {
+								setResult(EMPTY_HOOK_RESULT);
 								throw e;
 							}
 
@@ -319,7 +323,7 @@ export const useOptimisticAction = <
 	};
 
 	useActionCallbacks({
-		result,
+		result: result ?? EMPTY_HOOK_RESULT,
 		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		status,
 		cb: {
@@ -384,7 +388,7 @@ export const useStateAction = <
 	);
 
 	useActionCallbacks({
-		result,
+		result: result ?? EMPTY_HOOK_RESULT,
 		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		status,
 		cb: {
