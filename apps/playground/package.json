@@ -12,10 +12,10 @@
 	"dependencies": {
 		"@hookform/resolvers": "^3.3.4",
 		"lucide-react": "^0.378.0",
-		"next": "14.3.0-canary.42",
+		"next": "15.0.0-canary.25",
 		"next-safe-action": "workspace:*",
-		"react": "18.3.1",
-		"react-dom": "18.3.1",
+		"react": "19.0.0-rc-6230622a1a-20240610",
+		"react-dom": "19.0.0-rc-6230622a1a-20240610",
 		"react-hook-form": "^7.51.4",
 		"zod": "^3.23.6",
 		"zod-form-data": "^2.0.2"
@@ -26,7 +26,7 @@
 		"@types/react-dom": "18.3.0",
 		"autoprefixer": "10.4.19",
 		"eslint": "^8.57.0",
-		"eslint-config-next": "14.3.0-canary.42",
+		"eslint-config-next": "15.0.0-canary.25",
 		"postcss": "8.4.38",
 		"tailwindcss": "3.4.3",
 		"typescript": "^5.4.5"
