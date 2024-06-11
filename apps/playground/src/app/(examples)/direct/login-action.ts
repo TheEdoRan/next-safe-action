@@ -20,24 +20,40 @@ export const loginUser = action
 		handleValidationErrorsShape: (ve) =>
 			flattenValidationErrors(ve).fieldErrors,
 	})
-	.action(async ({ parsedInput: { username, password } }) => {
-		if (username === "johndoe") {
+	.action(
+		async ({ parsedInput: { username, password } }) => {
+			if (username === "johndoe") {
+				returnValidationErrors(schema, {
+					username: {
+						_errors: ["user_suspended"],
+					},
+				});
+			}
+
+			if (username === "user" && password === "password") {
+				return {
+					success: true,
+				};
+			}
+
 			returnValidationErrors(schema, {
 				username: {
-					_errors: ["user_suspended"],
+					_errors: ["incorrect_credentials"],
 				},
 			});
-		}
-
-		if (username === "user" && password === "password") {
-			return {
-				success: true,
-			};
-		}
-
-		returnValidationErrors(schema, {
-			username: {
-				_errors: ["incorrect_credentials"],
+		},
+		{
+			onSuccess: (args) => {
+				console.log("Logging from onSuccess callback:");
+				console.dir(args, { depth: null });
 			},
-		});
-	});
+			onError: (args) => {
+				console.log("Logging from onError callback:");
+				console.dir(args, { depth: null });
+			},
+			onSettled: (args) => {
+				console.log("Logging from onSettled callback:");
+				console.dir(args, { depth: null });
+			},
+		}
+	);
