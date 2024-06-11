@@ -181,7 +181,7 @@ Find more information about the updated `useOptimisticAction` hook [here](/docs/
 
 ### Hook callbacks arguments
 
-Previously, there were multiple arguments in hook callbacks. Now, metadata is passed inside a single object that is the first argument of each function. Find more information about the updated callbacks [here](/docs/execution/hooks/callbacks).
+Previously, there were multiple arguments in hook callbacks. Now, metadata is passed inside a single object that is the first argument of each function. Find more information about the updated callbacks [here](/docs/execution/hooks/hook-callbacks).
 
 ### Action metadata
 

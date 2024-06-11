@@ -3,7 +3,7 @@ sidebar_position: 4
 description: Hook callbacks are a way to perform custom logic based on the current action execution status.
 ---
 
-# Callbacks
+# Hook callbacks
 
 Hook callbacks are a way to perform custom logic based on the current action execution status. You can provide them to the three hooks in the `utils` object, which is the second argument. All of them are optional:
 
