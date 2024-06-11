@@ -141,6 +141,8 @@ export type SafeActionCallbacks<
 		bindArgsClientInputs: InferInArray<BAS>;
 		parsedInput: S extends Schema ? Infer<S> : undefined;
 		bindArgsParsedInputs: InferArray<BAS>;
+		hasRedirected: boolean;
+		hasNotFound: boolean;
 	}) => MaybePromise<void>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
@@ -151,5 +153,7 @@ export type SafeActionCallbacks<
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
+		hasRedirected: boolean;
+		hasNotFound: boolean;
 	}) => MaybePromise<void>;
 };

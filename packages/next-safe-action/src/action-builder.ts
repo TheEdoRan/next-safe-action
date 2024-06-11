@@ -256,6 +256,8 @@ export function actionBuilder<
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
+								hasRedirected: isRedirectError(frameworkError),
+								hasNotFound: isNotFoundError(frameworkError),
 							})
 						);
 
@@ -264,6 +266,8 @@ export function actionBuilder<
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								result: {},
+								hasRedirected: isRedirectError(frameworkError),
+								hasNotFound: isNotFoundError(frameworkError),
 							})
 						);
 
@@ -296,6 +300,8 @@ export function actionBuilder<
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
+								hasRedirected: false,
+								hasNotFound: false,
 							})
 						);
 					} else {
@@ -314,6 +320,8 @@ export function actionBuilder<
 							clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
 							bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 							result: actionResult,
+							hasRedirected: false,
+							hasNotFound: false,
 						})
 					);
 

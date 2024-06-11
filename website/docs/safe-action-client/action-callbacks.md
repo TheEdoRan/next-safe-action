@@ -16,7 +16,15 @@ const action = actionClient
   .action(async () => {
     // ...
   }, {
-    onSuccess: ({ data, clientInput, bindArgsClientInputs, parsedInput, bindArgsParsedInputs }) => {},
+    onSuccess: ({
+      data,
+      clientInput,
+      bindArgsClientInputs,
+      parsedInput,
+      bindArgsParsedInputs,
+      hasRedirected,
+      hasNotFound,
+    }) => {},
     onError: ({ error, clientInput, bindArgsClientInputs }) => {},
     onSettled: ({ result, clientInput, bindArgsClientInputs }) => {},
   });
