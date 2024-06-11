@@ -7,7 +7,8 @@ description: Getting started with next-safe-action version 7.
 
 :::info Requirements
 
-- Next.js >= 15
+- Next.js >= 14 (>= 15 for [`useStateAction`](/docs/execution/hooks/usestateaction) hook)
+- React >= 18.2.0
 - TypeScript >= 5
 - Zod or a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
 :::
@@ -19,7 +20,7 @@ description: Getting started with next-safe-action version 7.
 Assuming you want to use Zod as your validation library, use the following command:
 
 ```bash npm2yarn
-npm i next-safe-action@next zod
+npm i next-safe-action zod
 ```
 
 :::note

@@ -100,7 +100,7 @@ importers:
         specifier: ^0.13.3
         version: 0.13.3(zod@3.23.8)
       zod:
-        specifier: ^3.23.6
+        specifier: '>= 3.0.0'
         version: 3.23.8
     devDependencies:
       '@eslint/js':

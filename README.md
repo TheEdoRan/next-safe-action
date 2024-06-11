@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/logo.png" alt="next-safe-action logo" width="36" height="36">
+  <img src="https://raw.githubusercontent.com/TheEdoRan/next-safe-action/main/assets/logo.png" alt="next-safe-action logo" width="36" height="36">
   <a href="https://github.com/TheEdoRan/next-safe-action"><h1>next-safe-action</h1></a>
 </div>
 
@@ -23,21 +23,29 @@ https://github.com/TheEdoRan/next-safe-action/assets/1337629/664eb3ee-92f3-4d4a-
 
 ## Documentation
 
-**Explore the documentation for the next version of the library on the [next-safe-action website](https://next.next-safe-action.dev).** ✨
+**Explore the documentation for the current stable version of the library on the [next-safe-action v7 website](https://next-safe-action.dev).** ✨
+
+### Looking for v6 docs?
+
+You can keep using version 6 and eventually upgrade to version 7. Check out the v6 documentation [here](https://v6.next-safe-action.dev).
+
+## Migrate from v6 to v7
+
+Check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migrations/v6-to-v7) to learn how to update your code for v7.
 
 ## Installation
 
 ```bash
-npm i next-safe-action@next
+npm i next-safe-action
 ```
 
 ## Playground
 
-You can find a basic working implementation of the library [here](apps/playground).
+You can find a basic working implementation of the library [here](https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground).
 
 ## Contributing
 
-If you want to contribute to next-safe-action, please check out the [contributing guide](CONTRIBUTING.md).
+If you want to contribute to next-safe-action, please check out the [contributing guide](https://github.com/TheEdoRan/next-safe-action/blob/main/CONTRIBUTING.md).
 
 If you found bugs or just want to ask a question, feel free to open an issue or a discussion by following the [issue templates](https://github.com/TheEdoRan/next-safe-action/issues/new/choose).
 
@@ -51,4 +59,4 @@ Made with [contrib.rocks](https://contrib.rocks).
 
 ## License
 
-next-safe-action is released under the [MIT License](./LICENSE).
+next-safe-action is released under the [MIT License](https://github.com/TheEdoRan/next-safe-action/blob/main/LICENSE).
