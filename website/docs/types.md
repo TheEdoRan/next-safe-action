@@ -169,6 +169,39 @@ export type StateServerCodeFn<
 ) => Promise<Data>;
 ```
 
+### `SafeActionCallbacks`
+
+Type of action execution callbacks. These are called after the action is executed, on the server side.
+
+```typescript
+export type SafeActionCallbacks<
+	ServerError,
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	CVE,
+	CBAVE,
+	Data,
+> = {
+	onSuccess?: (args: {
+		data: Data;
+		clientInput: S extends Schema ? InferIn<S> : undefined;
+		bindArgsClientInputs: InferInArray<BAS>;
+		parsedInput: S extends Schema ? Infer<S> : undefined;
+		bindArgsParsedInputs: InferArray<BAS>;
+	}) => MaybePromise<void>;
+	onError?: (args: {
+		error: Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">;
+		clientInput: S extends Schema ? InferIn<S> : undefined;
+		bindArgsClientInputs: InferInArray<BAS>;
+	}) => MaybePromise<void>;
+	onSettled?: (args: {
+		result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
+		clientInput: S extends Schema ? InferIn<S> : undefined;
+		bindArgsClientInputs: InferInArray<BAS>;
+	}) => MaybePromise<void>;
+};
+```
+
 ### `ValidationErrors`
 
 Type of the returned object when input validation fails.
