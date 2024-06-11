@@ -245,6 +245,7 @@ test("action with server validation error calls `onError` and `onSettled` callba
 							},
 						},
 						clientInput: { username: "johndoe" },
+						bindArgsClientInputs: [],
 					}
 				);
 			},

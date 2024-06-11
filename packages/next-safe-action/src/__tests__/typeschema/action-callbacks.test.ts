@@ -245,6 +245,7 @@ test("typeschema - action with server validation error calls `onError` and `onSe
 							},
 						},
 						clientInput: { username: "johndoe" },
+						bindArgsClientInputs: [],
 					}
 				);
 			},
