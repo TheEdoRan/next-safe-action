@@ -4,6 +4,7 @@ import type { InferIn, Schema } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import {} from "react/experimental";
 import type {} from "zod";
 import type {
@@ -374,15 +375,21 @@ export const useStateAction = <
 	);
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
-	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
+	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
+		isExecuting,
+		result: result ?? EMPTY_HOOK_RESULT,
+		isIdle,
+	});
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
-			setTimeout(() => {
+			dispatcher(input as S extends Schema ? InferIn<S> : undefined);
+
+			// eslint-disable-next-line
+			ReactDOM.flushSync(() => {
 				setIsIdle(false);
 				setClientInput(input);
-				dispatcher(input as S extends Schema ? InferIn<S> : undefined);
-			}, 0);
+			});
 		},
 		[dispatcher]
 	);
