@@ -156,7 +156,6 @@ export const useAction = <
 					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
-							setResult(EMPTY_HOOK_RESULT);
 							throw e;
 						}
 
@@ -180,7 +179,6 @@ export const useAction = <
 				startTransition(() => {
 					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 						.then((res) => {
-							setResult(res ?? EMPTY_HOOK_RESULT);
 							resolve(res);
 						})
 						.catch((e) => {
@@ -271,7 +269,6 @@ export const useOptimisticAction = <
 					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
-							setResult(EMPTY_HOOK_RESULT);
 							throw e;
 						}
 
@@ -296,7 +293,6 @@ export const useOptimisticAction = <
 					setOptimisticValue(input as S extends Schema ? InferIn<S> : undefined);
 					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 						.then((res) => {
-							setResult(res ?? EMPTY_HOOK_RESULT);
 							resolve(res);
 						})
 						.catch((e) => {
