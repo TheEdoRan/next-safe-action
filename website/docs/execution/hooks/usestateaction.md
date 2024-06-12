@@ -52,7 +52,7 @@ export const statefulAction = actionClient
     await new Promise((res) => setTimeout(res, 1000));
 
     return {
-      prevName: prevResult?.data?.newName,
+      prevName: prevResult.data?.newName,
       newName: parsedInput.name,
     };
   });

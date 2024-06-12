@@ -34,21 +34,19 @@ export type SafeActionResult<
 	Data = unknown,
 	// eslint-disable-next-line
 	NextCtx = unknown,
-> =
-	| {
-			data?: Data;
-			serverError?: ServerError;
-			validationErrors?: CVE;
-			bindArgsValidationErrors?: CBAVE;
-	  }
-	| undefined;
+> = {
+	data?: Data;
+	serverError?: ServerError;
+	validationErrors?: CVE;
+	bindArgsValidationErrors?: CBAVE;
+};
 
 /**
  * Type of the function called from components with type safe input data.
  */
 export type SafeActionFn<ServerError, S extends Schema | undefined, BAS extends readonly Schema[], CVE, CBAVE, Data> = (
 	...clientInputs: [...bindArgsInputs: InferInArray<BAS>, input: S extends Schema ? InferIn<S> : void]
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 
 /**
  * Type of the stateful function called from components with type safe input data.
@@ -66,7 +64,7 @@ export type SafeStateActionFn<
 		prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>,
 		input: S extends Schema ? InferIn<S> : void,
 	]
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 
 /**
  * Type of the result of a middleware function. It extends the result of a safe action with

@@ -46,14 +46,12 @@ export type SafeActionResult<
   Data = unknown,
   // eslint-disable-next-line
   NextCtx = unknown,
-> = 
-  | {
+> = {
       data?: Data;
       serverError?: ServerError;
       validationErrors?: CVE;
       bindArgsValidationErrors?: CBAVE;
     };
-  | undefined;
 ```
 
 ### `SafeActionFn`
@@ -70,7 +68,7 @@ export type SafeActionFn<
   Data
 > = (
   ...clientInputs: [...bindArgsInputs: InferInArray<BAS>, input: S extends Schema ? InferIn<S> : void]
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 ```
 
 ### `SafeStateActionFn`
@@ -91,7 +89,7 @@ export type SafeStateActionFn<
     prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>,
     input: S extends Schema ? InferIn<S> : void,
   ]
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 ```
 
 ### `MiddlewareResult`
@@ -284,7 +282,7 @@ export type HookResult<
   CVE,
   CBAVE,
   Data,
-> = NonNullable<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>> & {
+> = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> & {
   fetchError?: string;
 };
 ```
