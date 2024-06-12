@@ -8,7 +8,7 @@ import { useStateAction } from "next-safe-action/hooks";
 import { statefulAction } from "./stateful-action";
 
 export default function StatefulFormPage() {
-	const { execute, result, status } = useStateAction(statefulAction, {
+	const { execute, result, status, input } = useStateAction(statefulAction, {
 		initResult: { data: { newName: "jane" } }, // optionally pass initial state
 		onSuccess({ data, input }) {
 			console.log("HELLO FROM ONSUCCESS", data, input);
@@ -20,7 +20,10 @@ export default function StatefulFormPage() {
 			console.log("HELLO FROM ONSETTLED", result, input);
 		},
 		onExecute({ input }) {
-			console.log("HELLO FROM ONEXECUTE", input);
+			console.log(
+				"HELLO FROM ONEXECUTE",
+				Object.fromEntries(input?.entries() ?? [])
+			);
 		},
 	});
 

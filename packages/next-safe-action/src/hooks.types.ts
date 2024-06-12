@@ -13,7 +13,7 @@ export type HookResult<
 	CVE,
 	CBAVE,
 	Data,
-> = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> & {
+> = NonNullable<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>> & {
 	fetchError?: string;
 };
 

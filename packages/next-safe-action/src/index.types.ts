@@ -34,12 +34,14 @@ export type SafeActionResult<
 	Data = unknown,
 	// eslint-disable-next-line
 	NextCtx = unknown,
-> = {
-	data?: Data;
-	serverError?: ServerError;
-	validationErrors?: CVE;
-	bindArgsValidationErrors?: CBAVE;
-};
+> =
+	| {
+			data?: Data;
+			serverError?: ServerError;
+			validationErrors?: CVE;
+			bindArgsValidationErrors?: CBAVE;
+	  }
+	| undefined;
 
 /**
  * Type of the function called from components with type safe input data.
