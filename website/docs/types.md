@@ -89,7 +89,7 @@ export type SafeStateActionFn<
     prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>,
     input: S extends Schema ? InferIn<S> : void,
   ]
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 ```
 
 ### `MiddlewareResult`
@@ -327,7 +327,7 @@ export type HookSafeActionFn<
   Data,
 > = (
   input: S extends Schema ? InferIn<S> : undefined
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 ```
 
 ### `HookSafeStateActionFn`

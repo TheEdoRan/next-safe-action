@@ -53,7 +53,7 @@ export type HookSafeActionFn<
 	Data,
 > = (
 	input: S extends Schema ? InferIn<S> : undefined
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 
 /**
  * Type of the stateful safe action function passed to hooks. Same as `SafeStateActionFn` except it accepts

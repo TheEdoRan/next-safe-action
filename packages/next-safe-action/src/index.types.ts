@@ -64,7 +64,7 @@ export type SafeStateActionFn<
 		prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>,
 		input: S extends Schema ? InferIn<S> : void,
 	]
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
+) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 
 /**
  * Type of the result of a middleware function. It extends the result of a safe action with
