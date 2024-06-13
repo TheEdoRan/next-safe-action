@@ -7,20 +7,7 @@ import { ResultBox } from "../../_components/result-box";
 import { noargsAction } from "./noargs-action";
 
 export default function EmptySchema() {
-	const { execute, result, status, reset } = useAction(noargsAction, {
-		onSuccess({ data, input }) {
-			console.log("HELLO FROM ONSUCCESS", data, input);
-		},
-		onError({ error, input }) {
-			console.log("OH NO FROM ONERROR", error, input);
-		},
-		onSettled({ result, input }) {
-			console.log("HELLO FROM ONSETTLED", result, input);
-		},
-		onExecute({ input }) {
-			console.log("HELLO FROM ONEXECUTE", input);
-		},
-	});
+	const { execute, result, status, reset } = useAction(noargsAction);
 
 	console.log("status:", status);
 

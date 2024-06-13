@@ -7,7 +7,7 @@ import { useState } from "react";
 import { ResultBox } from "../../_components/result-box";
 import { loginUser } from "./login-action";
 
-export default function DirectExamplePage() {
+export default function AsyncSchemaPage() {
 	const [result, setResult] = useState<any>(undefined);
 
 	return (
@@ -26,7 +26,7 @@ export default function DirectExamplePage() {
 						username: string;
 						password: string;
 					};
-					const res = await loginUser(input); // this is the typesafe action directly called
+					const res = await loginUser(input); // this is the type safe action directly called
 					setResult(res);
 				}}>
 				<StyledInput

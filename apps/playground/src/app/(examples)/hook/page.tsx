@@ -10,6 +10,7 @@ import { deleteUser } from "./deleteuser-action";
 export default function Hook() {
 	// Safe action (`deleteUser`) and optional callbacks passed to `useAction` hook.
 	const {
+		execute,
 		executeAsync,
 		result,
 		status,

@@ -17,8 +17,11 @@ export default function Home() {
 				<ExampleLink href="/optimistic-hook">
 					<span className="font-mono">useOptimisticAction</span> hook
 				</ExampleLink>
+				<ExampleLink href="/stateless-form">
+					Stateless form (<span className="font-mono">useAction</span> hook)
+				</ExampleLink>
 				<ExampleLink href="/stateful-form">
-					<span className="font-mono">useStateAction</span> hook
+					Stateful form (<span className="font-mono">useStateAction</span> hook)
 				</ExampleLink>
 				<ExampleLink href="/bind-arguments">Bind arguments</ExampleLink>
 				<ExampleLink href="/no-arguments">No arguments</ExampleLink>

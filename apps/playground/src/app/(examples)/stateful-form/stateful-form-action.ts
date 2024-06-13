@@ -12,8 +12,8 @@ const schema = zfd.formData({
 // This is because TypeScript can't infer the return type of the function and then "pass it" to
 // the second argument of the server code function (`prevResult`). If you don't need to access `prevResult`,
 // though, you can omit the type here, since it will be inferred just like with `action` method.
-export const statefulAction = action
-	.metadata({ actionName: "statefulAction" })
+export const statefulFormAction = action
+	.metadata({ actionName: "statefulFormAction" })
 	.schema(schema)
 	.stateAction<{
 		prevName?: string;

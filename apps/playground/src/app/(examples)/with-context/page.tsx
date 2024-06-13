@@ -7,7 +7,7 @@ import { useAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
 import { editUser } from "./edituser-action";
 
-export default function WithAuth() {
+export default function WithContextPage() {
 	const { execute, result, status } = useAction(editUser);
 
 	return (

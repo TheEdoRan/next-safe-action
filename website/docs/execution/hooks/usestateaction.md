@@ -7,6 +7,8 @@ description: Learn how to use the useStateAction hook.
 
 `useStateAction` keeps track of the previous action execution result(s), thanks to the [`useActionState`](https://react.dev/reference/react/useActionState) hook from React that is used under the hood. This hook works with actions declared with the [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) instance method, that changes the function signature, placing a `prevResult` argument in the first position, and an input (if a validation schema was provided) in the second one. When a stateful action is passed to `useStateAction` hook, the returned `execute` function will accept just the (optional) input and returns the action result, as the normal `useAction` hook does.
 
+Note that you're not required to use this hook in combination with the `stateAction` method for Form Actions, you can also define _stateless_ actions using the `action` method. More information about this in the [Form Actions](/docs/recipes/form-actions) recipe.
+
 :::note
 React's `useActionState` hook has replaced the previous `useFormState` hook, that is deprecated in React 19. You can explore the documentation for it in the [React docs](https://react.dev/reference/react/useActionState).
 :::
@@ -22,7 +24,7 @@ Let's say you want to update the number of likes of a post in your application, 
 1. Define a new stateful action called `statefulAction`, that takes a name as input and returns the name you just passed, as well as the previous one (if any).
 
 Note two important things: 
-  1. We use the [`zod-form-data`](https://www.npmjs.com/package/zod-form-data) library to generate the input validation schema;
+  1. We're defining an action that will be used as a Form Action, so here we use the [`zod-form-data`](https://www.npmjs.com/package/zod-form-data) library to generate the input validation schema;
   2. We use [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) instance method to define the action. You **must** use this method, because `useStateAction` hook requires `prevResult` to be the first argument of the Server Action function. Using this method also allows you to access the previous action result in `serverCodeFn`, via the `prevResult` property in the second argument of the function:
 
 ```typescript title=src/app/stateful-action.ts
@@ -89,7 +91,7 @@ export default function StatefulFormPage() {
 | `safeActionFn`          | [`HookSafeStateActionFn`](/docs/types#hooksafestateactionfn)                              | This is the action that will be passed to React's `useActionState` hook. You can then all it with `execute` function from the hook's return object, that has the same signature as `safeActionFn`, minus the first argument (`prevResult`).                                                               |
 | `utils`            | `{ initResult: Awaited<ReturnType<typeof safeActionFn>>; permalink?: string }` `&` [`HookCallbacks`](/docs/types#hookcallbacks)                            | Object with required `initResult` property and optional `permalink` and [callbacks](/docs/execution/hooks/hook-callbacks). Permalink usage is [explained in React docs](https://react.dev/reference/react/useActionState#parameters) for `useActionState` hook.                                                                                                                                            |
 
-You can pass an optional initial result to `useStateAction`, with the `initResult` argument. If not passed, the init result will default to `EMPTY_HOOK_RESULT` (every property typed `undefined`).
+You can pass an optional initial result to `useStateAction`, with the `initResult` argument. If not passed, the init result will default to an empty object: `{}`.
 
 
 ### `useOptimisticAction` return object

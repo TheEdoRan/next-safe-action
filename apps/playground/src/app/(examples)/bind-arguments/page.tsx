@@ -14,20 +14,7 @@ export default function BindArguments() {
 		Math.floor(Math.random() * 200)
 	);
 
-	const { execute, result, status, reset } = useAction(boundOnboardUser, {
-		onSuccess({ data, input }) {
-			console.log("HELLO FROM ONSUCCESS", data, input);
-		},
-		onError({ error, input }) {
-			console.log("OH NO FROM ONERROR", error, input);
-		},
-		onSettled({ result, input }) {
-			console.log("HELLO FROM ONSETTLED", result, input);
-		},
-		onExecute({ input }) {
-			console.log("HELLO FROM ONEXECUTE", input);
-		},
-	});
+	const { execute, result, status, reset } = useAction(boundOnboardUser);
 
 	console.log("status:", status);
 
