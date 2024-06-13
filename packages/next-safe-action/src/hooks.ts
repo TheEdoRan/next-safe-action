@@ -16,16 +16,6 @@ import type {
 } from "./hooks.types";
 import { isError } from "./utils";
 
-/**
- * Default value for `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
- */
-export const EMPTY_HOOK_RESULT = {
-	data: undefined,
-	fetchError: undefined,
-	serverError: undefined,
-	validationErrors: undefined,
-} satisfies HookResult<any, any, any, any, any, any>;
-
 const getActionStatus = <
 	ServerError,
 	S extends Schema | undefined,
@@ -138,7 +128,7 @@ export const useAction = <
 	utils?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>(EMPTY_HOOK_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
@@ -147,13 +137,9 @@ export const useAction = <
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
-			setIsIdle(false);
-			setClientInput(input);
-			setIsExecuting(true);
-
-			return startTransition(() => {
-				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
-					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
+			startTransition(() => {
+				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
+					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
 							throw e;
@@ -165,25 +151,27 @@ export const useAction = <
 						setIsExecuting(false);
 					});
 			});
+
+			ReactDOM.flushSync(() => {
+				setIsIdle(false);
+				setClientInput(input);
+				setIsExecuting(true);
+			});
 		},
 		[safeActionFn]
 	);
 
 	const executeAsync = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
-			setIsIdle(false);
-			setClientInput(input);
-			setIsExecuting(true);
-
-			return new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
+			const fn = new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
 				startTransition(() => {
 					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 						.then((res) => {
+							setResult(res ?? {});
 							resolve(res);
 						})
 						.catch((e) => {
 							if (isRedirectError(e) || isNotFoundError(e)) {
-								setResult(EMPTY_HOOK_RESULT);
 								throw e;
 							}
 
@@ -195,6 +183,14 @@ export const useAction = <
 						});
 				});
 			});
+
+			ReactDOM.flushSync(() => {
+				setIsIdle(false);
+				setClientInput(input);
+				setIsExecuting(true);
+			});
+
+			return fn;
 		},
 		[safeActionFn]
 	);
@@ -202,11 +198,11 @@ export const useAction = <
 	const reset = () => {
 		setIsIdle(true);
 		setClientInput(undefined);
-		setResult(EMPTY_HOOK_RESULT);
+		setResult({});
 	};
 
 	useActionCallbacks({
-		result: result ?? EMPTY_HOOK_RESULT,
+		result: result ?? {},
 		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		status,
 		cb: utils,
@@ -246,7 +242,7 @@ export const useOptimisticAction = <
 	} & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>(EMPTY_HOOK_RESULT);
+	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
@@ -259,14 +255,10 @@ export const useOptimisticAction = <
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
-			setIsIdle(false);
-			setClientInput(input);
-			setIsExecuting(true);
-
-			return startTransition(() => {
+			startTransition(() => {
 				setOptimisticValue(input as S extends Schema ? InferIn<S> : undefined);
-				return safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
-					.then((res) => setResult(res ?? EMPTY_HOOK_RESULT))
+				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
+					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
 						if (isRedirectError(e) || isNotFoundError(e)) {
 							throw e;
@@ -278,26 +270,28 @@ export const useOptimisticAction = <
 						setIsExecuting(false);
 					});
 			});
+
+			ReactDOM.flushSync(() => {
+				setIsIdle(false);
+				setClientInput(input);
+				setIsExecuting(true);
+			});
 		},
 		[safeActionFn, setOptimisticValue]
 	);
 
 	const executeAsync = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
-			setIsIdle(false);
-			setClientInput(input);
-			setIsExecuting(true);
-
-			return new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
+			const fn = new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
 				startTransition(() => {
 					setOptimisticValue(input as S extends Schema ? InferIn<S> : undefined);
 					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 						.then((res) => {
+							setResult(res ?? {});
 							resolve(res);
 						})
 						.catch((e) => {
 							if (isRedirectError(e) || isNotFoundError(e)) {
-								setResult(EMPTY_HOOK_RESULT);
 								throw e;
 							}
 
@@ -309,6 +303,14 @@ export const useOptimisticAction = <
 						});
 				});
 			});
+
+			ReactDOM.flushSync(() => {
+				setIsIdle(false);
+				setClientInput(input);
+				setIsExecuting(true);
+			});
+
+			return fn;
 		},
 		[safeActionFn, setOptimisticValue]
 	);
@@ -316,11 +318,11 @@ export const useOptimisticAction = <
 	const reset = () => {
 		setIsIdle(true);
 		setClientInput(undefined);
-		setResult(EMPTY_HOOK_RESULT);
+		setResult({});
 	};
 
 	useActionCallbacks({
-		result: result ?? EMPTY_HOOK_RESULT,
+		result: result ?? {},
 		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		status,
 		cb: {
@@ -366,14 +368,14 @@ export const useStateAction = <
 ) => {
 	const [result, dispatcher, isExecuting] = React.useActionState(
 		safeActionFn,
-		utils?.initResult ?? EMPTY_HOOK_RESULT,
+		utils?.initResult ?? {},
 		utils?.permalink
 	);
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
 		isExecuting,
-		result: result ?? EMPTY_HOOK_RESULT,
+		result: result ?? {},
 		isIdle,
 	});
 
@@ -381,7 +383,6 @@ export const useStateAction = <
 		(input: S extends Schema ? InferIn<S> : void) => {
 			dispatcher(input as S extends Schema ? InferIn<S> : undefined);
 
-			// eslint-disable-next-line
 			ReactDOM.flushSync(() => {
 				setIsIdle(false);
 				setClientInput(input);
@@ -391,7 +392,7 @@ export const useStateAction = <
 	);
 
 	useActionCallbacks({
-		result: result ?? EMPTY_HOOK_RESULT,
+		result: result ?? {},
 		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		status,
 		cb: {
