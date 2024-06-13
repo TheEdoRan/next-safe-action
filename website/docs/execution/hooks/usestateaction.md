@@ -15,6 +15,8 @@ React's `useActionState` hook has replaced the previous `useFormState` hook, tha
 
 :::warning important
 The `useActionState` hook requires Next.js >= 15 to work, because previous versions do not support the React's [`useActionState`](https://react.dev/reference/react/useActionState) hook that is used under the hood. In the meantime, you can use the [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method manually with React 18's `useFormState` hook.
+
+The `useActionState` hook is exported from `next-safe-action/stateful-hooks` path, unlike the other two hooks. This is because it uses React 19 features and would cause build errors in React 18.
 :::
 
 Let's say you want to update the number of likes of a post in your application, mutating directly the database.
@@ -65,7 +67,7 @@ export const statefulAction = actionClient
 ```tsx title=src/app/stateful-form.tsx
 "use client";
 
-import { useStateAction } from "next-safe-action/hooks";
+import { useStateAction } from "next-safe-action/stateful-hooks";
 import { statefulAction } from "./stateful-action";
 
 export default function StatefulFormPage() {

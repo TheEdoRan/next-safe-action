@@ -159,6 +159,8 @@ Note that this hook expects as argument actions defined using the `stateAction` 
 
 :::warning important
 The `useActionState` hook requires Next.js >= 15 to work, because previous versions do not support the React's [`useActionState`](https://react.dev/reference/react/useActionState) hook that is used under the hood. In the meantime, you can use the [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method manually with React 18's `useFormState` hook.
+
+The `useActionState` hook is exported from `next-safe-action/stateful-hooks` path, unlike the other two hooks. This is because it uses React 19 features and would cause build errors in React 18.
 :::
 
 ### [Return input from hooks](https://github.com/TheEdoRan/next-safe-action/issues/117)
@@ -203,7 +205,7 @@ TypeSchema was updated to v0.13, so now, if you want to use a validation library
 
 ## Requirements
 
-next-safe-action version 7 requires Next.js 14 and React 18.2.0 or later to work. For `useActionState` hook, the minimum required Next.js version is 15, since previous versions don't support the React's `useStateAction` hook that is used under the hood.
+next-safe-action version 7 requires Next.js 14 and React 18.2.0 or later to work. For `useActionState` hook, the minimum required Next.js version is 15, since previous versions don't support the React's `useStateAction` hook that is used under the hood. The `useActionState` hook is exported from `next-safe-action/stateful-hooks` path.
 
 ## What about v6?
 
