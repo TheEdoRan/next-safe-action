@@ -72,7 +72,7 @@ With this method, you can access previous result both from the client component,
 Note that if you want or need to use _stateful_ actions:
 1. You **must** define them with [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) instance method. This changes the signature of the Server Action function, placing the `prevResult` as the first argument.
 2. If you're on Next.js < 15, you can manually pass them to `useFormState` hook, which will be deprecated.
-3. Starting from Next.js 15, you **should** use the built-in `useStateAction` hook (which uses React's [`useActionState`](https://react.dev/reference/react/useActionState) hook under the hood) exported from next-safe-action.
+3. Starting from Next.js 15, you **should** use the built-in `useStateAction` hook (which uses React's [`useActionState`](https://react.dev/reference/react/useActionState) hook under the hood) exported from `next-safe-action/stateful-hooks` path.
 
 Here's an example of a stateful action, using the `useStateAction` hook:
 
@@ -107,7 +107,7 @@ export const statefulFormAction = action
 ```tsx title="stateful-form.tsx"
 "use client";
 
-import { useStateAction } from "next-safe-action/hooks";
+import { useStateAction } from "next-safe-action/stateful-hooks";
 import { statefulFormAction } from "./stateful-form-action";
 
 export default function StatefulForm() {
