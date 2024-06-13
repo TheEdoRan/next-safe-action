@@ -129,6 +129,8 @@ export type StateServerCodeFn<
  */
 export type SafeActionCallbacks<
 	ServerError,
+	MD,
+	Ctx,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	CVE,
@@ -137,6 +139,8 @@ export type SafeActionCallbacks<
 > = {
 	onSuccess?: (args: {
 		data?: Data;
+		metadata: MD;
+		ctx?: Ctx;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
 		parsedInput: S extends Schema ? Infer<S> : undefined;
@@ -146,11 +150,15 @@ export type SafeActionCallbacks<
 	}) => MaybePromise<void>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
+		metadata: MD;
+		ctx?: Ctx;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
 	}) => MaybePromise<void>;
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+		metadata: MD;
+		ctx?: Ctx;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
 		hasRedirected: boolean;
