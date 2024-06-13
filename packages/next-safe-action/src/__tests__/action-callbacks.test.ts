@@ -5,7 +5,17 @@ import { test } from "node:test";
 import { z } from "zod";
 import { DEFAULT_SERVER_ERROR_MESSAGE, createSafeActionClient, returnValidationErrors } from "..";
 
-const ac = createSafeActionClient();
+const ac = createSafeActionClient({
+	defineMetadataSchema() {
+		return z.object({
+			actionName: z.string(),
+		});
+	},
+})
+	.use(async ({ next }) => {
+		return next({ ctx: { foo: "bar" } });
+	})
+	.metadata({ actionName: "test" });
 
 test("action with no input schema and no server errors calls `onSuccess` and `onSettled` callbacks", async () => {
 	let executed = 0;
@@ -45,12 +55,14 @@ test("action with input schemas and no errors calls `onSuccess` and `onSettled` 
 				};
 			},
 			{
-				onSuccess: ({ clientInput, bindArgsClientInputs, parsedInput, bindArgsParsedInputs, data }) => {
+				onSuccess: ({ clientInput, bindArgsClientInputs, parsedInput, bindArgsParsedInputs, data, metadata, ctx }) => {
 					executed++;
 
 					assert.deepStrictEqual(
-						{ clientInput, bindArgsClientInputs, parsedInput, bindArgsParsedInputs, data },
+						{ clientInput, bindArgsClientInputs, parsedInput, bindArgsParsedInputs, data, metadata, ctx },
 						{
+							metadata: { actionName: "test" },
+							ctx: { foo: "bar" },
 							clientInput: inputs[2],
 							bindArgsClientInputs: inputs.slice(0, 2),
 							parsedInput: inputs[2],
@@ -64,12 +76,14 @@ test("action with input schemas and no errors calls `onSuccess` and `onSettled` 
 				onError: () => {
 					executed++; // should not be called
 				},
-				onSettled: ({ clientInput, bindArgsClientInputs, result }) => {
+				onSettled: ({ clientInput, bindArgsClientInputs, result, metadata, ctx }) => {
 					executed++;
 
 					assert.deepStrictEqual(
-						{ clientInput, bindArgsClientInputs, result },
+						{ clientInput, bindArgsClientInputs, result, metadata, ctx },
 						{
+							metadata: { actionName: "test" },
+							ctx: { foo: "bar" },
 							clientInput: inputs[2],
 							bindArgsClientInputs: inputs.slice(0, 2),
 							result: {
@@ -102,12 +116,14 @@ test("action with input schemas and server error calls `onError` and `onSettled`
 				onSuccess: () => {
 					executed++; // should not be called
 				},
-				onError({ error, clientInput, bindArgsClientInputs }) {
+				onError({ error, clientInput, bindArgsClientInputs, metadata, ctx }) {
 					executed++;
 
 					assert.deepStrictEqual(
-						{ error, clientInput, bindArgsClientInputs },
+						{ error, clientInput, bindArgsClientInputs, metadata, ctx },
 						{
+							metadata: { actionName: "test" },
+							ctx: { foo: "bar" },
 							error: {
 								serverError: DEFAULT_SERVER_ERROR_MESSAGE,
 							},
@@ -116,12 +132,14 @@ test("action with input schemas and server error calls `onError` and `onSettled`
 						}
 					);
 				},
-				onSettled({ clientInput, bindArgsClientInputs, result }) {
+				onSettled({ clientInput, bindArgsClientInputs, result, metadata, ctx }) {
 					executed++;
 
 					assert.deepStrictEqual(
-						{ result, clientInput, bindArgsClientInputs },
+						{ result, clientInput, bindArgsClientInputs, metadata, ctx },
 						{
+							metadata: { actionName: "test" },
+							ctx: { foo: "bar" },
 							result: {
 								serverError: DEFAULT_SERVER_ERROR_MESSAGE,
 							},
@@ -154,12 +172,14 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 				onSuccess: () => {
 					executed++; // should not be called
 				},
-				onError({ error, clientInput, bindArgsClientInputs }) {
+				onError({ error, clientInput, bindArgsClientInputs, metadata, ctx }) {
 					executed++;
 
 					assert.deepStrictEqual(
-						{ error, clientInput, bindArgsClientInputs },
+						{ error, clientInput, bindArgsClientInputs, metadata, ctx },
 						{
+							metadata: { actionName: "test" },
+							ctx: { foo: "bar" },
 							error: {
 								validationErrors: {
 									username: {
@@ -180,12 +200,14 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 						}
 					);
 				},
-				onSettled({ clientInput, bindArgsClientInputs, result }) {
+				onSettled({ clientInput, bindArgsClientInputs, result, metadata, ctx }) {
 					executed++;
 
 					assert.deepStrictEqual(
-						{ result, clientInput, bindArgsClientInputs },
+						{ result, clientInput, bindArgsClientInputs, metadata, ctx },
 						{
+							metadata: { actionName: "test" },
+							ctx: { foo: "bar" },
 							result: {
 								validationErrors: {
 									username: {
@@ -231,12 +253,14 @@ test("action with server validation error calls `onError` and `onSettled` callba
 			onSuccess: () => {
 				executed++; // should not be called
 			},
-			onError({ error, clientInput, bindArgsClientInputs }) {
+			onError({ error, clientInput, bindArgsClientInputs, metadata, ctx }) {
 				executed++;
 
 				assert.deepStrictEqual(
-					{ error, clientInput, bindArgsClientInputs },
+					{ error, clientInput, bindArgsClientInputs, metadata, ctx },
 					{
+						metadata: { actionName: "test" },
+						ctx: { foo: "bar" },
 						error: {
 							validationErrors: {
 								username: {
@@ -249,12 +273,14 @@ test("action with server validation error calls `onError` and `onSettled` callba
 					}
 				);
 			},
-			onSettled({ clientInput, bindArgsClientInputs, result }) {
+			onSettled({ clientInput, bindArgsClientInputs, result, metadata, ctx }) {
 				executed++;
 
 				assert.deepStrictEqual(
-					{ result, clientInput, bindArgsClientInputs },
+					{ result, clientInput, bindArgsClientInputs, metadata, ctx },
 					{
+						metadata: { actionName: "test" },
+						ctx: { foo: "bar" },
 						result: {
 							validationErrors: {
 								username: {

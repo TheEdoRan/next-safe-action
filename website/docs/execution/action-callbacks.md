@@ -18,6 +18,8 @@ const action = actionClient
   }, {
     onSuccess: ({
       data,
+      ctx,
+      metadata,
       clientInput,
       bindArgsClientInputs,
       parsedInput,
@@ -25,8 +27,8 @@ const action = actionClient
       hasRedirected,
       hasNotFound,
     }) => {},
-    onError: ({ error, clientInput, bindArgsClientInputs }) => {},
-    onSettled: ({ result, clientInput, bindArgsClientInputs }) => {},
+    onError: ({ error, ctx, metadata, clientInput, bindArgsClientInputs }) => {},
+    onSettled: ({ result, ctx, metadata, clientInput, bindArgsClientInputs }) => {},
   });
 ```
 

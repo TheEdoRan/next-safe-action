@@ -199,7 +199,7 @@ export class SafeActionClient<
 	 */
 	action<Data>(
 		serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>,
-		cb?: SafeActionCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+		cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 	) {
 		return actionBuilder({
 			validationStrategy: this.#validationStrategy,
@@ -226,7 +226,7 @@ export class SafeActionClient<
 	 */
 	stateAction<Data>(
 		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
-		cb?: SafeActionCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+		cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 	) {
 		return actionBuilder({
 			validationStrategy: this.#validationStrategy,
