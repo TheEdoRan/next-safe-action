@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 3
 description: Action callbacks are a way to perform custom logic after the action is executed, on the server.
 ---
 
