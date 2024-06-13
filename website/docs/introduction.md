@@ -1,11 +1,11 @@
 ---
 sidebar_position: 1
-description: next-safe-action is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using validation libraries of your choice, to let you define typesafe Server Actions and execute them inside Client Components.
+description: next-safe-action is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features to let you define type safe Server Actions and execute them inside React Components.
 ---
 
 # Introduction
 
-**next-safe-action** is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features, using validation libraries of your choice, to let you define **typesafe** Server Actions and execute them inside Client Components.
+**next-safe-action** is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features to let you define **type safe** Server Actions and execute them inside React Components.
 
 ## How does it work?
 
@@ -17,9 +17,11 @@ Your browser does not support the video tag.
 </video>
 
 ## Features
+
 - ✅ Pretty simple
 - ✅ End-to-end type safety
-- ✅ Context based clients (with middlewares)
+- ✅ Form Actions support
+- ✅ Powerful middleware system
 - ✅ Input validation using multiple validation libraries
 - ✅ Advanced server error handling
 - ✅ Optimistic updates

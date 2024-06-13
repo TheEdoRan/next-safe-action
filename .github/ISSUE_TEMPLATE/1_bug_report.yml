@@ -1,73 +1,79 @@
 name: Bug report
-description: Create a report to help us fix bugs
+description: Create a report to help us fix bugs.
 title: "[BUG] "
 labels: ["bug"]
 body:
-- type: checkboxes
-  attributes:
-    label: Are you using the latest version of this library?
-    description: Please confirm that you are using the latest version of next-safe-action.
-    options:
-    - label: I verified that the issue exists in the latest next-safe-action release
+  - type: checkboxes
+    attributes:
+      label: Are you using the latest version of this library?
+      description: Please confirm that you are using the latest version of next-safe-action.
+      options:
+        - label: I verified that the issue exists in the latest next-safe-action release
+          required: true
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues and found nothing that matches
+          required: true
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: I found out that the '...' functionality is not working.
+    validations:
       required: true
-- type: checkboxes
-  attributes:
-    label: Is there an existing issue for this?
-    description: Please search to see if an issue already exists for the bug you encountered.
-    options:
-    - label: I have searched the existing issues and found nothing that matches
+  - type: textarea
+    attributes:
+      label: Reproduction steps
+      description: Steps to reproduce the incorrect behavior.
+      placeholder: |
+        A step-by-step reproduction of the bug. For example:
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
       required: true
-- type: textarea
-  attributes:
-    label: Describe the bug
-    description: A clear and concise description of what the bug is.
-    placeholder: I found out that the '...' functionality is not working.
-  validations:
-    required: true
-- type: textarea
-  attributes:
-    label: Reproduction steps
-    description: Steps to reproduce the incorrect behavior.
-    placeholder: |
-      A step-by-step reproduction of the bug. For example:
-      1. Go to '...'
-      2. Click on '...'
-      3. Scroll down to '...'
-      4. See error
-  validations:
-    required: true
-- type: textarea
-  attributes:
-    label: Expected behavior
-    description: A description of what you expected to happen instead.
-    placeholder: I expected that this happened instead.
-  validations:
-    required: true
-- type: input
-  attributes:
-    label: Reproduction example
-    description: Link to an example that reproduces the bug. Could be, for example, a GitHub repo or a CodeSandbox link.
-    placeholder: https://github.com/...
-  validations:
-    required: true
-- type: markdown
-  attributes:
-    value: Information about the environment you are using.
-- type: input
-  attributes:
-    label: Operating System
-    placeholder: Windows 11, macOS, Ubuntu 22.04
-  validations:
-    required: true
-- type: input
-  attributes:
-    label: Library version
-    placeholder: 6.0.0
-  validations:
-    required: true
-- type: textarea
-  attributes:
-    label: Additional context
-    description: Add any other context about the problem here.
-  validations:
-    required: false
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: A description of what you expected to happen instead.
+      placeholder: I expected that this happened instead.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Minimal reproduction example
+      description: Link to a minimal example that reproduces the bug. Please provide a GitHub/CodeSandbox link with as little code as possible to reproduce the bug.
+      placeholder: https://github.com/...
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Information about the environment you are using.
+  - type: input
+    attributes:
+      label: Operating System
+      placeholder: Windows 11, macOS, Ubuntu 22.04
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Library version
+      placeholder: 6.0.0
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Next.js version
+      placeholder: 14.x.x
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here.
+    validations:
+      required: false

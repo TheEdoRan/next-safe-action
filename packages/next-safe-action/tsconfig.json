@@ -22,8 +22,8 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"incremental": false,
-		"noEmit": true,
+		"noEmit": true
 	},
 	"exclude": ["node_modules"],
-	"include": ["tsup.config.ts", "./src/**/*.ts"],
+	"include": ["tsup.config.ts", "./src/**/*.ts"]
 }

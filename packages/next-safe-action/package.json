@@ -11,24 +11,35 @@
 	],
 	"exports": {
 		".": "./dist/index.mjs",
-		"./hooks": "./dist/hooks.mjs",
-		"./status": "./dist/status.mjs"
+		"./typeschema": "./dist/typeschema.mjs",
+		"./hooks": "./dist/hooks.mjs"
 	},
 	"typesVersions": {
 		"*": {
 			".": [
 				"./dist/index.d.mts"
 			],
+			"typeschema": [
+				"./dist/typeschema.d.mts"
+			],
 			"hooks": [
 				"./dist/hooks.d.mts"
-			],
-			"status": [
-				"./dist/status.d.mts"
 			]
 		}
 	},
+	"funding": [
+		{
+			"type": "github",
+			"url": "https://github.com/sponsors/TheEdoRan"
+		},
+		{
+			"type": "paypal",
+			"url": "https://www.paypal.com/donate/?hosted_button_id=ES9JRPSC66XKW"
+		}
+	],
 	"scripts": {
-		"lint": "tsc && eslint --ext ts .",
+		"lint": "tsc && prettier --write . && eslint .",
+		"test": "node --import tsx --test ./src/__tests__/*.test.ts ./src/__tests__/typeschema/*.test.ts",
 		"build": "tsup",
 		"deploy": "semantic-release"
 	},
@@ -51,30 +62,42 @@
 		"node": ">=18.17"
 	},
 	"devDependencies": {
-		"@types/node": "^20.11.5",
-		"@types/react": "^18.2.48",
-		"@typescript-eslint/eslint-plugin": "^6.19.0",
-		"@typescript-eslint/parser": "^6.19.0",
-		"eslint": "^8.56.0",
+		"@eslint/js": "^9.2.0",
+		"@types/node": "^20.12.10",
+		"@types/react": "^18.3.1",
+		"@types/react-dom": "18.3.0",
+		"@typeschema/core": "^0.13.2",
+		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
-		"next": "14.1.0",
-		"prettier": "^3.2.4",
-		"react": "18.2.0",
-		"tsup": "^8.0.1",
-		"typescript": "^5.3.3"
+		"eslint-define-config": "^2.1.0",
+		"eslint-plugin-react-hooks": "^4.6.2",
+		"next": "14.3.0-canary.42",
+		"prettier": "^3.2.5",
+		"react": "18.3.1",
+		"react-dom": "18.3.1",
+		"semantic-release": "^23.0.8",
+		"tsup": "^8.0.2",
+		"tsx": "^4.11.2",
+		"typescript": "^5.4.5",
+		"typescript-eslint": "^7.8.0"
 	},
 	"peerDependencies": {
 		"next": ">= 14.0.0",
-		"react": ">= 18.2.0"
+		"react": ">= 18.2.0",
+		"react-dom": ">= 18.2.0",
+		"zod": ">= 3.0.0"
+	},
+	"peerDependenciesMeta": {
+		"zod": {
+			"optional": true
+		}
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"dependencies": {
-		"@decs/typeschema": "^0.12.2"
-	},
-	"optionalDependencies": {
-		"zod": "^3.22.4"
+		"@typeschema/main": "^0.13.9",
+		"@typeschema/zod": "^0.13.3"
 	}
 }

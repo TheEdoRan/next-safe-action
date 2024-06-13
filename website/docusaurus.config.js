@@ -60,6 +60,14 @@ export default {
 			apiKey: "87b638e133658cdec7cc633e6c4986c3",
 			indexName: "next-safe-action",
 		},
+		announcementBar: {
+			id: "banner_version_7",
+			content:
+				"You are viewing documentation for the current stable version (v7) of the library. To access previous version docs, visit the <a href='https://v6.next-safe-action.dev'>v6 website</a>.",
+			backgroundColor: "#1f252e",
+			textColor: "#ffffff",
+			isCloseable: true,
+		},
 		navbar: {
 			title: "next-safe-action",
 			logo: {
@@ -74,15 +82,12 @@ export default {
 					label: "Docs",
 				},
 				{
-					href: "https://github.com/TheEdoRan/next-safe-action",
-					label: "GitHub",
-					position: "right",
+					"href": "https://github.com/TheEdoRan/next-safe-action",
+					"position": "right",
+					"className": "header-github-link",
+					"aria-label": "next-safe-action's GitHub page",
 				},
 			],
-		},
-		footer: {
-			style: "light",
-			copyright: `Copyleft <span class="copyleft">&copy;</span> ${new Date().getFullYear()} Edoardo Ranghieri`,
 		},
 		prism: {
 			additionalLanguages: ["typescript"],

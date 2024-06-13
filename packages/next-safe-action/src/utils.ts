@@ -1,32 +1,53 @@
-import type { Infer, Schema, ValidationIssue } from "@decs/typeschema";
+import type { Infer, InferIn, Schema } from "@typeschema/main";
 
-export const isError = (error: any): error is Error => error instanceof Error;
+export const DEFAULT_SERVER_ERROR_MESSAGE = "Something went wrong while executing the operation.";
+
+export const isError = (error: unknown): error is Error => error instanceof Error;
+
+// UTIL TYPES
+
+// Takes an object type and makes it more readable.
+export type Prettify<T> = {
+	[K in keyof T]: T[K];
+} & {};
+
+// Returns type or promise of type.
 export type MaybePromise<T> = Promise<T> | T;
 
-// This function is used to build the validation errors object from a list of validation issues.
-export const buildValidationErrors = <const S extends Schema>(issues: ValidationIssue[]) => {
-	const validationErrors = {} as Partial<Record<keyof Infer<S> | "_root", string[]>>;
+// Infers output schema type in array of schemas.
+export type InferArray<BAS extends readonly Schema[]> = {
+	[K in keyof BAS]: Infer<BAS[K]>;
+};
 
-	const appendIssue = (path: keyof Infer<S> | "_root", message: string) => {
-		if (validationErrors[path]?.length) {
-			validationErrors[path]!.push(message);
-		} else {
-			validationErrors[path] = [message];
-		}
-	};
+// Infers input schema type in array of schemas.
+export type InferInArray<BAS extends readonly Schema[]> = {
+	[K in keyof BAS]: InferIn<BAS[K]>;
+};
 
-	for (const issue of issues) {
-		const paths = issue.path as (keyof Infer<S>)[] | undefined;
+// Validate with Zod.
+export async function zodValidate<S extends Schema>(s: S, data: unknown) {
+	const result = await s.safeParseAsync(data);
 
-		if (paths?.length) {
-			for (const path of paths) {
-				appendIssue(path, issue.message);
-			}
-			// If path is not defined, it means that the issue belongs to the root (global) path.
-		} else {
-			appendIssue("_root", issue.message);
-		}
+	if (result.success) {
+		return {
+			success: true,
+			data: result.data as Infer<S>,
+		} as const;
 	}
 
-	return validationErrors;
-};
+	return {
+		success: false,
+		issues: result.error.issues.map(({ message, path }) => ({ message, path })),
+	} as const;
+}
+
+/**
+ * This error is thrown when an action's metadata input is invalid, i.e. when there's a mismatch between the
+ * type of the metadata schema returned from `defineMetadataSchema` and the actual input.
+ */
+export class ActionMetadataError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "ActionMetadataError";
+	}
+}
