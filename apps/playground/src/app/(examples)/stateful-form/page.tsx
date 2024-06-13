@@ -4,7 +4,7 @@ import { ResultBox } from "@/app/_components/result-box";
 import { StyledButton } from "@/app/_components/styled-button";
 import { StyledHeading } from "@/app/_components/styled-heading";
 import { StyledInput } from "@/app/_components/styled-input";
-import { useStateAction } from "next-safe-action/hooks";
+import { useStateAction } from "next-safe-action/stateful-hooks";
 import { statefulFormAction } from "./stateful-form-action";
 
 export default function StatefulFormPage() {
