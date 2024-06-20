@@ -56,9 +56,19 @@ export class ActionServerValidationError<S extends Schema> extends Error {
 	public kind: string;
 	public validationErrors: ValidationErrors<S>;
 	constructor(validationErrors: ValidationErrors<S>) {
-		super("Action server validation error");
+		super("Server Action server validation error(s) occurred");
 		this.validationErrors = validationErrors;
 		this.kind = "__actionServerValidationError";
+	}
+}
+
+// This class is internally used to throw validation errors in action's server code function, using
+// `returnValidationErrors`.
+export class ActionValidationError<CVE> extends Error {
+	public validationErrors: CVE;
+	constructor(validationErrors: CVE) {
+		super("Server Action validation error(s) occurred");
+		this.validationErrors = validationErrors;
 	}
 }
 

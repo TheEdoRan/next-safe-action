@@ -11,6 +11,7 @@ import {
 
 export { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export {
+	ActionValidationError,
 	flattenBindArgsValidationErrors,
 	flattenValidationErrors,
 	formatBindArgsValidationErrors,
@@ -63,6 +64,7 @@ export const createSafeActionClient = <
 		metadataSchema: createOpts?.defineMetadataSchema?.(),
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
+		throwValidationErrors: Boolean(createOpts?.throwValidationErrors),
 		handleValidationErrorsShape:
 			createOpts?.defaultValidationErrorsShape === "flattened" ? flattenValidationErrors : formatValidationErrors,
 		handleBindArgsValidationErrorsShape:
