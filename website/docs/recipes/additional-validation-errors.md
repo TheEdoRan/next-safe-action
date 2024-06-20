@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 description: Set additional custom validation errors in schema or in action's server code function.
 ---
 
