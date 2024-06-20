@@ -16,7 +16,7 @@ import type {
 } from "./index.types";
 import type { InferArray, InferInArray } from "./utils";
 import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
-import { buildValidationErrors } from "./validation-errors";
+import { ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
 	HandleBindArgsValidationErrorsShapeFn,
@@ -46,6 +46,7 @@ export function actionBuilder<
 	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	ctxType: Ctx;
 	validationStrategy: "typeschema" | "zod";
+	throwValidationErrors: boolean;
 }) {
 	const bindArgsSchemas = (args.bindArgsSchemas ?? []) as BAS;
 
@@ -281,6 +282,9 @@ export function actionBuilder<
 					const actionResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> = {};
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
+						if (args.throwValidationErrors) {
+							throw new ActionValidationError(middlewareResult.validationErrors as CVE);
+						}
 						actionResult.validationErrors = middlewareResult.validationErrors as CVE;
 					}
 

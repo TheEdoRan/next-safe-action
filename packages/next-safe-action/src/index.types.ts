@@ -19,6 +19,7 @@ export type SafeActionClientOpts<
 	handleServerErrorLog?: (e: Error) => MaybePromise<void>;
 	handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
 	defineMetadataSchema?: () => MetadataSchema;
+	throwValidationErrors?: boolean;
 	defaultValidationErrorsShape?: ODVES;
 };
 

@@ -44,6 +44,7 @@ export class SafeActionClient<
 	readonly #handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
 	readonly #handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	readonly #defaultValidationErrorsShape: ODVES;
+	readonly #throwValidationErrors: boolean;
 
 	constructor(
 		opts: {
@@ -59,7 +60,7 @@ export class SafeActionClient<
 		} & Required<
 			Pick<
 				SafeActionClientOpts<ServerError, any, ODVES>,
-				"handleReturnedServerError" | "handleServerErrorLog" | "defaultValidationErrorsShape"
+				"handleReturnedServerError" | "handleServerErrorLog" | "defaultValidationErrorsShape" | "throwValidationErrors"
 			>
 		>
 	) {
@@ -74,6 +75,7 @@ export class SafeActionClient<
 		this.#handleValidationErrorsShape = opts.handleValidationErrorsShape;
 		this.#handleBindArgsValidationErrorsShape = opts.handleBindArgsValidationErrorsShape;
 		this.#defaultValidationErrorsShape = opts.defaultValidationErrorsShape;
+		this.#throwValidationErrors = opts.throwValidationErrors;
 	}
 
 	/**
@@ -96,6 +98,7 @@ export class SafeActionClient<
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: undefined as NextCtx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
+			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
 
@@ -119,6 +122,7 @@ export class SafeActionClient<
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: undefined as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
+			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
 
@@ -160,6 +164,7 @@ export class SafeActionClient<
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: undefined as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
+			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
 
@@ -193,6 +198,7 @@ export class SafeActionClient<
 				this.#handleBindArgsValidationErrorsShape) as HandleBindArgsValidationErrorsShapeFn<OBAS, OCBAVE>,
 			ctxType: undefined as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
+			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
 
@@ -219,6 +225,7 @@ export class SafeActionClient<
 			bindArgsSchemas: this.#bindArgsSchemas,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
+			throwValidationErrors: this.#throwValidationErrors,
 		}).action(serverCodeFn, cb);
 	}
 
@@ -246,6 +253,7 @@ export class SafeActionClient<
 			bindArgsSchemas: this.#bindArgsSchemas,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
+			throwValidationErrors: this.#throwValidationErrors,
 		}).stateAction(serverCodeFn, cb);
 	}
 }
