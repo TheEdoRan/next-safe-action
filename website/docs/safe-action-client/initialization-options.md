@@ -116,3 +116,7 @@ export const actionClient = createSafeActionClient({
   defaultValidationErrorsShape: "flattened",
 });
 ```
+
+## `throwValidationErrors?`
+
+You can provide this optional boolean property to `createSafeActionClient` to change the default behavior of what happens when validation errors occur during action execution. When this option is set to `true`, the action will throw a `ActionValidationError` with the related validation errors in a `validationErrors` property. This option also works for server validation errors set with [`returnValidationErrors`](/docs/recipes/additional-validation-errors#returnvalidationerrors) function. The errors shape respects the `defaultValidationErrorsShape` option or the overridden one set in [`schema`](/docs/safe-action-client/instance-methods#schema) using the optional [`handleValidationErrorsShape`](/docs/recipes/customize-validation-errors-format) function. The default value is `false`.
