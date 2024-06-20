@@ -3,7 +3,7 @@ sidebar_position: 2
 description: Learn how to use both a basic and an authorization client at the same time in your project.
 ---
 
-# Extending a base client
+# Extend base client
 
 A common and recommended pattern with this library is to extend the base safe action client, to cover different use cases that you might want and/or need in your applicaton.
 
