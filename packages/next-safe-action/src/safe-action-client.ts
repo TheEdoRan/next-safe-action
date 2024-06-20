@@ -130,8 +130,8 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#schema See docs for more information}
 	 */
 	schema<
-		OS extends Schema | (() => Promise<Schema>),
-		AS extends Schema = OS extends () => Promise<Schema> ? Awaited<ReturnType<OS>> : OS, // actual schema
+		OS extends Schema | ((prevSchema: S) => Promise<Schema>),
+		AS extends Schema = OS extends (prevSchema: S) => Promise<Schema> ? Awaited<ReturnType<OS>> : OS, // actual schema
 		OCVE = ODVES extends "flattened" ? FlattenedValidationErrors<ValidationErrors<AS>> : ValidationErrors<AS>,
 	>(
 		schema: OS,
@@ -147,7 +147,13 @@ export class SafeActionClient<
 			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			// @ts-expect-error
-			schemaFn: (schema[Symbol.toStringTag] === "AsyncFunction" ? schema : async () => schema) as SF,
+			schemaFn: (schema[Symbol.toStringTag] === "AsyncFunction"
+				? async () => {
+						const prevSchema = await this.#schemaFn?.();
+						// @ts-expect-error
+						return schema(prevSchema as S) as AS;
+					}
+				: async () => schema) as SF,
 			bindArgsSchemas: this.#bindArgsSchemas,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AS, OCVE>,
