@@ -77,6 +77,32 @@ test("typeschema - action with input schema passed via async function and return
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
+test("typeschema - action with input schema extended via async function and return data gives back an object with correct `data`", async () => {
+	const userId = "ed6f5b84-6bca-4d01-9a51-c3d0c49a7996";
+	const password = "password";
+
+	const action = ac
+		.schema(z.object({ password: z.string() }))
+		.schema(async (prevSchema) => prevSchema.extend({ userId: z.string().uuid() }))
+		.action(async ({ parsedInput }) => {
+			return {
+				userId: parsedInput.userId,
+				password: parsedInput.password,
+			};
+		});
+
+	const actualResult = await action({ password, userId });
+
+	const expectedResult = {
+		data: {
+			password,
+			userId,
+		},
+	};
+
+	assert.deepStrictEqual(actualResult, expectedResult);
+});
+
 test("typeschema - action with no input schema, bind args input schemas and return data gives back an object with correct `data`", async () => {
 	const username = "johndoe";
 	const age = 30;
