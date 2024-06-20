@@ -533,3 +533,44 @@ test("action with errors set via `returnValidationErrors` gives back an object w
 
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
+
+// `throwValidationErrors` tests.
+
+const tveac = createSafeActionClient({
+	throwValidationErrors: true,
+});
+
+test("action with validation errors and `throwValidationErrors` option set to true in client throws", async () => {
+	const schema = z.object({
+		username: z.string().min(3),
+		password: z.string().min(3),
+	});
+
+	const action = tveac.schema(schema).action(async () => {
+		return {
+			ok: true,
+		};
+	});
+
+	assert.rejects(async () => await action({ username: "12", password: "34" }));
+});
+
+test("action with server validation errors and `throwValidationErrors` option set to true in client throws", async () => {
+	const schema = z.object({
+		username: z.string().min(3),
+		password: z.string().min(3),
+	});
+
+	const action = tveac.schema(schema).action(async () => {
+		returnValidationErrors(schema, {
+			username: {
+				_errors: ["user_suspended"],
+			},
+		});
+		return {
+			ok: true,
+		};
+	});
+
+	assert.rejects(async () => await action({ username: "1234", password: "5678" }));
+});
