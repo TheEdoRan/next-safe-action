@@ -48,6 +48,10 @@ export const loginUser = actionClient
   });
 ```
 
+:::note
+If you chain multiple `schema` methods, as explained in the [Extend previous schema](/docs/recipes/extend-previous-schema) page, and want to override the default validation errors shape, you **must** use `handleValidationErrorsShape` inside the last `schema` method, otherwise there would be a type mismatch in the returned action result.
+:::
+
 ### `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions
 
 Exported `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions emulates Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method for building validation errors and return them to the client. Be aware that they discard errors for nested fields in objects, but when dealing with simple one-level schemas, it's sometimes better to use the flattened format instead of the formatted one.
