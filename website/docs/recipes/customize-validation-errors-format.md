@@ -54,7 +54,7 @@ If you chain multiple `schema` methods, as explained in the [Extend previous sch
 
 ### `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions
 
-Exported `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions emulates Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method for building validation errors and return them to the client. Be aware that they discard errors for nested fields in objects, but when dealing with simple one-level schemas, it's sometimes better to use the flattened format instead of the formatted one.
+Exported `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions emulate Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method for building validation errors and return them to the client. Be aware that they discard errors for nested fields in objects, but when dealing with simple one-level schemas, it's sometimes better to use the flattened format instead of the formatted one.
 
 So, for instance, a formatted (default) validation errors object like this:
 
