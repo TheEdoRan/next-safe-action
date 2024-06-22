@@ -101,7 +101,7 @@
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
 	},
 	"dependencies": {
-		"@typeschema/main": "^0.13.9",
+		"@typeschema/main": "^0.13.10",
 		"@typeschema/zod": "^0.13.3"
 	}
 }

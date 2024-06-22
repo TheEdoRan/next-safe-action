@@ -94,8 +94,8 @@ importers:
   packages/next-safe-action:
     dependencies:
       '@typeschema/main':
-        specifier: ^0.13.9
-        version: 0.13.9(@typeschema/zod@0.13.3(zod@3.23.8))
+        specifier: ^0.13.10
+        version: 0.13.10(@typeschema/zod@0.13.3(zod@3.23.8))
       '@typeschema/zod':
         specifier: ^0.13.3
         version: 0.13.3(zod@3.23.8)
@@ -1090,8 +1090,8 @@ packages:
       '@types/json-schema':
         optional: true
 
-  '@typeschema/main@0.13.9':
-    resolution: {integrity: sha512-Z6yFaf2dLoqvuSNIeUelek9XI8T5Rog/NXHBMwV6KLhQCT0lQPBtmZSXAdW6EzFaqn1najhQEcirBqjWiFXiig==}
+  '@typeschema/main@0.13.10':
+    resolution: {integrity: sha512-ArdFC4GbgdVWWgPKg2tymxx2KHMus3xZ8I2kHwqw/0P4FtWBXCmSNAiBqDtpoXXF8h9cbcm7fVpcs5ftoWT9+A==}
     peerDependencies:
       '@typeschema/arktype': 0.13.2
       '@typeschema/class-validator': 0.1.2
@@ -1107,7 +1107,7 @@ packages:
       '@typeschema/superstruct': 0.13.2
       '@typeschema/suretype': 0.1.0
       '@typeschema/typebox': 0.13.4
-      '@typeschema/valibot': 0.13.4
+      '@typeschema/valibot': 0.13.5
       '@typeschema/valita': 0.1.0
       '@typeschema/vine': 0.1.0
       '@typeschema/yup': 0.13.3
@@ -4835,7 +4835,7 @@ snapshots:
 
   '@typeschema/core@0.13.2': {}
 
-  '@typeschema/main@0.13.9(@typeschema/zod@0.13.3(zod@3.23.8))':
+  '@typeschema/main@0.13.10(@typeschema/zod@0.13.3(zod@3.23.8))':
     dependencies:
       '@typeschema/core': 0.13.2
     optionalDependencies:
