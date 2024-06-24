@@ -99,11 +99,11 @@ export const useAction = <
 		[safeActionFn]
 	);
 
-	const reset = () => {
+	const reset = React.useCallback(() => {
 		setIsIdle(true);
 		setClientInput(undefined);
 		setResult({});
-	};
+	}, []);
 
 	useActionCallbacks({
 		result: result ?? {},
@@ -219,11 +219,11 @@ export const useOptimisticAction = <
 		[safeActionFn, setOptimisticValue]
 	);
 
-	const reset = () => {
+	const reset = React.useCallback(() => {
 		setIsIdle(true);
 		setClientInput(undefined);
 		setResult({});
-	};
+	}, []);
 
 	useActionCallbacks({
 		result: result ?? {},
