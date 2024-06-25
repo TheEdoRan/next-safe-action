@@ -7,7 +7,7 @@ description: You can initialize a safe action client with these options.
 
 ## `handleReturnedServerError?`
 
-You can provide this optional function to the safe action client. It is used to customize the server error returned to the client, if one occurs during action's server execution. This includes errors thrown by the action server code, and errors thrown by the middleware.
+You can provide this optional function to the safe action client. It is used to customize the server error returned to the client, if one occurs during action's server execution. This includes errors thrown by the action server code, and errors thrown by the middleware. You also have access to useful properties via the `utils` object, which is the second argument of the function.
 
 Here's a simple example, changing the default message for every error thrown on the server:
 
@@ -16,7 +16,10 @@ import { createSafeActionClient } from "next-safe-action";
 
 export const actionClient = createSafeActionClient({
   // Can also be an async function.
-  handleReturnedServerError(e) {
+  handleReturnedServerError(e, utils) {
+    // You can access these properties inside the `utils` object.
+    const { clientInput, bindArgsClientInputs, metadata, ctx } = utils;
+
     return "Oh no, something went wrong!";
   },
 });
@@ -66,7 +69,7 @@ Note that the return type of this function will determine the type of the server
 
 ## `handleServerErrorLog?`
 
-You can provide this optional function to the safe action client. This is used to define how errors should be logged when one occurs while the server is executing an action. This includes errors thrown by the action server code, and errors thrown by the middleware. Here you get as argument the **original error object**, not a message customized by `handleReturnedServerError`, if provided.
+You can provide this optional function to the safe action client. This is used to define how errors should be logged when one occurs while the server is executing an action. This includes errors thrown by the action server code, and errors thrown by the middleware. Here you get as the first argument the **original error object**, not the one customized by `handleReturnedServerError`, if provided. Though, you can access the `returnedError` and other useful properties inside the `utils` object, which is the second argument.
 
 Here's a simple example, logging error to the console while also reporting it to an error handling system:
 
@@ -75,12 +78,16 @@ import { createSafeActionClient } from "next-safe-action";
 
 export const actionClient = createSafeActionClient({
   // Can also be an async function.
-  handleServerErrorLog(e) {
+  handleServerErrorLog(originalError, utils) {
+    // You can access these properties inside the `utils` object.
+    // Note that here you also have access to the custom server error defined by `handleReturnedServerError`.
+    const { clientInput, bindArgsClientInputs, metadata, ctx, returnedError } = utils;
+
     // We can, for example, also send the error to a dedicated logging system.
-    reportToErrorHandlingSystem(e);
+    reportToErrorHandlingSystem(originalError);
 
     // And also log it to the console.
-    console.error("Action error:", e.message);
+    console.error("Action error:", originalError.message);
   },
 });
 ```
