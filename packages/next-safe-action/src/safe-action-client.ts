@@ -31,9 +31,11 @@ export class SafeActionClient<
 	const CBAVE = undefined,
 > {
 	readonly #validationStrategy: "typeschema" | "zod";
-	readonly #handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any, any>["handleServerErrorLog"]>;
+	readonly #handleServerErrorLog: NonNullable<
+		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerErrorLog"]
+	>;
 	readonly #handleReturnedServerError: NonNullable<
-		SafeActionClientOpts<ServerError, any, any>["handleReturnedServerError"]
+		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
 	>;
 	readonly #middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	readonly #ctxType = undefined as Ctx;
@@ -59,7 +61,7 @@ export class SafeActionClient<
 			ctxType: Ctx;
 		} & Required<
 			Pick<
-				SafeActionClientOpts<ServerError, any, ODVES>,
+				SafeActionClientOpts<ServerError, MetadataSchema, ODVES>,
 				"handleReturnedServerError" | "handleServerErrorLog" | "defaultValidationErrorsShape" | "throwValidationErrors"
 			>
 		>
