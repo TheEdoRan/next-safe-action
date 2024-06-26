@@ -250,6 +250,8 @@ export function actionBuilder<
 									})
 								);
 
+								middlewareResult.serverError = returnedError;
+
 								await Promise.resolve(
 									args.handleServerErrorLog(error, {
 										returnedError,
