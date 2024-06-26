@@ -24,7 +24,8 @@ export type * from "./validation-errors.types";
 
 /**
  * Create a new safe action client.
- * Note: this client only works with Zod as the validation library.
+ * Note: this client is for validation libraries other than Zod, and can cause some problems with deployments, check out
+ * [the troubleshooting page](https://next-safe-action.dev/docs/troubleshooting#typeschema-issues-with-edge-runtime) on the website.
  * If you want to use a validation library supported by [TypeSchema](https://typeschema.com), import this client from `/typeschema` path.
  * @param createOpts Optional initialization options
  *
@@ -41,17 +42,18 @@ export const createSafeActionClient = <
 	// server error messages.
 	const handleServerErrorLog =
 		createOpts?.handleServerErrorLog ||
-		((e) => {
-			console.error("Action error:", e.message);
-		});
+		(((originalError: Error) => {
+			console.error("Action error:", originalError.message);
+		}) as unknown as NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerErrorLog"]>);
 
 	// If `handleReturnedServerError` is provided, use it to handle server error
 	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
-	const handleReturnedServerError = ((e: Error) =>
-		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR_MESSAGE) as NonNullable<
-		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
-	>;
+	const handleReturnedServerError =
+		createOpts?.handleReturnedServerError ||
+		((() => DEFAULT_SERVER_ERROR_MESSAGE) as unknown as NonNullable<
+			SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
+		>);
 
 	return new SafeActionClient({
 		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
@@ -61,7 +63,7 @@ export const createSafeActionClient = <
 		schemaFn: undefined,
 		bindArgsSchemas: [],
 		ctxType: undefined,
-		metadataSchema: createOpts?.defineMetadataSchema?.(),
+		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
 		throwValidationErrors: Boolean(createOpts?.throwValidationErrors),

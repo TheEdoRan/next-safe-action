@@ -15,6 +15,19 @@ Type of the default validation errors shape passed to `createSafeActionClient` v
 export type DVES = "flattened" | "formatted";
 ```
 
+### `ServerErrorFunctionUtils`
+
+Type of the util properties passed to server error handler functions.
+
+```typescript
+export type ServerErrorFunctionUtils<MetadataSchema extends Schema | undefined> = {
+  clientInput: unknown;
+  bindArgsClientInputs: unknown[];
+  ctx: unknown;
+  metadata: MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined;
+};
+```
+
 ### `SafeActionClientOpts`
 
 Type of options when creating a new safe action client.
@@ -23,11 +36,20 @@ Type of options when creating a new safe action client.
 export type SafeActionClientOpts<
   ServerError,
   MetadataSchema extends Schema | undefined,
-  ODVES extends DVES | undefined
+  ODVES extends DVES | undefined,
 > = {
-  handleServerErrorLog?: (e: Error) => MaybePromise<void>;
-  handleReturnedServerError?: (e: Error) => MaybePromise<ServerError>;
   defineMetadataSchema?: () => MetadataSchema;
+  handleReturnedServerError?: (
+    error: Error,
+    utils: ServerErrorFunctionUtils<MetadataSchema>
+  ) => MaybePromise<ServerError>;
+  handleServerErrorLog?: (
+    originalError: Error,
+    utils: ServerErrorFunctionUtils<MetadataSchema> & {
+      returnedError: ServerError;
+    }
+  ) => MaybePromise<void>;
+  throwValidationErrors?: boolean;
   defaultValidationErrorsShape?: ODVES;
 };
 ```

@@ -41,17 +41,18 @@ export const createSafeActionClient = <
 	// server error messages.
 	const handleServerErrorLog =
 		createOpts?.handleServerErrorLog ||
-		((e) => {
-			console.error("Action error:", e.message);
-		});
+		(((originalError: Error) => {
+			console.error("Action error:", originalError.message);
+		}) as unknown as NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerErrorLog"]>);
 
 	// If `handleReturnedServerError` is provided, use it to handle server error
 	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
-	const handleReturnedServerError = ((e: Error) =>
-		createOpts?.handleReturnedServerError?.(e) || DEFAULT_SERVER_ERROR_MESSAGE) as NonNullable<
-		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
-	>;
+	const handleReturnedServerError =
+		createOpts?.handleReturnedServerError ||
+		((() => DEFAULT_SERVER_ERROR_MESSAGE) as unknown as NonNullable<
+			SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
+		>);
 
 	return new SafeActionClient({
 		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
@@ -61,7 +62,7 @@ export const createSafeActionClient = <
 		schemaFn: undefined,
 		bindArgsSchemas: [],
 		ctxType: undefined,
-		metadataSchema: createOpts?.defineMetadataSchema?.(),
+		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
 		throwValidationErrors: Boolean(createOpts?.throwValidationErrors),

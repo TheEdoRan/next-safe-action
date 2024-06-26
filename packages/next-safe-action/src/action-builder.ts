@@ -41,8 +41,10 @@ export function actionBuilder<
 	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	metadataSchema: MetadataSchema;
 	metadata: MD;
-	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, any, any>["handleServerErrorLog"]>;
-	handleReturnedServerError: NonNullable<SafeActionClientOpts<ServerError, any, any>["handleReturnedServerError"]>;
+	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, any>["handleServerErrorLog"]>;
+	handleReturnedServerError: NonNullable<
+		SafeActionClientOpts<ServerError, MetadataSchema, any>["handleReturnedServerError"]
+	>;
 	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	ctxType: Ctx;
 	validationStrategy: "typeschema" | "zod";
@@ -239,8 +241,26 @@ export function actionBuilder<
 								// If error is not an instance of Error, wrap it in an Error object with
 								// the default message.
 								const error = isError(e) ? e : new Error(DEFAULT_SERVER_ERROR_MESSAGE);
-								await Promise.resolve(args.handleServerErrorLog(error));
-								middlewareResult.serverError = await Promise.resolve(args.handleReturnedServerError(error));
+								const returnedError = await Promise.resolve(
+									args.handleReturnedServerError(error, {
+										clientInput: clientInputs.at(-1), // pass raw client input
+										bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
+										ctx: prevCtx,
+										metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+									})
+								);
+
+								middlewareResult.serverError = returnedError;
+
+								await Promise.resolve(
+									args.handleServerErrorLog(error, {
+										returnedError,
+										clientInput: clientInputs.at(-1), // pass raw client input
+										bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
+										ctx: prevCtx,
+										metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+									})
+								);
 							}
 						}
 					};
