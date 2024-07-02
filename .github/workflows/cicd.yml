@@ -8,6 +8,7 @@ on:
       - main
       - beta
       - next
+      - experimental
       - 4.x
   pull_request:
     paths:
