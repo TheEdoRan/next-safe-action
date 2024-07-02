@@ -1,4 +1,3 @@
-import type { Infer, Schema } from "@typeschema/main";
 import type {} from "zod";
 import { actionBuilder } from "./action-builder";
 import type {
@@ -9,6 +8,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
+import type { Infer, Schema } from "./utils";
 import type {
 	BindArgsValidationErrors,
 	FlattenedBindArgsValidationErrors,
@@ -30,7 +30,6 @@ export class SafeActionClient<
 	CVE = undefined,
 	const CBAVE = undefined,
 > {
-	readonly #validationStrategy: "typeschema" | "zod";
 	readonly #handleServerErrorLog: NonNullable<
 		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerErrorLog"]
 	>;
@@ -51,7 +50,6 @@ export class SafeActionClient<
 	constructor(
 		opts: {
 			middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
-			validationStrategy: "typeschema" | "zod";
 			metadataSchema: MetadataSchema;
 			metadata: MD;
 			schemaFn: SF;
@@ -69,7 +67,6 @@ export class SafeActionClient<
 		this.#middlewareFns = opts.middlewareFns;
 		this.#handleServerErrorLog = opts.handleServerErrorLog;
 		this.#handleReturnedServerError = opts.handleReturnedServerError;
-		this.#validationStrategy = opts.validationStrategy;
 		this.#metadataSchema = opts.metadataSchema;
 		this.#metadata = opts.metadata;
 		this.#schemaFn = (opts.schemaFn ?? undefined) as SF;
@@ -91,7 +88,6 @@ export class SafeActionClient<
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
-			validationStrategy: this.#validationStrategy,
 			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			schemaFn: this.#schemaFn,
@@ -115,7 +111,6 @@ export class SafeActionClient<
 			middlewareFns: this.#middlewareFns,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
-			validationStrategy: this.#validationStrategy,
 			metadataSchema: this.#metadataSchema,
 			metadata: data,
 			schemaFn: this.#schemaFn,
@@ -149,7 +144,6 @@ export class SafeActionClient<
 			middlewareFns: this.#middlewareFns,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
-			validationStrategy: this.#validationStrategy,
 			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			// @ts-expect-error
@@ -190,7 +184,6 @@ export class SafeActionClient<
 			middlewareFns: this.#middlewareFns,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
-			validationStrategy: this.#validationStrategy,
 			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			schemaFn: this.#schemaFn,
@@ -216,7 +209,6 @@ export class SafeActionClient<
 		cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 	) {
 		return actionBuilder({
-			validationStrategy: this.#validationStrategy,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: this.#middlewareFns,
@@ -244,7 +236,6 @@ export class SafeActionClient<
 		cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 	) {
 		return actionBuilder({
-			validationStrategy: this.#validationStrategy,
 			handleReturnedServerError: this.#handleReturnedServerError,
 			handleServerErrorLog: this.#handleServerErrorLog,
 			middlewareFns: this.#middlewareFns,

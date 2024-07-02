@@ -1,5 +1,9 @@
-import type { Infer, Schema } from "@typeschema/main";
-import type { Prettify } from "./utils";
+import type { Infer, Prettify, Schema } from "./utils";
+
+export type ValidationIssue = {
+	message: string;
+	path?: Array<string | number | symbol>;
+};
 
 // Object with an optional list of validation errors.
 type VEList = Prettify<{ _errors?: string[] }>;

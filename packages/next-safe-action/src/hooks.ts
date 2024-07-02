@@ -1,6 +1,5 @@
 "use client";
 
-import type { InferIn, Schema } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
@@ -9,6 +8,7 @@ import {} from "react/experimental";
 import type {} from "zod";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
 import type { HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
+import type { InferIn, Schema } from "./utils";
 import { isError } from "./utils";
 
 // HOOKS

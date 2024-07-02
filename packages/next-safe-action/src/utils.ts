@@ -1,4 +1,4 @@
-import type { Infer, InferIn, Schema } from "@typeschema/main";
+import type { z } from "zod";
 
 export const DEFAULT_SERVER_ERROR_MESSAGE = "Something went wrong while executing the operation.";
 
@@ -13,6 +13,15 @@ export type Prettify<T> = {
 
 // Returns type or promise of type.
 export type MaybePromise<T> = Promise<T> | T;
+
+// Schema type.
+export type Schema = z.ZodType;
+
+// Infers output schema type.
+export type Infer<S extends Schema> = z.infer<S>;
+
+// Infers input schema type.
+export type InferIn<S extends Schema> = z.input<S>;
 
 // Infers output schema type in array of schemas.
 export type InferArray<BAS extends readonly Schema[]> = {

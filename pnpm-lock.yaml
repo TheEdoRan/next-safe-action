@@ -92,16 +92,6 @@ importers:
         version: 5.4.5
 
   packages/next-safe-action:
-    dependencies:
-      '@typeschema/main':
-        specifier: ^0.13.10
-        version: 0.13.10(@typeschema/zod@0.13.3(zod@3.23.8))
-      '@typeschema/zod':
-        specifier: ^0.13.3
-        version: 0.13.3(zod@3.23.8)
-      zod:
-        specifier: '>= 3.0.0'
-        version: 3.23.8
     devDependencies:
       '@eslint/js':
         specifier: ^9.2.0
@@ -115,9 +105,6 @@ importers:
       '@types/react-dom':
         specifier: 18.3.0
         version: 18.3.0
-      '@typeschema/core':
-        specifier: ^0.13.2
-        version: 0.13.2
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -157,6 +144,9 @@ importers:
       typescript-eslint:
         specifier: ^7.8.0
         version: 7.10.0(eslint@8.57.0)(typescript@5.4.5)
+      zod:
+        specifier: ^3.23.6
+        version: 3.23.8
 
 packages:
 
@@ -1081,87 +1071,6 @@ packages:
 
   '@types/semver@6.2.7':
     resolution: {integrity: sha512-blctEWbzUFzQx799RZjzzIdBJOXmE37YYEyDtKkx5Dg+V7o/zyyAxLPiI98A2jdTtDgxZleMdfV+7p8WbRJ1OQ==}
-
-  '@typeschema/core@0.13.2':
-    resolution: {integrity: sha512-pAt0MK249/9szYaoPuvzhSfOd3smrLhhwCCpUNB4onX32mRx5F3lzDIveIYGQkLYRq58xOX5sjoW+n72f/MLLw==}
-    peerDependencies:
-      '@types/json-schema': ^7.0.15
-    peerDependenciesMeta:
-      '@types/json-schema':
-        optional: true
-
-  '@typeschema/main@0.13.10':
-    resolution: {integrity: sha512-ArdFC4GbgdVWWgPKg2tymxx2KHMus3xZ8I2kHwqw/0P4FtWBXCmSNAiBqDtpoXXF8h9cbcm7fVpcs5ftoWT9+A==}
-    peerDependencies:
-      '@typeschema/arktype': 0.13.2
-      '@typeschema/class-validator': 0.1.2
-      '@typeschema/deepkit': 0.13.4
-      '@typeschema/effect': 0.13.4
-      '@typeschema/fastest-validator': 0.1.0
-      '@typeschema/function': 0.13.2
-      '@typeschema/io-ts': 0.13.3
-      '@typeschema/joi': 0.13.3
-      '@typeschema/json': 0.13.3
-      '@typeschema/ow': 0.13.3
-      '@typeschema/runtypes': 0.13.2
-      '@typeschema/superstruct': 0.13.2
-      '@typeschema/suretype': 0.1.0
-      '@typeschema/typebox': 0.13.4
-      '@typeschema/valibot': 0.13.5
-      '@typeschema/valita': 0.1.0
-      '@typeschema/vine': 0.1.0
-      '@typeschema/yup': 0.13.3
-      '@typeschema/zod': 0.13.3
-    peerDependenciesMeta:
-      '@typeschema/arktype':
-        optional: true
-      '@typeschema/class-validator':
-        optional: true
-      '@typeschema/deepkit':
-        optional: true
-      '@typeschema/effect':
-        optional: true
-      '@typeschema/fastest-validator':
-        optional: true
-      '@typeschema/function':
-        optional: true
-      '@typeschema/io-ts':
-        optional: true
-      '@typeschema/joi':
-        optional: true
-      '@typeschema/json':
-        optional: true
-      '@typeschema/ow':
-        optional: true
-      '@typeschema/runtypes':
-        optional: true
-      '@typeschema/superstruct':
-        optional: true
-      '@typeschema/suretype':
-        optional: true
-      '@typeschema/typebox':
-        optional: true
-      '@typeschema/valibot':
-        optional: true
-      '@typeschema/valita':
-        optional: true
-      '@typeschema/vine':
-        optional: true
-      '@typeschema/yup':
-        optional: true
-      '@typeschema/zod':
-        optional: true
-
-  '@typeschema/zod@0.13.3':
-    resolution: {integrity: sha512-p5Hs22WIKkM/vZTAvw5QOLSA0EJ6QBUsQMGUrXlYnTAE2LSR/F5MLsDUb18O6S5VxGjrzU7x3VIznD5qOafJRw==}
-    peerDependencies:
-      zod: ^3.22.4
-      zod-to-json-schema: ^3.22.4
-    peerDependenciesMeta:
-      zod:
-        optional: true
-      zod-to-json-schema:
-        optional: true
 
   '@typescript-eslint/eslint-plugin@7.10.0':
     resolution: {integrity: sha512-PzCr+a/KAef5ZawX7nbyNwBDtM1HdLIT53aSA2DDlxmxMngZ43O8SIePOeX8H5S+FHXeI6t97mTt/dDdzY4Fyw==}
@@ -4832,24 +4741,6 @@ snapshots:
       csstype: 3.1.3
 
   '@types/semver@6.2.7': {}
-
-  '@typeschema/core@0.13.2': {}
-
-  '@typeschema/main@0.13.10(@typeschema/zod@0.13.3(zod@3.23.8))':
-    dependencies:
-      '@typeschema/core': 0.13.2
-    optionalDependencies:
-      '@typeschema/zod': 0.13.3(zod@3.23.8)
-    transitivePeerDependencies:
-      - '@types/json-schema'
-
-  '@typeschema/zod@0.13.3(zod@3.23.8)':
-    dependencies:
-      '@typeschema/core': 0.13.2
-    optionalDependencies:
-      zod: 3.23.8
-    transitivePeerDependencies:
-      - '@types/json-schema'
 
   '@typescript-eslint/eslint-plugin@7.10.0(@typescript-eslint/parser@7.10.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5)':
     dependencies:
