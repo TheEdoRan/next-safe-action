@@ -12,6 +12,11 @@ module.exports = {
 			prerelease: true,
 		},
 		{
+			name: "experimental",
+			channel: "experimental",
+			prerelease: true,
+		},
+		{
 			name: "beta",
 			channel: "beta",
 			prerelease: true,
