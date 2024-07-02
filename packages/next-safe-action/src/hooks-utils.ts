@@ -2,7 +2,7 @@ import * as React from "react";
 import {} from "react/experimental";
 import type {} from "zod";
 import type { HookActionStatus, HookCallbacks, HookResult } from "./hooks.types";
-import type { InferIn, Schema } from "./utils";
+import type { InferIn, Schema } from "./utils.types";
 
 export const getActionStatus = <
 	ServerError,

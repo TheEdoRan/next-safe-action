@@ -12,16 +12,8 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import type { InferArray, InferInArray } from "./utils";
-import {
-	ActionMetadataError,
-	DEFAULT_SERVER_ERROR_MESSAGE,
-	isError,
-	zodValidate,
-	type Infer,
-	type InferIn,
-	type Schema,
-} from "./utils";
+import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
+import type { Infer, InferArray, InferIn, InferInArray, Schema } from "./utils.types";
 import { ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
