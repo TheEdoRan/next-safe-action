@@ -112,3 +112,26 @@ You can pass an optional initial result to `useStateAction`, with the `initResul
 | `hasErrored`  | `boolean` | True if the action status is `hasErrored`.                                                                        |
 
 Explore a working example [here](<https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)/stateful-form>).
+
+## Progressive enhancement
+
+`useStateAction` doesn't support progressive enhancement, since it wraps the form action returned by the `useActionState` hook from React with additional functionality that only works with JavaScript enabled. This behavior has been discussed in [this issue](https://github.com/TheEdoRan/next-safe-action/issues/189) and in [this discussion](https://github.com/TheEdoRan/next-safe-action/discussions/190) on GitHub.
+
+So, if you want to use a safe action with progressive enhancement, you have to pass it directly to the `useActionState` hook from React:
+
+```tsx
+"use client";
+
+import { useActionState } from "react";
+import { testAction } from "./action";
+
+export function TestForm() {
+  const [state, action, isPending] = useActionState(testAction, {});
+
+  return {
+    <form action={action}>
+      ...
+    </form>
+  }
+}
+```
