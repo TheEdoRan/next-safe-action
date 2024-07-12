@@ -106,12 +106,10 @@ export default function Login() {
         });
 
         // Result keys.
-        const {
-          data,
-          validationErrors,
-          bindArgsValidationErrors,
-          serverError,
-        } = res;
+        res?.data;
+        res?.validationErrors;
+        res?.bindArgsValidationErrors;
+        res?.serverError;
       }}>
       Log in
     </button>
