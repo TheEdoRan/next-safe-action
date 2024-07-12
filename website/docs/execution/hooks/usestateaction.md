@@ -96,9 +96,9 @@ export default function StatefulFormPage() {
 You can pass an optional initial result to `useStateAction`, with the `initResult` argument. If not passed, the init result will default to an empty object: `{}`.
 
 
-### `useOptimisticAction` return object
+### `useStateAction` return object
 
-`useOptimisticAction` returns an object with the following properties:
+`useStateAction` returns an object with the following properties:
 
 | Name             | Type                                                                    | Purpose                                                                                                                                                                                                                                   |
 | ---------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
