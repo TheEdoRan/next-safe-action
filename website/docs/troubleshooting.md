@@ -23,8 +23,8 @@ If you're in this situation, you have two paths to choose from to fix it:
 
 2. If you're using Zod and TypeScript 5.5, you can install the experimental version of next-safe-action. It shares the same codebase as the stable version, the only difference it's that it supports just Zod. More information about this can be found in [this issue](https://github.com/TheEdoRan/next-safe-action/issues/180#issuecomment-2201607407) on GitHub. You can install it in your project by running the following command:
   
-```sh
-npm i next-safe-action@experimental # or yarn, pnpm
+```bash npm2yarn
+npm i next-safe-action@experimental
 ```
 
 ### TypeSchema issues with Edge Runtime
