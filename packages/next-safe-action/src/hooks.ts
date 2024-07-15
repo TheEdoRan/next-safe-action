@@ -249,4 +249,6 @@ export const useOptimisticAction = <
 	};
 };
 
+export { useStateAction } from "./stateful-hooks";
+
 export type * from "./hooks.types";
