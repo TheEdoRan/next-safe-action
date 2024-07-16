@@ -12,8 +12,8 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
-import type { Infer, InferArray, InferIn, InferInArray, Schema } from "./validation-adapters";
+import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./validation-adapters";
 import { ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
@@ -35,6 +35,7 @@ export function actionBuilder<
 >(args: {
 	schemaFn?: SF;
 	bindArgsSchemas?: BAS;
+	validationAdapter: ValidationAdapter;
 	handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
 	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	metadataSchema: MetadataSchema;
@@ -104,7 +105,7 @@ export function actionBuilder<
 							if (idx === 0) {
 								if (args.metadataSchema) {
 									// Validate metadata input.
-									if (!(await zodValidate(args.metadataSchema, args.metadata)).success) {
+									if (!(await args.validationAdapter.validate(args.metadataSchema, args.metadata)).success) {
 										throw new ActionMetadataError(
 											"Invalid metadata input. Please be sure to pass metadata via `metadata` method before defining the action."
 										);
@@ -141,11 +142,11 @@ export function actionBuilder<
 											}
 
 											// Otherwise, parse input with the schema.
-											return zodValidate(await args.schemaFn(), input);
+											return args.validationAdapter.validate(await args.schemaFn(), input);
 										}
 
 										// Otherwise, we're processing bind args client inputs.
-										return zodValidate(bindArgsSchemas[i]!, input);
+										return args.validationAdapter.validate(bindArgsSchemas[i]!, input);
 									})
 								);
 

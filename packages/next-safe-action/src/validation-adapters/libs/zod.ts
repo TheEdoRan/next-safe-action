@@ -1,8 +1,8 @@
 import type { z } from "zod";
 import type { Infer, ValidationAdapter } from "../types";
 
-class ZodAdapter<S extends z.ZodType> implements ValidationAdapter<S> {
-	async validate(schema: S, data: unknown) {
+class ZodAdapter implements ValidationAdapter {
+	async validate<S extends z.ZodType>(schema: S, data: unknown) {
 		const result = await schema.safeParseAsync(data);
 
 		if (result.success) {
@@ -20,5 +20,5 @@ class ZodAdapter<S extends z.ZodType> implements ValidationAdapter<S> {
 }
 
 export function zodAdapter() {
-	return new ZodAdapter<z.ZodType>();
+	return new ZodAdapter();
 }

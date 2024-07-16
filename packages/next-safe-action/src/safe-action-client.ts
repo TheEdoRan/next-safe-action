@@ -8,7 +8,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import type { Infer, Schema } from "./validation-adapters";
+import type { Infer, Schema, ValidationAdapter } from "./validation-adapters";
 import type {
 	BindArgsValidationErrors,
 	FlattenedBindArgsValidationErrors,
@@ -42,6 +42,7 @@ export class SafeActionClient<
 	readonly #metadata: MD;
 	readonly #schemaFn: SF;
 	readonly #bindArgsSchemas: BAS;
+	readonly #validationAdapter: ValidationAdapter;
 	readonly #handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
 	readonly #handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	readonly #defaultValidationErrorsShape: ODVES;
@@ -54,6 +55,7 @@ export class SafeActionClient<
 			metadata: MD;
 			schemaFn: SF;
 			bindArgsSchemas: BAS;
+			validationAdapter: ValidationAdapter;
 			handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
 			handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 			ctxType: Ctx;
@@ -71,6 +73,7 @@ export class SafeActionClient<
 		this.#metadata = opts.metadata;
 		this.#schemaFn = (opts.schemaFn ?? undefined) as SF;
 		this.#bindArgsSchemas = opts.bindArgsSchemas ?? [];
+		this.#validationAdapter = opts.validationAdapter;
 		this.#handleValidationErrorsShape = opts.handleValidationErrorsShape;
 		this.#handleBindArgsValidationErrorsShape = opts.handleBindArgsValidationErrorsShape;
 		this.#defaultValidationErrorsShape = opts.defaultValidationErrorsShape;
@@ -92,6 +95,7 @@ export class SafeActionClient<
 			metadata: this.#metadata,
 			schemaFn: this.#schemaFn,
 			bindArgsSchemas: this.#bindArgsSchemas,
+			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: undefined as NextCtx,
@@ -115,6 +119,7 @@ export class SafeActionClient<
 			metadata: data,
 			schemaFn: this.#schemaFn,
 			bindArgsSchemas: this.#bindArgsSchemas,
+			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: undefined as Ctx,
@@ -155,6 +160,7 @@ export class SafeActionClient<
 					}
 				: async () => schema) as SF,
 			bindArgsSchemas: this.#bindArgsSchemas,
+			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AS, OCVE>,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
@@ -188,6 +194,7 @@ export class SafeActionClient<
 			metadata: this.#metadata,
 			schemaFn: this.#schemaFn,
 			bindArgsSchemas,
+			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: (utils?.handleBindArgsValidationErrorsShape ??
 				this.#handleBindArgsValidationErrorsShape) as HandleBindArgsValidationErrorsShapeFn<OBAS, OCBAVE>,
@@ -217,6 +224,7 @@ export class SafeActionClient<
 			metadata: this.#metadata,
 			schemaFn: this.#schemaFn,
 			bindArgsSchemas: this.#bindArgsSchemas,
+			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -244,6 +252,7 @@ export class SafeActionClient<
 			metadata: this.#metadata,
 			schemaFn: this.#schemaFn,
 			bindArgsSchemas: this.#bindArgsSchemas,
+			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,

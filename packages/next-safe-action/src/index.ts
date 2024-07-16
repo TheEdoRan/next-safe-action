@@ -53,12 +53,18 @@ export const createSafeActionClient = <
 			SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
 		>);
 
+	// FIXME: require validation adapter
+	if (!createOpts?.validationAdapter) {
+		throw new Error("Validation adapter is required");
+	}
+
 	return new SafeActionClient({
 		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
 		handleServerErrorLog,
 		handleReturnedServerError,
 		schemaFn: undefined,
 		bindArgsSchemas: [],
+		validationAdapter: createOpts.validationAdapter(),
 		ctxType: undefined,
 		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,

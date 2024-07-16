@@ -15,8 +15,8 @@ export type ValidationIssue = {
 	path?: Array<string | number | symbol>;
 };
 
-export interface ValidationAdapter<S extends Schema> {
-	validate(
+export interface ValidationAdapter {
+	validate<S extends Schema>(
 		schema: S,
 		data: unknown
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
