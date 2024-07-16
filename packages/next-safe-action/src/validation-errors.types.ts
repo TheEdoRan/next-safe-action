@@ -1,4 +1,5 @@
-import type { Infer, Prettify, Schema } from "./utils.types";
+import type { Prettify } from "./utils.types";
+import type { Infer, Schema } from "./validation-adapters";
 
 export type ValidationIssue = {
 	message: string;

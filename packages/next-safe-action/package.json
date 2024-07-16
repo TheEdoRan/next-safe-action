@@ -87,6 +87,11 @@
 		"react-dom": ">= 18.2.0",
 		"zod": ">= 3.0.0"
 	},
+	"peerDependenciesMeta": {
+		"zod": {
+			"optional": true
+		}
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"

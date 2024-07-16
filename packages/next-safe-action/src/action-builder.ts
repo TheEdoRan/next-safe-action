@@ -13,7 +13,7 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
-import type { Infer, InferArray, InferIn, InferInArray, Schema } from "./utils.types";
+import type { Infer, InferArray, InferIn, InferInArray, Schema } from "./validation-adapters";
 import { ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,

@@ -9,7 +9,7 @@ import type {} from "zod";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
 import type { HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
 import { isError } from "./utils";
-import type { InferIn, Schema } from "./utils.types";
+import type { InferIn, Schema } from "./validation-adapters";
 
 // HOOKS
 

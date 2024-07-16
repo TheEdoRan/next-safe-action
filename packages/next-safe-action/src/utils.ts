@@ -1,4 +1,4 @@
-import type { Infer, Schema } from "./utils.types";
+import type { Infer, Schema } from "./validation-adapters";
 
 export const DEFAULT_SERVER_ERROR_MESSAGE = "Something went wrong while executing the operation.";
 

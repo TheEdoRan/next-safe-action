@@ -1,5 +1,6 @@
 import type { SafeActionResult } from "./index.types";
-import type { InferIn, MaybePromise, Prettify, Schema } from "./utils.types";
+import type { MaybePromise, Prettify } from "./utils.types";
+import type { InferIn, Schema } from "./validation-adapters";
 
 /**
  * Type of `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.

@@ -8,7 +8,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import type { Infer, Schema } from "./utils.types";
+import type { Infer, Schema } from "./validation-adapters";
 import type {
 	BindArgsValidationErrors,
 	FlattenedBindArgsValidationErrors,

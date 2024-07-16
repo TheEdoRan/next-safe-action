@@ -1,7 +1,7 @@
 import type { DVES, SafeActionClientOpts } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
-import type { Infer, Schema } from "./utils.types";
+import type { Infer, Schema } from "./validation-adapters";
 import {
 	flattenBindArgsValidationErrors,
 	flattenValidationErrors,
