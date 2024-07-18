@@ -4,9 +4,9 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {} from "react/experimental";
 import type {} from "zod";
+import type { InferIn, Schema } from "./adapters/types";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
 import type { HookCallbacks, HookSafeStateActionFn } from "./hooks.types";
-import type { InferIn, Schema } from "./validation-adapters";
 /**
  * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction).
  * @param safeActionFn The action function

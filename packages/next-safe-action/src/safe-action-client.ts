@@ -1,5 +1,6 @@
 import type {} from "zod";
 import { actionBuilder } from "./action-builder";
+import type { Infer, Schema, ValidationAdapter } from "./adapters/types";
 import type {
 	DVES,
 	MiddlewareFn,
@@ -8,7 +9,6 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import type { Infer, Schema, ValidationAdapter } from "./validation-adapters";
 import type {
 	BindArgsValidationErrors,
 	FlattenedBindArgsValidationErrors,

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 
-import type { Schema } from "./validation-adapters";
+import type { Schema } from "./adapters/types";
 import type {
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,

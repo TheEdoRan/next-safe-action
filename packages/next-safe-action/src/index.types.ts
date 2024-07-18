@@ -1,5 +1,5 @@
+import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
 import type { MaybePromise, Prettify } from "./utils.types";
-import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./validation-adapters";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 
 /**
@@ -26,7 +26,7 @@ export type SafeActionClientOpts<
 	MetadataSchema extends Schema | undefined,
 	ODVES extends DVES | undefined,
 > = {
-	validationAdapter: () => ValidationAdapter;
+	validationAdapter: ValidationAdapter;
 	defineMetadataSchema?: () => MetadataSchema;
 	handleReturnedServerError?: (
 		error: Error,

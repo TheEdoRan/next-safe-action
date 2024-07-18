@@ -6,10 +6,10 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {} from "react/experimental";
 import type {} from "zod";
+import type { InferIn, Schema } from "./adapters/types";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
 import type { HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
 import { isError } from "./utils";
-import type { InferIn, Schema } from "./validation-adapters";
 
 // HOOKS
 

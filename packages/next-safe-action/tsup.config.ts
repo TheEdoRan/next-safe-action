@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-	entry: ["src/*.ts", "src/validation-adapters/**/*.ts"],
+	entry: ["src/*.ts", "src/adapters/*.ts"],
 	bundle: false,
 	format: ["esm"],
 	clean: true,

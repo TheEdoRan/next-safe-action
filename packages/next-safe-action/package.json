@@ -12,7 +12,8 @@
 	"exports": {
 		".": "./dist/index.mjs",
 		"./hooks": "./dist/hooks.mjs",
-		"./stateful-hooks": "./dist/stateful-hooks.mjs"
+		"./stateful-hooks": "./dist/stateful-hooks.mjs",
+		"./adapters/*": "./dist/adapters/*.mjs"
 	},
 	"typesVersions": {
 		"*": {
@@ -24,6 +25,9 @@
 			],
 			"stateful-hooks": [
 				"./dist/stateful-hooks.d.mts"
+			],
+			"adapters/*": [
+				"./dist/adapters/*.d.mts"
 			]
 		}
 	},

@@ -4,10 +4,13 @@ import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
 import { createSafeActionClient, flattenValidationErrors, formatValidationErrors, returnValidationErrors } from "..";
+import { zodAdapter } from "../adapters/zod";
 
 // Default client tests.
 
-const dac = createSafeActionClient();
+const dac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
+});
 
 test("action with invalid input gives back an object with correct `validationErrors` (default formatted shape)", async () => {
 	const schema = z.object({
@@ -144,6 +147,7 @@ test("action with invalid input gives back an object with correct `validationErr
 // Formatted shape tests (same as default).
 
 const foac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "formatted",
 });
 
@@ -282,6 +286,7 @@ test("action with invalid input gives back an object with correct `validationErr
 // Flattened shape tests.
 
 const flac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "flattened",
 });
 
@@ -537,6 +542,7 @@ test("action with errors set via `returnValidationErrors` gives back an object w
 // `throwValidationErrors` tests.
 
 const tveac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
 	throwValidationErrors: true,
 });
 

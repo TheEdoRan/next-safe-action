@@ -1,6 +1,7 @@
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {} from "zod";
+import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
 import type {
 	MiddlewareFn,
 	MiddlewareResult,
@@ -13,7 +14,6 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
-import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./validation-adapters";
 import { ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,

@@ -4,10 +4,13 @@ import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
 import { createSafeActionClient, flattenBindArgsValidationErrors, formatBindArgsValidationErrors } from "..";
+import { zodAdapter } from "../adapters/zod";
 
 // Default client tests.
 
-const dac = createSafeActionClient();
+const dac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
+});
 
 test("action with invalid bind args input gives back an object with correct `bindArgsValidationErrors` (default formatted shape)", async () => {
 	const bindArgsSchemas: [age: z.ZodNumber, userId: z.ZodString, product: z.ZodObject<{ id: z.ZodString }>] = [
@@ -87,6 +90,7 @@ test("action with invalid bind args input gives back an object with correct `bin
 // Formatted shape tests (same as default).
 
 const foac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "formatted",
 });
 
@@ -168,6 +172,7 @@ test("action with invalid bind args input gives back an object with correct `bin
 // Flattened shape tests.
 
 const flac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "flattened",
 });
 
