@@ -83,16 +83,21 @@
 		"tsx": "^4.11.2",
 		"typescript": "^5.4.5",
 		"typescript-eslint": "^7.8.0",
+		"valibot": "^0.36.0",
 		"zod": "^3.23.6"
 	},
 	"peerDependencies": {
 		"next": ">= 14.0.0",
 		"react": ">= 18.2.0",
 		"react-dom": ">= 18.2.0",
-		"zod": ">= 3.0.0"
+		"zod": ">= 3.0.0",
+		"valibot": ">= 0.36.0"
 	},
 	"peerDependenciesMeta": {
 		"zod": {
+			"optional": true
+		},
+		"valibot": {
 			"optional": true
 		}
 	},
