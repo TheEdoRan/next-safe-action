@@ -26,7 +26,7 @@ export type SafeActionClientOpts<
 	MetadataSchema extends Schema | undefined,
 	ODVES extends DVES | undefined,
 > = {
-	validationAdapter: ValidationAdapter;
+	validationAdapter?: ValidationAdapter;
 	defineMetadataSchema?: () => MetadataSchema;
 	handleReturnedServerError?: (
 		error: Error,

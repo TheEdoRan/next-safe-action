@@ -1,4 +1,5 @@
 import type { Infer, Schema } from "./adapters/types";
+import { zodAdapter } from "./adapters/zod";
 import type { DVES, SafeActionClientOpts } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
@@ -34,12 +35,12 @@ export const createSafeActionClient = <
 	ServerError = string,
 	MetadataSchema extends Schema | undefined = undefined,
 >(
-	createOpts: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
+	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
 ) => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
-		createOpts.handleServerErrorLog ||
+		createOpts?.handleServerErrorLog ||
 		(((originalError: Error) => {
 			console.error("Action error:", originalError.message);
 		}) as unknown as NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerErrorLog"]>);
@@ -48,7 +49,7 @@ export const createSafeActionClient = <
 	// messages returned on the client.
 	// Otherwise mask the error and use a generic message.
 	const handleReturnedServerError =
-		createOpts.handleReturnedServerError ||
+		createOpts?.handleReturnedServerError ||
 		((() => DEFAULT_SERVER_ERROR_MESSAGE) as unknown as NonNullable<
 			SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
 		>);
@@ -59,16 +60,16 @@ export const createSafeActionClient = <
 		handleReturnedServerError,
 		schemaFn: undefined,
 		bindArgsSchemas: [],
-		validationAdapter: createOpts.validationAdapter,
+		validationAdapter: createOpts?.validationAdapter ?? zodAdapter(), // use zod adapter by default
 		ctxType: undefined,
-		metadataSchema: (createOpts.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
+		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
-		defaultValidationErrorsShape: (createOpts.defaultValidationErrorsShape ?? "formatted") as ODVES,
-		throwValidationErrors: Boolean(createOpts.throwValidationErrors),
+		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
+		throwValidationErrors: Boolean(createOpts?.throwValidationErrors),
 		handleValidationErrorsShape:
-			createOpts.defaultValidationErrorsShape === "flattened" ? flattenValidationErrors : formatValidationErrors,
+			createOpts?.defaultValidationErrorsShape === "flattened" ? flattenValidationErrors : formatValidationErrors,
 		handleBindArgsValidationErrorsShape:
-			createOpts.defaultValidationErrorsShape === "flattened"
+			createOpts?.defaultValidationErrorsShape === "flattened"
 				? flattenBindArgsValidationErrors
 				: formatBindArgsValidationErrors,
 	});
