@@ -6,25 +6,33 @@ import type { z } from "zod";
 
 export type IfInstalled<T> = any extends T ? never : T;
 
-export type Schema = IfInstalled<z.ZodType> | IfInstalled<GenericSchema | GenericSchemaAsync> | IfInstalled<YupSchema>;
+export type Schema =
+	| IfInstalled<z.ZodType>
+	| IfInstalled<GenericSchema>
+	| IfInstalled<GenericSchemaAsync>
+	| IfInstalled<YupSchema>;
 
 export type Infer<S extends Schema> =
 	S extends IfInstalled<z.ZodType>
 		? z.infer<S>
-		: S extends IfInstalled<GenericSchema | GenericSchemaAsync>
+		: S extends IfInstalled<GenericSchema>
 			? InferOutput<S>
-			: S extends IfInstalled<YupSchema>
-				? InferType<S>
-				: never;
+			: S extends IfInstalled<GenericSchemaAsync>
+				? InferOutput<S>
+				: S extends IfInstalled<YupSchema>
+					? InferType<S>
+					: never;
 
 export type InferIn<S extends Schema> =
 	S extends IfInstalled<z.ZodType>
 		? z.input<S>
-		: S extends IfInstalled<GenericSchema | GenericSchemaAsync>
+		: S extends IfInstalled<GenericSchema>
 			? InferInput<S>
-			: S extends IfInstalled<YupSchema>
-				? InferType<S>
-				: never;
+			: S extends IfInstalled<GenericSchemaAsync>
+				? InferInput<S>
+				: S extends IfInstalled<YupSchema>
+					? InferType<S>
+					: never;
 
 export type InferArray<BAS extends readonly Schema[]> = {
 	[K in keyof BAS]: Infer<BAS[K]>;
@@ -50,7 +58,11 @@ export interface ValidationAdapter {
 		data: unknown
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
 	// valibot
-	validate<S extends IfInstalled<GenericSchema | GenericSchemaAsync>>(
+	validate<S extends IfInstalled<GenericSchema>>(
+		schema: S,
+		data: unknown
+	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	validate<S extends IfInstalled<GenericSchemaAsync>>(
 		schema: S,
 		data: unknown
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
