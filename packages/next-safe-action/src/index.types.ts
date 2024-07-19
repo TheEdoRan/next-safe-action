@@ -1,4 +1,4 @@
-import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters.types";
+import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
 import type { MaybePromise, Prettify } from "./utils.types";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 

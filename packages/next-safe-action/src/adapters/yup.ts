@@ -2,7 +2,7 @@
 
 import type { Schema as YupSchema } from "yup";
 import { ValidationError } from "yup";
-import type { IfInstalled, Infer, ValidationAdapter, ValidationIssue } from "../adapters.types";
+import type { IfInstalled, Infer, ValidationAdapter, ValidationIssue } from "./types";
 
 class YupAdapter implements ValidationAdapter {
 	async validate<S extends IfInstalled<YupSchema>>(schema: S, data: unknown) {

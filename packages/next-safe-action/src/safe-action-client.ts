@@ -1,6 +1,6 @@
 import type {} from "zod";
 import { actionBuilder } from "./action-builder";
-import type { Infer, Schema, ValidationAdapter } from "./adapters.types";
+import type { Infer, Schema, ValidationAdapter } from "./adapters/types";
 import type {
 	DVES,
 	MiddlewareFn,

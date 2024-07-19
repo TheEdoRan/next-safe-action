@@ -1,4 +1,4 @@
-import type { Infer, Schema } from "./adapters.types";
+import type { Infer, Schema } from "./adapters/types";
 import type { DVES, SafeActionClientOpts } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";

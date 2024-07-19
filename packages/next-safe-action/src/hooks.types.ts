@@ -1,4 +1,4 @@
-import type { InferIn, Schema } from "./adapters.types";
+import type { InferIn, Schema } from "./adapters/types";
 import type { SafeActionResult } from "./index.types";
 import type { MaybePromise, Prettify } from "./utils.types";
 
