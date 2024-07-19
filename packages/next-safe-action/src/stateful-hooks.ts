@@ -4,7 +4,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {} from "react/experimental";
 import type {} from "zod";
-import type { InferIn, Schema } from "./adapters/types";
+import type { InferIn, Schema } from "./adapters.types";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
 import type { HookCallbacks, HookSafeStateActionFn } from "./hooks.types";
 /**

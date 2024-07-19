@@ -1,7 +1,7 @@
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {} from "zod";
-import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
+import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters.types";
 import type {
 	MiddlewareFn,
 	MiddlewareResult,

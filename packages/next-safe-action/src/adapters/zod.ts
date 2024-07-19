@@ -1,5 +1,7 @@
+// https://github.com/decs/typeschema/blob/main/packages/zod/src/validation.ts
+
 import type { z } from "zod";
-import type { IfInstalled, Infer, ValidationAdapter } from "./types";
+import type { IfInstalled, Infer, ValidationAdapter } from "../adapters.types";
 
 export type ZodSchema = z.ZodType;
 

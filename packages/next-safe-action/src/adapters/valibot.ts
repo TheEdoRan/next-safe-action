@@ -1,5 +1,7 @@
+// Code courtesy of https://github.com/decs/typeschema/blob/main/packages/valibot/src/validation.ts
+
 import { getDotPath, safeParseAsync, type GenericSchema, type GenericSchemaAsync } from "valibot";
-import type { IfInstalled, Infer, ValidationAdapter } from "./types";
+import type { IfInstalled, Infer, ValidationAdapter } from "../adapters.types";
 
 class ValibotAdapter implements ValidationAdapter {
 	async validate<S extends IfInstalled<GenericSchema | GenericSchemaAsync>>(schema: S, data: unknown) {

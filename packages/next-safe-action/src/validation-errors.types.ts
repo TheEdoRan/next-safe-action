@@ -1,4 +1,4 @@
-import type { Infer, Schema } from "./adapters/types";
+import type { Infer, Schema } from "./adapters.types";
 import type { Prettify } from "./utils.types";
 
 export type ValidationIssue = {
