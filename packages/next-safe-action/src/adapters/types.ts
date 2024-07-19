@@ -2,8 +2,7 @@ import type { GenericSchema, GenericSchemaAsync, InferInput, InferOutput } from 
 import type { z } from "zod";
 
 export type IfInstalled<T> = any extends T ? never : T;
-
-export type Schema = IfInstalled<z.ZodType> | IfInstalled<GenericSchema> | IfInstalled<GenericSchemaAsync>;
+export type Schema = IfInstalled<z.ZodType> | IfInstalled<GenericSchema | GenericSchemaAsync>;
 export type Infer<S extends Schema> =
 	S extends IfInstalled<z.ZodType>
 		? z.infer<S>
