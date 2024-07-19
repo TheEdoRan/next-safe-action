@@ -223,8 +223,7 @@ export function actionBuilder<
 							}
 
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
-							// Shouldn't be this difficult to check for `ActionServerValidationError`, but /typeschema clients fail
-							// if it's not done this way.
+							// TODO: check if this is still true after switching to built-in system
 							if (
 								e instanceof Error &&
 								"kind" in e &&
