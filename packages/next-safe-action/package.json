@@ -67,7 +67,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.2.0",
-		"@types/node": "^20.12.10",
+		"@types/node": "^20.14.11",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "18.3.0",
 		"eslint": "^8.57.0",
@@ -81,7 +81,7 @@
 		"semantic-release": "^23.0.8",
 		"tsup": "^8.0.2",
 		"tsx": "^4.11.2",
-		"typescript": "^5.4.5",
+		"typescript": "^5.5.3",
 		"typescript-eslint": "^7.8.0",
 		"valibot": "^0.36.0",
 		"zod": "^3.23.6"
@@ -90,8 +90,8 @@
 		"next": ">= 14.0.0",
 		"react": ">= 18.2.0",
 		"react-dom": ">= 18.2.0",
-		"zod": ">= 3.0.0",
-		"valibot": ">= 0.36.0"
+		"valibot": ">= 0.36.0",
+		"zod": ">= 3.0.0"
 	},
 	"peerDependenciesMeta": {
 		"zod": {
