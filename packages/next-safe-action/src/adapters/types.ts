@@ -29,6 +29,11 @@ export type ValidationIssue = {
 };
 
 export interface ValidationAdapter {
+	// generic
+	validate<S extends Schema>(
+		schema: S,
+		data: unknown
+	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
 	// zod
 	validate<S extends z.ZodType>(
 		schema: S,
