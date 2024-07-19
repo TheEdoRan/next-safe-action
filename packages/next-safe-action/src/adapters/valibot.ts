@@ -1,8 +1,8 @@
 import { getDotPath, safeParseAsync, type GenericSchema, type GenericSchemaAsync } from "valibot";
-import type { Infer, ValidationAdapter } from "./types";
+import type { IfInstalled, Infer, ValidationAdapter } from "./types";
 
 class ValibotAdapter implements ValidationAdapter {
-	async validate<S extends GenericSchema | GenericSchemaAsync>(schema: S, data: unknown) {
+	async validate<S extends IfInstalled<GenericSchema | GenericSchemaAsync>>(schema: S, data: unknown) {
 		const result = await safeParseAsync(schema, data);
 
 		if (result.success) {

@@ -1,23 +1,23 @@
 import type { GenericSchema, GenericSchemaAsync, InferInput, InferOutput } from "valibot";
 import type { z } from "zod";
 
-export type Exists<T> = any extends T ? never : T;
+export type IfInstalled<T> = any extends T ? never : T;
 
-export type Schema = Exists<z.ZodType> | Exists<GenericSchema> | Exists<GenericSchemaAsync>;
+export type Schema = IfInstalled<z.ZodType> | IfInstalled<GenericSchema> | IfInstalled<GenericSchemaAsync>;
 export type Infer<S extends Schema> =
-	S extends Exists<z.ZodType>
+	S extends IfInstalled<z.ZodType>
 		? z.infer<S>
-		: S extends Exists<GenericSchema>
+		: S extends IfInstalled<GenericSchema>
 			? InferOutput<S>
-			: S extends Exists<GenericSchemaAsync>
+			: S extends IfInstalled<GenericSchemaAsync>
 				? InferOutput<S>
 				: never;
 export type InferIn<S extends Schema> =
-	S extends Exists<z.ZodType>
+	S extends IfInstalled<z.ZodType>
 		? z.input<S>
-		: S extends Exists<GenericSchema>
+		: S extends IfInstalled<GenericSchema>
 			? InferInput<S>
-			: S extends Exists<GenericSchemaAsync>
+			: S extends IfInstalled<GenericSchemaAsync>
 				? InferInput<S>
 				: never;
 export type InferArray<BAS extends readonly Schema[]> = {
@@ -39,12 +39,12 @@ export interface ValidationAdapter {
 		data: unknown
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
 	// zod
-	validate<S extends z.ZodType>(
+	validate<S extends IfInstalled<z.ZodType>>(
 		schema: S,
 		data: unknown
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
 	// valibot
-	validate<S extends GenericSchema | GenericSchemaAsync>(
+	validate<S extends IfInstalled<GenericSchema | GenericSchemaAsync>>(
 		schema: S,
 		data: unknown
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
