@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 description: Learn how to upload a file using next-safe-action.
 ---
 

@@ -24,7 +24,7 @@ const features: { title: string; description: string }[] = [
 	},
 	{
 		title: "Input validation using multiple validation libraries",
-		description: `Input passed from the client to the server is validated using Zod or other validation libraries supported by <a href="https://typeschema.com" target="_blank" rel="noopener noreferrer">TypeSchema</a>.`,
+		description: `Input passed from the client to the server is validated using Zod, Valibot or Yup.`,
 	},
 	{
 		title: "Advanced server error handling",
