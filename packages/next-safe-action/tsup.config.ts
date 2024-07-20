@@ -1,8 +1,8 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-	entry: ["src/*.ts", "src/adapters/*.ts"],
-	bundle: false,
+	entry: ["src/index.ts", "src/hooks.ts", "src/stateful-hooks.ts", "src/adapters/*.ts"],
+	bundle: true,
 	format: ["esm"],
 	clean: true,
 	splitting: false,
