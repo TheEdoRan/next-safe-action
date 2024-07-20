@@ -7,8 +7,8 @@ import * as ReactDOM from "react-dom";
 import {} from "react/experimental";
 import type {} from "zod";
 import type { InferIn, Schema } from "./adapters/types";
-import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
-import type { HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
+import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
+import type { HookBaseUtils, HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
 import { isError } from "./utils";
 
 // HOOKS
@@ -29,7 +29,7 @@ export const useAction = <
 	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
-	utils?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+	utils?: HookBaseUtils<S> & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
@@ -105,11 +105,16 @@ export const useAction = <
 		setResult({});
 	}, []);
 
+	useExecuteOnMount({
+		executeOnMount: utils?.executeOnMount,
+		executeFn: execute,
+	});
+
 	useActionCallbacks({
 		result: result ?? {},
 		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		status,
-		cb: utils,
+		cb: { onSuccess: utils?.onSuccess, onError: utils?.onError, onSettled: utils?.onSettled },
 	});
 
 	return {
@@ -143,7 +148,8 @@ export const useOptimisticAction = <
 	utils: {
 		currentState: State;
 		updateFn: (state: State, input: S extends Schema ? InferIn<S> : undefined) => State;
-	} & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+	} & HookBaseUtils<S> &
+		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
 	const [, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
@@ -224,6 +230,11 @@ export const useOptimisticAction = <
 		setClientInput(undefined);
 		setResult({});
 	}, []);
+
+	useExecuteOnMount({
+		executeOnMount: utils?.executeOnMount,
+		executeFn: execute,
+	});
 
 	useActionCallbacks({
 		result: result ?? {},
