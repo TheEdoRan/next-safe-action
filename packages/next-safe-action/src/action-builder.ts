@@ -14,7 +14,7 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
-import { ActionValidationError, buildValidationErrors } from "./validation-errors";
+import { ActionServerValidationError, ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
 	HandleBindArgsValidationErrorsShapeFn,
@@ -223,14 +223,7 @@ export function actionBuilder<
 							}
 
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
-							// TODO: check if this is still true after switching to built-in system
-							if (
-								e instanceof Error &&
-								"kind" in e &&
-								"validationErrors" in e &&
-								typeof e.kind === "string" &&
-								e.kind === "__actionServerValidationError"
-							) {
+							if (e instanceof ActionServerValidationError) {
 								const ve = e.validationErrors as ValidationErrors<S>;
 								middlewareResult.validationErrors = await Promise.resolve(args.handleValidationErrorsShape(ve));
 							} else {
