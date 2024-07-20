@@ -5,6 +5,10 @@ description: You can initialize a safe action client with these options.
 
 # Initialization options
 
+## `validationAdapter?`
+
+You can provide this optional function to the safe action client. It is used to define which validation adapter should be used to validate the client input, based on the validation library of your choice. If not provided, the default `zodAdapter()` is used. The other two options, at this time, are `valibotAdapter()` and `yupAdapter()`. More information about that in the [validation libraries support](/docs/recipes/validation-libraries-support) recipe page.
+
 ## `handleReturnedServerError?`
 
 You can provide this optional function to the safe action client. It is used to customize the server error returned to the client, if one occurs during action's server execution. This includes errors thrown by the action server code, and errors thrown by the middleware. You also have access to useful properties via the `utils` object, which is the second argument of the function.
