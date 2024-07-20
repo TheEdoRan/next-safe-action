@@ -1,8 +1,7 @@
-import type { InferIn } from "@typeschema/main";
-import { validate, type Infer, type Schema } from "@typeschema/main";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {} from "zod";
+import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
 import type {
 	MiddlewareFn,
 	MiddlewareResult,
@@ -14,9 +13,8 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import type { InferArray, InferInArray } from "./utils";
-import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError, zodValidate } from "./utils";
-import { ActionValidationError, buildValidationErrors } from "./validation-errors";
+import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import { ActionServerValidationError, ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
 	HandleBindArgsValidationErrorsShapeFn,
@@ -37,6 +35,7 @@ export function actionBuilder<
 >(args: {
 	schemaFn?: SF;
 	bindArgsSchemas?: BAS;
+	validationAdapter: ValidationAdapter;
 	handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
 	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	metadataSchema: MetadataSchema;
@@ -47,7 +46,6 @@ export function actionBuilder<
 	>;
 	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	ctxType: Ctx;
-	validationStrategy: "typeschema" | "zod";
 	throwValidationErrors: boolean;
 }) {
 	const bindArgsSchemas = (args.bindArgsSchemas ?? []) as BAS;
@@ -77,7 +75,6 @@ export function actionBuilder<
 					const middlewareResult: MiddlewareResult<ServerError, unknown> = { success: false };
 					type PrevResult = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
-					const valFn = args.validationStrategy === "zod" ? zodValidate : validate;
 					const parsedInputDatas: any[] = [];
 					let frameworkError: Error | null = null;
 
@@ -108,7 +105,7 @@ export function actionBuilder<
 							if (idx === 0) {
 								if (args.metadataSchema) {
 									// Validate metadata input.
-									if (!(await valFn(args.metadataSchema, args.metadata)).success) {
+									if (!(await args.validationAdapter.validate(args.metadataSchema, args.metadata)).success) {
 										throw new ActionMetadataError(
 											"Invalid metadata input. Please be sure to pass metadata via `metadata` method before defining the action."
 										);
@@ -145,11 +142,11 @@ export function actionBuilder<
 											}
 
 											// Otherwise, parse input with the schema.
-											return valFn(await args.schemaFn(), input);
+											return args.validationAdapter.validate(await args.schemaFn(), input);
 										}
 
 										// Otherwise, we're processing bind args client inputs.
-										return valFn(bindArgsSchemas[i]!, input);
+										return args.validationAdapter.validate(bindArgsSchemas[i]!, input);
 									})
 								);
 
@@ -226,15 +223,7 @@ export function actionBuilder<
 							}
 
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
-							// Shouldn't be this difficult to check for `ActionServerValidationError`, but /typeschema clients fail
-							// if it's not done this way.
-							if (
-								e instanceof Error &&
-								"kind" in e &&
-								"validationErrors" in e &&
-								typeof e.kind === "string" &&
-								e.kind === "__actionServerValidationError"
-							) {
+							if (e instanceof ActionServerValidationError) {
 								const ve = e.validationErrors as ValidationErrors<S>;
 								middlewareResult.validationErrors = await Promise.resolve(args.handleValidationErrorsShape(ve));
 							} else {

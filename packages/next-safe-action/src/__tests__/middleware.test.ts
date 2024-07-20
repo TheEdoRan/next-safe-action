@@ -9,8 +9,10 @@ import {
 	formatValidationErrors,
 	returnValidationErrors,
 } from "..";
+import { zodAdapter } from "../adapters/zod";
 
 const ac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
 	handleServerErrorLog() {}, // disable server errors logging for these tests
 	handleReturnedServerError(e) {
 		return {
@@ -292,6 +294,7 @@ test("server validation errors in execution result from middleware are correct",
 // Flattened validation errors shape.
 
 const flac = createSafeActionClient({
+	validationAdapter: zodAdapter(),
 	handleServerErrorLog() {}, // disable server errors logging for these tests
 	defaultValidationErrorsShape: "flattened",
 });

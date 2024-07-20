@@ -10,7 +10,7 @@ description: Getting started with next-safe-action version 7.
 - Next.js >= 14 (>= 15 for [`useStateAction`](/docs/execution/hooks/usestateaction) hook)
 - React >= 18.2.0
 - TypeScript >= 5
-- Zod or a validation library supported by [TypeSchema](https://typeschema.com/#coverage)
+- Zod or Valibot or Yup
 :::
 
 **next-safe-action** provides a typesafe Server Actions implementation for Next.js App Router.
@@ -24,20 +24,7 @@ npm i next-safe-action zod
 ```
 
 :::note
-Zod is the default validation library for next-safe-action, because TypeSchema can cause some issues with deployments, so this documentation uses it for that reason. If you know what you're doing, though, you can use your validation library of choice, or even multiple ones at the same time, thanks to the **TypeSchema** package.
-
-To use this feature, you just need to update the import path for the safe client initialization function from:
-```typescript
-import { createSafeActionClient } from "next-safe-action";
-```
-
-to:
-
-```typescript
-import { createSafeActionClient } from "next-safe-action/typeschema";
-```
-
-and install the related [TypeSchema adapter](https://typeschema.com/#coverage).
+Zod is the default validation library for next-safe-action. If you want to use a different validation library, check out the [validation libraries support](/docs/recipes/validation-libraries-support) recipe.
 :::
 
 ## Usage

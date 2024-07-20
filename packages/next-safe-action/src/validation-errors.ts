@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 
-import type { ValidationIssue } from "@typeschema/core";
-import type { Schema } from "@typeschema/main";
+import type { Schema } from "./adapters/types";
 import type {
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,
 	ValidationErrors,
+	ValidationIssue,
 } from "./validation-errors.types";
 
 // This function is used internally to build the validation errors object from a list of validation issues.
@@ -53,12 +53,10 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Vali
 // This class is internally used to throw validation errors in action's server code function, using
 // `returnValidationErrors`.
 export class ActionServerValidationError<S extends Schema> extends Error {
-	public kind: string;
 	public validationErrors: ValidationErrors<S>;
 	constructor(validationErrors: ValidationErrors<S>) {
 		super("Server Action server validation error(s) occurred");
 		this.validationErrors = validationErrors;
-		this.kind = "__actionServerValidationError";
 	}
 }
 

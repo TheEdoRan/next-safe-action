@@ -1,6 +1,6 @@
-import type { InferIn, Schema } from "@typeschema/main";
+import type { InferIn, Schema } from "./adapters/types";
 import type { SafeActionResult } from "./index.types";
-import type { MaybePromise, Prettify } from "./utils";
+import type { MaybePromise, Prettify } from "./utils.types";
 
 /**
  * Type of `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.

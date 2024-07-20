@@ -442,6 +442,6 @@ type SchemaErrors<S> = {
 
 ---
 
-## TypeSchema library
+## Adapters types
 
-`Infer`, `InferIn`, `Schema` types used in this documentation come from [TypeSchema](https://typeschema.com) library.
+`Infer`, `InferIn`, `Schema` types used in this documentation come from `next-safe-action/adapters/types` path.

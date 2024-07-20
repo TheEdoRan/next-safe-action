@@ -11,23 +11,23 @@
 	],
 	"exports": {
 		".": "./dist/index.mjs",
-		"./typeschema": "./dist/typeschema.mjs",
 		"./hooks": "./dist/hooks.mjs",
-		"./stateful-hooks": "./dist/stateful-hooks.mjs"
+		"./stateful-hooks": "./dist/stateful-hooks.mjs",
+		"./adapters/*": "./dist/adapters/*.mjs"
 	},
 	"typesVersions": {
 		"*": {
 			".": [
 				"./dist/index.d.mts"
 			],
-			"typeschema": [
-				"./dist/typeschema.d.mts"
-			],
 			"hooks": [
 				"./dist/hooks.d.mts"
 			],
 			"stateful-hooks": [
 				"./dist/stateful-hooks.d.mts"
+			],
+			"adapters/*": [
+				"./dist/adapters/*.d.mts"
 			]
 		}
 	},
@@ -43,7 +43,7 @@
 	],
 	"scripts": {
 		"lint": "tsc && prettier --write . && eslint .",
-		"test": "node --import tsx --test ./src/__tests__/*.test.ts ./src/__tests__/typeschema/*.test.ts",
+		"test": "node --import tsx --test ./src/__tests__/*.test.ts",
 		"build": "tsup",
 		"deploy": "semantic-release"
 	},
@@ -67,10 +67,9 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.2.0",
-		"@types/node": "^20.12.10",
+		"@types/node": "^20.14.11",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "18.3.0",
-		"@typeschema/core": "^0.13.2",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-define-config": "^2.1.0",
@@ -82,26 +81,30 @@
 		"semantic-release": "^23.0.8",
 		"tsup": "^8.0.2",
 		"tsx": "^4.11.2",
-		"typescript": "^5.4.5",
-		"typescript-eslint": "^7.8.0"
+		"typescript": "^5.5.3",
+		"typescript-eslint": "^7.8.0",
+		"valibot": "^0.36.0",
+		"yup": "^1.4.0",
+		"zod": "^3.23.6"
 	},
 	"peerDependencies": {
 		"next": ">= 14.0.0",
 		"react": ">= 18.2.0",
 		"react-dom": ">= 18.2.0",
-		"zod": ">= 3.0.0"
+		"valibot": ">= 0.36.0",
+		"zod": ">= 3.0.0",
+		"yup": ">= 1.0.0"
 	},
 	"peerDependenciesMeta": {
 		"zod": {
+			"optional": true
+		},
+		"valibot": {
 			"optional": true
 		}
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/TheEdoRan/next-safe-action.git"
-	},
-	"dependencies": {
-		"@typeschema/main": "^0.13.10",
-		"@typeschema/zod": "^0.13.3"
 	}
 }

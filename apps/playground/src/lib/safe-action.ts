@@ -2,11 +2,13 @@ import {
 	DEFAULT_SERVER_ERROR_MESSAGE,
 	createSafeActionClient,
 } from "next-safe-action";
+import { zodAdapter } from "next-safe-action/adapters/zod";
 import { z } from "zod";
 
 export class ActionError extends Error {}
 
 export const action = createSafeActionClient({
+	validationAdapter: zodAdapter(),
 	// You can provide a custom logging function, otherwise the lib will use `console.error`
 	// as the default logging system. If you want to disable server errors logging,
 	// just pass an empty Promise.
