@@ -10,7 +10,7 @@ import type { HookBaseUtils, HookCallbacks, HookSafeStateActionFn } from "./hook
 /**
  * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction).
  * @param safeActionFn The action function
- * @param utils Optional `initResult`, `permalink` and callbacks
+ * @param utils Optional `initResult`, `permalink`, base utils and callbacks
  *
  * {@link https://next-safe-action.dev/docs/execution/hooks/usestateaction See docs for more information}
  */

@@ -16,7 +16,7 @@ import { isError } from "./utils";
 /**
  * Use the action from a Client Component via hook.
  * @param safeActionFn The action function
- * @param utils Optional callbacks
+ * @param utils Optional base utils and callbacks
  *
  * {@link https://next-safe-action.dev/docs/execution/hooks/useaction See docs for more information}
  */
@@ -131,7 +131,7 @@ export const useAction = <
 /**
  * Use the action from a Client Component via hook, with optimistic data update.
  * @param safeActionFn The action function
- * @param utils Required `currentData` and `updateFn` and optional callbacks
+ * @param utils Required `currentData` and `updateFn` and optional base utils and callbacks
  *
  * {@link https://next-safe-action.dev/docs/execution/hooks/useoptimisticaction See docs for more information}
  */
