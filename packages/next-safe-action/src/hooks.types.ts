@@ -8,6 +8,7 @@ import type { MaybePromise, Prettify } from "./utils.types";
 export type HookBaseUtils<S extends Schema | undefined> = {
 	executeOnMount?: {
 		input: S extends Schema ? InferIn<S> : undefined;
+		delayMs?: number;
 	};
 };
 

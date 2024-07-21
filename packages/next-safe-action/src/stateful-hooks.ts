@@ -35,6 +35,7 @@ export const useStateAction = <
 		utils?.permalink
 	);
 	const [isIdle, setIsIdle] = React.useState(true);
+	const [, startTransition] = React.useTransition();
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
 		isExecuting,
@@ -44,7 +45,9 @@ export const useStateAction = <
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
-			dispatcher(input as S extends Schema ? InferIn<S> : undefined);
+			startTransition(() => {
+				dispatcher(input as S extends Schema ? InferIn<S> : undefined);
+			});
 
 			ReactDOM.flushSync(() => {
 				setIsIdle(false);

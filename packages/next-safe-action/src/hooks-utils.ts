@@ -50,10 +50,19 @@ export const useExecuteOnMount = <S extends Schema | undefined>(
 		executeFn: (input: S extends Schema ? InferIn<S> : void) => void;
 	}
 ) => {
+	const mounted = React.useRef(false);
+
 	React.useEffect(() => {
-		if (args?.executeOnMount) {
-			args.executeFn(args.executeOnMount.input);
-		}
+		const t = setTimeout(() => {
+			if (args.executeOnMount && !mounted.current) {
+				args.executeFn(args.executeOnMount.input);
+				mounted.current = true;
+			}
+		}, args.executeOnMount?.delayMs ?? 0);
+
+		return () => {
+			clearTimeout(t);
+		};
 	}, [args]);
 };
 
