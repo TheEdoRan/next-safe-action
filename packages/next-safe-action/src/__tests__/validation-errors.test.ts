@@ -541,6 +541,25 @@ test("action with errors set via `returnValidationErrors` gives back an object w
 
 // `throwValidationErrors` tests.
 
+// test without `throwValidationErrors` set at the instance level, just set at the action level.
+test("action with validation errors and `throwValidationErrors` option set to true at the action level throws", async () => {
+	const schema = z.object({
+		username: z.string().min(3),
+		password: z.string().min(3),
+	});
+
+	const action = dac.schema(schema).action(
+		async () => {
+			return {
+				ok: true,
+			};
+		},
+		{ throwValidationErrors: true }
+	);
+
+	assert.rejects(async () => await action({ username: "12", password: "34" }));
+});
+
 const tveac = createSafeActionClient({
 	validationAdapter: zodAdapter(),
 	throwValidationErrors: true,
@@ -579,4 +598,79 @@ test("action with server validation errors and `throwValidationErrors` option se
 	});
 
 	assert.rejects(async () => await action({ username: "1234", password: "5678" }));
+});
+
+test("action with validation errors and `throwValidationErrors` option set to true both in client and action throws", async () => {
+	const schema = z.object({
+		username: z.string().min(3),
+		password: z.string().min(3),
+	});
+
+	const action = tveac.schema(schema).action(
+		async () => {
+			return {
+				ok: true,
+			};
+		},
+		{ throwValidationErrors: true }
+	);
+
+	assert.rejects(async () => await action({ username: "12", password: "34" }));
+});
+
+test("action with validation errors and overridden `throwValidationErrors` set to false at the action level doesn't throw", async () => {
+	const schema = z.object({
+		user: z.object({
+			id: z.string().min(36).uuid(),
+		}),
+		store: z.object({
+			id: z.string().min(36).uuid(),
+			product: z.object({
+				id: z.string().min(36).uuid(),
+			}),
+		}),
+	});
+
+	const action = tveac.schema(schema).action(
+		async () => {
+			return {
+				ok: true,
+			};
+		},
+		{ throwValidationErrors: false }
+	);
+
+	const actualResult = await action({
+		user: {
+			id: "invalid_uuid",
+		},
+		store: {
+			id: "invalid_uuid",
+			product: {
+				id: "invalid_uuid",
+			},
+		},
+	});
+
+	const expectedResult = {
+		validationErrors: {
+			user: {
+				id: {
+					_errors: ["String must contain at least 36 character(s)", "Invalid uuid"],
+				},
+			},
+			store: {
+				id: {
+					_errors: ["String must contain at least 36 character(s)", "Invalid uuid"],
+				},
+				product: {
+					id: {
+						_errors: ["String must contain at least 36 character(s)", "Invalid uuid"],
+					},
+				},
+			},
+		},
+	};
+
+	assert.deepStrictEqual(actualResult, expectedResult);
 });

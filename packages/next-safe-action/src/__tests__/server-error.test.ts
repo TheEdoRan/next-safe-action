@@ -93,6 +93,17 @@ test("known error occurred in middleware function is unmasked", async () => {
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
+test("error occurred with `throwServerError` set to true at the action level throws", async () => {
+	const action = ac1.action(
+		async () => {
+			throw new Error("Something bad happened");
+		},
+		{ throwServerError: true }
+	);
+
+	assert.rejects(async () => await action());
+});
+
 // Server error is an object with a 'message' property.
 const ac2 = createSafeActionClient({
 	validationAdapter: zodAdapter(),
