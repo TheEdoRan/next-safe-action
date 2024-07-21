@@ -3,6 +3,16 @@ import type { SafeActionResult } from "./index.types";
 import type { MaybePromise, Prettify } from "./utils.types";
 
 /**
+ * Type of base utils object passed to `useAction`, `useOptimisticAction` and `useStateAction` hooks.
+ */
+export type HookBaseUtils<S extends Schema | undefined> = {
+	executeOnMount?: {
+		input: S extends Schema ? InferIn<S> : undefined;
+		delayMs?: number;
+	};
+};
+
+/**
  * Type of `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
  * If a server-client communication error occurs, `fetchError` will be set to the error message.
  */

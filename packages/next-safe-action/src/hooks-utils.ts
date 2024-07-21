@@ -2,7 +2,7 @@ import * as React from "react";
 import {} from "react/experimental";
 import type {} from "zod";
 import type { InferIn, Schema } from "./adapters/types";
-import type { HookActionStatus, HookCallbacks, HookResult } from "./hooks.types";
+import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookResult } from "./hooks.types";
 
 export const getActionStatus = <
 	ServerError,
@@ -43,6 +43,27 @@ export const getActionShorthandStatusObject = (status: HookActionStatus) => {
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
 	};
+};
+
+export const useExecuteOnMount = <S extends Schema | undefined>(
+	args: HookBaseUtils<S> & {
+		executeFn: (input: S extends Schema ? InferIn<S> : void) => void;
+	}
+) => {
+	const mounted = React.useRef(false);
+
+	React.useEffect(() => {
+		const t = setTimeout(() => {
+			if (args.executeOnMount && !mounted.current) {
+				args.executeFn(args.executeOnMount.input);
+				mounted.current = true;
+			}
+		}, args.executeOnMount?.delayMs ?? 0);
+
+		return () => {
+			clearTimeout(t);
+		};
+	}, [args]);
 };
 
 export const useActionCallbacks = <

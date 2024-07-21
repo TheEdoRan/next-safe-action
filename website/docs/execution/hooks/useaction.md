@@ -66,7 +66,7 @@ As you can see, here we display a greet message after the action is performed, i
 | Name           | Type                                       | Purpose                                                                                                |
 | -------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
 | `safeActionFn` | [HookSafeActionFn](/docs/types#hooksafeactionfn)   | This is the action that will be called when you use `execute` from hook's return object.               |
-| `utils?`   | [HookCallbacks](/docs/types#hookcallbacks) | Optional callbacks. More information about them [here](/docs/execution/hooks/hook-callbacks). |
+| `utils?`   | [`HookBaseUtils`](/docs/types#hookbaseutils) `&` [`HookCallbacks`](/docs/types#hookcallbacks) | Optional [base utils](/docs/execution/hooks/hook-base-utils) and [callbacks](/docs/execution/hooks/hook-callbacks). |
 
 ### `useAction` return object
 
