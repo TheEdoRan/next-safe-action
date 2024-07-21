@@ -290,6 +290,19 @@ export type HandleBindArgsValidationErrorsShapeFn<BAS extends readonly Schema[],
 
 ## /hooks
 
+### `HookBaseUtils`
+
+Type of base utils object passed to `useAction`, `useOptimisticAction` and `useStateAction` hooks.
+
+```typescript
+export type HookBaseUtils<S extends Schema | undefined> = {
+  executeOnMount?: {
+    input: S extends Schema ? InferIn<S> : undefined;
+    delayMs?: number;
+  };
+};
+```
+
 ### `HookResult`
 
 Type of `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
