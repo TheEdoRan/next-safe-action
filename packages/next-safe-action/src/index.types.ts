@@ -157,6 +157,8 @@ export type SafeActionUtils<
 	CBAVE,
 	Data,
 > = {
+	throwServerError?: boolean;
+	throwValidationErrors?: boolean;
 	onSuccess?: (args: {
 		data?: Data;
 		metadata: MD;

@@ -291,10 +291,17 @@ export function actionBuilder<
 					const actionResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> = {};
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
-						if (args.throwValidationErrors) {
+						// Throw validation errors if either `throwValidationErrors` property at the action or instance level is `true`.
+						// If `throwValidationErrors` property at the action is `false`, do not throw validation errors, since it
+						// has a higher priority than the instance one.
+						if (
+							(utils?.throwValidationErrors || args.throwValidationErrors) &&
+							utils?.throwValidationErrors !== false
+						) {
 							throw new ActionValidationError(middlewareResult.validationErrors as CVE);
+						} else {
+							actionResult.validationErrors = middlewareResult.validationErrors as CVE;
 						}
-						actionResult.validationErrors = middlewareResult.validationErrors as CVE;
 					}
 
 					if (typeof middlewareResult.bindArgsValidationErrors !== "undefined") {
@@ -302,7 +309,11 @@ export function actionBuilder<
 					}
 
 					if (typeof middlewareResult.serverError !== "undefined") {
-						actionResult.serverError = middlewareResult.serverError;
+						if (utils?.throwServerError) {
+							throw middlewareResult.serverError;
+						} else {
+							actionResult.serverError = middlewareResult.serverError;
+						}
 					}
 
 					if (middlewareResult.success) {
