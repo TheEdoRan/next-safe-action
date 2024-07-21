@@ -196,7 +196,7 @@ export type StateServerCodeFn<
 Type of action execution utils. It includes action callbacks and other utils.
 
 ```typescript
-export type SafeActionCallbacks<
+export type SafeActionUtils<
   ServerError,
   S extends Schema | undefined,
   BAS extends readonly Schema[],
