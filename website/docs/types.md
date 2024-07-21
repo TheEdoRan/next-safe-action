@@ -191,9 +191,9 @@ export type StateServerCodeFn<
 ) => Promise<Data>;
 ```
 
-### `SafeActionCallbacks`
+### `SafeActionUtils`
 
-Type of action execution callbacks. These are called after the action is executed, on the server side.
+Type of action execution utils. It includes action callbacks and other utils.
 
 ```typescript
 export type SafeActionCallbacks<

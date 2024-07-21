@@ -5,10 +5,10 @@ import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapte
 import type {
 	MiddlewareFn,
 	MiddlewareResult,
-	SafeActionCallbacks,
 	SafeActionClientOpts,
 	SafeActionFn,
 	SafeActionResult,
+	SafeActionUtils,
 	SafeStateActionFn,
 	ServerCodeFn,
 	StateServerCodeFn,
@@ -53,13 +53,13 @@ export function actionBuilder<
 	function buildAction({ withState }: { withState: false }): {
 		action: <Data>(
 			serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>,
-			cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
+			utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 		) => SafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
 		action: <Data>(
 			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
-			cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
+			utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 		) => SafeStateActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
@@ -68,7 +68,7 @@ export function actionBuilder<
 				serverCodeFn:
 					| ServerCodeFn<MD, Ctx, S, BAS, Data>
 					| StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
-				cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
+				utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
 					let prevCtx: unknown = undefined;
@@ -260,7 +260,7 @@ export function actionBuilder<
 					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
 					if (frameworkError) {
 						await Promise.resolve(
-							cb?.onSuccess?.({
+							utils?.onSuccess?.({
 								data: undefined,
 								metadata: args.metadata,
 								ctx: prevCtx as Ctx,
@@ -274,7 +274,7 @@ export function actionBuilder<
 						);
 
 						await Promise.resolve(
-							cb?.onSettled?.({
+							utils?.onSettled?.({
 								metadata: args.metadata,
 								ctx: prevCtx as Ctx,
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
@@ -311,7 +311,7 @@ export function actionBuilder<
 						}
 
 						await Promise.resolve(
-							cb?.onSuccess?.({
+							utils?.onSuccess?.({
 								metadata: args.metadata,
 								ctx: prevCtx as Ctx,
 								data: actionResult.data as Data,
@@ -325,7 +325,7 @@ export function actionBuilder<
 						);
 					} else {
 						await Promise.resolve(
-							cb?.onError?.({
+							utils?.onError?.({
 								metadata: args.metadata,
 								ctx: prevCtx as Ctx,
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
@@ -337,7 +337,7 @@ export function actionBuilder<
 
 					// onSettled, if provided, is always executed.
 					await Promise.resolve(
-						cb?.onSettled?.({
+						utils?.onSettled?.({
 							metadata: args.metadata,
 							ctx: prevCtx as Ctx,
 							clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
