@@ -3,7 +3,6 @@
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import {} from "react/experimental";
 import type {} from "zod";
 import type { InferIn, Schema } from "./adapters/types";
@@ -41,6 +40,12 @@ export const useAction = <
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
+			setTimeout(() => {
+				setIsIdle(false);
+				setClientInput(input);
+				setIsExecuting(true);
+			}, 0);
+
 			startTransition(() => {
 				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? {}))
@@ -55,12 +60,6 @@ export const useAction = <
 						setIsExecuting(false);
 					});
 			});
-
-			ReactDOM.flushSync(() => {
-				setIsIdle(false);
-				setClientInput(input);
-				setIsExecuting(true);
-			});
 		},
 		[safeActionFn]
 	);
@@ -68,6 +67,12 @@ export const useAction = <
 	const executeAsync = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
 			const fn = new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
+				setTimeout(() => {
+					setIsIdle(false);
+					setClientInput(input);
+					setIsExecuting(true);
+				}, 0);
+
 				startTransition(() => {
 					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 						.then((res) => {
@@ -86,12 +91,6 @@ export const useAction = <
 							setIsExecuting(false);
 						});
 				});
-			});
-
-			ReactDOM.flushSync(() => {
-				setIsIdle(false);
-				setClientInput(input);
-				setIsExecuting(true);
 			});
 
 			return fn;
@@ -165,6 +164,12 @@ export const useOptimisticAction = <
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
+			setTimeout(() => {
+				setIsIdle(false);
+				setClientInput(input);
+				setIsExecuting(true);
+			}, 0);
+
 			startTransition(() => {
 				setOptimisticValue(input as S extends Schema ? InferIn<S> : undefined);
 				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
@@ -180,12 +185,6 @@ export const useOptimisticAction = <
 						setIsExecuting(false);
 					});
 			});
-
-			ReactDOM.flushSync(() => {
-				setIsIdle(false);
-				setClientInput(input);
-				setIsExecuting(true);
-			});
 		},
 		[safeActionFn, setOptimisticValue]
 	);
@@ -193,6 +192,12 @@ export const useOptimisticAction = <
 	const executeAsync = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
 			const fn = new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
+				setTimeout(() => {
+					setIsIdle(false);
+					setClientInput(input);
+					setIsExecuting(true);
+				}, 0);
+
 				startTransition(() => {
 					setOptimisticValue(input as S extends Schema ? InferIn<S> : undefined);
 					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
@@ -212,12 +217,6 @@ export const useOptimisticAction = <
 							setIsExecuting(false);
 						});
 				});
-			});
-
-			ReactDOM.flushSync(() => {
-				setIsIdle(false);
-				setClientInput(input);
-				setIsExecuting(true);
 			});
 
 			return fn;

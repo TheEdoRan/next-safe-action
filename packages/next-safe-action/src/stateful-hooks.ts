@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import {} from "react/experimental";
 import type {} from "zod";
 import type { InferIn, Schema } from "./adapters/types";
@@ -45,13 +44,13 @@ export const useStateAction = <
 
 	const execute = React.useCallback(
 		(input: S extends Schema ? InferIn<S> : void) => {
-			startTransition(() => {
-				dispatcher(input as S extends Schema ? InferIn<S> : undefined);
-			});
-
-			ReactDOM.flushSync(() => {
+			setTimeout(() => {
 				setIsIdle(false);
 				setClientInput(input);
+			}, 0);
+
+			startTransition(() => {
+				dispatcher(input as S extends Schema ? InferIn<S> : undefined);
 			});
 		},
 		[dispatcher]
