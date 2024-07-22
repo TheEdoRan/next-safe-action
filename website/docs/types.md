@@ -191,12 +191,12 @@ export type StateServerCodeFn<
 ) => Promise<Data>;
 ```
 
-### `SafeActionCallbacks`
+### `SafeActionUtils`
 
-Type of action execution callbacks. These are called after the action is executed, on the server side.
+Type of action execution utils. It includes action callbacks and other utils.
 
 ```typescript
-export type SafeActionCallbacks<
+export type SafeActionUtils<
   ServerError,
   S extends Schema | undefined,
   BAS extends readonly Schema[],
@@ -204,6 +204,8 @@ export type SafeActionCallbacks<
   CBAVE,
   Data,
 > = {
+  throwServerError?: boolean;
+  throwValidationErrors?: boolean;
   onSuccess?: (args: {
     data?: Data;
     clientInput: S extends Schema ? InferIn<S> : undefined;

@@ -149,7 +149,7 @@ When working with i18n solutions, often you'll find implementations that require
 
 ### [Support action execution callbacks](https://github.com/TheEdoRan/next-safe-action/issues/162)
 
-It's sometimes useful to be able to execute custom logic on the server side after an action succeeds or fails. Starting from version 7, next-safe-action allows you to pass action callbacks when defining an action. More information about this feature can be found [here](/docs/execution/action-callbacks).
+It's sometimes useful to be able to execute custom logic on the server side after an action succeeds or fails. Starting from version 7, next-safe-action allows you to pass action callbacks when defining an action. More information about this feature can be found [here](/docs/execution/action-utils#callbacks).
 
 ### [Support stateful actions using React `useActionState` hook](https://github.com/TheEdoRan/next-safe-action/issues/91)
 

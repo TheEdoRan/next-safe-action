@@ -4,8 +4,8 @@ import type { Infer, Schema, ValidationAdapter } from "./adapters/types";
 import type {
 	DVES,
 	MiddlewareFn,
-	SafeActionCallbacks,
 	SafeActionClientOpts,
+	SafeActionUtils,
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
@@ -213,7 +213,7 @@ export class SafeActionClient<
 	 */
 	action<Data>(
 		serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>,
-		cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
+		utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 	) {
 		return actionBuilder({
 			handleReturnedServerError: this.#handleReturnedServerError,
@@ -228,7 +228,7 @@ export class SafeActionClient<
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
-		}).action(serverCodeFn, cb);
+		}).action(serverCodeFn, utils);
 	}
 
 	/**
@@ -241,7 +241,7 @@ export class SafeActionClient<
 	 */
 	stateAction<Data>(
 		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
-		cb?: SafeActionCallbacks<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
+		utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 	) {
 		return actionBuilder({
 			handleReturnedServerError: this.#handleReturnedServerError,
@@ -256,6 +256,6 @@ export class SafeActionClient<
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
-		}).stateAction(serverCodeFn, cb);
+		}).stateAction(serverCodeFn, utils);
 	}
 }

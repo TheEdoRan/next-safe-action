@@ -44,14 +44,14 @@ bindArgsSchemas(bindArgsSchemas: BAS, bindArgsUtils?: { handleBindArgsValidation
 ## `action` / `stateAction`
 
 ```typescript
-action(serverCodeFn: ServerCodeFn, cb?: SafeActionCallbacks) => SafeActionFn
+action(serverCodeFn: ServerCodeFn, utils?: SafeActionUtils) => SafeActionFn
 ```
 
 ```typescript
-stateAction(serverCodeFn: StateServerCodeFn, cb?: SafeActionCallbacks) => SafeStateActionFn
+stateAction(serverCodeFn: StateServerCodeFn, utils?: SafeActionUtils) => SafeStateActionFn
 ```
 
-`action`/`stateAction` is the final method in the list. It accepts a [`serverCodeFn`](#servercodefn) of type [`ServerCodeFn`](/docs/types#servercodefn)/[`StateServerCodeFn`](/docs/types#stateservercodefn) and an object with optional [action callbacks](/docs/execution/action-callbacks), and it returns a new safe action function of type [`SafeActionFn`](/docs/types#safeactionfn)/[`SafeStateActionFn`](/docs/types#safestateactionfn), which can be called from your components. When an action doesn't need input arguments, you can directly use this method without passing a schema to [`schema`](#schema) method.
+`action`/`stateAction` is the final method in the list. It accepts a [`serverCodeFn`](#servercodefn) of type [`ServerCodeFn`](/docs/types#servercodefn)/[`StateServerCodeFn`](/docs/types#stateservercodefn) and an optional object with [action utils](/docs/execution/action-utils), and it returns a new safe action function of type [`SafeActionFn`](/docs/types#safeactionfn)/[`SafeStateActionFn`](/docs/types#safestateactionfn), which can be called from your components. When an action doesn't need input arguments, you can directly use this method without passing a schema to [`schema`](#schema) method.
 
 When the action is executed, all middleware functions in the chain will be called at runtime, in the order they were defined.
 

@@ -145,9 +145,9 @@ export type StateServerCodeFn<
 ) => Promise<Data>;
 
 /**
- * Type of action execution callbacks. These are called after the action is executed, on the server side.
+ * Type of action execution utils. It includes action callbacks and other utils.
  */
-export type SafeActionCallbacks<
+export type SafeActionUtils<
 	ServerError,
 	MD,
 	Ctx,
@@ -157,6 +157,8 @@ export type SafeActionCallbacks<
 	CBAVE,
 	Data,
 > = {
+	throwServerError?: boolean;
+	throwValidationErrors?: boolean;
 	onSuccess?: (args: {
 		data?: Data;
 		metadata: MD;
