@@ -101,6 +101,9 @@
 		},
 		"valibot": {
 			"optional": true
+		},
+		"yup": {
+			"optional": true
 		}
 	},
 	"repository": {
