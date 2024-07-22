@@ -204,6 +204,8 @@ export type SafeActionUtils<
   CBAVE,
   Data,
 > = {
+  throwServerError?: boolean;
+  throwValidationErrors?: boolean;
   onSuccess?: (args: {
     data?: Data;
     clientInput: S extends Schema ? InferIn<S> : undefined;
