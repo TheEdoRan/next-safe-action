@@ -113,7 +113,12 @@ export const useAction = <
 		result: result ?? {},
 		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		status,
-		cb: { onSuccess: utils?.onSuccess, onError: utils?.onError, onSettled: utils?.onSettled },
+		cb: {
+			onExecute: utils?.onExecute,
+			onSuccess: utils?.onSuccess,
+			onError: utils?.onError,
+			onSettled: utils?.onSettled,
+		},
 	});
 
 	return {
