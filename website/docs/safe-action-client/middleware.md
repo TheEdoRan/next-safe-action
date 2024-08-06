@@ -62,7 +62,7 @@ const actionClient = createSafeActionClient({
 // Auth client defined by extending the base one.
 // Note that the same initialization options and middleware functions of the base client
 // will also be used for this one.
-const authActionClient = actionClient
+export const authActionClient = actionClient
   // Define authorization middleware.
   .use(async ({ next }) => {
     const session = cookies().get("session")?.value;
