@@ -1,4 +1,4 @@
-// Code courtesy of https://github.com/decs/typeschema/blob/main/packages/zod/src/validation.ts
+// Code courtesy of https://github.com/decs/typeschema/blob/main/packages/typebox/src/validation.ts
 
 // MIT License
 
@@ -22,27 +22,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import type { z } from "zod";
+import type { TSchema } from "@sinclair/typebox";
+import { TypeCompiler } from "@sinclair/typebox/compiler";
 import type { IfInstalled, Infer, ValidationAdapter } from "./types";
 
-class ZodAdapter implements ValidationAdapter {
-	async validate<S extends IfInstalled<z.ZodType>>(schema: S, data: unknown) {
-		const result = await schema.safeParseAsync(data);
+class TypeboxAdapter implements ValidationAdapter {
+	async validate<S extends IfInstalled<TSchema>>(schema: S, data: unknown) {
+		const result = TypeCompiler.Compile(schema);
 
-		if (result.success) {
+		if (result.Check(data)) {
 			return {
 				success: true,
-				data: result.data as Infer<S>,
+				data: data as Infer<S>,
 			} as const;
 		}
 
 		return {
 			success: false,
-			issues: result.error.issues.map(({ message, path }) => ({ message, path })),
+			issues: [...result.Errors(data)].map(({ message, path }) => ({
+				message,
+				path: [path],
+			})),
 		} as const;
 	}
 }
 
-export function zodAdapter() {
-	return new ZodAdapter();
+export function typeboxAdapter() {
+	return new TypeboxAdapter();
 }

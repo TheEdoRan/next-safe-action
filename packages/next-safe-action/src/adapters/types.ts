@@ -1,5 +1,6 @@
 // Code courtesy of/highly inspired by https://github.com/decs/typeschema
 
+import type { Static, TSchema } from "@sinclair/typebox";
 import type { GenericSchema, GenericSchemaAsync, InferInput, InferOutput } from "valibot";
 import type { InferType, Schema as YupSchema } from "yup";
 import type { z } from "zod";
@@ -10,7 +11,8 @@ export type Schema =
 	| IfInstalled<z.ZodType>
 	| IfInstalled<GenericSchema>
 	| IfInstalled<GenericSchemaAsync>
-	| IfInstalled<YupSchema>;
+	| IfInstalled<YupSchema>
+	| IfInstalled<TSchema>;
 
 export type Infer<S extends Schema> =
 	S extends IfInstalled<z.ZodType>
@@ -21,7 +23,9 @@ export type Infer<S extends Schema> =
 				? InferOutput<S>
 				: S extends IfInstalled<YupSchema>
 					? InferType<S>
-					: never;
+					: S extends IfInstalled<TSchema>
+						? Static<S>
+						: never;
 
 export type InferIn<S extends Schema> =
 	S extends IfInstalled<z.ZodType>
@@ -32,7 +36,9 @@ export type InferIn<S extends Schema> =
 				? InferInput<S>
 				: S extends IfInstalled<YupSchema>
 					? InferType<S>
-					: never;
+					: S extends IfInstalled<TSchema>
+						? Static<S>
+						: never;
 
 export type InferArray<BAS extends readonly Schema[]> = {
 	[K in keyof BAS]: Infer<BAS[K]>;
@@ -68,6 +74,11 @@ export interface ValidationAdapter {
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
 	// yup
 	validate<S extends IfInstalled<YupSchema>>(
+		schema: S,
+		data: unknown
+	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	// typebox
+	validate<S extends IfInstalled<TSchema>>(
 		schema: S,
 		data: unknown
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;

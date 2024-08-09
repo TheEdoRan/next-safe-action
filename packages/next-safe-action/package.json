@@ -67,6 +67,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.2.0",
+		"@sinclair/typebox": "^0.33.3",
 		"@types/node": "^20.14.11",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "18.3.0",
@@ -92,8 +93,9 @@
 		"react": ">= 18.2.0",
 		"react-dom": ">= 18.2.0",
 		"valibot": ">= 0.36.0",
+		"yup": ">= 1.0.0",
 		"zod": ">= 3.0.0",
-		"yup": ">= 1.0.0"
+		"@sinclair/typebox": ">= 0.33.3"
 	},
 	"peerDependenciesMeta": {
 		"zod": {
@@ -103,6 +105,9 @@
 			"optional": true
 		},
 		"yup": {
+			"optional": true
+		},
+		"@sinclair/typebox": {
 			"optional": true
 		}
 	},
