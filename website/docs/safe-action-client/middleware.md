@@ -5,7 +5,7 @@ description: Learn how to use middleware functions in your actions.
 
 # Middleware
 
-next-safe-action, since version 7, ships with a composable and powerful middleware system, which allows you to create functions for almost every kind of use case you can imagine (authorization, logging, role based access, etc.). It works very similarly to the [tRPC implementation](https://trpc.io/docs/server/middlewares), with some minor differences.
+next-safe-action, since version 7, ships with a composable and powerful middleware system, which allows you to create functions for almost every kind of use case you can imagine (authorization, logging, role based access, etc.). It works very similarly to the [tRPC implementation](https://trpc.io/docs/server/middlewares).
 
 Middleware functions are defined using [`use`](/docs/safe-action-client/instance-methods#use) method in your action clients, via the `middlewareFn` argument.
 
@@ -144,7 +144,7 @@ const deleteUser = authActionClient
 
     // Here we pass the same untouched context (`userId`) to the next function, since we don't need
     // to add data to the context here.
-    return next({ ctx });
+    return next();
   })
   .metadata({ actionName: "deleteUser" })
   .action(async ({ ctx: { userId } }) => {
@@ -200,3 +200,7 @@ Note that the second line comes from the default `handleServerErrorLog` function
 ## `middlewareFn` return value
 
 `middlewareFn` returns a Promise of a [`MiddlewareResult`](/docs/types#middlewareresult) object. It extends the result of a safe action with `success` property, and `parsedInput`, `bindArgsParsedInputs` and `ctx` optional properties. This is the exact return type of the `next` function, so you must always return it (or its result) to continue executing the middleware chain.
+
+## Context extension
+
+Visit the [context extension](/docs/recipes/extend-context) recipe for more information on how to extend context with middleware functions.
