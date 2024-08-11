@@ -1,4 +1,4 @@
-// Code courtesy of https://github.com/decs/typeschema/blob/main/packages/valibot/src/validation.ts
+// Code courtesy of https://github.com/decs/typeschema/blob/main/packages/typebox/src/validation.ts
 
 // MIT License
 
@@ -22,30 +22,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import { getDotPath, safeParseAsync, type GenericSchema, type GenericSchemaAsync } from "valibot";
+import type { TSchema } from "@sinclair/typebox";
+import { TypeCompiler } from "@sinclair/typebox/compiler";
 import type { IfInstalled, Infer, ValidationAdapter } from "./types";
 
-class ValibotAdapter implements ValidationAdapter {
-	async validate<S extends IfInstalled<GenericSchema | GenericSchemaAsync>>(schema: S, data: unknown) {
-		const result = await safeParseAsync(schema, data);
+class TypeboxAdapter implements ValidationAdapter {
+	async validate<S extends IfInstalled<TSchema>>(schema: S, data: unknown) {
+		const result = TypeCompiler.Compile(schema);
 
-		if (result.success) {
+		if (result.Check(data)) {
 			return {
 				success: true,
-				data: result.output as Infer<S>,
+				data: data as Infer<S>,
 			} as const;
 		}
 
 		return {
 			success: false,
-			issues: result.issues.map((issue) => ({
-				message: issue.message,
-				path: getDotPath(issue)?.split("."),
+			issues: [...result.Errors(data)].map(({ message, path }) => ({
+				message,
+				path: path.split("/").slice(1),
 			})),
 		} as const;
 	}
 }
 
-export function valibotAdapter() {
-	return new ValibotAdapter();
+export function typeboxAdapter() {
+	return new TypeboxAdapter();
 }

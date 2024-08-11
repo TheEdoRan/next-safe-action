@@ -10,7 +10,7 @@ description: Getting started with next-safe-action version 7.
 - Next.js >= 14 (>= 15 for [`useStateAction`](/docs/execution/hooks/usestateaction) hook)
 - React >= 18.2.0
 - TypeScript >= 5
-- Zod or Valibot or Yup
+- Zod or Valibot or Yup or TypeBox
 :::
 
 **next-safe-action** provides a typesafe Server Actions implementation for Next.js App Router.
