@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "packages/**"
+      - "turbo.json"
+      - "package.json"
     branches:
       - main
       - beta
