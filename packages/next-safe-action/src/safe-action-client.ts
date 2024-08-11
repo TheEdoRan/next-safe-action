@@ -87,7 +87,7 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#use See docs for more information}
 	 */
-	use<NextCtx extends object>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, NextCtx>) {
+	use<NextCtx extends object>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, Ctx & NextCtx>) {
 		return new SafeActionClient({
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
@@ -99,7 +99,7 @@ export class SafeActionClient<
 			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
-			ctxType: {} as NextCtx,
+			ctxType: {} as Ctx & NextCtx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
 		});

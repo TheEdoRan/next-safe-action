@@ -112,10 +112,10 @@ export type MiddlewareFn<ServerError, MD, Ctx extends object, NextCtx extends ob
 	(opts: {
 		clientInput: unknown;
 		bindArgsClientInputs: unknown[];
-		ctx: Ctx;
+		ctx: Prettify<Ctx>;
 		metadata: MD;
 		next: {
-			<NC extends object>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
+			<NC extends object = {}>(opts?: { ctx?: NC }): Promise<MiddlewareResult<ServerError, NC>>;
 		};
 	}): Promise<MiddlewareResult<ServerError, NextCtx>>;
 };
@@ -132,7 +132,7 @@ export type ServerCodeFn<
 > = (args: {
 	parsedInput: S extends Schema ? Infer<S> : undefined;
 	bindArgsParsedInputs: InferArray<BAS>;
-	ctx: Ctx;
+	ctx: Prettify<Ctx>;
 	metadata: MD;
 }) => Promise<Data>;
 
@@ -152,7 +152,7 @@ export type StateServerCodeFn<
 	args: {
 		parsedInput: S extends Schema ? Infer<S> : undefined;
 		bindArgsParsedInputs: InferArray<BAS>;
-		ctx: Ctx;
+		ctx: Prettify<Ctx>;
 		metadata: MD;
 	},
 	utils: { prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>> }
@@ -176,7 +176,7 @@ export type SafeActionUtils<
 	onSuccess?: (args: {
 		data?: Data;
 		metadata: MD;
-		ctx?: Ctx;
+		ctx?: Prettify<Ctx>;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
 		parsedInput: S extends Schema ? Infer<S> : undefined;
@@ -187,14 +187,14 @@ export type SafeActionUtils<
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
 		metadata: MD;
-		ctx?: Ctx;
+		ctx?: Prettify<Ctx>;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
 	}) => MaybePromise<void>;
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 		metadata: MD;
-		ctx?: Ctx;
+		ctx?: Prettify<Ctx>;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
 		hasRedirected: boolean;

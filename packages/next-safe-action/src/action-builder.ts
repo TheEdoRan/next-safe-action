@@ -13,7 +13,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import { ActionMetadataError, deepMerge, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import { ActionServerValidationError, ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
@@ -71,7 +71,7 @@ export function actionBuilder<
 				utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
-					let prevCtx: object = {};
+					let currentCtx: object = {};
 					const middlewareResult: MiddlewareResult<ServerError, object> = { success: false };
 					type PrevResult = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
@@ -99,7 +99,7 @@ export function actionBuilder<
 						}
 
 						const middlewareFn = args.middlewareFns[idx];
-						middlewareResult.ctx = prevCtx;
+						middlewareResult.ctx = currentCtx;
 
 						try {
 							if (idx === 0) {
@@ -118,10 +118,11 @@ export function actionBuilder<
 								await middlewareFn({
 									clientInput: clientInputs.at(-1), // pass raw client input
 									bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
-									ctx: prevCtx,
+									ctx: currentCtx,
 									metadata: args.metadata,
-									next: async ({ ctx }) => {
-										prevCtx = ctx;
+									next: async (nextOpts) => {
+										currentCtx = deepMerge(currentCtx, nextOpts?.ctx ?? {});
+										// currentCtx = { ...cloneDeep(currentCtx), ...(nextOpts?.ctx ?? {}) };
 										await executeMiddlewareStack(idx + 1);
 										return middlewareResult;
 									},
@@ -196,7 +197,7 @@ export function actionBuilder<
 								scfArgs[0] = {
 									parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
 									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
-									ctx: prevCtx as Ctx,
+									ctx: currentCtx as Ctx,
 									metadata: args.metadata,
 								};
 
@@ -234,7 +235,7 @@ export function actionBuilder<
 									args.handleReturnedServerError(error, {
 										clientInput: clientInputs.at(-1), // pass raw client input
 										bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
-										ctx: prevCtx,
+										ctx: currentCtx,
 										metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 									})
 								);
@@ -246,7 +247,7 @@ export function actionBuilder<
 										returnedError,
 										clientInput: clientInputs.at(-1), // pass raw client input
 										bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
-										ctx: prevCtx,
+										ctx: currentCtx,
 										metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 									})
 								);
@@ -263,7 +264,7 @@ export function actionBuilder<
 							utils?.onSuccess?.({
 								data: undefined,
 								metadata: args.metadata,
-								ctx: prevCtx as Ctx,
+								ctx: currentCtx as Ctx,
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
@@ -276,7 +277,7 @@ export function actionBuilder<
 						await Promise.resolve(
 							utils?.onSettled?.({
 								metadata: args.metadata,
-								ctx: prevCtx as Ctx,
+								ctx: currentCtx as Ctx,
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								result: {},
@@ -324,7 +325,7 @@ export function actionBuilder<
 						await Promise.resolve(
 							utils?.onSuccess?.({
 								metadata: args.metadata,
-								ctx: prevCtx as Ctx,
+								ctx: currentCtx as Ctx,
 								data: actionResult.data as Data,
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
@@ -338,7 +339,7 @@ export function actionBuilder<
 						await Promise.resolve(
 							utils?.onError?.({
 								metadata: args.metadata,
-								ctx: prevCtx as Ctx,
+								ctx: currentCtx as Ctx,
 								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								error: actionResult,
@@ -350,7 +351,7 @@ export function actionBuilder<
 					await Promise.resolve(
 						utils?.onSettled?.({
 							metadata: args.metadata,
-							ctx: prevCtx as Ctx,
+							ctx: currentCtx as Ctx,
 							clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
 							bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 							result: actionResult,
