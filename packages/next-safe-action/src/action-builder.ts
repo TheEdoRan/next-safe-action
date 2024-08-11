@@ -26,7 +26,7 @@ export function actionBuilder<
 	ServerError,
 	MetadataSchema extends Schema | undefined = undefined,
 	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
-	Ctx = undefined,
+	Ctx extends object = {},
 	SF extends (() => Promise<Schema>) | undefined = undefined, // schema function
 	S extends Schema | undefined = SF extends Function ? Awaited<ReturnType<SF>> : undefined,
 	const BAS extends readonly Schema[] = [],
@@ -71,8 +71,8 @@ export function actionBuilder<
 				utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
-					let prevCtx: unknown = undefined;
-					const middlewareResult: MiddlewareResult<ServerError, unknown> = { success: false };
+					let prevCtx: object = {};
+					const middlewareResult: MiddlewareResult<ServerError, object> = { success: false };
 					type PrevResult = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
 					const parsedInputDatas: any[] = [];

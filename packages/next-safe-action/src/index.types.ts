@@ -14,7 +14,7 @@ export type DVES = "formatted" | "flattened";
 export type ServerErrorFunctionUtils<MetadataSchema extends Schema | undefined> = {
 	clientInput: unknown;
 	bindArgsClientInputs: unknown[];
-	ctx: unknown;
+	ctx: object;
 	metadata: MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined;
 };
 
@@ -53,7 +53,7 @@ export type SafeActionResult<
 	CBAVE = BindArgsValidationErrors<BAS>,
 	Data = unknown,
 	// eslint-disable-next-line
-	NextCtx = unknown,
+	NextCtx = object,
 > = {
 	data?: Data;
 	serverError?: ServerError;
@@ -90,24 +90,32 @@ export type SafeStateActionFn<
  * Type of the result of a middleware function. It extends the result of a safe action with
  * information about the action execution.
  */
-export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<ServerError, any, any, any, any, any, NextCtx> & {
+export type MiddlewareResult<ServerError, NextCtx extends object> = SafeActionResult<
+	ServerError,
+	any,
+	any,
+	any,
+	any,
+	any,
+	NextCtx
+> & {
 	parsedInput?: unknown;
 	bindArgsParsedInputs?: unknown[];
-	ctx?: unknown;
+	ctx?: object;
 	success: boolean;
 };
 
 /**
  * Type of the middleware function passed to a safe action client.
  */
-export type MiddlewareFn<ServerError, MD, Ctx, NextCtx> = {
+export type MiddlewareFn<ServerError, MD, Ctx extends object, NextCtx extends object> = {
 	(opts: {
 		clientInput: unknown;
 		bindArgsClientInputs: unknown[];
 		ctx: Ctx;
 		metadata: MD;
 		next: {
-			<NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
+			<NC extends object>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
 		};
 	}): Promise<MiddlewareResult<ServerError, NextCtx>>;
 };
@@ -115,7 +123,13 @@ export type MiddlewareFn<ServerError, MD, Ctx, NextCtx> = {
 /**
  * Type of the function that executes server code when defining a new safe action.
  */
-export type ServerCodeFn<MD, Ctx, S extends Schema | undefined, BAS extends readonly Schema[], Data> = (args: {
+export type ServerCodeFn<
+	MD,
+	Ctx extends object,
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	Data,
+> = (args: {
 	parsedInput: S extends Schema ? Infer<S> : undefined;
 	bindArgsParsedInputs: InferArray<BAS>;
 	ctx: Ctx;
@@ -128,7 +142,7 @@ export type ServerCodeFn<MD, Ctx, S extends Schema | undefined, BAS extends read
 export type StateServerCodeFn<
 	ServerError,
 	MD,
-	Ctx,
+	Ctx extends object,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	CVE,
@@ -150,7 +164,7 @@ export type StateServerCodeFn<
 export type SafeActionUtils<
 	ServerError,
 	MD,
-	Ctx,
+	Ctx extends object,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],
 	CVE,

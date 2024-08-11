@@ -326,7 +326,7 @@ test("flattened validation errors in execution result from middleware are correc
 
 	const expectedResult = {
 		success: false,
-		ctx: undefined,
+		ctx: {},
 		validationErrors: {
 			formErrors: [],
 			fieldErrors: {
@@ -377,7 +377,7 @@ test("overridden formatted validation errors in execution result from middleware
 
 	const expectedResult = {
 		success: false,
-		ctx: undefined,
+		ctx: {},
 		validationErrors: {
 			username: {
 				_errors: ["String must contain at most 3 character(s)"],
