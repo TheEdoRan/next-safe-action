@@ -44,7 +44,7 @@ class YupAdapter implements ValidationAdapter {
 					issues: [
 						{
 							message,
-							path: path && path.length > 0 ? [path] : undefined,
+							path: path && path.length > 0 ? path.split(".") : undefined,
 						},
 					] as ValidationIssue[],
 				} as const;

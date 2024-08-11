@@ -41,7 +41,7 @@ class TypeboxAdapter implements ValidationAdapter {
 			success: false,
 			issues: [...result.Errors(data)].map(({ message, path }) => ({
 				message,
-				path: [path],
+				path: path.split("/").slice(1),
 			})),
 		} as const;
 	}
