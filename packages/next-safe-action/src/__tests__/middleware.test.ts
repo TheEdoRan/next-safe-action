@@ -70,7 +70,7 @@ test("instance context value is correctly overridden in subsequent middleware", 
 			if (ctx.foo !== "baz") {
 				throw new Error("Expected ctx.foo to be 'baz'");
 			}
-			return next({ ctx });
+			return next();
 		})
 		.action(async ({ ctx }) => {
 			return {
@@ -130,9 +130,9 @@ test("happy path execution result from middleware is correct", async () => {
 			})
 		)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })])
-		.use(async ({ next, ctx }) => {
+		.use(async ({ next }) => {
 			// Await action execution.
-			const res = await next({ ctx });
+			const res = await next();
 			middlewareResult = res;
 			return res;
 		})
@@ -176,9 +176,9 @@ test("server error execution result from middleware is correct", async () => {
 			})
 		)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })])
-		.use(async ({ next, ctx }) => {
+		.use(async ({ next }) => {
 			// Await action execution.
-			const res = await next({ ctx });
+			const res = await next();
 			middlewareResult = res;
 			return res;
 		})
@@ -212,9 +212,9 @@ test("validation errors in execution result from middleware are correct", async 
 			})
 		)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })])
-		.use(async ({ next, ctx }) => {
+		.use(async ({ next }) => {
 			// Await action execution.
-			const res = await next({ ctx });
+			const res = await next();
 			middlewareResult = res;
 			return res;
 		})
@@ -259,9 +259,9 @@ test("server validation errors in execution result from middleware are correct",
 	const action = ac
 		.schema(schema)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })])
-		.use(async ({ next, ctx }) => {
+		.use(async ({ next }) => {
 			// Await action execution.
-			const res = await next({ ctx });
+			const res = await next();
 			middlewareResult = res;
 			return res;
 		})
@@ -309,9 +309,9 @@ test("flattened validation errors in execution result from middleware are correc
 			})
 		)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })])
-		.use(async ({ next, ctx }) => {
+		.use(async ({ next }) => {
 			// Await action execution.
-			const res = await next({ ctx });
+			const res = await next();
 			middlewareResult = res;
 			return res;
 		})
@@ -360,9 +360,9 @@ test("overridden formatted validation errors in execution result from middleware
 		.bindArgsSchemas([z.object({ age: z.number().positive() })], {
 			handleBindArgsValidationErrorsShape: formatBindArgsValidationErrors,
 		})
-		.use(async ({ next, ctx }) => {
+		.use(async ({ next }) => {
 			// Await action execution.
-			const res = await next({ ctx });
+			const res = await next();
 			middlewareResult = res;
 			return res;
 		})
