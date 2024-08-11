@@ -1,4 +1,4 @@
-// Code courtesy of/highly inspired by https://github.com/decs/typeschema
+// Code inspired by https://github.com/decs/typeschema
 
 import type { Static, TSchema } from "@sinclair/typebox";
 import type { GenericSchema, GenericSchemaAsync, InferInput, InferOutput } from "valibot";

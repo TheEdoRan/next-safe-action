@@ -1,4 +1,4 @@
-// Code courtesy of https://github.com/decs/typeschema/blob/main/packages/zod/src/validation.ts
+// Code based on https://github.com/decs/typeschema/blob/main/packages/zod/src/validation.ts
 
 // MIT License
 
