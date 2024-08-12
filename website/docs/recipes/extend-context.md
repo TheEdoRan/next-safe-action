@@ -18,7 +18,6 @@ const actionClient = createSafeActionClient()
     return next({ ctx: { sessionId } })
   })
   .use(async ({ next, ctx }) => {
-    // Get user id from database.
     const { sessionId } = ctx; // Context contains `sessionId`
     const userId = await getUserIdBySessionId(sessionId);
     return next({ ctx: { userId } })
