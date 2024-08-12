@@ -5,6 +5,7 @@ import { test } from "node:test";
 import { z } from "zod";
 import {
 	createSafeActionClient,
+	experimental_createMiddleware,
 	formatBindArgsValidationErrors,
 	formatValidationErrors,
 	returnValidationErrors,
@@ -393,4 +394,25 @@ test("overridden formatted validation errors in execution result from middleware
 	};
 
 	assert.deepStrictEqual(middlewareResult, expectedResult);
+});
+
+test("standalone middleware extends context", async () => {
+	const myMiddleware = experimental_createMiddleware<{ ctx: { foo: string } }>().define(async ({ next }) => {
+		return next({ ctx: { baz: "qux" } });
+	});
+
+	const action = ac.use(myMiddleware).action(async ({ ctx }) => {
+		return {
+			ctx,
+		};
+	});
+
+	const actualResult = await action();
+	const expectedResult = {
+		data: {
+			ctx: { foo: "bar", baz: "qux" },
+		},
+	};
+
+	assert.deepStrictEqual(actualResult, expectedResult);
 });
