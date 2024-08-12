@@ -10,7 +10,7 @@ import {
 	formatValidationErrors,
 } from "./validation-errors";
 
-export { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
+export { ActionMetadataError, createMiddleware, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export {
 	ActionValidationError,
 	flattenBindArgsValidationErrors,
