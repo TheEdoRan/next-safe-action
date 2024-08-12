@@ -42,8 +42,8 @@ test("instance context value is accessible in server code function", async () =>
 
 test("instance context value is extended in action middleware and both values are accessible in server code function", async () => {
 	const action = ac
-		.use(async ({ next, ctx }) => {
-			return next({ ctx: { ...ctx, bar: "baz" } });
+		.use(async ({ next }) => {
+			return next({ ctx: { bar: "baz" } });
 		})
 		.action(async ({ ctx }) => {
 			return {
@@ -96,8 +96,8 @@ test("action client inputs are passed to middleware", async () => {
 			})
 		)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })])
-		.use(async ({ clientInput, bindArgsClientInputs, next, ctx }) => {
-			return next({ ctx: { ...ctx, clientInput, bindArgsClientInputs } });
+		.use(async ({ clientInput, bindArgsClientInputs, next }) => {
+			return next({ ctx: { clientInput, bindArgsClientInputs } });
 		})
 		.action(async ({ ctx }) => {
 			return {
