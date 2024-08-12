@@ -204,3 +204,7 @@ Note that the second line comes from the default `handleServerErrorLog` function
 ## Context extension
 
 Visit the [context extension](/docs/recipes/extend-context) recipe for more information on how to extend context with middleware functions.
+
+## Create standalone middleware with `createMiddleware`
+
+WIP
