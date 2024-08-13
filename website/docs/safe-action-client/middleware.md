@@ -273,8 +273,8 @@ const myMiddleware1 = experimental_createMiddleware().define(async ({ next }) =>
   return next({ ctx: { baz: "qux" } });
 });
 
-// This middleware works with clients that at minimum have `ctx.foo` and `metadata.actionName` properties.
-// More information below. *
+// This middleware works with clients that at minimum have `ctx.foo`, `metadata.actionName`
+// and `serverError.message` properties. More information below. *
 const myMiddleware2 = experimental_createMiddleware<{
   ctx: { foo: string }; // [1]
   metadata: { actionName: string }; // [2]
