@@ -226,6 +226,8 @@ export const actionClient = createSafeActionClient()
   })
 ```
 
+And then use the client to define an action:
+
 ```typescript title="src/app/test-action.ts"
 "use server";
 
@@ -256,7 +258,10 @@ import { z } from "zod";
 
 export const actionClient = createSafeActionClient({
   defineMetadataSchema: () => z.object({
-    actionName: z.string()
+    actionName: z.string(),
+  }),
+  handleReturnedServerError: (e) => ({
+    message: e.message,
   }),
 }).use(async ({ next }) => {
   return next({ ctx: { foo: "bar" } });
@@ -273,6 +278,7 @@ const myMiddleware1 = experimental_createMiddleware().define(async ({ next }) =>
 const myMiddleware2 = experimental_createMiddleware<{
   ctx: { foo: string }; // [1]
   metadata: { actionName: string }; // [2]
+  serverError: { message: string } // [3]
 }>().define(async ({ next }) => {
   // Do something useful here...
   return next({ ctx: { john: "doe" } });
@@ -284,4 +290,4 @@ export const actionClientWithMyMiddleware = actionClient.use(myMiddleware1).use(
 
 An action defined using the `actionClientWithMyMiddleware` will contain `foo`, `baz` and `john` in its context.
 
-\* Note that you can pass, **but not required to**, an object with two generic properties to the `experimental_createMiddleware()` function: `ctx` \[1\], and `metadata` \[2\]. Those keys are optional, and you should only provide them if you want your middleware to require **at minimum** the shape you passed in as generic. By doing that, following the above example, you can then access `ctx.foo` and `metadata.actionName` in the middleware you're defining. If you pass a middleware that requires those properties to a client that doesn't have them, you'll get an error in `use()` method.
+\* Note that you can pass, **but not required to**, an object with two generic properties to the `experimental_createMiddleware()` function: `ctx` \[1\], `metadata` \[2\] and `serverError` \[3\]. Those keys are optional, and you should only provide them if you want your middleware to require **at minimum** the shape you passed in as generic. By doing that, following the above example, you can then access `ctx.foo` and `metadata.actionName` in the middleware you're defining, and by await the `next` function you'll see that `serverError` is an object with the `message` property. If you pass a middleware that requires those properties to a client that doesn't have them, you'll get an error in `use()` method.
