@@ -1,3 +1,4 @@
+import { deepmerge } from "deepmerge-ts";
 import { isNotFoundError } from "next/dist/client/components/not-found.js";
 import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {} from "zod";
@@ -13,7 +14,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { ActionMetadataError, deepMerge, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import { ActionServerValidationError, ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
@@ -121,7 +122,7 @@ export function actionBuilder<
 									ctx: currentCtx,
 									metadata: args.metadata,
 									next: async (nextOpts) => {
-										currentCtx = deepMerge(currentCtx, nextOpts?.ctx ?? {});
+										currentCtx = deepmerge(currentCtx, nextOpts?.ctx ?? {});
 										// currentCtx = { ...cloneDeep(currentCtx), ...(nextOpts?.ctx ?? {}) };
 										await executeMiddlewareStack(idx + 1);
 										return middlewareResult;
