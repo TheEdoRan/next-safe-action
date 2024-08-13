@@ -10,6 +10,7 @@ import {
 	formatValidationErrors,
 } from "./validation-errors";
 
+export { createMiddleware as experimental_createMiddleware } from "./middleware";
 export { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export {
 	ActionValidationError,
@@ -55,13 +56,13 @@ export const createSafeActionClient = <
 		>);
 
 	return new SafeActionClient({
-		middlewareFns: [async ({ next }) => next({ ctx: undefined })],
+		middlewareFns: [async ({ next }) => next({ ctx: {} })],
 		handleServerErrorLog,
 		handleReturnedServerError,
 		schemaFn: undefined,
 		bindArgsSchemas: [],
 		validationAdapter: createOpts?.validationAdapter ?? zodAdapter(), // use zod adapter by default
-		ctxType: undefined,
+		ctxType: {},
 		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,

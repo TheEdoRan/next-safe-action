@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 6
 description: Learn how to use next-safe-action with a i18n solution.
 ---
 

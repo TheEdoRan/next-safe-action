@@ -5,7 +5,7 @@ description: Learn how to use middleware functions in your actions.
 
 # Middleware
 
-next-safe-action, since version 7, ships with a composable and powerful middleware system, which allows you to create functions for almost every kind of use case you can imagine (authorization, logging, role based access, etc.). It works very similarly to the [tRPC implementation](https://trpc.io/docs/server/middlewares), with some minor differences.
+next-safe-action, since version 7, ships with a composable and powerful middleware system, which allows you to create functions for almost every kind of use case you can imagine (authorization, logging, role based access, etc.). It works very similarly to the [tRPC implementation](https://trpc.io/docs/server/middlewares).
 
 Middleware functions are defined using [`use`](/docs/safe-action-client/instance-methods#use) method in your action clients, via the `middlewareFn` argument.
 
@@ -144,7 +144,7 @@ const deleteUser = authActionClient
 
     // Here we pass the same untouched context (`userId`) to the next function, since we don't need
     // to add data to the context here.
-    return next({ ctx });
+    return next();
   })
   .metadata({ actionName: "deleteUser" })
   .action(async ({ ctx: { userId } }) => {
@@ -200,3 +200,88 @@ Note that the second line comes from the default `handleServerErrorLog` function
 ## `middlewareFn` return value
 
 `middlewareFn` returns a Promise of a [`MiddlewareResult`](/docs/types#middlewareresult) object. It extends the result of a safe action with `success` property, and `parsedInput`, `bindArgsParsedInputs` and `ctx` optional properties. This is the exact return type of the `next` function, so you must always return it (or its result) to continue executing the middleware chain.
+
+## Extend context
+
+Context is a special object that holds information about the current execution state. This object is passed to middleware functions and server code functions when defining actions.
+
+Starting from version 7.6.0, context is extended by default when defining middleware functions. For instance, if you want both the `sessionId` and `userId` in the context, by using two different middleware functions (trivial example), you can do it like this:
+
+```typescript title="src/lib/safe-action.ts"
+import { createSafeActionClient } from "next-safe-action";
+
+export const actionClient = createSafeActionClient()
+  .use(async ({ next }) => {
+    const sessionId = await getSessionId();
+    return next({ ctx: { sessionId } })
+  })
+  .use(async ({ next, ctx }) => {
+    const { sessionId } = ctx; // Context contains `sessionId`
+    const userId = await getUserIdBySessionId(sessionId);
+    return next({ ctx: { userId } })
+  })
+  .use(async ({ next }) => {
+    // You can also define a middleware function that doesn't extend or modify the context.
+    return next();
+  })
+```
+
+```typescript title="src/app/test-action.ts"
+"use server";
+
+import { actionClient } from "@/lib/safe-action";
+
+export const testAction = actionClient
+  .action(async ({ ctx }) => {
+    // Context contains `sessionId` and `userId` thanks to the middleware.
+    const { sessionId, userId } = ctx;
+  });
+```
+
+## Create standalone middleware
+
+:::info
+Experimental feature
+:::
+
+Starting from version 7.6.0, you can create standalone middleware functions using the built-in `experimental_createMiddleware()` function. It's labelled as experimental because the API could change in the future, but it's perfectly fine to use it, as it's a pretty simple function that just wraps the creation of middleware.
+
+Thanks to this feature, and the previously mentioned [context extension](#extend-context), you can now define standalone middleware functions and even publish them as packages, if you want to.
+
+Here's how to use `experimental_createMiddleware()`:
+
+```typescript title="src/lib/safe-action.ts"
+import { createSafeActionClient, experimental_createMiddleware } from "next-safe-action";
+import { z } from "zod";
+
+export const actionClient = createSafeActionClient({
+  defineMetadataSchema: () => z.object({
+    actionName: z.string()
+  }),
+}).use(async ({ next }) => {
+  return next({ ctx: { foo: "bar" } });
+});
+
+// This middleware works with any client.
+const myMiddleware1 = experimental_createMiddleware().define(async ({ next }) => {
+  // Do something useful here...
+  return next({ ctx: { baz: "qux" } });
+});
+
+// This middleware works with clients that at minimum have `ctx.foo` and `metadata.actionName` properties.
+// More information below. *
+const myMiddleware2 = experimental_createMiddleware<{
+  ctx: { foo: string }; // [1]
+  metadata: { actionName: string }; // [2]
+}>().define(async ({ next }) => {
+  // Do something useful here...
+  return next({ ctx: { john: "doe" } });
+});
+
+// You can use it like a regular middleware function.
+export const actionClientWithMyMiddleware = actionClient.use(myMiddleware1).use(myMiddleware2);
+```
+
+An action defined using the `actionClientWithMyMiddleware` will contain `foo`, `baz` and `john` in its context.
+
+\* Note that you can pass, **but not required to**, an object with two generic properties to the `experimental_createMiddleware()` function: `ctx` \[1\], and `metadata` \[2\]. Those keys are optional, and you should only provide them if you want your middleware to require **at minimum** the shape you passed in as generic. By doing that, following the above example, you can then access `ctx.foo` and `metadata.actionName` in the middleware you're defining. If you pass a middleware that requires those properties to a client that doesn't have them, you'll get an error in `use()` method.

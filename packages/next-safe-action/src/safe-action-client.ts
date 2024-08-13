@@ -23,7 +23,7 @@ export class SafeActionClient<
 	ODVES extends DVES | undefined, // override default validation errors shape
 	MetadataSchema extends Schema | undefined = undefined,
 	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
-	Ctx = undefined,
+	Ctx extends object = {},
 	SF extends (() => Promise<Schema>) | undefined = undefined, // schema function
 	S extends Schema | undefined = SF extends Function ? Awaited<ReturnType<SF>> : undefined,
 	const BAS extends readonly Schema[] = [],
@@ -37,10 +37,10 @@ export class SafeActionClient<
 		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
 	>;
 	readonly #middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
-	readonly #ctxType = undefined as Ctx;
 	readonly #metadataSchema: MetadataSchema;
 	readonly #metadata: MD;
 	readonly #schemaFn: SF;
+	readonly #ctxType: Ctx;
 	readonly #bindArgsSchemas: BAS;
 	readonly #validationAdapter: ValidationAdapter;
 	readonly #handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
@@ -74,6 +74,7 @@ export class SafeActionClient<
 		this.#schemaFn = (opts.schemaFn ?? undefined) as SF;
 		this.#bindArgsSchemas = opts.bindArgsSchemas ?? [];
 		this.#validationAdapter = opts.validationAdapter;
+		this.#ctxType = opts.ctxType as unknown as Ctx;
 		this.#handleValidationErrorsShape = opts.handleValidationErrorsShape;
 		this.#handleBindArgsValidationErrorsShape = opts.handleBindArgsValidationErrorsShape;
 		this.#defaultValidationErrorsShape = opts.defaultValidationErrorsShape;
@@ -86,7 +87,7 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#use See docs for more information}
 	 */
-	use<NextCtx>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, NextCtx>) {
+	use<NextCtx extends object>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, Ctx & NextCtx>) {
 		return new SafeActionClient({
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
 			handleReturnedServerError: this.#handleReturnedServerError,
@@ -98,7 +99,7 @@ export class SafeActionClient<
 			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
-			ctxType: undefined as NextCtx,
+			ctxType: {} as Ctx & NextCtx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
 		});
@@ -122,7 +123,7 @@ export class SafeActionClient<
 			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
-			ctxType: undefined as Ctx,
+			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
 		});
@@ -164,7 +165,7 @@ export class SafeActionClient<
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AS, OCVE>,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
-			ctxType: undefined as Ctx,
+			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
 		});
@@ -198,7 +199,7 @@ export class SafeActionClient<
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: (utils?.handleBindArgsValidationErrorsShape ??
 				this.#handleBindArgsValidationErrorsShape) as HandleBindArgsValidationErrorsShapeFn<OBAS, OCBAVE>,
-			ctxType: undefined as Ctx,
+			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
 		});

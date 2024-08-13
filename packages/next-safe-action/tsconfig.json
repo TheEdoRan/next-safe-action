@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "ESNext",
 		"module": "CommonJS",
-		"lib": ["ES2021.String"],
+		"lib": ["ES2022"],
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"outDir": "./dist",

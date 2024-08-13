@@ -39,7 +39,7 @@ test("unknown error occurred in server code function is masked by default", asyn
 
 test("unknown error occurred in middleware function is masked by default", async () => {
 	const action = ac1
-		.use(async ({ next, ctx }) => next({ ctx }))
+		.use(async ({ next }) => next())
 		.use(async () => {
 			throw new Error("Something bad happened");
 		})
@@ -74,7 +74,7 @@ test("known error occurred in server code function is unmasked", async () => {
 
 test("known error occurred in middleware function is unmasked", async () => {
 	const action = ac1
-		.use(async ({ next, ctx }) => next({ ctx }))
+		.use(async ({ next }) => next())
 		.use(async () => {
 			throw new ActionError("Something bad happened");
 		})
@@ -131,7 +131,7 @@ test("error occurred in server code function has the correct shape defined by `h
 
 test("error occurred in middleware function has the correct shape defined by `handleReturnedServerError`", async () => {
 	const action = ac2
-		.use(async ({ next, ctx }) => next({ ctx }))
+		.use(async ({ next }) => next())
 		.use(async () => {
 			throw new Error("Something bad happened");
 		})
@@ -169,7 +169,7 @@ test("action throws if an error occurred in server code function and `handleRetu
 
 test("action throws if an error occurred in middleware function and `handleReturnedServerError` rethrows it", async () => {
 	const action = ac3
-		.use(async ({ next, ctx }) => next({ ctx }))
+		.use(async ({ next }) => next())
 		.use(async () => {
 			throw new Error("Something bad happened");
 		})

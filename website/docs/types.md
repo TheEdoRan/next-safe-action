@@ -23,7 +23,7 @@ Type of the util properties passed to server error handler functions.
 export type ServerErrorFunctionUtils<MetadataSchema extends Schema | undefined> = {
   clientInput: unknown;
   bindArgsClientInputs: unknown[];
-  ctx: unknown;
+  ctx: object;
   metadata: MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined;
 };
 ```
@@ -67,7 +67,7 @@ export type SafeActionResult<
   CBAVE = BindArgsValidationErrors<BAS>,
   Data = unknown,
   // eslint-disable-next-line
-  NextCtx = unknown,
+  NextCtx = object,
 > = {
       data?: Data;
       serverError?: ServerError;
@@ -119,7 +119,7 @@ export type SafeStateActionFn<
 Type of the result of a middleware function. It extends the result of a safe action with information about the action execution.
 
 ```typescript
-export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
+export type MiddlewareResult<ServerError, NextCtx extends object> = SafeActionResult<
   ServerError,
   any,
   any,
@@ -130,7 +130,7 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 > & {
   parsedInput?: unknown;
   bindArgsParsedInputs?: unknown[];
-  ctx?: unknown;
+  ctx?: object;
   success: boolean;
 };
 ```
@@ -140,14 +140,14 @@ export type MiddlewareResult<ServerError, NextCtx> = SafeActionResult<
 Type of the middleware function passed to a safe action client.
 
 ```typescript
-export type MiddlewareFn<ServerError, MD, Ctx, NextCtx> = {
+export type MiddlewareFn<ServerError, MD, Ctx, NextCtx extends object> = {
   (opts: {
     clientInput: unknown;
     bindArgsClientInputs: unknown[];
     ctx: Ctx;
     metadata: MD;
     next: {
-      <NC>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
+      <NC extends object = {}>(opts: { ctx: NC }): Promise<MiddlewareResult<ServerError, NC>>;
     };
   }): Promise<MiddlewareResult<ServerError, NextCtx>>;
 };
@@ -158,10 +158,16 @@ export type MiddlewareFn<ServerError, MD, Ctx, NextCtx> = {
 Type of the function that executes server code when defining a new safe action.
 
 ```typescript
-export type ServerCodeFn<MD, Ctx, S extends Schema | undefined, BAS extends readonly Schema[], Data> = (args: {
+export type ServerCodeFn<
+  MD,
+  Ctx extends object,
+  S extends Schema | undefined,
+  BAS extends readonly Schema[],
+  Data,
+> = (args: {
   parsedInput: S extends Schema ? Infer<S> : undefined;
   bindArgsParsedInputs: InferArray<BAS>;
-  ctx: Ctx;
+  ctx: Prettify<Ctx>;
   metadata: MD;
 }) => Promise<Data>;
 ```
@@ -174,7 +180,7 @@ Type of the function that executes server code when defining a new stateful safe
 export type StateServerCodeFn<
   ServerError,
   MD,
-  Ctx
+  Ctx extends object,
   S extends Schema | undefined,
   BAS extends readonly Schema[],
   CVE,
@@ -198,6 +204,8 @@ Type of action execution utils. It includes action callbacks and other utils.
 ```typescript
 export type SafeActionUtils<
   ServerError,
+  MD,
+  Ctx extends object,
   S extends Schema | undefined,
   BAS extends readonly Schema[],
   CVE,
@@ -208,20 +216,30 @@ export type SafeActionUtils<
   throwValidationErrors?: boolean;
   onSuccess?: (args: {
     data?: Data;
+    metadata: MD;
+    ctx?: Prettify<Ctx>;
     clientInput: S extends Schema ? InferIn<S> : undefined;
     bindArgsClientInputs: InferInArray<BAS>;
     parsedInput: S extends Schema ? Infer<S> : undefined;
     bindArgsParsedInputs: InferArray<BAS>;
+    hasRedirected: boolean;
+    hasNotFound: boolean;
   }) => MaybePromise<void>;
   onError?: (args: {
-    error: Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">;
+    error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
+    metadata: MD;
+    ctx?: Prettify<Ctx>;
     clientInput: S extends Schema ? InferIn<S> : undefined;
     bindArgsClientInputs: InferInArray<BAS>;
   }) => MaybePromise<void>;
   onSettled?: (args: {
-    result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
+    result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+    metadata: MD;
+    ctx?: Prettify<Ctx>;
     clientInput: S extends Schema ? InferIn<S> : undefined;
     bindArgsClientInputs: InferInArray<BAS>;
+    hasRedirected: boolean;
+    hasNotFound: boolean;
   }) => MaybePromise<void>;
 };
 ```

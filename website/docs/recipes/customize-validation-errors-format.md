@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 description: Learn how to customize validation errors format returned to the client.
 ---
 
@@ -49,7 +49,7 @@ export const loginUser = actionClient
 ```
 
 :::note
-If you chain multiple `schema` methods, as explained in the [Extend previous schema](/docs/recipes/extend-previous-schema) page, and want to override the default validation errors shape, you **must** use `handleValidationErrorsShape` inside the last `schema` method, otherwise there would be a type mismatch in the returned action result.
+If you chain multiple `schema` methods, as explained in the [Extend previous schema](/docs/safe-action-client/extend-previous-schema) page, and want to override the default validation errors shape, you **must** use `handleValidationErrorsShape` inside the last `schema` method, otherwise there would be a type mismatch in the returned action result.
 :::
 
 ### `flattenValidationErrors` and `flattenBindArgsValidationErrors` utility functions

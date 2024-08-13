@@ -38,7 +38,7 @@ export const action = createSafeActionClient({
 	const start = Date.now();
 
 	// Here we await the next middleware.
-	const result = await next({ ctx });
+	const result = await next();
 
 	const end = Date.now();
 
