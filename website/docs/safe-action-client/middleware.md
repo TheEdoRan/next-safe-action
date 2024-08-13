@@ -207,10 +207,10 @@ Context is a special object that holds information about the current execution s
 
 Starting from version 7.6.0, context is extended by default when defining middleware functions. For instance, if you want both the `sessionId` and `userId` in the context, by using two different middleware functions (trivial example), you can do it like this:
 
-```typescript
+```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
 
-const actionClient = createSafeActionClient()
+export const actionClient = createSafeActionClient()
   .use(async ({ next }) => {
     const sessionId = await getSessionId();
     return next({ ctx: { sessionId } })
@@ -226,7 +226,17 @@ const actionClient = createSafeActionClient()
   })
 ```
 
-All actions defined using this client will contain both `sessionId` and `userId` in their context.
+```typescript title="src/app/test-action.ts"
+"use server";
+
+import { actionClient } from "@/lib/safe-action";
+
+export const testAction = actionClient
+  .action(async ({ ctx }) => {
+    // Context contains `sessionId` and `userId` thanks to the middleware.
+    const { sessionId, userId } = ctx;
+  });
+```
 
 ## Create standalone middleware
 
