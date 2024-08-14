@@ -34,7 +34,7 @@ export const useStateAction = <
 		utils?.permalink
 	);
 	const [isIdle, setIsIdle] = React.useState(true);
-	const [, startTransition] = React.useTransition();
+	const [isTransitioning, startTransition] = React.useTransition();
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
 		isExecuting,
@@ -78,6 +78,6 @@ export const useStateAction = <
 		input: clientInput,
 		result,
 		status,
-		...getActionShorthandStatusObject(status),
+		...getActionShorthandStatusObject({ status, isTransitioning }),
 	};
 };

@@ -23,4 +23,4 @@ Here is the full list of callbacks, with their behavior explained. All of them a
 | `onExecute?` | `"executing"`                                                            |
 | `onSuccess?` | `"hasSucceeded"`                                                         |
 | `onError?`   | `"hasErrored"`                                                           | 
-| `onSettled?` | `"hasSucceeded"` or `"hasErrored"` (after `onSuccess` or `onError` call) |
+| `onSettled?` | `"hasSucceeded"` or `"hasErrored"`                                       |

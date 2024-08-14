@@ -30,7 +30,7 @@ export const useAction = <
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
 	utils?: HookBaseUtils<S> & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
-	const [, startTransition] = React.useTransition();
+	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
@@ -128,7 +128,7 @@ export const useAction = <
 		result,
 		reset,
 		status,
-		...getActionShorthandStatusObject(status),
+		...getActionShorthandStatusObject({ status, isTransitioning }),
 	};
 };
 
@@ -155,7 +155,7 @@ export const useOptimisticAction = <
 	} & HookBaseUtils<S> &
 		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ) => {
-	const [, startTransition] = React.useTransition();
+	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
@@ -260,7 +260,7 @@ export const useOptimisticAction = <
 		optimisticState,
 		reset,
 		status,
-		...getActionShorthandStatusObject(status),
+		...getActionShorthandStatusObject({ status, isTransitioning }),
 	};
 };
 

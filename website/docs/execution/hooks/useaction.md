@@ -81,7 +81,9 @@ As you can see, here we display a greet message after the action is performed, i
 | `reset`   | `() => void`                                 | Programmatically reset `input` and `result` object with this function.                            |
 | `status`  | [`HookActionStatus`](/docs/types#hookresult) | The action current status.                                                                        |
 | `isIdle`  | `boolean` | True if the action status is `idle`.                                                                        |
+| `isTransitioning`  | `boolean` | True if the transition status  from the `useTransition` hook used under the hood is `true`.                                                                        |
 | `isExecuting`  | `boolean` | True if the action status is `executing`.                                                                        |
+| `isPending`  | `boolean` | True if either `isTransitioning` or `isExecuting` are `true`.                                                                        |
 | `hasSucceeded`  | `boolean` | True if the action status is `hasSucceeded`.                                                                        |
 | `hasErrored`  | `boolean` | True if the action status is `hasErrored`.                                                                        |
 

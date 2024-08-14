@@ -36,10 +36,18 @@ export const getActionStatus = <
 	}
 };
 
-export const getActionShorthandStatusObject = (status: HookActionStatus) => {
+export const getActionShorthandStatusObject = ({
+	status,
+	isTransitioning,
+}: {
+	status: HookActionStatus;
+	isTransitioning: boolean;
+}) => {
 	return {
 		isIdle: status === "idle",
 		isExecuting: status === "executing",
+		isTransitioning,
+		isPending: status === "executing" || isTransitioning,
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
 	};
@@ -102,12 +110,16 @@ export const useActionCallbacks = <
 					await Promise.resolve(onExecute?.({ input }));
 					break;
 				case "hasSucceeded":
-					await Promise.resolve(onSuccess?.({ data: result?.data, input }));
-					await Promise.resolve(onSettled?.({ result, input }));
+					await Promise.all([
+						Promise.resolve(onSuccess?.({ data: result?.data, input })),
+						Promise.resolve(onSettled?.({ result, input })),
+					]);
 					break;
 				case "hasErrored":
-					await Promise.resolve(onError?.({ error: result, input }));
-					await Promise.resolve(onSettled?.({ result, input }));
+					await Promise.all([
+						Promise.resolve(onError?.({ error: result, input })),
+						Promise.resolve(onSettled?.({ result, input })),
+					]);
 					break;
 			}
 		};
