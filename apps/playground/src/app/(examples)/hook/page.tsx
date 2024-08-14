@@ -17,6 +17,8 @@ export default function Hook() {
 		reset,
 		isIdle,
 		isExecuting,
+		isTransitioning,
+		isPending,
 		hasSucceeded,
 		hasErrored,
 	} = useAction(deleteUser, {
@@ -34,7 +36,15 @@ export default function Hook() {
 		},
 	});
 
-	console.dir({ status, isIdle, isExecuting, hasSucceeded, hasErrored });
+	console.dir({
+		status,
+		isIdle,
+		isExecuting,
+		isTransitioning,
+		isPending,
+		hasSucceeded,
+		hasErrored,
+	});
 
 	return (
 		<main className="w-96 max-w-full px-4">
