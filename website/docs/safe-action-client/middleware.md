@@ -246,7 +246,7 @@ export const testAction = actionClient
 Experimental feature
 :::
 
-Starting from version 7.6.0, you can create standalone middleware functions using the built-in `experimental_createMiddleware()` function. It's labelled as experimental because the API could change in the future, but it's perfectly fine to use it, as it's a pretty simple function that just wraps the creation of middleware.
+Starting from version 7.6.0, you can create standalone middleware functions using the built-in `experimental_createMiddleware()` function. It's labeled as experimental because the API could change in the future, but it's perfectly fine to use it, as it's a pretty simple function that just wraps the creation of middleware.
 
 Thanks to this feature, and the previously mentioned [context extension](#extend-context), you can now define standalone middleware functions and even publish them as packages, if you want to.
 
@@ -290,4 +290,4 @@ export const actionClientWithMyMiddleware = actionClient.use(myMiddleware1).use(
 
 An action defined using the `actionClientWithMyMiddleware` will contain `foo`, `baz` and `john` in its context.
 
-\* Note that you can pass, **but not required to**, an object with two generic properties to the `experimental_createMiddleware()` function: `ctx` \[1\], `metadata` \[2\] and `serverError` \[3\]. Those keys are optional, and you should only provide them if you want your middleware to require **at minimum** the shape you passed in as generic. By doing that, following the above example, you can then access `ctx.foo` and `metadata.actionName` in the middleware you're defining, and by await the `next` function you'll see that `serverError` is an object with the `message` property. If you pass a middleware that requires those properties to a client that doesn't have them, you'll get an error in `use()` method.
+\* Note that you can pass, **but not required to**, an object with two generic properties to the `experimental_createMiddleware()` function: `ctx` \[1\], `metadata` \[2\] and `serverError` \[3\]. Those keys are optional, and you should only provide them if you want your middleware to require **at minimum** the shape you passed in as generic. By doing that, following the above example, you can then access `ctx.foo` and `metadata.actionName` in the middleware you're defining, and by awaiting the `next` function you'll see that `serverError` is an object with the `message` property. If you pass a middleware that requires those properties to a client that doesn't have them, you'll get an error in `use()` method.

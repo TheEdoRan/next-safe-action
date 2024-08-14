@@ -143,7 +143,9 @@ export default function TodosBox({ todos }: Props) {
 | `reset`   | `() => void`                                 | Programmatically reset `input` and `result` object with this function.                            |
 | `status`         | [`HookActionStatus`](/docs/types#hookresult)                            | The action current status.                                                                                                                                                                                                                |
 | `isIdle`  | `boolean` | True if the action status is `idle`.                                                                        |
+| `isTransitioning`  | `boolean` | True if the transition status  from the `useTransition` hook used under the hood is `true`.                                                                        |
 | `isExecuting`  | `boolean` | True if the action status is `executing`.                                                                        |
+| `isPending`  | `boolean` | True if either `isTransitioning` or `isExecuting` are `true`.                                                                        |
 | `hasSucceeded`  | `boolean` | True if the action status is `hasSucceeded`.                                                                        |
 | `hasErrored`  | `boolean` | True if the action status is `hasErrored`.                                                                        |
 
