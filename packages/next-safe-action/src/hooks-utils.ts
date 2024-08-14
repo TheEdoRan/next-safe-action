@@ -36,10 +36,18 @@ export const getActionStatus = <
 	}
 };
 
-export const getActionShorthandStatusObject = (status: HookActionStatus) => {
+export const getActionShorthandStatusObject = ({
+	status,
+	isTransitioning,
+}: {
+	status: HookActionStatus;
+	isTransitioning: boolean;
+}) => {
 	return {
 		isIdle: status === "idle",
 		isExecuting: status === "executing",
+		isTransitioning,
+		isPending: status === "executing" || isTransitioning,
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
 	};
