@@ -6,10 +6,11 @@ import type { MaybePromise, Prettify } from "./utils.types";
  * Type of base utils object passed to `useAction`, `useOptimisticAction` and `useStateAction` hooks.
  */
 export type HookBaseUtils<S extends Schema | undefined> = {
-	executeOnMount?: {
-		input: S extends Schema ? InferIn<S> : undefined;
-		delayMs?: number;
-	};
+	executeOnMount?: (undefined extends S
+		? { input?: undefined }
+		: {
+				input: S extends Schema ? InferIn<S> : undefined;
+			}) & { delayMs?: number };
 };
 
 /**

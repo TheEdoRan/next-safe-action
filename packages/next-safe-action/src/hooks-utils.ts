@@ -63,7 +63,7 @@ export const useExecuteOnMount = <S extends Schema | undefined>(
 	React.useEffect(() => {
 		const t = setTimeout(() => {
 			if (args.executeOnMount && !mounted.current) {
-				args.executeFn(args.executeOnMount.input);
+				args.executeFn(args.executeOnMount.input as S extends Schema ? InferIn<S> : void);
 				mounted.current = true;
 			}
 		}, args.executeOnMount?.delayMs ?? 0);
