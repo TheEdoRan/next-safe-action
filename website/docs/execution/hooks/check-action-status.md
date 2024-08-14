@@ -18,6 +18,6 @@ Shorthand properties are convenience booleans that are `true` if the correspondi
 
 ### Difference between `isExecuting`, `isTransitioning`, and `isPending`
 
-The difference between these three properties is that `isExecuting` is `true` when the Server Action is actually been executed, `isTransitioning` is true when the under the hood value from `useTransition` hook is `true` (so, when the transition is in progress), and `isPending` is `true` when `isExecuting` or `isTransitioning` are `true`.
+The difference between these three properties is that `isExecuting` is `true` when the Server Action is actually being executed, `isTransitioning` is true when the under the hood value from `useTransition` hook is `true` (so, when the transition is in progress), and `isPending` is `true` when `isExecuting` or `isTransitioning` are `true`.
 
 The safest and recommended way to check if the action is in progress is to use `isPending` property, because using just `isExecuting` could cause some weird glitches when navigation functions like `redirect` are used inside the Server Action.
