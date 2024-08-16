@@ -57,8 +57,8 @@ const action = actionClient
 
 Here is the list of callbacks, with their behavior explained. All of them are optional and have return type `void` or `Promise<void>` (async or non-async functions with no return):
 
-| Name         | Executed after                  |
+| Name         | Executed after                                                           |
 | ------------ | -----------------------------------------------------------------------  |
-| `onSuccess?` | Action succeeded
-| `onError?`   | Action errored with server or validation error(s)
-| `onSettled?` | Action succeeded or errored (after `onSuccess` or `onError` call) |
+| `onSuccess?` | Action succeeded                                                         |
+| `onError?`   | Action errored with server or validation error(s)                        |
+| `onSettled?` | Action succeeded or errored                                              |

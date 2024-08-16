@@ -15,6 +15,7 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import type { MaybePromise } from "./utils.types";
 import { ActionServerValidationError, ActionValidationError, buildValidationErrors } from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
@@ -259,9 +260,11 @@ export function actionBuilder<
 					// Execute middleware chain + action function.
 					await executeMiddlewareStack();
 
+					const callbacksToExecute: MaybePromise<void>[] = [];
+
 					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
 					if (frameworkError) {
-						await Promise.resolve(
+						callbacksToExecute.push(
 							utils?.onSuccess?.({
 								data: undefined,
 								metadata: args.metadata,
@@ -275,7 +278,7 @@ export function actionBuilder<
 							})
 						);
 
-						await Promise.resolve(
+						callbacksToExecute.push(
 							utils?.onSettled?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -286,6 +289,8 @@ export function actionBuilder<
 								hasNotFound: isNotFoundError(frameworkError),
 							})
 						);
+
+						await Promise.all(callbacksToExecute);
 
 						throw frameworkError;
 					}
@@ -323,7 +328,7 @@ export function actionBuilder<
 							actionResult.data = middlewareResult.data as Data;
 						}
 
-						await Promise.resolve(
+						callbacksToExecute.push(
 							utils?.onSuccess?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -337,7 +342,7 @@ export function actionBuilder<
 							})
 						);
 					} else {
-						await Promise.resolve(
+						callbacksToExecute.push(
 							utils?.onError?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -349,7 +354,7 @@ export function actionBuilder<
 					}
 
 					// onSettled, if provided, is always executed.
-					await Promise.resolve(
+					callbacksToExecute.push(
 						utils?.onSettled?.({
 							metadata: args.metadata,
 							ctx: currentCtx as Ctx,
@@ -360,6 +365,8 @@ export function actionBuilder<
 							hasNotFound: false,
 						})
 					);
+
+					await Promise.all(callbacksToExecute);
 
 					return actionResult;
 				};
