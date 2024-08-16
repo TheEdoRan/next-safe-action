@@ -36,7 +36,7 @@
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^9.0.11",
 		"is-ci": "^3.0.1",
-		"turbo": "^2.0.12"
+		"turbo": "^2.0.14"
 	},
 	"packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf"
 }
