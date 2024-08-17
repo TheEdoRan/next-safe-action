@@ -308,6 +308,103 @@ export type HandleBindArgsValidationErrorsShapeFn<BAS extends readonly Schema[],
 ) => FBAVE;
 ```
 
+### `InferSafeActionFnInput`
+
+Infer input types of a safe action.
+
+```typescript
+export type InferSafeActionFnInput<T extends Function> = T extends
+  | SafeActionFn<any, infer S extends Schema | undefined, infer BAS extends readonly Schema[], any, any, any>
+  | SafeStateActionFn<any, infer S extends Schema | undefined, infer BAS extends readonly Schema[], any, any, any>
+  ? S extends Schema
+    ? {
+        clientInput: InferIn<S>;
+        bindArgsClientInputs: InferInArray<BAS>;
+        parsedInput: Infer<S>;
+        bindArgsParsedInputs: InferArray<BAS>;
+      }
+    : {
+        clientInput: undefined;
+        bindArgsClientInputs: InferInArray<BAS>;
+        parsedInput: undefined;
+        bindArgsParsedInputs: InferArray<BAS>;
+      }
+  : never;
+```
+
+### `InferSafeActionFnResult`
+
+Infer the result type of a safe action.
+
+```typescript
+export type InferSafeActionFnResult<T extends Function> = T extends
+  | SafeActionFn<
+      infer ServerError,
+      infer S extends Schema | undefined,
+      infer BAS extends readonly Schema[],
+      infer CVE,
+      infer CBAVE,
+      infer Data
+    >
+  | SafeStateActionFn<
+      infer ServerError,
+      infer S extends Schema | undefined,
+      infer BAS extends readonly Schema[],
+      infer CVE,
+      infer CBAVE,
+      infer Data
+    >
+  ? SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>
+  : never;
+```
+
+### `InferMiddlewareFnNextCtx`
+
+Infer the next context type returned by a middleware function.
+
+```typescript
+export type InferMiddlewareFnNextCtx<T> =
+  T extends MiddlewareFn<any, any, any, infer NextCtx extends object> ? NextCtx : never;
+```
+
+### `InferCtx`
+
+Infer the context type of a safe action client or middleware function.
+
+```typescript
+export type InferCtx<T> = T extends
+  | SafeActionClient<any, any, any, any, infer Ctx extends object, any, any, any, any, any>
+  | MiddlewareFn<any, any, infer Ctx extends object, any>
+  ? Ctx
+  : never;
+```
+
+### `InferMetadata`
+
+Infer the metadata type of a safe action client or middleware function.
+
+```typescript
+export type InferMetadata<T> = T extends
+  | SafeActionClient<any, any, any, infer MD, any, any, any, any, any, any>
+  | MiddlewareFn<any, infer MD, any, any>
+  ? MD
+  : never;
+```
+
+### `InferServerError`
+
+Infer the server error type from a safe action client or a middleware function or a safe action function.
+
+```typescript
+export type InferServerError<T> = T extends
+  | SafeActionClient<infer ServerError, any, any, any, any, any, any, any, any, any>
+  | MiddlewareFn<infer ServerError, any, any, any>
+  | SafeActionFn<infer ServerError, any, any, any, any, any>
+  | SafeStateActionFn<infer ServerError, any, any, any, any, any>
+  ? ServerError
+  : never;
+```
+
 ## /hooks
 
 ### `HookBaseUtils`
@@ -406,10 +503,137 @@ export type HookSafeStateActionFn<
 
 ### `HookActionStatus`
 
-Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
+Type of the action status returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
 
 ```typescript
 type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
+```
+
+### `HookShorthandStatus`
+
+Type of the shorthand status object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
+
+```typescript
+export type HookShorthandStatus = {
+  isIdle: boolean;
+  isExecuting: boolean;
+  isTransitioning: boolean;
+  isPending: boolean;
+  hasSucceeded: boolean;
+  hasErrored: boolean;
+};
+```
+
+### `UseActionHookReturn`
+
+Type of the return object of the `useAction` hook.
+
+```typescript
+export type UseActionHookReturn<
+  ServerError,
+  S extends Schema | undefined,
+  BAS extends readonly Schema[],
+  CVE,
+  CBAVE,
+  Data,
+> = {
+  execute: (input: S extends Schema ? InferIn<S> : void) => void;
+  executeAsync: (
+    input: S extends Schema ? InferIn<S> : void
+  ) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
+  input: S extends Schema ? InferIn<S> : undefined;
+  result: Prettify<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+  reset: () => void;
+  status: HookActionStatus;
+} & HookShorthandStatus;
+```
+
+### `UseOptimisticActionHookReturn`
+
+Type of the return object of the `useOptimisticAction` hook.
+
+```typescript
+export type UseOptimisticActionHookReturn<
+  ServerError,
+  S extends Schema | undefined,
+  BAS extends readonly Schema[],
+  CVE,
+  CBAVE,
+  Data,
+  State,
+> = UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> &
+  HookShorthandStatus & {
+    optimisticState: State;
+  };
+```
+
+### `UseStateActionHookReturn`
+
+Type of the return object of the `useStateAction` hook.
+
+```typescript
+export type UseStateActionHookReturn<
+  ServerError,
+  S extends Schema | undefined,
+  BAS extends readonly Schema[],
+  CVE,
+  CBAVE,
+  Data,
+> = Omit<UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data>, "executeAsync" | "reset"> & HookShorthandStatus;
+```
+
+### `InferUseActionHookReturn`
+
+Type of the return object of the `useAction` hook.
+
+```typescript
+export type InferUseActionHookReturn<T extends Function> =
+  T extends SafeActionFn<
+    infer ServerError,
+    infer S extends Schema | undefined,
+    infer BAS extends readonly Schema[],
+    infer CVE,
+    infer CBAVE,
+    infer Data
+  >
+    ? UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data>
+    : never;
+```
+
+### `InferUseOptimisticActionHookReturn`
+
+Type of the return object of the `useOptimisticAction` hook.
+
+```typescript
+export type InferUseOptimisticActionHookReturn<T extends Function, State = any> =
+  T extends SafeActionFn<
+    infer ServerError,
+    infer S extends Schema | undefined,
+    infer BAS extends readonly Schema[],
+    infer CVE,
+    infer CBAVE,
+    infer Data
+  >
+    ? UseOptimisticActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data, State>
+    : never;
+```
+
+### `InferUseStateActionHookReturn`
+
+Type of the return object of the `useStateAction` hook.
+
+```typescript
+export type InferUseStateActionHookReturn<T extends Function> =
+  T extends SafeStateActionFn<
+    infer ServerError,
+    infer S extends Schema | undefined,
+    infer BAS extends readonly Schema[],
+    infer CVE,
+    infer CBAVE,
+    infer Data
+  >
+    ? UseStateActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data>
+    : never;
 ```
 
 ---
