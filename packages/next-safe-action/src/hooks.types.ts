@@ -1,5 +1,5 @@
 import type { InferIn, Schema } from "./adapters/types";
-import type { SafeActionResult } from "./index.types";
+import type { SafeActionFn, SafeActionResult, SafeStateActionFn } from "./index.types";
 import type { MaybePromise, Prettify } from "./utils.types";
 
 /**
@@ -147,3 +147,48 @@ export type UseStateActionHookReturn<
 	CBAVE,
 	Data,
 > = Omit<UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data>, "executeAsync" | "reset"> & HookShorthandStatus;
+
+/**
+ * Type of the return object of the `useAction` hook.
+ */
+export type InferUseActionHookReturn<T extends Function> =
+	T extends SafeActionFn<
+		infer ServerError,
+		infer S extends Schema | undefined,
+		infer BAS extends readonly Schema[],
+		infer CVE,
+		infer CBAVE,
+		infer Data
+	>
+		? UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data>
+		: never;
+
+/**
+ * Type of the return object of the `useOptimisticAction` hook.
+ */
+export type InferUseOptimisticActionHookReturn<T extends Function, State = any> =
+	T extends SafeActionFn<
+		infer ServerError,
+		infer S extends Schema | undefined,
+		infer BAS extends readonly Schema[],
+		infer CVE,
+		infer CBAVE,
+		infer Data
+	>
+		? UseOptimisticActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data, State>
+		: never;
+
+/**
+ * Type of the return object of the `useStateAction` hook.
+ */
+export type InferUseStateActionHookReturn<T extends Function> =
+	T extends SafeStateActionFn<
+		infer ServerError,
+		infer S extends Schema | undefined,
+		infer BAS extends readonly Schema[],
+		infer CVE,
+		infer CBAVE,
+		infer Data
+	>
+		? UseStateActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data>
+		: never;
