@@ -248,7 +248,7 @@ export type InferSafeActionFnResult<T extends Function> = T extends
 	: never;
 
 /**
- * Infer the next context type returned by a middleware function.
+ * Infer the next context type returned by a middleware function using the `next` function.
  */
 export type InferMiddlewareFnNextCtx<T> =
 	T extends MiddlewareFn<any, any, any, infer NextCtx extends object> ? NextCtx : never;
