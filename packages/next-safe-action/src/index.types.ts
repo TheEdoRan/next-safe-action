@@ -248,22 +248,28 @@ export type InferSafeActionFnResult<T extends Function> = T extends
 	: never;
 
 /**
- * Infer the context type of a safe action client.
- */
-export type InferSafeActionClientCtx<T> =
-	T extends SafeActionClient<any, any, any, any, infer Ctx extends object, any, any, any, any, any> ? Ctx : never;
-
-/**
- * Infer the metadata type of a safe action client.
- */
-export type InferSafeActionClientMetadata<T> =
-	T extends SafeActionClient<any, any, any, infer MD, any, any, any, any, any, any> ? MD : never;
-
-/**
  * Infer the next context type returned by a middleware function.
  */
 export type InferMiddlewareFnNextCtx<T> =
 	T extends MiddlewareFn<any, any, any, infer NextCtx extends object> ? NextCtx : never;
+
+/**
+ * Infer the context type of a safe action client or middleware function.
+ */
+export type InferCtx<T> = T extends
+	| SafeActionClient<any, any, any, any, infer Ctx extends object, any, any, any, any, any>
+	| MiddlewareFn<any, any, infer Ctx extends object, any>
+	? Ctx
+	: never;
+
+/**
+ * Infer the metadata type of a safe action client or middleware function.
+ */
+export type InferMetadata<T> = T extends
+	| SafeActionClient<any, any, any, infer MD, any, any, any, any, any, any>
+	| MiddlewareFn<any, infer MD, any, any>
+	? MD
+	: never;
 
 /**
  * Infer the server error type from a safe action client or a middleware function or a safe action function.
