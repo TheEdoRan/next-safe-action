@@ -360,7 +360,7 @@ export type InferSafeActionFnResult<T extends Function> = T extends
 
 ### `InferMiddlewareFnNextCtx`
 
-Infer the next context type returned by a middleware function.
+Infer the next context type returned by a middleware function using the `next` function.
 
 ```typescript
 export type InferMiddlewareFnNextCtx<T> =
