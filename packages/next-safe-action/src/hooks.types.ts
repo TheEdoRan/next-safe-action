@@ -139,7 +139,7 @@ export type UseOptimisticActionHookReturn<
 /**
  * Type of the return object of the `useStateAction` hook.
  */
-export type UseStateActionReturn<
+export type UseStateActionHookReturn<
 	ServerError,
 	S extends Schema | undefined,
 	BAS extends readonly Schema[],

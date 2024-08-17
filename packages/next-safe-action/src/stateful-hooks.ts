@@ -5,7 +5,7 @@ import {} from "react/experimental";
 import type {} from "zod";
 import type { InferIn, Schema } from "./adapters/types";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
-import type { HookBaseUtils, HookCallbacks, HookSafeStateActionFn, UseStateActionReturn } from "./hooks.types";
+import type { HookBaseUtils, HookCallbacks, HookSafeStateActionFn, UseStateActionHookReturn } from "./hooks.types";
 /**
  * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction).
  * @param safeActionFn The action function
@@ -27,7 +27,7 @@ export const useStateAction = <
 		permalink?: string;
 	} & HookBaseUtils<S> &
 		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
-): UseStateActionReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
+): UseStateActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
 	const [result, dispatcher, isExecuting] = React.useActionState(
 		safeActionFn,
 		utils?.initResult ?? {},
