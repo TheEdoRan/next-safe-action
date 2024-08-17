@@ -7,7 +7,14 @@ import {} from "react/experimental";
 import type {} from "zod";
 import type { InferIn, Schema } from "./adapters/types";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
-import type { HookBaseUtils, HookCallbacks, HookResult, HookSafeActionFn } from "./hooks.types";
+import type {
+	HookBaseUtils,
+	HookCallbacks,
+	HookResult,
+	HookSafeActionFn,
+	UseActionHookReturn,
+	UseOptimisticActionHookReturn,
+} from "./hooks.types";
 import { isError } from "./utils";
 
 // HOOKS
@@ -29,7 +36,7 @@ export const useAction = <
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
 	utils?: HookBaseUtils<S> & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
-) => {
+): UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
@@ -124,7 +131,7 @@ export const useAction = <
 	return {
 		execute,
 		executeAsync,
-		input: clientInput,
+		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		result,
 		reset,
 		status,
@@ -154,7 +161,7 @@ export const useOptimisticAction = <
 		updateFn: (state: State, input: S extends Schema ? InferIn<S> : undefined) => State;
 	} & HookBaseUtils<S> &
 		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
-) => {
+): UseOptimisticActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data, State> => {
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
@@ -255,7 +262,7 @@ export const useOptimisticAction = <
 	return {
 		execute,
 		executeAsync,
-		input: clientInput,
+		input: clientInput as S extends Schema ? InferIn<S> : undefined,
 		result,
 		optimisticState,
 		reset,

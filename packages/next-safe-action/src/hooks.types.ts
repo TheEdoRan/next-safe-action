@@ -83,6 +83,67 @@ export type HookSafeStateActionFn<
 ) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 
 /**
- * Type of the action status returned by `useAction` and `useOptimisticAction` hooks.
+ * Type of the action status returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
  */
 export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
+
+/**
+ * Type of the shorthand status object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
+ */
+export type HookShorthandStatus = {
+	isIdle: boolean;
+	isExecuting: boolean;
+	isTransitioning: boolean;
+	isPending: boolean;
+	hasSucceeded: boolean;
+	hasErrored: boolean;
+};
+
+/**
+ * Type of the return object of the `useAction` hook.
+ */
+export type UseActionHookReturn<
+	ServerError,
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	CVE,
+	CBAVE,
+	Data,
+> = {
+	execute: (input: S extends Schema ? InferIn<S> : void) => void;
+	executeAsync: (
+		input: S extends Schema ? InferIn<S> : void
+	) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
+	input: S extends Schema ? InferIn<S> : undefined;
+	result: Prettify<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+	reset: () => void;
+	status: HookActionStatus;
+} & HookShorthandStatus;
+
+/**
+ * Type of the return object of the `useOptimisticAction` hook.
+ */
+export type UseOptimisticActionHookReturn<
+	ServerError,
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	CVE,
+	CBAVE,
+	Data,
+	State,
+> = UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> &
+	HookShorthandStatus & {
+		optimisticState: State;
+	};
+
+/**
+ * Type of the return object of the `useStateAction` hook.
+ */
+export type UseStateActionReturn<
+	ServerError,
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	CVE,
+	CBAVE,
+	Data,
+> = Omit<UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data>, "executeAsync" | "reset"> & HookShorthandStatus;
