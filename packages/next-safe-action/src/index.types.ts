@@ -1,4 +1,5 @@
 import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
+import type { SafeActionClient } from "./safe-action-client";
 import type { MaybePromise, Prettify } from "./utils.types";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 
@@ -201,3 +202,82 @@ export type SafeActionUtils<
 		hasNotFound: boolean;
 	}) => MaybePromise<void>;
 };
+
+/**
+ * Infer input types of a safe action.
+ */
+export type InferSafeActionFnInput<T extends Function> = T extends
+	| SafeActionFn<any, infer S extends Schema | undefined, infer BAS extends readonly Schema[], any, any, any>
+	| SafeStateActionFn<any, infer S extends Schema | undefined, infer BAS extends readonly Schema[], any, any, any>
+	? S extends Schema
+		? {
+				clientInput: InferIn<S>;
+				bindArgsClientInputs: InferInArray<BAS>;
+				parsedInput: Infer<S>;
+				bindArgsParsedInputs: InferArray<BAS>;
+			}
+		: {
+				clientInput: undefined;
+				bindArgsClientInputs: InferInArray<BAS>;
+				parsedInput: undefined;
+				bindArgsParsedInputs: InferArray<BAS>;
+			}
+	: never;
+
+/**
+ * Infer the result type of a safe action.
+ */
+export type InferSafeActionFnResult<T extends Function> = T extends
+	| SafeActionFn<
+			infer ServerError,
+			infer S extends Schema | undefined,
+			infer BAS extends readonly Schema[],
+			infer CVE,
+			infer CBAVE,
+			infer Data
+	  >
+	| SafeStateActionFn<
+			infer ServerError,
+			infer S extends Schema | undefined,
+			infer BAS extends readonly Schema[],
+			infer CVE,
+			infer CBAVE,
+			infer Data
+	  >
+	? SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>
+	: never;
+
+/**
+ * Infer the next context type returned by a middleware function using the `next` function.
+ */
+export type InferMiddlewareFnNextCtx<T> =
+	T extends MiddlewareFn<any, any, any, infer NextCtx extends object> ? NextCtx : never;
+
+/**
+ * Infer the context type of a safe action client or middleware function.
+ */
+export type InferCtx<T> = T extends
+	| SafeActionClient<any, any, any, any, infer Ctx extends object, any, any, any, any, any>
+	| MiddlewareFn<any, any, infer Ctx extends object, any>
+	? Ctx
+	: never;
+
+/**
+ * Infer the metadata type of a safe action client or middleware function.
+ */
+export type InferMetadata<T> = T extends
+	| SafeActionClient<any, any, any, infer MD, any, any, any, any, any, any>
+	| MiddlewareFn<any, infer MD, any, any>
+	? MD
+	: never;
+
+/**
+ * Infer the server error type from a safe action client or a middleware function or a safe action function.
+ */
+export type InferServerError<T> = T extends
+	| SafeActionClient<infer ServerError, any, any, any, any, any, any, any, any, any>
+	| MiddlewareFn<infer ServerError, any, any, any>
+	| SafeActionFn<infer ServerError, any, any, any, any, any>
+	| SafeStateActionFn<infer ServerError, any, any, any, any, any>
+	? ServerError
+	: never;

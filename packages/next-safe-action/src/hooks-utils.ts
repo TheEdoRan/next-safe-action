@@ -2,7 +2,7 @@ import * as React from "react";
 import {} from "react/experimental";
 import type {} from "zod";
 import type { InferIn, Schema } from "./adapters/types";
-import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookResult } from "./hooks.types";
+import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookResult, HookShorthandStatus } from "./hooks.types";
 
 export const getActionStatus = <
 	ServerError,
@@ -42,7 +42,7 @@ export const getActionShorthandStatusObject = ({
 }: {
 	status: HookActionStatus;
 	isTransitioning: boolean;
-}) => {
+}): HookShorthandStatus => {
 	return {
 		isIdle: status === "idle",
 		isExecuting: status === "executing",
