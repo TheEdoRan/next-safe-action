@@ -10,7 +10,7 @@ import {
 	formatValidationErrors,
 } from "./validation-errors";
 
-export { createMiddleware as experimental_createMiddleware } from "./middleware";
+export { createMiddleware } from "./middleware";
 export { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export {
 	ActionValidationError,

@@ -243,17 +243,17 @@ export const testAction = actionClient
 ## Create standalone middleware
 
 :::info
-Experimental feature
+Since version 7.7.0, this API is stable, so it was renamed from `experimental_createMiddleware` to `createMiddleware`.
 :::
 
-Starting from version 7.6.0, you can create standalone middleware functions using the built-in `experimental_createMiddleware()` function. It's labeled as experimental because the API could change in the future, but it's perfectly fine to use it, as it's a pretty simple function that just wraps the creation of middleware.
+Starting from version 7.6.0, you can create standalone middleware functions using the built-in `createMiddleware()` function.
 
 Thanks to this feature, and the previously mentioned [context extension](#extend-context), you can now define standalone middleware functions and even publish them as packages, if you want to.
 
-Here's how to use `experimental_createMiddleware()`:
+Here's how to use `createMiddleware()`:
 
 ```typescript title="src/lib/safe-action.ts"
-import { createSafeActionClient, experimental_createMiddleware } from "next-safe-action";
+import { createSafeActionClient, createMiddleware } from "next-safe-action";
 import { z } from "zod";
 
 export const actionClient = createSafeActionClient({
@@ -268,14 +268,14 @@ export const actionClient = createSafeActionClient({
 });
 
 // This middleware works with any client.
-const myMiddleware1 = experimental_createMiddleware().define(async ({ next }) => {
+const myMiddleware1 = createMiddleware().define(async ({ next }) => {
   // Do something useful here...
   return next({ ctx: { baz: "qux" } });
 });
 
 // This middleware works with clients that at minimum have `ctx.foo`, `metadata.actionName`
 // and `serverError.message` properties. More information below. *
-const myMiddleware2 = experimental_createMiddleware<{
+const myMiddleware2 = createMiddleware<{
   ctx: { foo: string }; // [1]
   metadata: { actionName: string }; // [2]
   serverError: { message: string } // [3]
@@ -290,4 +290,4 @@ export const actionClientWithMyMiddleware = actionClient.use(myMiddleware1).use(
 
 An action defined using the `actionClientWithMyMiddleware` will contain `foo`, `baz` and `john` in its context.
 
-\* Note that you can pass, **but not required to**, an object with two generic properties to the `experimental_createMiddleware()` function: `ctx` \[1\], `metadata` \[2\] and `serverError` \[3\]. Those keys are optional, and you should only provide them if you want your middleware to require **at minimum** the shape you passed in as generic. By doing that, following the above example, you can then access `ctx.foo` and `metadata.actionName` in the middleware you're defining, and by awaiting the `next` function you'll see that `serverError` is an object with the `message` property. If you pass a middleware that requires those properties to a client that doesn't have them, you'll get an error in `use()` method.
+\* Note that you can pass, **but not required to**, an object with two generic properties to the `createMiddleware()` function: `ctx` \[1\], `metadata` \[2\] and `serverError` \[3\]. Those keys are optional, and you should only provide them if you want your middleware to require **at minimum** the shape you passed in as generic. By doing that, following the above example, you can then access `ctx.foo` and `metadata.actionName` in the middleware you're defining, and by awaiting the `next` function you'll see that `serverError` is an object with the `message` property. If you pass a middleware that requires those properties to a client that doesn't have them, you'll get an error in `use()` method.

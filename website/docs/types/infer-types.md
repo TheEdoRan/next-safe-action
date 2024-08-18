@@ -11,11 +11,11 @@ Suppose we have declared this safe action client:
 
 ```typescript title="src/lib/safe-action.ts"
 import { z } from "zod";
-import { createSafeActionClient, experimental_createMiddleware } from "next-safe-action";
+import { createSafeActionClient, createMiddleware } from "next-safe-action";
 import { getSessionData } from "@/services/auth"
 
 // Here we declare a standalone auth middleware.
-export const authMiddleware = experimental_createMiddleware<{
+export const authMiddleware = createMiddleware<{
   ctx: { sessionToken: string };
   metadata: { actionName: string };
 }>().define(async ({ ctx, next }) => {

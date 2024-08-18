@@ -4,8 +4,8 @@ import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
 import {
+	createMiddleware,
 	createSafeActionClient,
-	experimental_createMiddleware,
 	formatBindArgsValidationErrors,
 	formatValidationErrors,
 	returnValidationErrors,
@@ -397,7 +397,7 @@ test("overridden formatted validation errors in execution result from middleware
 });
 
 test("standalone middleware extends context", async () => {
-	const myMiddleware = experimental_createMiddleware<{ ctx: { foo: string } }>().define(async ({ next }) => {
+	const myMiddleware = createMiddleware<{ ctx: { foo: string } }>().define(async ({ next }) => {
 		return next({ ctx: { baz: "qux" } });
 	});
 
