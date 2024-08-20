@@ -22,7 +22,7 @@ export class SafeActionClient<
 	ServerError,
 	ODVES extends DVES | undefined, // override default validation errors shape
 	MetadataSchema extends Schema | undefined = undefined,
-	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
+	MD = MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 	Ctx extends object = {},
 	SF extends (() => Promise<Schema>) | undefined = undefined, // schema function
 	S extends Schema | undefined = SF extends Function ? Awaited<ReturnType<SF>> : undefined,
@@ -233,7 +233,7 @@ export class SafeActionClient<
 	}
 
 	/**
-	 * Define the stateful action (without input validation schema, bind arguments validation schemas or metadata).
+	 * Define the stateful action.
 	 * To be used with the [`useStateAction`](https://next-safe-action.dev/docs/execution/hooks/usestateaction) hook.
 	 * @param serverCodeFn Code that will be executed on the **server side**
 	 * @param [cb] Optional callbacks that will be called after action execution, on the server.
