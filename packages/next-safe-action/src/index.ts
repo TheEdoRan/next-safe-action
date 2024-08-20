@@ -9,6 +9,7 @@ import {
 	formatBindArgsValidationErrors,
 	formatValidationErrors,
 } from "./validation-errors";
+import type { HandleBindArgsValidationErrorsShapeFn, HandleValidationErrorsShapeFn } from "./validation-errors.types";
 
 export { createMiddleware } from "./middleware";
 export { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
@@ -32,12 +33,25 @@ export type * from "./validation-errors.types";
  * {@link https://next-safe-action.dev/docs/safe-action-client/initialization-options See docs for more information}
  */
 export const createSafeActionClient = <
-	ODVES extends DVES | undefined = undefined,
 	ServerError = string,
 	MetadataSchema extends Schema | undefined = undefined,
+	ODVES extends DVES | undefined = undefined,
+	CVE = undefined,
+	CBAVE = undefined,
 >(
 	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
-) => {
+): SafeActionClient<
+	ServerError,
+	ODVES,
+	MetadataSchema,
+	MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+	{},
+	undefined,
+	undefined,
+	readonly [],
+	CVE,
+	CBAVE
+> => {
 	// If server log function is not provided, default to `console.error` for logging
 	// server error messages.
 	const handleServerErrorLog =
@@ -67,11 +81,11 @@ export const createSafeActionClient = <
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
 		throwValidationErrors: Boolean(createOpts?.throwValidationErrors),
-		handleValidationErrorsShape:
-			createOpts?.defaultValidationErrorsShape === "flattened" ? flattenValidationErrors : formatValidationErrors,
-		handleBindArgsValidationErrorsShape:
-			createOpts?.defaultValidationErrorsShape === "flattened"
-				? flattenBindArgsValidationErrors
-				: formatBindArgsValidationErrors,
+		handleValidationErrorsShape: (createOpts?.defaultValidationErrorsShape === "flattened"
+			? flattenValidationErrors
+			: formatValidationErrors) as unknown as HandleValidationErrorsShapeFn<undefined, CVE>,
+		handleBindArgsValidationErrorsShape: (createOpts?.defaultValidationErrorsShape === "flattened"
+			? flattenBindArgsValidationErrors
+			: formatBindArgsValidationErrors) as HandleBindArgsValidationErrorsShapeFn<readonly [], CBAVE>,
 	});
 };
