@@ -53,6 +53,10 @@ export default {
 
 	/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
 	themeConfig: {
+		colorMode: {
+			defaultMode: "light",
+			respectPrefersColorScheme: true,
+		},
 		// Replace with your project's social card
 		image: "img/social-card.png",
 		algolia: {
@@ -72,7 +76,8 @@ export default {
 			title: "next-safe-action",
 			logo: {
 				alt: "next-safe-action",
-				src: "img/logo.svg",
+				src: "img/logo-light-mode.svg",
+				srcDark: "img/logo-dark-mode.svg",
 			},
 			items: [
 				{

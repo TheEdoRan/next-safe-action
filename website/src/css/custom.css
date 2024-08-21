@@ -9,6 +9,10 @@
 
 /* You can override the default Infima variables here. */
 
+.lib-logo > path {
+	color: white !important;
+}
+
 .header-github-link::before {
 	display: flex;
 	background-repeat: no-repeat;
