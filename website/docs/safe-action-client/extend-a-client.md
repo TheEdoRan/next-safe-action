@@ -17,7 +17,7 @@ import { getUserIdFromSessionId } from "./db";
 // This is our base client.
 // Here we define a middleware that logs the result of the action execution.
 export const actionClient = createSafeActionClient().use(async ({ next }) => {
-  const result = await next({ ctx: null });
+  const result = await next();
   console.log("LOGGING MIDDLEWARE: result ->", result);
   return result;
 });
