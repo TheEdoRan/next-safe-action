@@ -110,22 +110,6 @@ const editProfile = authActionClient
   });
 ```
 
-Calling `editProfile` will produce this console output, thanks to the two middleware functions passed to the clients above:
-
-```
-LOGGING MIDDLEWARE
-Result -> {
-  success: true,
-  ctx: { userId: 'e473de7f-d1e4-49c1-b4fe-85eb50048b99' },
-  data: { updated: true },
-  parsedInput: { newUsername: 'johndoe' }
-}
-Client input -> { newUsername: 'johndoe' }
-Metadata -> { actionName: 'editProfile' }
-```
-
-Note that `userId` in `ctx` comes from the `authActionClient` middleware, and console output comes from the logging middleware defined in the base client.
-
 ### Action level middleware
 
 Server Action level is the right place for middleware checks that only specific actions need to make. For instance, when you want to restrict the execution to specific user roles.
@@ -158,35 +142,7 @@ const deleteUser = authActionClient
   });
 ```
 
-This is the console output when an admin executes this action:
-
-```
-LOGGING MIDDLEWARE
-Result -> {
-  success: true,
-  ctx: { userId: '9af18417-524e-4f04-9621-b5934b09f2c9' },
-  data: undefined,
-  parsedInput: undefined
-}
-Client input -> undefined
-Metadata -> { actionName: 'deleteUser' }
-```
-
-If a regular user tries to do the same, the execution will be stopped at the last middleware function, defined at the action level, that checks the user role. This is the console output in this case:
-
-```
-LOGGING MIDDLEWARE
-Action error: Only admins can delete users.
-Result -> {
-  success: false,
-  ctx: { userId: '0a1fa8a8-d323-47c0-bbde-eadbfcdd2587' },
-  serverError: 'Only admins can delete users.'
-}
-Client input -> undefined
-Metadata -> { actionName: 'deleteUser' }
-```
-
-Note that the second line comes from the default `handleServerErrorLog` function of the safe action client(s).
+If a regular user tries to do the same, the execution will be stopped at the last middleware function, defined at the action level, that checks the user role.
 
 ---
 
