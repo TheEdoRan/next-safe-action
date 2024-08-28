@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 description: Getting started with next-safe-action version 7.
 ---
 

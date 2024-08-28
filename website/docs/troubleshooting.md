@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 8
 description: Troubleshoot common issues with next-safe-action.
 ---
 
@@ -27,13 +27,12 @@ If you use next-safe-action in a monorepo, you'll likely experience this error:
 Type error: The inferred type of 'action' cannot be named without a reference to '...'. This is likely not portable. A type annotation is necessary.
 ```
 
-This error currently affects multiple TypeScript projects, and a viable solution is yet to be found. However, you can set these two options in your `tsconfig.json` to remove that error:
+You can set this option in your `tsconfig.json` to remove the error:
 
 ```json title="tsconfig.json"
 {
   "compilerOptions": {
-    "declaration": false,
-    "declarationMap": false,
+    "baseUrl": "."
   }
 }
 ```
