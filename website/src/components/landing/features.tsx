@@ -47,7 +47,7 @@ export function Features() {
 						<div className="text-center font-bold text-3xl sm:text-4xl lg:text-5xl">
 							Why choose next-safe-action?
 						</div>
-						<div className="min-w-full bg-white dark:bg-zinc-800 max-[479px]:px-5 max-[479px]:py-6 rounded-xl p-8 md:p-10 flex flex-col space-y-6">
+						<div className="min-w-full flex flex-col space-y-6">
 							{features.map(({ title, description }, idx) => (
 								<Fragment key={idx}>
 									{idx > 0 ? (

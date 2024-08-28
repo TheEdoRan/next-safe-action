@@ -66,7 +66,7 @@ div[role="banner"] > button > svg {
 	--ifm-color-primary-lighter: #f9b257;
 	--ifm-color-primary-lightest: #fac681;
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
-	--ifm-background-color: #191a1d !important;
+	--ifm-background-color: #18181b !important;
 	--ifm-color-emphasis-200: #2b2e33 !important;
 
 	.header-github-link::before {
