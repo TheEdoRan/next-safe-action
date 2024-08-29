@@ -22,14 +22,14 @@ export default {
 	onDuplicateRoutes: "throw",
 	onBrokenAnchors: "throw",
 
-	// scripts: [
-	// 	{
-	// 		"src": "https://plausible.theedoran.xyz/js/script.js",
-	// 		"async": true,
-	// 		"defer": true,
-	// 		"data-domain": "next-safe-action.dev",
-	// 	},
-	// ],
+	scripts: [
+		{
+			"src": "https://plausible.theedoran.xyz/js/script.js",
+			"async": true,
+			"defer": true,
+			"data-domain": "next-safe-action.dev",
+		},
+	],
 	headTags: [
 		{
 			tagName: "link",
