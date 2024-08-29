@@ -3,8 +3,16 @@
 import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
-import { createSafeActionClient, flattenValidationErrors, formatValidationErrors, returnValidationErrors } from "..";
+import type { ValidationErrors } from "..";
+import {
+	createSafeActionClient,
+	DEFAULT_SERVER_ERROR_MESSAGE,
+	flattenValidationErrors,
+	formatValidationErrors,
+	returnValidationErrors,
+} from "..";
 import { zodAdapter } from "../adapters/zod";
+import { ActionOutputDataError } from "../utils";
 
 // Default client tests.
 
@@ -140,6 +148,58 @@ test("action with invalid input gives back an object with correct `validationErr
 			},
 		},
 	};
+
+	assert.deepStrictEqual(actualResult, expectedResult);
+});
+
+test("action with invalid output data returns the default `serverError`", async () => {
+	const action = dac.outputSchema(z.object({ result: z.string().min(3) })).action(async () => {
+		return {
+			result: "ok",
+		};
+	});
+
+	const actualResult = await action();
+
+	const expectedResult = {
+		serverError: DEFAULT_SERVER_ERROR_MESSAGE,
+	};
+
+	assert.deepStrictEqual(actualResult, expectedResult);
+});
+
+test("action with invalid output data throws an error of the correct type", async () => {
+	const tac = createSafeActionClient({
+		validationAdapter: zodAdapter(),
+		handleReturnedServerError: (e) => {
+			throw e;
+		},
+	});
+
+	const outputSchema = z.object({ result: z.string().min(3) });
+
+	const action = tac.outputSchema(outputSchema).action(async () => {
+		return {
+			result: "ok",
+		};
+	});
+
+	const expectedResult = {
+		serverError: "String must contain at least 3 character(s)",
+	};
+
+	const actualResult = {
+		serverError: "",
+	};
+
+	try {
+		await action();
+	} catch (e) {
+		if (e instanceof ActionOutputDataError) {
+			actualResult.serverError =
+				(e.validationErrors as ValidationErrors<typeof outputSchema>).result?._errors?.[0] ?? "";
+		}
+	}
 
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
