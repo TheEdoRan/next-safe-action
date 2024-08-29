@@ -110,7 +110,11 @@ export default {
 					createSitemapItems: async (params) => {
 						const { defaultCreateSitemapItems, ...rest } = params;
 						const items = await defaultCreateSitemapItems(rest);
-						return items;
+						return items.filter(
+							(item) =>
+								item.url === "https://next-safe-action.dev" ||
+								item.url.startsWith("https://next-safe-action.dev/docs")
+						);
 					},
 				},
 			},
