@@ -102,17 +102,17 @@ export default {
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
-				// sitemap: {
-				// 	lastmod: "date",
-				// 	changefreq: "weekly",
-				// 	priority: 0.8,
-				// 	filename: "sitemap.xml",
-				// 	createSitemapItems: async (params) => {
-				// 		const { defaultCreateSitemapItems, ...rest } = params;
-				// 		const items = await defaultCreateSitemapItems(rest);
-				// 		return items;
-				// 	},
-				// },
+				sitemap: {
+					lastmod: "date",
+					changefreq: "weekly",
+					priority: 0.8,
+					filename: "sitemap.xml",
+					createSitemapItems: async (params) => {
+						const { defaultCreateSitemapItems, ...rest } = params;
+						const items = await defaultCreateSitemapItems(rest);
+						return items;
+					},
+				},
 			},
 		],
 	],
