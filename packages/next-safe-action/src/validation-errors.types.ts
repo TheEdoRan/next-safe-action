@@ -10,7 +10,7 @@ type SchemaErrors<S> = {
 } & {};
 
 /**
- * Type of the returned object when input validation fails.
+ * Type of the returned object when validation fails.
  */
 export type ValidationErrors<S extends Schema | undefined> = S extends Schema
 	? Infer<S> extends object

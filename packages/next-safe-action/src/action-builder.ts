@@ -14,9 +14,15 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { ActionMetadataError, ActionOutputDataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import type { MaybePromise } from "./utils.types";
-import { ActionServerValidationError, ActionValidationError, buildValidationErrors } from "./validation-errors";
+import {
+	ActionMetadataValidationError,
+	ActionOutputDataValidationError,
+	ActionServerValidationError,
+	ActionValidationError,
+	buildValidationErrors,
+} from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
 	HandleBindArgsValidationErrorsShapeFn,
@@ -112,7 +118,7 @@ export function actionBuilder<
 									const parsedMd = await args.validationAdapter.validate(args.metadataSchema, args.metadata);
 
 									if (!parsedMd.success) {
-										throw new ActionMetadataError<MetadataSchema>(buildValidationErrors(parsedMd.issues));
+										throw new ActionMetadataValidationError<MetadataSchema>(buildValidationErrors(parsedMd.issues));
 									}
 								}
 							}
@@ -217,7 +223,7 @@ export function actionBuilder<
 									const parsedData = await args.validationAdapter.validate(args.outputSchema, data);
 
 									if (!parsedData.success) {
-										throw new ActionOutputDataError<OS>(buildValidationErrors(parsedData.issues));
+										throw new ActionOutputDataValidationError<OS>(buildValidationErrors(parsedData.issues));
 									}
 								}
 

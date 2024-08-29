@@ -12,7 +12,7 @@ import {
 	returnValidationErrors,
 } from "..";
 import { zodAdapter } from "../adapters/zod";
-import { ActionOutputDataError } from "../utils";
+import { ActionOutputDataValidationError } from "../validation-errors";
 
 // Default client tests.
 
@@ -195,7 +195,7 @@ test("action with invalid output data throws an error of the correct type", asyn
 	try {
 		await action();
 	} catch (e) {
-		if (e instanceof ActionOutputDataError) {
+		if (e instanceof ActionOutputDataValidationError) {
 			actualResult.serverError =
 				(e.validationErrors as ValidationErrors<typeof outputSchema>).result?._errors?.[0] ?? "";
 		}

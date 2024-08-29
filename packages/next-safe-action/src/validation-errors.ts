@@ -144,3 +144,33 @@ export function flattenBindArgsValidationErrors<BAVE extends readonly Validation
 ) {
 	return bindArgsValidationErrors.map((ve) => flattenValidationErrors(ve)) as FlattenedBindArgsValidationErrors<BAVE>;
 }
+
+/**
+ * This error is thrown when an action metadata is invalid, i.e. when there's a mismatch between the
+ * type of the metadata schema returned from `defineMetadataSchema` and the actual data passed.
+ */
+export class ActionMetadataValidationError<MDS extends Schema | undefined> extends Error {
+	public validationErrors: ValidationErrors<MDS>;
+
+	constructor(validationErrors: ValidationErrors<MDS>) {
+		super("Invalid metadata input. Please be sure to pass metadata via `metadata` method before defining the action.");
+		this.name = "ActionMetadataError";
+		this.validationErrors = validationErrors;
+	}
+}
+
+/**
+ * This error is thrown when an action's data (output) is invalid, i.e. when there's a mismatch between the
+ * type of the data schema passed to `dataSchema` method and the actual return of the action.
+ */
+export class ActionOutputDataValidationError<DS extends Schema | undefined> extends Error {
+	public validationErrors: ValidationErrors<DS>;
+
+	constructor(validationErrors: ValidationErrors<DS>) {
+		super(
+			"Invalid action data (output). Please be sure to return data following the shape of the schema passed to `dataSchema` method."
+		);
+		this.name = "ActionOutputDataError";
+		this.validationErrors = validationErrors;
+	}
+}

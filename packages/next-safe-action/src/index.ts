@@ -11,8 +11,10 @@ import {
 } from "./validation-errors";
 
 export { createMiddleware } from "./middleware";
-export { ActionOutputDataError as ActionDataError, ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
+export { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export {
+	ActionMetadataValidationError,
+	ActionOutputDataValidationError,
 	ActionValidationError,
 	flattenBindArgsValidationErrors,
 	flattenValidationErrors,
