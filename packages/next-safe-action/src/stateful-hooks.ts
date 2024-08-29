@@ -7,11 +7,11 @@ import type { InferIn, Schema } from "./adapters/types";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
 import type { HookBaseUtils, HookCallbacks, HookSafeStateActionFn, UseStateActionHookReturn } from "./hooks.types";
 /**
- * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction).
+ * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction).
  * @param safeActionFn The action function
  * @param utils Optional `initResult`, `permalink`, base utils and callbacks
  *
- * {@link https://next-safe-action.dev/docs/execution/hooks/usestateaction See docs for more information}
+ * {@link https://next-safe-action.dev/docs/execute-actions/hooks/usestateaction See docs for more information}
  */
 export const useStateAction = <
 	ServerError,

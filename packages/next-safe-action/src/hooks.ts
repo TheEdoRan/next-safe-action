@@ -24,7 +24,7 @@ import { isError } from "./utils";
  * @param safeActionFn The action function
  * @param utils Optional base utils and callbacks
  *
- * {@link https://next-safe-action.dev/docs/execution/hooks/useaction See docs for more information}
+ * {@link https://next-safe-action.dev/docs/execute-actions/hooks/useaction See docs for more information}
  */
 export const useAction = <
 	ServerError,
@@ -144,7 +144,7 @@ export const useAction = <
  * @param safeActionFn The action function
  * @param utils Required `currentData` and `updateFn` and optional base utils and callbacks
  *
- * {@link https://next-safe-action.dev/docs/execution/hooks/useoptimisticaction See docs for more information}
+ * {@link https://next-safe-action.dev/docs/execute-actions/hooks/useoptimisticaction See docs for more information}
  */
 export const useOptimisticAction = <
 	ServerError,

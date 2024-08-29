@@ -75,7 +75,7 @@ export class ActionValidationError<CVE> extends Error {
  * @param schema Input schema
  * @param validationErrors Validation errors object
  *
- * {@link https://next-safe-action.dev/docs/recipes/additional-validation-errors#returnvalidationerrors See docs for more information}
+ * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#returnvalidationerrors See docs for more information}
  */
 export function returnValidationErrors<
 	S extends Schema | (() => Promise<Schema>),
@@ -109,7 +109,7 @@ export function formatBindArgsValidationErrors<BAVE extends readonly ValidationE
  * Emulation of `zod`'s [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) function.
  * @param {ValidationErrors} [validationErrors] Validation errors object
  *
- * {@link https://next-safe-action.dev/docs/recipes/customize-validation-errors-format#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
+ * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
  */
 export function flattenValidationErrors<VE extends ValidationErrors<any>>(validationErrors: VE) {
 	const flattened: FlattenedValidationErrors<VE> = {
@@ -137,7 +137,7 @@ export function flattenValidationErrors<VE extends ValidationErrors<any>>(valida
  * Emulation of `zod`'s [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) function.
  * @param {ValidationErrors[]} [bindArgsValidationErrors] Bind arguments validation errors object
  *
- * {@link https://next-safe-action.dev/docs/recipes/customize-validation-errors-format#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
+ * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
  */
 export function flattenBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]>(
 	bindArgsValidationErrors: BAVE

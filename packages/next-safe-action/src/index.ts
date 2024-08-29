@@ -31,7 +31,7 @@ export type * from "./validation-errors.types";
  * Note: this client only works with Zod as the validation library.
  * @param createOpts Initialization options
  *
- * {@link https://next-safe-action.dev/docs/safe-action-client/initialization-options See docs for more information}
+ * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#initialization-options See docs for more information}
  */
 export const createSafeActionClient = <
 	ODVES extends DVES | undefined = undefined,

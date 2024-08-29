@@ -89,7 +89,7 @@ export class SafeActionClient<
 	 * Use a middleware function.
 	 * @param middlewareFn Middleware function
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#use See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#use See docs for more information}
 	 */
 	use<NextCtx extends object>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, Ctx & NextCtx>) {
 		return new SafeActionClient({
@@ -112,9 +112,9 @@ export class SafeActionClient<
 
 	/**
 	 * Define metadata for the action.
-	 * @param data Metadata with the same type as the return value of the [`defineMetadataSchema`](https://next-safe-action.dev/docs/safe-action-client/initialization-options#definemetadataschema) optional initialization function
+	 * @param data Metadata with the same type as the return value of the [`defineMetadataSchema`](https://next-safe-action.dev/docs/define-actions/create-the-client#definemetadataschema) optional initialization function
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#metadata See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#metadata See docs for more information}
 	 */
 	metadata(data: MD) {
 		return new SafeActionClient({
@@ -140,7 +140,7 @@ export class SafeActionClient<
 	 * @param inputSchema Input validation schema
 	 * @param utils Optional utils object
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#inputschema See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#inputschema See docs for more information}
 	 */
 	schema<
 		OIS extends Schema | ((prevSchema: IS) => Promise<Schema>), // override input schema
@@ -183,7 +183,7 @@ export class SafeActionClient<
 	 * @param bindArgsSchemas Bind args input validation schemas
 	 * @param utils Optional utils object
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#bindargsschemas See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#bindargsschemas See docs for more information}
 	 */
 	bindArgsSchemas<
 		const OBAS extends readonly Schema[],
@@ -217,7 +217,7 @@ export class SafeActionClient<
 	 * Define the output data validation schema for the action.
 	 * @param schema Output data validation schema
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#outputschema See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#outputschema See docs for more information}
 	 */
 	outputSchema<OOS extends Schema>(dataSchema: OOS) {
 		return new SafeActionClient({
@@ -243,7 +243,7 @@ export class SafeActionClient<
 	 * @param serverCodeFn Code that will be executed on the **server side**
 	 * @param [cb] Optional callbacks that will be called after action execution, on the server.
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction See docs for more information}
 	 */
 	action<Data extends OS extends Schema ? Infer<OS> : any>(
 		serverCodeFn: ServerCodeFn<MD, Ctx, IS, BAS, Data>,
@@ -268,11 +268,11 @@ export class SafeActionClient<
 
 	/**
 	 * Define the stateful action.
-	 * To be used with the [`useStateAction`](https://next-safe-action.dev/docs/execution/hooks/usestateaction) hook.
+	 * To be used with the [`useStateAction`](https://next-safe-action.dev/docs/execute-actions/hooks/usestateaction) hook.
 	 * @param serverCodeFn Code that will be executed on the **server side**
 	 * @param [cb] Optional callbacks that will be called after action execution, on the server.
 	 *
-	 * {@link https://next-safe-action.dev/docs/safe-action-client/instance-methods#action--stateaction See docs for more information}
+	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction See docs for more information}
 	 */
 	stateAction<Data extends OS extends Schema ? Infer<OS> : any>(
 		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
