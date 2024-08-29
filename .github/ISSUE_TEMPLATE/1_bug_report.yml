@@ -71,6 +71,12 @@ body:
       placeholder: 14.x.x
     validations:
       required: true
+  - type: input
+    attributes:
+      label: Node.js version
+      placeholder: 20.x.x
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Additional context
