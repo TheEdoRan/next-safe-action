@@ -60,27 +60,27 @@ export default {
 		defaultLocale: "en",
 		locales: ["en"],
 	},
-	// plugins: [
-	// 	[
-	// 		"@docusaurus/plugin-client-redirects",
-	// 		{
-	// 			createRedirects(path) {
-	// 				if (path.startsWith("/docs/safe-action-client/")) {
-	// 					return path.replace(
-	// 						"/docs/safe-action-client/",
-	// 						"/docs/define-actions/"
-	// 					);
-	// 				}
+	plugins: [
+		[
+			"@docusaurus/plugin-client-redirects",
+			{
+				createRedirects(path) {
+					if (path.startsWith("/docs/safe-action-client/")) {
+						return path.replace(
+							"/docs/safe-action-client/",
+							"/docs/define-actions/"
+						);
+					}
 
-	// 				if (path.startsWith("/docs/execution/")) {
-	// 					return path.replace("/docs/execution/", "/docs/execute-actions/");
-	// 				}
+					if (path.startsWith("/docs/execution/")) {
+						return path.replace("/docs/execution/", "/docs/execute-actions/");
+					}
 
-	// 				return undefined;
-	// 			},
-	// 		},
-	// 	],
-	// ],
+					return undefined;
+				},
+			},
+		],
+	],
 	presets: [
 		[
 			"classic",
