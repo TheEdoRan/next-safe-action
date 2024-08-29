@@ -19,15 +19,17 @@ export default {
 
 	onBrokenLinks: "throw",
 	onBrokenMarkdownLinks: "warn",
+	onDuplicateRoutes: "throw",
+	onBrokenAnchors: "throw",
 
-	scripts: [
-		{
-			"src": "https://plausible.theedoran.xyz/js/script.js",
-			"async": true,
-			"defer": true,
-			"data-domain": "next-safe-action.dev",
-		},
-	],
+	// scripts: [
+	// 	{
+	// 		"src": "https://plausible.theedoran.xyz/js/script.js",
+	// 		"async": true,
+	// 		"defer": true,
+	// 		"data-domain": "next-safe-action.dev",
+	// 	},
+	// ],
 	headTags: [
 		{
 			tagName: "link",
@@ -60,34 +62,33 @@ export default {
 		defaultLocale: "en",
 		locales: ["en"],
 	},
-	plugins: [
-		[
-			"@docusaurus/plugin-client-redirects",
-			{
-				createRedirects(path) {
-					if (path.startsWith("/docs/safe-action-client/")) {
-						return path.replace(
-							"/docs/safe-action-client/",
-							"/docs/define-actions/"
-						);
-					}
+	// plugins: [
+	// 	[
+	// 		"@docusaurus/plugin-client-redirects",
+	// 		{
+	// 			createRedirects(path) {
+	// 				if (path.startsWith("/docs/safe-action-client/")) {
+	// 					return path.replace(
+	// 						"/docs/safe-action-client/",
+	// 						"/docs/define-actions/"
+	// 					);
+	// 				}
 
-					if (path.startsWith("/docs/execution/")) {
-						return path.replace("/docs/execution/", "/docs/execute-actions/");
-					}
+	// 				if (path.startsWith("/docs/execution/")) {
+	// 					return path.replace("/docs/execution/", "/docs/execute-actions/");
+	// 				}
 
-					return undefined;
-				},
-			},
-		],
-	],
+	// 				return undefined;
+	// 			},
+	// 		},
+	// 	],
+	// ],
 	presets: [
 		[
 			"classic",
 			/** @type {import('@docusaurus/preset-classic').Options} */
 			{
 				docs: {
-					showLastUpdateTime: true,
 					sidebarPath: require.resolve("./sidebars.js"),
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
@@ -128,14 +129,6 @@ export default {
 			appId: "I6TZS9IBSZ",
 			apiKey: "87b638e133658cdec7cc633e6c4986c3",
 			indexName: "next-safe-action",
-		},
-		announcementBar: {
-			id: "banner_version_7",
-			content:
-				"You are viewing documentation for the current stable version (v7) of the library. To access previous version docs, visit the <a href='https://v6.next-safe-action.dev'>v6 website</a>.",
-			backgroundColor: "#1f252e",
-			textColor: "#ffffff",
-			isCloseable: true,
 		},
 		navbar: {
 			title: "next-safe-action",
