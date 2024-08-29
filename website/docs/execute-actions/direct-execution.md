@@ -3,7 +3,7 @@ sidebar_position: 1
 description: You can execute safe actions by directrly calling them inside Client Components.
 ---
 
-# 1. Direct execution
+# Direct execution
 
 The first way to execute Server Actions inside Client Components is by importing it and directly calling it in a function. This method is the simplest one, but in some cases it could be all you need, for example if you just need the action result inside an `onClick` or `onSubmit` handlers, without overcomplicating things.
 
@@ -42,10 +42,12 @@ export default function Login() {
     <button
       onClick={async () => {
         // Result is scoped to this function.
+        // highlight-start
         const result = await loginUser({
           username: "johndoe",
           password: "123456",
         });
+        // highlight-end
 
         // You can do something with it here.
       }}>
@@ -57,6 +59,6 @@ export default function Login() {
 
 ### Action result object
 
-Every action you execute returns an object with the same structure. This is described in the [action result object](/docs/execution/action-result-object) section.
+Every action you execute returns an object with the same structure. This is described in the [action result object](/docs/define-actions/action-result-object) section.
 
 Explore a working example [here](<https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)/direct>).

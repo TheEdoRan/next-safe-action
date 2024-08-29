@@ -1,20 +1,24 @@
 ---
-sidebar_position: 3
+sidebar_position: 7
 description: Action utils is an object with useful properties and callbacks functions that you can use to customize the action execution flow.
 ---
 
 # Action utils
 
-Action utils is an object with some useful properties and callbacks passed as the second argument of the [`action`/`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method.
+Action utils is an object with some useful properties and callbacks passed as the second argument of the [`action`/`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method.
 
 ## Throw errors when they occur
 
 Starting from v7.4.0, you can now pass optional `throwServerError` and `throwValidationErrors` properties at the action level, if you want or need that behavior. Note that the `throwValidationErrors` property set at the action level has a higher priority than the one at the instance level, so if you set it to `false` while the one at the instance level is `true`, validation errors will **not** be thrown.
 
 
-## Callbacks
+## Action callbacks
 
-With action callbacks you can perform custom logic after the action is executed, on the server side. You can provide them to [`action`/`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method in the second argument, after the server code function:
+- `onSuccess`: called when action execution succeeds.
+- `onError`: called when action execution fails (validation errors or server error).
+- `onSettled`: called when action execution succeeds or fails.
+
+With action callbacks you can perform custom logic after the action is executed, on the server side. You can pass them to [`action`/`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method in the second argument, after the server code function. They don't return anything and can be async or not.
 
 ```tsx
 import { actionClient } from "@/lib/safe-action";
@@ -54,11 +58,3 @@ const action = actionClient
     }) => {},
   });
 ```
-
-Here is the list of callbacks, with their behavior explained. All of them are optional and have return type `void` or `Promise<void>` (async or non-async functions with no return):
-
-| Name         | Executed after                                                           |
-| ------------ | -----------------------------------------------------------------------  |
-| `onSuccess?` | Action succeeded                                                         |
-| `onError?`   | Action errored with server or validation error(s)                        |
-| `onSettled?` | Action succeeded or errored                                              |

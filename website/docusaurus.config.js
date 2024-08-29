@@ -20,6 +20,39 @@ export default {
 	onBrokenLinks: "throw",
 	onBrokenMarkdownLinks: "warn",
 
+	scripts: [
+		{
+			"src": "https://plausible.theedoran.xyz/js/script.js",
+			"async": true,
+			"defer": true,
+			"data-domain": "next-safe-action.dev",
+		},
+	],
+	headTags: [
+		{
+			tagName: "link",
+			attributes: {
+				rel: "preconnect",
+				href: "https://fonts.googleapis.com",
+			},
+		},
+		{
+			tagName: "link",
+			attributes: {
+				rel: "preconnect",
+				href: "https://fonts.gstatic.com",
+				crossorigin: "anonymous",
+			},
+		},
+		{
+			tagName: "link",
+			attributes: {
+				rel: "stylesheet",
+				href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+			},
+		},
+	],
+
 	// Even if you don't use internalization, you can use this field to set useful
 	// metadata like html lang. For example, if your site is Chinese, you may want
 	// to replace "en" with "zh-Hans".
@@ -27,7 +60,27 @@ export default {
 		defaultLocale: "en",
 		locales: ["en"],
 	},
+	plugins: [
+		[
+			"@docusaurus/plugin-client-redirects",
+			{
+				createRedirects(path) {
+					if (path.startsWith("/docs/safe-action-client/")) {
+						return path.replace(
+							"/docs/safe-action-client/",
+							"/docs/define-actions/"
+						);
+					}
 
+					if (path.startsWith("/docs/execution/")) {
+						return path.replace("/docs/execution/", "/docs/execute-actions/");
+					}
+
+					return undefined;
+				},
+			},
+		],
+	],
 	presets: [
 		[
 			"classic",
@@ -46,6 +99,17 @@ export default {
 				blog: false,
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
+				},
+				sitemap: {
+					lastmod: "date",
+					changefreq: "weekly",
+					priority: 0.8,
+					filename: "sitemap.xml",
+					createSitemapItems: async (params) => {
+						const { defaultCreateSitemapItems, ...rest } = params;
+						const items = await defaultCreateSitemapItems(rest);
+						return items;
+					},
 				},
 			},
 		],
@@ -96,7 +160,8 @@ export default {
 		},
 		prism: {
 			additionalLanguages: ["typescript"],
-			theme: themes.vsDark,
+			theme: themes.vsLight,
+			darkTheme: themes.oceanicNext,
 		},
 	},
 };

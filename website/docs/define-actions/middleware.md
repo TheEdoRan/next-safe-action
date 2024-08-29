@@ -7,7 +7,7 @@ description: Learn how to use middleware functions in your actions.
 
 next-safe-action, since version 7, ships with a composable and powerful middleware system, which allows you to create functions for almost every kind of use case you can imagine (authorization, logging, role based access, etc.). It works very similarly to the [tRPC implementation](https://trpc.io/docs/server/middlewares).
 
-Middleware functions are defined using [`use`](/docs/safe-action-client/instance-methods#use) method in your action clients, via the `middlewareFn` argument.
+Middleware functions are defined using [`use`](/docs/define-actions/instance-methods#use) method in your action clients, via the `middlewareFn` argument.
 
 ## Usage
 
@@ -45,6 +45,7 @@ const actionClient = createSafeActionClient({
     });
   },
   // Define logging middleware.
+  // highlight-start
 }).use(async ({ next, clientInput, metadata }) => {
   console.log("LOGGING MIDDLEWARE");
 
@@ -63,12 +64,14 @@ const actionClient = createSafeActionClient({
   // And then return the result of the awaited action.
   return result;
 });
+// highlight-end
 
 // Auth client defined by extending the base one.
 // Note that the same initialization options and middleware functions of the base client
 // will also be used for this one.
 export const authActionClient = actionClient
   // Define authorization middleware.
+  // highlight-start
   .use(async ({ next }) => {
     const session = cookies().get("session")?.value;
 
@@ -85,6 +88,7 @@ export const authActionClient = actionClient
     // Return the next middleware with `userId` value in the context
     return next({ ctx: { userId } });
   });
+  // highlight-end
 ```
 
 Here we import `authActionClient` in the action's file:
@@ -92,6 +96,7 @@ Here we import `authActionClient` in the action's file:
 ```typescript title="src/app/edituser-action.ts"
 "use server";
 
+// highlight-next-line
 import { authActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
@@ -101,6 +106,7 @@ const editProfile = authActionClient
   // Here we pass the input schema.
   .schema(z.object({ newUsername: z.string() }))
   // Here we get `userId` from the middleware defined in `authActionClient`.
+  // highlight-next-line
   .action(async ({ parsedInput: { newUsername }, ctx: { userId } }) => {
     await saveNewUsernameInDb(userId, newUsername);
 
@@ -123,6 +129,7 @@ import { authActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
 const deleteUser = authActionClient
+  // highlight-start
   .use(async ({ next, ctx }) => {
     // `userId` comes from the context set in the previous middleware function.
     const userRole = await getUserRole(ctx.userId);
@@ -135,6 +142,7 @@ const deleteUser = authActionClient
     // to add data to the context here.
     return next();
   })
+  // highlight-end
   .metadata({ actionName: "deleteUser" })
   .action(async ({ ctx: { userId } }) => {
     // Here we're sure that the user that is performing this operation is an admin.
@@ -148,19 +156,15 @@ If a regular user tries to do the same, the execution will be stopped at the las
 
 ## `middlewareFn` arguments
 
-`middlewareFn` has the following arguments:
-
-| Name                   | Type                                                           | Purpose                                                                                                                                                                             |
-| ---------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `clientInput`          | `unknown`                                                      | The raw input (not parsed) passed from client.                                                                                                                                      |
-| `bindArgsClientInputs` | `unknown[]`                                                    | The raw array of bind arguments inputs (not parsed).                                                                                                                                |
-| `ctx`                  | `Ctx`                                                | Type safe context value from previous middleware function(s).                                                                                                                       |
-| `metadata`             | `MD \| undefined`                                         | Metadata for the safe action execution.                                                                                                                                             |
-| `next`                 | `<NC>(opts: { ctx: NC }): Promise<MiddlewareResult<NC>>` | Function that will execute the next function in the middleware stack or the server code function. It expects, as argument, the next `ctx` value for the next function in the chain. |
+- `clientInput`: the raw input (not parsed) passed from client.
+- `bindArgsClientInputs`: the raw array of bind arguments inputs (not parsed).
+- `ctx`: type safe context value from previous middleware function(s).
+- `metadata`: metadata for the action.
+- `next` function that will execute the next function in the middleware stack or the server code function. You can opionally extend the `ctx` inside of it.
 
 ## `middlewareFn` return value
 
-`middlewareFn` returns a Promise of a [`MiddlewareResult`](/docs/types#middlewareresult) object. It extends the result of a safe action with `success` property, and `parsedInput`, `bindArgsParsedInputs` and `ctx` optional properties. This is the exact return type of the `next` function, so you must always return it (or its result) to continue executing the middleware chain.
+`middlewareFn` returns a Promise of a `MiddlewareResult` object. It extends the result of a safe action with `success` property, and `parsedInput`, `bindArgsParsedInputs` and `ctx` optional properties. This is the exact return type of the `next` function, so you must always return it (or its result) to continue executing the middleware chain.
 
 ## Extend context
 
@@ -197,6 +201,7 @@ import { actionClient } from "@/lib/safe-action";
 export const testAction = actionClient
   .action(async ({ ctx }) => {
     // Context contains `sessionId` and `userId` thanks to the middleware.
+    // highlight-next-line
     const { sessionId, userId } = ctx;
   });
 ```
@@ -229,13 +234,16 @@ export const actionClient = createSafeActionClient({
 });
 
 // This middleware works with any client.
+// highlight-start
 const myMiddleware1 = createMiddleware().define(async ({ next }) => {
   // Do something useful here...
   return next({ ctx: { baz: "qux" } });
 });
+// highlight-end
 
 // This middleware works with clients that at minimum have `ctx.foo`, `metadata.actionName`
 // and `serverError.message` properties. More information below. *
+// highlight-start
 const myMiddleware2 = createMiddleware<{
   ctx: { foo: string }; // [1]
   metadata: { actionName: string }; // [2]
@@ -244,6 +252,7 @@ const myMiddleware2 = createMiddleware<{
   // Do something useful here...
   return next({ ctx: { john: "doe" } });
 });
+// highlight-end
 
 // You can use it like a regular middleware function.
 export const actionClientWithMyMiddleware = actionClient.use(myMiddleware1).use(myMiddleware2);

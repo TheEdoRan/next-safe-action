@@ -42,6 +42,8 @@ div[role="banner"] > button > svg {
 }
 
 :root {
+	--ifm-font-family-base: "Inter";
+	--ifm-heading-font-family: "Inter";
 	--ifm-color-primary: #da6f0c;
 	--ifm-color-primary-dark: #c4640b;
 	--ifm-color-primary-darker: #b95e0a;
@@ -68,6 +70,8 @@ div[role="banner"] > button > svg {
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 	--ifm-background-color: #18181b !important;
 	--ifm-color-emphasis-200: #2b2e33 !important;
+
+	--docusaurus-highlighted-code-line-bg: #363b44;
 
 	.header-github-link::before {
 		filter: invert(1);

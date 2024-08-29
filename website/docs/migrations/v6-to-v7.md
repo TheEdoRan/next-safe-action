@@ -107,7 +107,7 @@ export const editProfile = authActionClient
 
 ### [Allow setting validation errors in action server code function](https://github.com/TheEdoRan/next-safe-action/issues/62)
 
-Sometimes it's useful to set custom validation errors in the action server code function, for example when the user wants to log in, but there was a problem with the email or password fields. next-safe-action v7 introduces a new function called [`returnValidationErrors`](/docs/recipes/additional-validation-errors#returnvalidationerrors) that allows you to do that.
+Sometimes it's useful to set custom validation errors in the action server code function, for example when the user wants to log in, but there was a problem with the email or password fields. next-safe-action v7 introduces a new function called [`returnValidationErrors`](/docs/define-actions/validation-errors#returnvalidationerrors) that allows you to do that.
 
 ### [Support schema nested objects validation](https://github.com/TheEdoRan/next-safe-action/issues/51)
 
@@ -117,48 +117,48 @@ Before v7, next-safe-action allowed you to define schemas with nested objects, b
 
 This is a core change in next-safe-action v7. In previous versions, you could define just one "monolithic" middleware at the instance level. So, the previous workflow was to define multiple safe action clients, each one with its own middleware.
 
-With version 7, you can chain multiple middleware functions using the [`use`](/docs/safe-action-client/instance-methods#use) method, both at the instance level and at the action level. This is explained in detail in the [middleware page](/docs/safe-action-client/middleware) of the documentation. The new design is much more flexible and powerful, allowing you to do things that just couldn't be done before, such as extending context, logging action execution, [integrating with third party systems for error reporting](https://github.com/TheEdoRan/next-safe-action/issues/39#issuecomment-2062387039), etc.
+With version 7, you can chain multiple middleware functions using the [`use`](/docs/define-actions/instance-methods#use) method, both at the instance level and at the action level. This is explained in detail in the [middleware page](/docs/define-actions/middleware) of the documentation. The new design is much more flexible and powerful, allowing you to do things that just couldn't be done before, such as extending context, logging action execution, [integrating with third party systems for error reporting](https://github.com/TheEdoRan/next-safe-action/issues/39#issuecomment-2062387039), etc.
 
 ### [Generic type for `serverError`](https://github.com/TheEdoRan/next-safe-action/issues/86)
 
-The `serverError` property of the [action result object](/docs/execution/action-result-object) is now of generic type. By default it's a `string` with a default value of "Something went wrong while executing the operation.". You can customize error value and type using the [`handleReturnedServerError`](/docs/safe-action-client/initialization-options#handlereturnedservererror) initialization function, just like pre-v7. Basically, what you return from that function is what `serverError` will be on the client.
+The `serverError` property of the [action result object](/docs/define-actions/action-result-object) is now of generic type. By default it's a `string` with a default value of "Something went wrong while executing the operation.". You can customize error value and type using the [`handleReturnedServerError`](/docs/define-actions/create-the-client#handlereturnedservererror) initialization function, just like pre-v7. Basically, what you return from that function is what `serverError` will be on the client.
 
 ### [Support binding additional arguments](https://github.com/TheEdoRan/next-safe-action/issues/29)
 
 Next.js allows you to [pass additional arguments to the action](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#passing-additional-arguments) using JavaScript `bind` method. This approach has the advantage of supporting progressive enhancement.
 
-next-safe-action v7 supports bind arguments via the [`bindArgsSchemas`](/docs/safe-action-client/instance-methods#bindargsschemas) method.
+next-safe-action v7 supports bind arguments via the [`bindArgsSchemas`](/docs/define-actions/instance-methods#bindargsschemas) method.
 
 ### [Support setting default validation errors shape per instance](https://github.com/TheEdoRan/next-safe-action/issues/153)
 
-By default, next-safe-action v7 returns validation errors in an object of the same shape as Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. You can override this behavior globally by setting the [`defaultValidationErrorsShape`](/docs/safe-action-client/initialization-options#defaultvalidationerrorsshape) optional property to `flattened` in `createSafeActionClient` method. Doing so, the validation errors are returned in the shape of the Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. If you need a custom format for a specific action, you can override the default shape using the `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in `schema` and `bindArgsSchemas` methods, as explained below.
+By default, next-safe-action v7 returns validation errors in an object of the same shape as Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. You can override this behavior globally by setting the [`defaultValidationErrorsShape`](/docs/define-actions/create-the-client#defaultvalidationerrorsshape) optional property to `flattened` in `createSafeActionClient` method. Doing so, the validation errors are returned in the shape of the Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. If you need a custom format for a specific action, you can override the default shape using the `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in `schema` and `bindArgsSchemas` methods, as explained below.
 
 ### [Support custom validation errors shape](https://github.com/TheEdoRan/next-safe-action/issues/98)
 
 As already said above, by default version 7 now returns validation errors in the same format of the Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method.
 
-This is customizable by using the `handleValidationErrorsShape`/`handleBindArgsValidationErrorsShape` optional functions in `schema`/`bindArgsSchemas` methods. Check out [this page](/docs/recipes/customize-validation-errors-format) for more information. For example, if you need to work with flattened errors for a specific action, next-safe-action conveniently provides two functions to do that: [`flattenValidationErrors` and `flattenBindArgsValidationErrors`](/docs/recipes/customize-validation-errors-format#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions).
+This is customizable by using the `handleValidationErrorsShape`/`handleBindArgsValidationErrorsShape` optional functions in `schema`/`bindArgsSchemas` methods. Check out [this page](/docs/define-actions/validation-errors#customize-validation-errors-format) for more information. For example, if you need to work with flattened errors for a specific action, next-safe-action conveniently provides two functions to do that: [`flattenValidationErrors` and `flattenBindArgsValidationErrors`](/docs/define-actions/validation-errors#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions).
 
 ### [Allow calling `action` method without `schema`](https://github.com/TheEdoRan/next-safe-action/issues/107)
 
-Sometimes it's not necessary to define an action with input. In this case, you can omit the [`schema`](/docs/safe-action-client/instance-methods#schema) method and use directly the [`action`/`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method.
+Sometimes it's not necessary to define an action with input. In this case, you can omit the [`schema`](/docs/define-actions/instance-methods#schema) method and use directly the [`action`/`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method.
 
 ### [Support passing schema via async function](https://github.com/TheEdoRan/next-safe-action/issues/155)
 
-When working with i18n solutions, often you'll find implementations that require awaiting a `getTranslations` function in order to get the translations, that then get passed to the schema. Starting from version 7, next-safe-action allows you to pass an async function to the [`schema`](/docs/safe-action-client/instance-methods#schema) method, that returns a promise of type `Schema`. More information about this feature can be found in [this discussion](https://github.com/TheEdoRan/next-safe-action/discussions/111) on GitHub and in the [i18n](/docs/recipes/i18n) recipe page.
+When working with i18n solutions, often you'll find implementations that require awaiting a `getTranslations` function in order to get the translations, that then get passed to the schema. Starting from version 7, next-safe-action allows you to pass an async function to the [`schema`](/docs/define-actions/instance-methods#schema) method, that returns a promise of type `Schema`. More information about this feature can be found in [this discussion](https://github.com/TheEdoRan/next-safe-action/discussions/111) on GitHub and in the [i18n](/docs/recipes/i18n) recipe page.
 
 ### [Support action execution callbacks](https://github.com/TheEdoRan/next-safe-action/issues/162)
 
-It's sometimes useful to be able to execute custom logic on the server side after an action succeeds or fails. Starting from version 7, next-safe-action allows you to pass action callbacks when defining an action. More information about this feature can be found [here](/docs/execution/action-utils#callbacks).
+It's sometimes useful to be able to execute custom logic on the server side after an action succeeds or fails. Starting from version 7, next-safe-action allows you to pass action callbacks when defining an action. More information about this feature can be found [here](/docs/define-actions/action-utils#action-callbacks).
 
 ### [Support stateful actions using React `useActionState` hook](https://github.com/TheEdoRan/next-safe-action/issues/91)
 
-React added a hook called `useActionState` that replaces the previous `useFormState` hook and improves it. next-safe-action v7 uses it under the hood in the exported [`useStateAction`](/docs/execution/hooks/usestateaction) hook, that keeps track of the state of the action execution.
+React added a hook called `useActionState` that replaces the previous `useFormState` hook and improves it. next-safe-action v7 uses it under the hood in the exported [`useStateAction`](/docs/execute-actions/hooks/usestateaction) hook, that keeps track of the state of the action execution.
 
-Note that this hook expects as argument actions defined using the `stateAction` method, and not the usual `action` method. Find more information about these two methods [here](/docs/safe-action-client/instance-methods#action--stateaction).
+Note that this hook expects as argument actions defined using the `stateAction` method, and not the usual `action` method. Find more information about these two methods [here](/docs/define-actions/instance-methods#action--stateaction).
 
 :::warning important
-The `useActionState` hook requires Next.js >= 15 to work, because previous versions do not support the React's [`useActionState`](https://react.dev/reference/react/useActionState) hook that is used under the hood. In the meantime, you can use the [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method manually with React 18's `useFormState` hook.
+The `useActionState` hook requires Next.js >= 15 to work, because previous versions do not support the React's [`useActionState`](https://react.dev/reference/react/useActionState) hook that is used under the hood. In the meantime, you can use the [`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method manually with React 18's `useFormState` hook.
 
 The `useActionState` hook is exported from `next-safe-action/stateful-hooks` path, unlike the other two hooks. This is because it uses React 19 features and would cause build errors in React 18.
 :::
@@ -179,7 +179,7 @@ Sometimes it's useful to await the result of an action execution when using acti
 
 ### `serverCodeFn` signature
 
-Previously, `serverCodeFn` had two arguments: `parsedInput` and `ctx`. Now, it only has one argument, which is an object that contains `parsedInput` and `ctx`, and other useful properties. In the case of [`stateAction`](/docs/safe-action-client/instance-methods#action--stateaction) method, `serverCodeFn` also has an additional argument, which is an object that contains the previous result of the action. Find more information about `serverCodeFn` [here](/docs/safe-action-client/instance-methods#servercodefn).
+Previously, `serverCodeFn` had two arguments: `parsedInput` and `ctx`. Now, it only has one argument, which is an object that contains `parsedInput` and `ctx`, and other useful properties. In the case of [`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method, `serverCodeFn` also has an additional argument, which is an object that contains the previous result of the action. Find more information about `serverCodeFn` [here](/docs/define-actions/instance-methods#servercodefn).
 
 ### `useOptimisticAction` signature
 
@@ -187,15 +187,15 @@ The function signature for `useOptimisticAction` has been updated to be much mor
 
 Other than that, now `currentState` is unlinked from the safe action's return value. The action purpose in optimistic state updates is just to make mutations of data. Then, the fresh data is refetched from the parent Server Component, so it didn't make sense to lock the type of `currentState` to the action's return type. This is explained in detail [here](https://github.com/TheEdoRan/next-safe-action/discussions/127#discussioncomment-9480520) and [here](https://github.com/TheEdoRan/next-safe-action/pull/134).
 
-Find more information about the updated `useOptimisticAction` hook [here](/docs/execution/hooks/useoptimisticaction).
+Find more information about the updated `useOptimisticAction` hook [here](/docs/execute-actions/hooks/useoptimisticaction).
 
 ### Hook callbacks arguments
 
-Previously, there were multiple arguments in hook callbacks. Now, metadata is passed inside a single object that is the first argument of each function. Find more information about the updated callbacks [here](/docs/execution/hooks/hook-callbacks).
+Previously, there were multiple arguments in hook callbacks. Now, metadata is passed inside a single object that is the first argument of each function. Find more information about the updated callbacks [here](/docs/execute-actions/hooks/hook-callbacks).
 
 ### Action metadata
 
-In version 6, you could pass metadata to actions via the third argument of the safe action function, after `serverCodeFn`. In version 7, there's a dedicated `metadata` method that lets you define useful data for the action execution. This data can then be accessed in middleware functions and `serverCodeFn`. Find more information about the `metadata` method [here](/docs/safe-action-client/instance-methods#metadata).
+In version 6, you could pass metadata to actions via the third argument of the safe action function, after `serverCodeFn`. In version 7, there's a dedicated `metadata` method that lets you define useful data for the action execution. This data can then be accessed in middleware functions and `serverCodeFn`. Find more information about the `metadata` method [here](/docs/define-actions/instance-methods#metadata).
 
 ## Internal changes
 

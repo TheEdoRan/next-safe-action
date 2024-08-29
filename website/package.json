@@ -16,6 +16,7 @@
 	},
 	"dependencies": {
 		"@docusaurus/core": "3.5.2",
+		"@docusaurus/plugin-client-redirects": "^3.5.2",
 		"@docusaurus/preset-classic": "3.5.2",
 		"@docusaurus/remark-plugin-npm2yarn": "^3.5.2",
 		"@mdx-js/react": "^3.0.1",
@@ -29,6 +30,7 @@
 	"devDependencies": {
 		"@docusaurus/module-type-aliases": "3.5.2",
 		"@docusaurus/tsconfig": "^3.5.2",
+		"@docusaurus/types": "^3.5.2",
 		"autoprefixer": "^10.4.20",
 		"postcss": "^8.4.41",
 		"postcss-nested": "^6.2.0",

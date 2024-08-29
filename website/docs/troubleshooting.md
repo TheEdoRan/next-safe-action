@@ -32,6 +32,7 @@ You can set this option in your `tsconfig.json` to remove the error:
 ```json title="tsconfig.json"
 {
   "compilerOptions": {
+    // highlight-next-line
     "baseUrl": "."
   }
 }
