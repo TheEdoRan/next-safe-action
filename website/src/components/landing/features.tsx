@@ -23,8 +23,8 @@ const features: { title: string; description: string }[] = [
 			"Manage authorization, log and halt execution, and much more with a composable middleware system.",
 	},
 	{
-		title: "Input validation using multiple validation libraries",
-		description: `Input passed from the client to the server is validated using Zod, Valibot or Yup.`,
+		title: "Input/output validation using multiple validation libraries",
+		description: `Input and output are validated using your favorite library.`,
 	},
 	{
 		title: "Advanced server error handling",
