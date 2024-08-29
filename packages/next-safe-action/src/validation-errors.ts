@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 
-import type { Schema } from "./adapters/types";
+import type { Schema, ValidationIssue } from "./adapters/types";
 import type {
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,
 	ValidationErrors,
-	ValidationIssue,
 } from "./validation-errors.types";
 
 // This function is used internally to build the validation errors object from a list of validation issues.

@@ -11,7 +11,7 @@ import {
 } from "./validation-errors";
 
 export { createMiddleware } from "./middleware";
-export { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
+export { ActionOutputDataError as ActionDataError, ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export {
 	ActionValidationError,
 	flattenBindArgsValidationErrors,
@@ -59,8 +59,9 @@ export const createSafeActionClient = <
 		middlewareFns: [async ({ next }) => next({ ctx: {} })],
 		handleServerErrorLog,
 		handleReturnedServerError,
-		schemaFn: undefined,
+		inputSchemaFn: undefined,
 		bindArgsSchemas: [],
+		outputSchema: undefined,
 		validationAdapter: createOpts?.validationAdapter ?? zodAdapter(), // use zod adapter by default
 		ctxType: {},
 		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
