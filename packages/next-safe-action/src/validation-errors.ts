@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 
-import type { Schema } from "./adapters/types";
+import type { Schema, ValidationIssue } from "./adapters/types";
 import type {
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,
 	ValidationErrors,
-	ValidationIssue,
 } from "./validation-errors.types";
 
 // This function is used internally to build the validation errors object from a list of validation issues.
@@ -144,4 +143,34 @@ export function flattenBindArgsValidationErrors<BAVE extends readonly Validation
 	bindArgsValidationErrors: BAVE
 ) {
 	return bindArgsValidationErrors.map((ve) => flattenValidationErrors(ve)) as FlattenedBindArgsValidationErrors<BAVE>;
+}
+
+/**
+ * This error is thrown when an action metadata is invalid, i.e. when there's a mismatch between the
+ * type of the metadata schema returned from `defineMetadataSchema` and the actual data passed.
+ */
+export class ActionMetadataValidationError<MDS extends Schema | undefined> extends Error {
+	public validationErrors: ValidationErrors<MDS>;
+
+	constructor(validationErrors: ValidationErrors<MDS>) {
+		super("Invalid metadata input. Please be sure to pass metadata via `metadata` method before defining the action.");
+		this.name = "ActionMetadataError";
+		this.validationErrors = validationErrors;
+	}
+}
+
+/**
+ * This error is thrown when an action's data (output) is invalid, i.e. when there's a mismatch between the
+ * type of the data schema passed to `dataSchema` method and the actual return of the action.
+ */
+export class ActionOutputDataValidationError<DS extends Schema | undefined> extends Error {
+	public validationErrors: ValidationErrors<DS>;
+
+	constructor(validationErrors: ValidationErrors<DS>) {
+		super(
+			"Invalid action data (output). Please be sure to return data following the shape of the schema passed to `dataSchema` method."
+		);
+		this.name = "ActionOutputDataError";
+		this.validationErrors = validationErrors;
+	}
 }

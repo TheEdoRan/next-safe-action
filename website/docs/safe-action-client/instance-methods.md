@@ -28,7 +28,7 @@ metadata(data: Metadata) => new SafeActionClient()
 ## `schema`
 
 ```typescript
-schema(schema: S, utils?: { handleValidationErrorsShape?: HandleValidationErrorsShapeFn } }) => new SafeActionClient()
+schema(inputSchema: S, utils?: { handleValidationErrorsShape?: HandleValidationErrorsShapeFn } }) => new SafeActionClient()
 ```
 
 `schema` accepts an input schema of type `Schema` or a function that returns a promise of type `Schema` and an optional `utils` object that accepts a [`handleValidationErrorsShape`](/docs/recipes/customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`handleValidationErrorsShape`](/docs/recipes/customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns a new instance of the safe action client.
@@ -40,6 +40,14 @@ bindArgsSchemas(bindArgsSchemas: BAS, bindArgsUtils?: { handleBindArgsValidation
 ```
 
 `bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` and an optional `bindArgsUtils` object that accepts a `handleBindArgsValidationErrorsShape` function. The schema is used to define the bind arguments that the safe action will receive, the optional `handleBindArgsValidationErrorsShape` function is used to [return a custom format for bind arguments validation errors](/docs/recipes/customize-validation-errors-format). It returns a new instance of the safe action client.
+
+## `outputSchema`
+
+```typescript
+outputSchema(outputSchema: S) => new SafeActionClient()
+```
+
+`outputSchema` accepts a schema of type `Schema`. That schema is used to define what the safe action will return. If you don't pass an output schema when you're defining an action, the return type will be inferred instead. If validation fails, an `ActionOutputDataValidationError` is internally thrown. You can catch it inside [`handleReturnedServerError`](/docs/safe-action-client/initialization-options#handlereturnedservererror)/[`handleServerErrorLog`](/docs/safe-action-client/initialization-options#handleservererrorlog) and access the `validationErrors` property to get the validation errors. It returns a new instance of the safe action client.
 
 ## `action` / `stateAction`
 

@@ -14,9 +14,15 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { ActionMetadataError, DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
 import type { MaybePromise } from "./utils.types";
-import { ActionServerValidationError, ActionValidationError, buildValidationErrors } from "./validation-errors";
+import {
+	ActionMetadataValidationError,
+	ActionOutputDataValidationError,
+	ActionServerValidationError,
+	ActionValidationError,
+	buildValidationErrors,
+} from "./validation-errors";
 import type {
 	BindArgsValidationErrors,
 	HandleBindArgsValidationErrorsShapeFn,
@@ -27,18 +33,20 @@ import type {
 export function actionBuilder<
 	ServerError,
 	MetadataSchema extends Schema | undefined = undefined,
-	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined,
+	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined, // metadata type (inferred from metadata schema)
 	Ctx extends object = {},
-	SF extends (() => Promise<Schema>) | undefined = undefined, // schema function
-	S extends Schema | undefined = SF extends Function ? Awaited<ReturnType<SF>> : undefined,
+	ISF extends (() => Promise<Schema>) | undefined = undefined, // input schema function
+	IS extends Schema | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
+	OS extends Schema | undefined = undefined, // output schema
 	const BAS extends readonly Schema[] = [],
 	CVE = undefined,
 	CBAVE = undefined,
 >(args: {
-	schemaFn?: SF;
+	inputSchemaFn?: ISF;
 	bindArgsSchemas?: BAS;
+	outputSchema?: OS;
 	validationAdapter: ValidationAdapter;
-	handleValidationErrorsShape: HandleValidationErrorsShapeFn<S, CVE>;
+	handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, CVE>;
 	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	metadataSchema: MetadataSchema;
 	metadata: MD;
@@ -53,29 +61,29 @@ export function actionBuilder<
 	const bindArgsSchemas = (args.bindArgsSchemas ?? []) as BAS;
 
 	function buildAction({ withState }: { withState: false }): {
-		action: <Data>(
-			serverCodeFn: ServerCodeFn<MD, Ctx, S, BAS, Data>,
-			utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
-		) => SafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
+		action: <Data extends OS extends Schema ? Infer<OS> : any>(
+			serverCodeFn: ServerCodeFn<MD, Ctx, IS, BAS, Data>,
+			utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
+		) => SafeActionFn<ServerError, IS, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
-		action: <Data>(
-			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
-			utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
-		) => SafeStateActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
+		action: <Data extends OS extends Schema ? Infer<OS> : any>(
+			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
+			utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
+		) => SafeStateActionFn<ServerError, IS, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
 		return {
-			action: <Data>(
+			action: <Data extends OS extends Schema ? Infer<OS> : any>(
 				serverCodeFn:
-					| ServerCodeFn<MD, Ctx, S, BAS, Data>
-					| StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>,
-				utils?: SafeActionUtils<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>
+					| ServerCodeFn<MD, Ctx, IS, BAS, Data>
+					| StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
+				utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
 					let currentCtx: object = {};
 					const middlewareResult: MiddlewareResult<ServerError, object> = { success: false };
-					type PrevResult = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined;
+					type PrevResult = SafeActionResult<ServerError, IS, BAS, CVE, CBAVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
 					const parsedInputDatas: any[] = [];
 					let frameworkError: Error | null = null;
@@ -107,10 +115,10 @@ export function actionBuilder<
 							if (idx === 0) {
 								if (args.metadataSchema) {
 									// Validate metadata input.
-									if (!(await args.validationAdapter.validate(args.metadataSchema, args.metadata)).success) {
-										throw new ActionMetadataError(
-											"Invalid metadata input. Please be sure to pass metadata via `metadata` method before defining the action."
-										);
+									const parsedMd = await args.validationAdapter.validate(args.metadataSchema, args.metadata);
+
+									if (!parsedMd.success) {
+										throw new ActionMetadataValidationError<MetadataSchema>(buildValidationErrors(parsedMd.issues));
 									}
 								}
 							}
@@ -124,7 +132,6 @@ export function actionBuilder<
 									metadata: args.metadata,
 									next: async (nextOpts) => {
 										currentCtx = deepmerge(currentCtx, nextOpts?.ctx ?? {});
-										// currentCtx = { ...cloneDeep(currentCtx), ...(nextOpts?.ctx ?? {}) };
 										await executeMiddlewareStack(idx + 1);
 										return middlewareResult;
 									},
@@ -137,7 +144,7 @@ export function actionBuilder<
 										// Last client input in the array, main argument (no bind arg).
 										if (i === clientInputs.length - 1) {
 											// If schema is undefined, set parsed data to undefined.
-											if (typeof args.schemaFn === "undefined") {
+											if (typeof args.inputSchemaFn === "undefined") {
 												return {
 													success: true,
 													data: undefined,
@@ -145,7 +152,7 @@ export function actionBuilder<
 											}
 
 											// Otherwise, parse input with the schema.
-											return args.validationAdapter.validate(await args.schemaFn(), input);
+											return args.validationAdapter.validate(await args.inputSchemaFn(), input);
 										}
 
 										// Otherwise, we're processing bind args client inputs.
@@ -172,7 +179,7 @@ export function actionBuilder<
 											hasBindValidationErrors = true;
 										} else {
 											// Otherwise, we're processing the non-bind argument (the last one) in the array.
-											const validationErrors = buildValidationErrors<S>(parsedInput.issues);
+											const validationErrors = buildValidationErrors<IS>(parsedInput.issues);
 
 											middlewareResult.validationErrors = await Promise.resolve(
 												args.handleValidationErrorsShape(validationErrors)
@@ -193,11 +200,11 @@ export function actionBuilder<
 								}
 
 								// @ts-expect-error
-								const scfArgs: Parameters<StateServerCodeFn<ServerError, MD, Ctx, S, BAS, CVE, CBAVE, Data>> = [];
+								const scfArgs: Parameters<StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>> = [];
 
 								// Server code function always has this object as the first argument.
 								scfArgs[0] = {
-									parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
+									parsedInput: parsedInputDatas.at(-1) as IS extends Schema ? Infer<IS> : undefined,
 									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 									ctx: currentCtx as Ctx,
 									metadata: args.metadata,
@@ -210,6 +217,15 @@ export function actionBuilder<
 								}
 
 								const data = await serverCodeFn(...scfArgs);
+
+								// If a `outputSchema` is passed, validate the action return value.
+								if (typeof args.outputSchema !== "undefined") {
+									const parsedData = await args.validationAdapter.validate(args.outputSchema, data);
+
+									if (!parsedData.success) {
+										throw new ActionOutputDataValidationError<OS>(buildValidationErrors(parsedData.issues));
+									}
+								}
 
 								middlewareResult.success = true;
 								middlewareResult.data = data;
@@ -227,7 +243,7 @@ export function actionBuilder<
 
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
 							if (e instanceof ActionServerValidationError) {
-								const ve = e.validationErrors as ValidationErrors<S>;
+								const ve = e.validationErrors as ValidationErrors<IS>;
 								middlewareResult.validationErrors = await Promise.resolve(args.handleValidationErrorsShape(ve));
 							} else {
 								// If error is not an instance of Error, wrap it in an Error object with
@@ -269,9 +285,9 @@ export function actionBuilder<
 								data: undefined,
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
-								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
+								parsedInput: parsedInputDatas.at(-1) as IS extends Schema ? Infer<IS> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								hasRedirected: isRedirectError(frameworkError),
 								hasNotFound: isNotFoundError(frameworkError),
@@ -282,7 +298,7 @@ export function actionBuilder<
 							utils?.onSettled?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								result: {},
 								hasRedirected: isRedirectError(frameworkError),
@@ -295,7 +311,7 @@ export function actionBuilder<
 						throw frameworkError;
 					}
 
-					const actionResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> = {};
+					const actionResult: SafeActionResult<ServerError, IS, BAS, CVE, CBAVE, Data> = {};
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
 						// Throw validation errors if either `throwValidationErrors` property at the action or instance level is `true`.
@@ -333,9 +349,9 @@ export function actionBuilder<
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
 								data: actionResult.data as Data,
-								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
-								parsedInput: parsedInputDatas.at(-1) as S extends Schema ? Infer<S> : undefined,
+								parsedInput: parsedInputDatas.at(-1) as IS extends Schema ? Infer<IS> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								hasRedirected: false,
 								hasNotFound: false,
@@ -346,7 +362,7 @@ export function actionBuilder<
 							utils?.onError?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								error: actionResult,
 							})
@@ -358,7 +374,7 @@ export function actionBuilder<
 						utils?.onSettled?.({
 							metadata: args.metadata,
 							ctx: currentCtx as Ctx,
-							clientInput: clientInputs.at(-1) as S extends Schema ? InferIn<S> : undefined,
+							clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
 							bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 							result: actionResult,
 							hasRedirected: false,

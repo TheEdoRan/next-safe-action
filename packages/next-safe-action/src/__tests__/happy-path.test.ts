@@ -38,14 +38,17 @@ test("action with no input schema and return data gives back an object with corr
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
-test("action with input schema and return data gives back an object with correct `data`", async () => {
+test("action with input, output schema and return data gives back an object with correct `data`", async () => {
 	const userId = "ed6f5b84-6bca-4d01-9a51-c3d0c49a7996";
 
-	const action = ac.schema(z.object({ userId: z.string().uuid() })).action(async ({ parsedInput }) => {
-		return {
-			userId: parsedInput.userId,
-		};
-	});
+	const action = ac
+		.schema(z.object({ userId: z.string().uuid() }))
+		.outputSchema(z.object({ userId: z.string() }))
+		.action(async ({ parsedInput }) => {
+			return {
+				userId: parsedInput.userId,
+			};
+		});
 
 	const actualResult = await action({ userId });
 
@@ -80,13 +83,14 @@ test("action with input schema passed via async function and return data gives b
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
-test("action with input schema extended via async function and return data gives back an object with correct `data`", async () => {
+test("action with input schema extended via async function, ouput schema and return data gives back an object with correct `data`", async () => {
 	const userId = "ed6f5b84-6bca-4d01-9a51-c3d0c49a7996";
 	const password = "password";
 
 	const action = ac
 		.schema(z.object({ password: z.string() }))
 		.schema(async (prevSchema) => prevSchema.extend({ userId: z.string().uuid() }))
+		.outputSchema(z.object({ userId: z.string(), password: z.string() }))
 		.action(async ({ parsedInput }) => {
 			return {
 				userId: parsedInput.userId,
@@ -106,12 +110,13 @@ test("action with input schema extended via async function and return data gives
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
-test("action with no input schema, bind args input schemas and return data gives back an object with correct `data`", async () => {
+test("action with no input schema, with bind args input schemas, output schema and return data gives back an object with correct `data`", async () => {
 	const username = "johndoe";
 	const age = 30;
 
 	const action = ac
 		.bindArgsSchemas<[username: z.ZodString, age: z.ZodNumber]>([z.string(), z.number()])
+		.outputSchema(z.object({ username: z.string(), age: z.number() }))
 		.action(async ({ bindArgsParsedInputs: [username, age] }) => {
 			return {
 				username,
@@ -131,7 +136,7 @@ test("action with no input schema, bind args input schemas and return data gives
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
-test("action with input schema, bind args input schemas and return data gives back an object with correct `data`", async () => {
+test("action with input schema, bind args input schemas, output schema and return data gives back an object with correct `data`", async () => {
 	const userId = "ed6f5b84-6bca-4d01-9a51-c3d0c49a7996";
 	const username = "johndoe";
 	const age = 30;
@@ -139,6 +144,7 @@ test("action with input schema, bind args input schemas and return data gives ba
 	const action = ac
 		.schema(z.object({ userId: z.string().uuid() }))
 		.bindArgsSchemas<[username: z.ZodString, age: z.ZodNumber]>([z.string(), z.number()])
+		.outputSchema(z.object({ userId: z.string(), username: z.string(), age: z.number() }))
 		.action(async ({ parsedInput, bindArgsParsedInputs: [username, age] }) => {
 			return {
 				userId: parsedInput.userId,

@@ -18,7 +18,8 @@ export function Hero() {
 									</h1>
 									<h2 className="text-zinc-700 dark:text-zinc-300 font-medium text-base sm:text-lg md:text-xl max-w-xl">
 										next-safe-action handles your Next.js app mutations type
-										safety, input validation, server errors and even more!
+										safety, input/output validation, server errors and even
+										more!
 									</h2>
 								</div>
 								<div className="flex justify-center items-center">

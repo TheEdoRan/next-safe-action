@@ -246,7 +246,7 @@ export type SafeActionUtils<
 
 ### `ValidationErrors`
 
-Type of the returned object when input validation fails.
+Type of the returned object when validation fails.
 
 ```typescript
 export type ValidationErrors<S extends Schema | undefined> = S extends Schema
