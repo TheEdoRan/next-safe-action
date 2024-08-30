@@ -19,6 +19,8 @@ export default {
 
 	onBrokenLinks: "throw",
 	onBrokenMarkdownLinks: "warn",
+	onDuplicateRoutes: "throw",
+	onBrokenAnchors: "throw",
 
 	scripts: [
 		{
@@ -100,17 +102,17 @@ export default {
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
-				sitemap: {
-					lastmod: "date",
-					changefreq: "weekly",
-					priority: 0.8,
-					filename: "sitemap.xml",
-					createSitemapItems: async (params) => {
-						const { defaultCreateSitemapItems, ...rest } = params;
-						const items = await defaultCreateSitemapItems(rest);
-						return items;
-					},
-				},
+				// sitemap: {
+				// 	lastmod: "date",
+				// 	changefreq: "weekly",
+				// 	priority: 0.8,
+				// 	filename: "sitemap.xml",
+				// 	createSitemapItems: async (params) => {
+				// 		const { defaultCreateSitemapItems, ...rest } = params;
+				// 		const items = await defaultCreateSitemapItems(rest);
+				// 		return items
+				// 		);
+				// 	},
 			},
 		],
 	],
@@ -127,14 +129,6 @@ export default {
 			appId: "I6TZS9IBSZ",
 			apiKey: "87b638e133658cdec7cc633e6c4986c3",
 			indexName: "next-safe-action",
-		},
-		announcementBar: {
-			id: "banner_version_7",
-			content:
-				"You are viewing documentation for the current stable version (v7) of the library. To access previous version docs, visit the <a href='https://v6.next-safe-action.dev'>v6 website</a>.",
-			backgroundColor: "#1f252e",
-			textColor: "#ffffff",
-			isCloseable: true,
 		},
 		navbar: {
 			title: "next-safe-action",
