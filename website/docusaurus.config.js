@@ -62,27 +62,27 @@ export default {
 		defaultLocale: "en",
 		locales: ["en"],
 	},
-	// plugins: [
-	// 	[
-	// 		"@docusaurus/plugin-client-redirects",
-	// 		{
-	// 			createRedirects(path) {
-	// 				if (path.startsWith("/docs/safe-action-client/")) {
-	// 					return path.replace(
-	// 						"/docs/safe-action-client/",
-	// 						"/docs/define-actions/"
-	// 					);
-	// 				}
+	plugins: [
+		[
+			"@docusaurus/plugin-client-redirects",
+			{
+				createRedirects(path) {
+					if (path.startsWith("/docs/safe-action-client/")) {
+						return path.replace(
+							"/docs/safe-action-client/",
+							"/docs/define-actions/"
+						);
+					}
 
-	// 				if (path.startsWith("/docs/execution/")) {
-	// 					return path.replace("/docs/execution/", "/docs/execute-actions/");
-	// 				}
+					if (path.startsWith("/docs/execution/")) {
+						return path.replace("/docs/execution/", "/docs/execute-actions/");
+					}
 
-	// 				return undefined;
-	// 			},
-	// 		},
-	// 	],
-	// ],
+					return undefined;
+				},
+			},
+		],
+	],
 	presets: [
 		[
 			"classic",
@@ -102,21 +102,17 @@ export default {
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
-				sitemap: {
-					lastmod: "date",
-					changefreq: "weekly",
-					priority: 0.8,
-					filename: "sitemap.xml",
-					createSitemapItems: async (params) => {
-						const { defaultCreateSitemapItems, ...rest } = params;
-						const items = await defaultCreateSitemapItems(rest);
-						return items.filter(
-							(item) =>
-								item.url === "https://next-safe-action.dev" ||
-								item.url.startsWith("https://next-safe-action.dev/docs")
-						);
-					},
-				},
+				// sitemap: {
+				// 	lastmod: "date",
+				// 	changefreq: "weekly",
+				// 	priority: 0.8,
+				// 	filename: "sitemap.xml",
+				// 	createSitemapItems: async (params) => {
+				// 		const { defaultCreateSitemapItems, ...rest } = params;
+				// 		const items = await defaultCreateSitemapItems(rest);
+				// 		return items
+				// 		);
+				// 	},
 			},
 		],
 	],
