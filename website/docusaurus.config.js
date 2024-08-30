@@ -67,14 +67,14 @@ export default {
 			"@docusaurus/plugin-client-redirects",
 			{
 				createRedirects(path) {
-					if (path.startsWith("/docs/safe-action-client/")) {
+					if (path.includes("/docs/safe-action-client/")) {
 						return path.replace(
 							"/docs/safe-action-client/",
 							"/docs/define-actions/"
 						);
 					}
 
-					if (path.startsWith("/docs/execution/")) {
+					if (path.includes("/docs/execution/")) {
 						return path.replace("/docs/execution/", "/docs/execute-actions/");
 					}
 
