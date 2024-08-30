@@ -62,27 +62,6 @@ export default {
 		defaultLocale: "en",
 		locales: ["en"],
 	},
-	plugins: [
-		[
-			"@docusaurus/plugin-client-redirects",
-			{
-				createRedirects(path) {
-					if (path.includes("/docs/safe-action-client/")) {
-						return path.replace(
-							"/docs/safe-action-client/",
-							"/docs/define-actions/"
-						);
-					}
-
-					if (path.includes("/docs/execution/")) {
-						return path.replace("/docs/execution/", "/docs/execute-actions/");
-					}
-
-					return undefined;
-				},
-			},
-		],
-	],
 	presets: [
 		[
 			"classic",
