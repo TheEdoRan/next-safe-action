@@ -3,7 +3,7 @@ import { themes } from "prism-react-renderer";
 /** @type {import('@docusaurus/types').Config} */
 export default {
 	title: "next-safe-action",
-	tagline: "Type safe Server Actions in your Next.js (App Router) project",
+	tagline: "Type safe Server Actions in your Next.js project",
 	favicon: "img/favicon.ico",
 
 	// Set the production url of your site here

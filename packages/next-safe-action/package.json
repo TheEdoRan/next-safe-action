@@ -2,7 +2,7 @@
 	"name": "next-safe-action",
 	"version": "0.0.0-development",
 	"private": false,
-	"description": "Type safe and validated Server Actions in your Next.js (App Router) project.",
+	"description": "Type safe and validated Server Actions in your Next.js project.",
 	"main": "./dist/index.mjs",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.mts",
