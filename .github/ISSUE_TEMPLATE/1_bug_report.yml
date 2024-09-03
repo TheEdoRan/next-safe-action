@@ -45,8 +45,8 @@ body:
       required: true
   - type: input
     attributes:
-      label: Minimal reproduction example
-      description: Link to a minimal example that reproduces the bug. Please provide a GitHub/CodeSandbox link with as little code as possible to reproduce the bug.
+      label: Link to a minimal reproduction of the issue
+      description: Link to a minimal example that reproduces the bug. Please provide a GitHub/CodeSandbox link with as little code as possible to reproduce the issue. Without a link, the issue will be closed as "not planned" until a valid URL is provided.
       placeholder: https://github.com/...
     validations:
       required: true
