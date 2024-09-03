@@ -107,7 +107,7 @@ export default function TodosBox({ todos }: Props) {
         }}>
         Add todo
       </button>
-      {/* Optimistic state gets updated immediately, it doesn't wait for the server to respond. */}
+      {/* Optimistic state gets updated right after the `execute` call (next render), it doesn't wait for the server to respond. */}
       <pre>Optimistic state: {optimisticState}</pre>
     </div>
   );
@@ -125,7 +125,7 @@ export default function TodosBox({ todos }: Props) {
 - `executeAsync`: an action caller that returns a promise with the return value of the safe action. Input is the same as the safe action you passed to the hook.
 - `input`: the input passed to the `execute` or `executeAsync` function.
 - `result`: result of the action after its execution.
-- `optimisticState`: the optimistic state updated immediately after the action is executed, with the behavior defined in `updateFn`.
+- `optimisticState`: the optimistic state updated right after `execute` call (on the next render), with the behavior defined in `updateFn`.
 - `reset`: programmatically reset execution state (`input`, `status` and `result`).
 - `status`: string that represents the current action status.
 - `isIdle`: true if the action status is `idle`.
