@@ -40,9 +40,7 @@ export const createSafeActionClient = <
 >(
 	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
 ) => {
-	// If `handleReturnedServerError` is provided, use it to handle server error
-	// messages returned on the client.
-	// Otherwise mask the error and use a generic message.
+	// If `handleServerError` is provided, use it, otherwise default to log to console and generic error message.
 	const handleServerError: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerError"]> =
 		createOpts?.handleServerError ||
 		((e) => {
