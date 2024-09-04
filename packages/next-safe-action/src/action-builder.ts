@@ -50,10 +50,7 @@ export function actionBuilder<
 	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
 	metadataSchema: MetadataSchema;
 	metadata: MD;
-	handleServerErrorLog: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, any>["handleServerErrorLog"]>;
-	handleReturnedServerError: NonNullable<
-		SafeActionClientOpts<ServerError, MetadataSchema, any>["handleReturnedServerError"]
-	>;
+	handleServerError: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, any>["handleServerError"]>;
 	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	ctxType: Ctx;
 	throwValidationErrors: boolean;
@@ -250,7 +247,7 @@ export function actionBuilder<
 								// the default message.
 								const error = isError(e) ? e : new Error(DEFAULT_SERVER_ERROR_MESSAGE);
 								const returnedError = await Promise.resolve(
-									args.handleReturnedServerError(error, {
+									args.handleServerError(error, {
 										clientInput: clientInputs.at(-1), // pass raw client input
 										bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
 										ctx: currentCtx,
@@ -259,16 +256,6 @@ export function actionBuilder<
 								);
 
 								middlewareResult.serverError = returnedError;
-
-								await Promise.resolve(
-									args.handleServerErrorLog(error, {
-										returnedError,
-										clientInput: clientInputs.at(-1), // pass raw client input
-										bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
-										ctx: currentCtx,
-										metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
-									})
-								);
 							}
 						}
 					};

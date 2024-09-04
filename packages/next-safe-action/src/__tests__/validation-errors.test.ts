@@ -171,7 +171,8 @@ test("action with invalid output data returns the default `serverError`", async 
 test("action with invalid output data throws an error of the correct type", async () => {
 	const tac = createSafeActionClient({
 		validationAdapter: zodAdapter(),
-		handleReturnedServerError: (e) => {
+		handleServerError: (e) => {
+			// disable server error logging for this test
 			throw e;
 		},
 	});

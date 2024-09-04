@@ -29,16 +29,7 @@ export type SafeActionClientOpts<
 > = {
 	validationAdapter?: ValidationAdapter;
 	defineMetadataSchema?: () => MetadataSchema;
-	handleReturnedServerError?: (
-		error: Error,
-		utils: ServerErrorFunctionUtils<MetadataSchema>
-	) => MaybePromise<ServerError>;
-	handleServerErrorLog?: (
-		originalError: Error,
-		utils: ServerErrorFunctionUtils<MetadataSchema> & {
-			returnedError: ServerError;
-		}
-	) => MaybePromise<void>;
+	handleServerError?: (error: Error, utils: ServerErrorFunctionUtils<MetadataSchema>) => MaybePromise<ServerError>;
 	throwValidationErrors?: boolean;
 	defaultValidationErrorsShape?: ODVES;
 };

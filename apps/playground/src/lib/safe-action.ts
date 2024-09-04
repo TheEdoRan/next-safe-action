@@ -9,16 +9,11 @@ export class ActionError extends Error {}
 
 export const action = createSafeActionClient({
 	validationAdapter: zodAdapter(),
-	// You can provide a custom logging function, otherwise the lib will use `console.error`
-	// as the default logging system. If you want to disable server errors logging,
-	// just pass an empty Promise.
-	handleServerErrorLog: (e) => {
-		console.error(
-			"CUSTOM ERROR LOG FUNCTION, server error message:",
-			e.message
-		);
-	},
-	handleReturnedServerError: (e) => {
+	// You can provide a custom handler for server errors, otherwise the lib will use `console.error`
+	// as the default logging mechanism and will return the DEFAULT_SERVER_ERROR_MESSAGE for all server errors.
+	handleServerError: (e) => {
+		console.error("Action server error occurred:", e.message);
+
 		// If the error is an instance of `ActionError`, unmask the message.
 		if (e instanceof ActionError) {
 			return e.message;
