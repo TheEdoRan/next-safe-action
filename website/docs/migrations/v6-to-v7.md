@@ -121,7 +121,7 @@ With version 7, you can chain multiple middleware functions using the [`use`](/d
 
 ### [Generic type for `serverError`](https://github.com/TheEdoRan/next-safe-action/issues/86)
 
-The `serverError` property of the [action result object](/docs/define-actions/action-result-object) is now of generic type. By default it's a `string` with a default value of "Something went wrong while executing the operation.". You can customize error value and type using the [`handleReturnedServerError`](/docs/define-actions/create-the-client#handlereturnedservererror) initialization function, just like pre-v7. Basically, what you return from that function is what `serverError` will be on the client.
+The `serverError` property of the [action result object](/docs/define-actions/action-result-object) is now of generic type. By default it's a `string` with a default value of "Something went wrong while executing the operation.". You can customize error value and type using the [`handleServerError`](/docs/define-actions/create-the-client#handleservererror) initialization function, just like pre-v7. Basically, what you return from that function is what `serverError` will be on the client.
 
 ### [Support binding additional arguments](https://github.com/TheEdoRan/next-safe-action/issues/29)
 

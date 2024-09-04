@@ -17,7 +17,7 @@ You can chain multiple middleware functions, that will be executed in the order 
 
 Instance level is the right place when you want to share middleware behavior for all the actions you're going to define; for example when you need to log the result of actions execution, or verify if the user intending to execute the operation is authorized to do so, and if not, halt the execution at that point, by throwing an error.
 
-Here we'll use a logging middleware in the base client and then extend it with an authorization middleware in `authActionClient`. We'll also define a safe action called `editProfile`, that will use `authActionClient` as its client. Note that the `handleReturnedServerError` function passed to the base client will also be used for `authActionClient`:
+Here we'll use a logging middleware in the base client and then extend it with an authorization middleware in `authActionClient`. We'll also define a safe action called `editProfile`, that will use `authActionClient` as its client. Note that the `handleServerError` function passed to the base client will also be used for `authActionClient`:
 
 ```typescript title="src/lib/safe-action.ts"
 import {
@@ -32,7 +32,9 @@ class ActionError extends Error {}
 
 // Base client.
 const actionClient = createSafeActionClient({
-  handleReturnedServerError(e) {
+  handleServerError(e) {
+    console.error("Action error:", e.message);
+
     if (e instanceof ActionError) {
       return e.message;
     }
@@ -226,9 +228,12 @@ export const actionClient = createSafeActionClient({
   defineMetadataSchema: () => z.object({
     actionName: z.string(),
   }),
-  handleReturnedServerError: (e) => ({
-    message: e.message,
-  }),
+  handleServerError: (e) => {
+    console.error("Action error:", e.message);
+    return {
+      message: e.message,
+    }
+  }
 }).use(async ({ next }) => {
   return next({ ctx: { foo: "bar" } });
 });
