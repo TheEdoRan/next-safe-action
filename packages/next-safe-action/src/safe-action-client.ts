@@ -31,11 +31,8 @@ export class SafeActionClient<
 	CVE = undefined,
 	const CBAVE = undefined,
 > {
-	readonly #handleServerErrorLog: NonNullable<
-		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerErrorLog"]
-	>;
-	readonly #handleReturnedServerError: NonNullable<
-		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
+	readonly #handleServerError: NonNullable<
+		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerError"]
 	>;
 	readonly #middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	readonly #metadataSchema: MetadataSchema;
@@ -65,13 +62,12 @@ export class SafeActionClient<
 		} & Required<
 			Pick<
 				SafeActionClientOpts<ServerError, MetadataSchema, ODVES>,
-				"handleReturnedServerError" | "handleServerErrorLog" | "defaultValidationErrorsShape" | "throwValidationErrors"
+				"handleServerError" | "defaultValidationErrorsShape" | "throwValidationErrors"
 			>
 		>
 	) {
 		this.#middlewareFns = opts.middlewareFns;
-		this.#handleServerErrorLog = opts.handleServerErrorLog;
-		this.#handleReturnedServerError = opts.handleReturnedServerError;
+		this.#handleServerError = opts.handleServerError;
 		this.#metadataSchema = opts.metadataSchema;
 		this.#metadata = opts.metadata;
 		this.#inputSchemaFn = (opts.inputSchemaFn ?? undefined) as ISF;
@@ -94,8 +90,7 @@ export class SafeActionClient<
 	use<NextCtx extends object>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, Ctx & NextCtx>) {
 		return new SafeActionClient({
 			middlewareFns: [...this.#middlewareFns, middlewareFn],
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
+			handleServerError: this.#handleServerError,
 			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			inputSchemaFn: this.#inputSchemaFn,
@@ -119,8 +114,7 @@ export class SafeActionClient<
 	metadata(data: MD) {
 		return new SafeActionClient({
 			middlewareFns: this.#middlewareFns,
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
+			handleServerError: this.#handleServerError,
 			metadataSchema: this.#metadataSchema,
 			metadata: data,
 			inputSchemaFn: this.#inputSchemaFn,
@@ -154,8 +148,7 @@ export class SafeActionClient<
 	) {
 		return new SafeActionClient({
 			middlewareFns: this.#middlewareFns,
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
+			handleServerError: this.#handleServerError,
 			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			// @ts-expect-error
@@ -196,8 +189,7 @@ export class SafeActionClient<
 	) {
 		return new SafeActionClient({
 			middlewareFns: this.#middlewareFns,
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
+			handleServerError: this.#handleServerError,
 			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			inputSchemaFn: this.#inputSchemaFn,
@@ -222,8 +214,7 @@ export class SafeActionClient<
 	outputSchema<OOS extends Schema>(dataSchema: OOS) {
 		return new SafeActionClient({
 			middlewareFns: this.#middlewareFns,
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
+			handleServerError: this.#handleServerError,
 			metadataSchema: this.#metadataSchema,
 			metadata: this.#metadata,
 			inputSchemaFn: this.#inputSchemaFn,
@@ -250,8 +241,7 @@ export class SafeActionClient<
 		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
 	) {
 		return actionBuilder({
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
+			handleServerError: this.#handleServerError,
 			middlewareFns: this.#middlewareFns,
 			ctxType: this.#ctxType,
 			metadataSchema: this.#metadataSchema,
@@ -279,8 +269,7 @@ export class SafeActionClient<
 		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
 	) {
 		return actionBuilder({
-			handleReturnedServerError: this.#handleReturnedServerError,
-			handleServerErrorLog: this.#handleServerErrorLog,
+			handleServerError: this.#handleServerError,
 			middlewareFns: this.#middlewareFns,
 			ctxType: this.#ctxType,
 			metadataSchema: this.#metadataSchema,

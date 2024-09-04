@@ -40,27 +40,17 @@ export const createSafeActionClient = <
 >(
 	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
 ) => {
-	// If server log function is not provided, default to `console.error` for logging
-	// server error messages.
-	const handleServerErrorLog =
-		createOpts?.handleServerErrorLog ||
-		(((originalError: Error) => {
-			console.error("Action error:", originalError.message);
-		}) as unknown as NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerErrorLog"]>);
-
-	// If `handleReturnedServerError` is provided, use it to handle server error
-	// messages returned on the client.
-	// Otherwise mask the error and use a generic message.
-	const handleReturnedServerError =
-		createOpts?.handleReturnedServerError ||
-		((() => DEFAULT_SERVER_ERROR_MESSAGE) as unknown as NonNullable<
-			SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleReturnedServerError"]
-		>);
+	// If `handleServerError` is provided, use it, otherwise default to log to console and generic error message.
+	const handleServerError: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerError"]> =
+		createOpts?.handleServerError ||
+		((e) => {
+			console.error("Action error:", e.message);
+			return DEFAULT_SERVER_ERROR_MESSAGE as ServerError;
+		});
 
 	return new SafeActionClient({
 		middlewareFns: [async ({ next }) => next({ ctx: {} })],
-		handleServerErrorLog,
-		handleReturnedServerError,
+		handleServerError,
 		inputSchemaFn: undefined,
 		bindArgsSchemas: [],
 		outputSchema: undefined,

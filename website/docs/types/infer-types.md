@@ -36,7 +36,8 @@ export const actionClient = createSafeActionClient({
       actionName: z.string(),
     });
   },
-  handleReturnedServerError: (e) => {
+  handleServerError: (e) => {
+    console.error("Action error:", e.message);
     return {
       errorMessage: e.message,
     };

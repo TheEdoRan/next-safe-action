@@ -8,7 +8,7 @@ import { zodAdapter } from "../adapters/zod";
 
 const ac = createSafeActionClient({
 	validationAdapter: zodAdapter(),
-	handleServerErrorLog() {}, // disable server errors logging for these tests
+	handleServerError: () => DEFAULT_SERVER_ERROR_MESSAGE, // disable server errors logging for these tests
 	defineMetadataSchema() {
 		return z.object({
 			actionName: z.string(),

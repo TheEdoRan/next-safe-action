@@ -47,7 +47,7 @@ bindArgsSchemas(bindArgsSchemas: BAS, bindArgsUtils?: { handleBindArgsValidation
 outputSchema(outputSchema: S) => new SafeActionClient()
 ```
 
-`outputSchema` accepts a schema of type `Schema`. That schema is used to define what the safe action will return. If you don't pass an output schema when you're defining an action, the return type will be inferred instead. If validation fails, an `ActionOutputDataValidationError` is internally thrown. You can catch it inside [`handleReturnedServerError`](/docs/define-actions/create-the-client#handlereturnedservererror)/[`handleServerErrorLog`](/docs/define-actions/create-the-client#handleservererrorlog) and access the `validationErrors` property to get the validation errors. It returns a new instance of the safe action client.
+`outputSchema` accepts a schema of type `Schema`. That schema is used to define what the safe action will return. If you don't pass an output schema when you're defining an action, the return type will be inferred instead. If validation fails, an `ActionOutputDataValidationError` is internally thrown. You can catch it inside [`handleServerError`](/docs/define-actions/create-the-client#handleservererror) and access the `validationErrors` property to get the validation errors. It returns a new instance of the safe action client.
 
 ### `action` / `stateAction`
 

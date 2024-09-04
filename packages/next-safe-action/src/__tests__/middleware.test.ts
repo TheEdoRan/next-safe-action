@@ -6,6 +6,7 @@ import { z } from "zod";
 import {
 	createMiddleware,
 	createSafeActionClient,
+	DEFAULT_SERVER_ERROR_MESSAGE,
 	formatBindArgsValidationErrors,
 	formatValidationErrors,
 	returnValidationErrors,
@@ -14,8 +15,8 @@ import { zodAdapter } from "../adapters/zod";
 
 const ac = createSafeActionClient({
 	validationAdapter: zodAdapter(),
-	handleServerErrorLog() {}, // disable server errors logging for these tests
-	handleReturnedServerError(e) {
+	handleServerError(e) {
+		// disable server error logging for these tests
 		return {
 			message: e.message,
 		};
@@ -296,7 +297,7 @@ test("server validation errors in execution result from middleware are correct",
 
 const flac = createSafeActionClient({
 	validationAdapter: zodAdapter(),
-	handleServerErrorLog() {}, // disable server errors logging for these tests
+	handleServerError: () => DEFAULT_SERVER_ERROR_MESSAGE, // disable server errors logging for these tests
 	defaultValidationErrorsShape: "flattened",
 });
 
