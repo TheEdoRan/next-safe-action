@@ -14,21 +14,6 @@ export type HookBaseUtils<S extends Schema | undefined> = {
 };
 
 /**
- * Type of `result` object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
- * If a server-client communication error occurs, `fetchError` will be set to the error message.
- */
-export type HookResult<
-	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
-	CVE,
-	CBAVE,
-	Data,
-> = SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> & {
-	fetchError?: string;
-};
-
-/**
  * Type of hooks callbacks. These are executed when action is in a specific state.
  */
 export type HookCallbacks<
@@ -42,11 +27,11 @@ export type HookCallbacks<
 	onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
 	onSuccess?: (args: { data?: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
 	onError?: (args: {
-		error: Prettify<Omit<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
+		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
 		input: S extends Schema ? InferIn<S> : undefined;
 	}) => MaybePromise<void>;
 	onSettled?: (args: {
-		result: Prettify<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 		input: S extends Schema ? InferIn<S> : undefined;
 	}) => MaybePromise<void>;
 };
@@ -115,7 +100,7 @@ export type UseActionHookReturn<
 		input: S extends Schema ? InferIn<S> : void
 	) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 	input: S extends Schema ? InferIn<S> : undefined;
-	result: Prettify<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+	result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 	reset: () => void;
 	status: HookActionStatus;
 } & HookShorthandStatus;
