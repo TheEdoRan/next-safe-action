@@ -46,8 +46,8 @@ export function actionBuilder<
 	bindArgsSchemas?: BAS;
 	outputSchema?: OS;
 	validationAdapter: ValidationAdapter;
-	handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, CVE>;
-	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
+	handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
+	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 	metadataSchema: MetadataSchema;
 	metadata: MD;
 	handleServerError: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, any>["handleServerError"]>;
@@ -179,7 +179,14 @@ export function actionBuilder<
 											const validationErrors = buildValidationErrors<IS>(parsedInput.issues);
 
 											middlewareResult.validationErrors = await Promise.resolve(
-												args.handleValidationErrorsShape(validationErrors)
+												args.handleValidationErrorsShape(validationErrors, {
+													clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
+													bindArgsClientInputs: (bindArgsSchemas.length
+														? clientInputs.slice(0, -1)
+														: []) as InferInArray<BAS>,
+													ctx: currentCtx as Ctx,
+													metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+												})
 											);
 										}
 									}
@@ -188,7 +195,17 @@ export function actionBuilder<
 								// If there are bind args validation errors, format them and store them in the middleware result.
 								if (hasBindValidationErrors) {
 									middlewareResult.bindArgsValidationErrors = await Promise.resolve(
-										args.handleBindArgsValidationErrorsShape(bindArgsValidationErrors as BindArgsValidationErrors<BAS>)
+										args.handleBindArgsValidationErrorsShape(
+											bindArgsValidationErrors as BindArgsValidationErrors<BAS>,
+											{
+												clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
+												bindArgsClientInputs: (bindArgsSchemas.length
+													? clientInputs.slice(0, -1)
+													: []) as InferInArray<BAS>,
+												ctx: currentCtx as Ctx,
+												metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+											}
+										)
 									);
 								}
 
@@ -241,7 +258,16 @@ export function actionBuilder<
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
 							if (e instanceof ActionServerValidationError) {
 								const ve = e.validationErrors as ValidationErrors<IS>;
-								middlewareResult.validationErrors = await Promise.resolve(args.handleValidationErrorsShape(ve));
+								middlewareResult.validationErrors = await Promise.resolve(
+									args.handleValidationErrorsShape(ve, {
+										clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
+										bindArgsClientInputs: (bindArgsSchemas.length
+											? clientInputs.slice(0, -1)
+											: []) as InferInArray<BAS>,
+										ctx: currentCtx as Ctx,
+										metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+									})
+								);
 							} else {
 								// If error is not an instance of Error, wrap it in an Error object with
 								// the default message.

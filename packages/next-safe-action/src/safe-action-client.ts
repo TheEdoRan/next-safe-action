@@ -42,8 +42,8 @@ export class SafeActionClient<
 	readonly #ctxType: Ctx;
 	readonly #bindArgsSchemas: BAS;
 	readonly #validationAdapter: ValidationAdapter;
-	readonly #handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, CVE>;
-	readonly #handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
+	readonly #handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
+	readonly #handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 	readonly #defaultValidationErrorsShape: ODVES;
 	readonly #throwValidationErrors: boolean;
 
@@ -56,8 +56,8 @@ export class SafeActionClient<
 			outputSchema: OS;
 			bindArgsSchemas: BAS;
 			validationAdapter: ValidationAdapter;
-			handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, CVE>;
-			handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<BAS, CBAVE>;
+			handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
+			handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 			ctxType: Ctx;
 		} & Required<
 			Pick<
@@ -143,7 +143,7 @@ export class SafeActionClient<
 	>(
 		inputSchema: OIS,
 		utils?: {
-			handleValidationErrorsShape?: HandleValidationErrorsShapeFn<AIS, OCVE>;
+			handleValidationErrorsShape?: HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>;
 		}
 	) {
 		return new SafeActionClient({
@@ -163,8 +163,9 @@ export class SafeActionClient<
 			outputSchema: this.#outputSchema,
 			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
-				this.#handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, OCVE>,
-			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
+				this.#handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
+			handleBindArgsValidationErrorsShape: this
+				.#handleBindArgsValidationErrorsShape as HandleBindArgsValidationErrorsShapeFn<AIS, BAS, MD, Ctx, CBAVE>,
 			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -185,7 +186,7 @@ export class SafeActionClient<
 			: BindArgsValidationErrors<OBAS>,
 	>(
 		bindArgsSchemas: OBAS,
-		utils?: { handleBindArgsValidationErrorsShape?: HandleBindArgsValidationErrorsShapeFn<OBAS, OCBAVE> }
+		utils?: { handleBindArgsValidationErrorsShape?: HandleBindArgsValidationErrorsShapeFn<IS, OBAS, MD, Ctx, OCBAVE> }
 	) {
 		return new SafeActionClient({
 			middlewareFns: this.#middlewareFns,
@@ -196,9 +197,15 @@ export class SafeActionClient<
 			bindArgsSchemas,
 			outputSchema: this.#outputSchema,
 			validationAdapter: this.#validationAdapter,
-			handleValidationErrorsShape: this.#handleValidationErrorsShape,
+			handleValidationErrorsShape: this.#handleValidationErrorsShape as unknown as HandleValidationErrorsShapeFn<
+				IS,
+				OBAS,
+				MD,
+				Ctx,
+				CVE
+			>,
 			handleBindArgsValidationErrorsShape: (utils?.handleBindArgsValidationErrorsShape ??
-				this.#handleBindArgsValidationErrorsShape) as HandleBindArgsValidationErrorsShapeFn<OBAS, OCBAVE>,
+				this.#handleBindArgsValidationErrorsShape) as HandleBindArgsValidationErrorsShapeFn<IS, OBAS, MD, Ctx, OCBAVE>,
 			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
