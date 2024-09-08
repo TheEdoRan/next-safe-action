@@ -65,6 +65,18 @@ export type HandleValidationErrorsShapeFn<
 /**
  * Type of the function used to format bind arguments validation errors.
  */
-export type HandleBindArgsValidationErrorsShapeFn<BAS extends readonly Schema[], CBAVE> = (
-	bindArgsValidationErrors: BindArgsValidationErrors<BAS>
+export type HandleBindArgsValidationErrorsShapeFn<
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	MD,
+	Ctx extends object,
+	CBAVE,
+> = (
+	bindArgsValidationErrors: BindArgsValidationErrors<BAS>,
+	utils: {
+		clientInput: S extends Schema ? InferIn<S> : undefined;
+		bindArgsClientInputs: BAS;
+		metadata: MD;
+		ctx: Prettify<Ctx>;
+	}
 ) => CBAVE;
