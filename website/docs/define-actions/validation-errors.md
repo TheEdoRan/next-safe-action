@@ -13,7 +13,7 @@ This can be customized both at the safe action client level and at the action le
 - using [`defaultValidationErrorsShape`](/docs/define-actions/create-the-client#defaultvalidationerrorsshape) optional property in `createSafeActionClient`;
 - using `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in [`schema`](/docs/define-actions/instance-methods#schema) and [`bindArgsSchemas`](/docs/define-actions/instance-methods#bindargsschemas) methods.
 
-The second way overrides the shape set at the instance level, per action. More information below.
+The second way overrides the shape set at the instance level, per action.
 
 For example, if you want to flatten the validation errors (emulation of Zod's [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method), you can (but not required to) use the `flattenValidationErrors` utility function exported from the library, combining it with `handleValidationErrorsShape` inside `schema` method:
 
@@ -39,18 +39,20 @@ export const loginUser = actionClient
     // Here we use the `flattenValidationErrors` function to customize the returned validation errors
     // object to the client.
     // highlight-next-line
-    handleValidationErrorsShape: (ve) => flattenValidationErrors(ve).fieldErrors,
+    handleValidationErrorsShape: (ve, utils) => flattenValidationErrors(ve).fieldErrors,
   })
   .bindArgsSchemas(bindArgsSchemas, {
     // Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
     // validation errors object array to the client.
     // highlight-next-line
-    handleBindArgsValidationErrors: (ve) => flattenBindArgsValidationErrors(ve),
+    handleBindArgsValidationErrors: (ve, utils) => flattenBindArgsValidationErrors(ve),
   })
   .action(async ({ parsedInput: { username, password } }) => {
     // Your code here...
   });
 ```
+
+The second argument of both `handleValidationErrorsShape` and `handleBindArgsValidationErrors` functions is an `utils` object that contains info about the current action execution (`clientInput`, `bindArgsClientInputs`, `metadata` and `ctx` properties). It's passed to the functions to allow granular and dynamic customization of the validation errors shape.
 
 :::note
 If you chain multiple `schema` methods, as explained in the [Extend previous schema](/docs/define-actions/extend-previous-schemas) page, and want to override the default validation errors shape, you **must** use `handleValidationErrorsShape` inside the last `schema` method, otherwise there would be a type mismatch in the returned action result.
