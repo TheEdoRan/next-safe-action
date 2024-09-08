@@ -2,7 +2,8 @@ import * as React from "react";
 import {} from "react/experimental";
 import type {} from "zod";
 import type { InferIn, Schema } from "./adapters/types";
-import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookResult, HookShorthandStatus } from "./hooks.types";
+import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookShorthandStatus } from "./hooks.types";
+import type { SafeActionResult } from "./index.types";
 
 export const getActionStatus = <
 	ServerError,
@@ -18,7 +19,7 @@ export const getActionStatus = <
 }: {
 	isIdle: boolean;
 	isExecuting: boolean;
-	result: HookResult<ServerError, S, BAS, CVE, CBAVE, Data>;
+	result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
 }): HookActionStatus => {
 	if (isIdle) {
 		return "idle";
@@ -27,8 +28,7 @@ export const getActionStatus = <
 	} else if (
 		typeof result.validationErrors !== "undefined" ||
 		typeof result.bindArgsValidationErrors !== "undefined" ||
-		typeof result.serverError !== "undefined" ||
-		typeof result.fetchError !== "undefined"
+		typeof result.serverError !== "undefined"
 	) {
 		return "hasErrored";
 	} else {
@@ -87,7 +87,7 @@ export const useActionCallbacks = <
 	status,
 	cb,
 }: {
-	result: HookResult<ServerError, S, BAS, CVE, CBAVE, Data>;
+	result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
 	input: S extends Schema ? InferIn<S> : undefined;
 	status: HookActionStatus;
 	cb?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>;

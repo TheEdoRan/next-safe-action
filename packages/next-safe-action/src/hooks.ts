@@ -1,7 +1,5 @@
 "use client";
 
-import { isNotFoundError } from "next/dist/client/components/not-found.js";
-import { isRedirectError } from "next/dist/client/components/redirect.js";
 import * as React from "react";
 import {} from "react/experimental";
 import type {} from "zod";
@@ -10,12 +8,11 @@ import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, us
 import type {
 	HookBaseUtils,
 	HookCallbacks,
-	HookResult,
 	HookSafeActionFn,
 	UseActionHookReturn,
 	UseOptimisticActionHookReturn,
 } from "./hooks.types";
-import { isError } from "./utils";
+import type { SafeActionResult } from "./index.types";
 
 // HOOKS
 
@@ -38,7 +35,7 @@ export const useAction = <
 	utils?: HookBaseUtils<S> & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ): UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
 	const [isTransitioning, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
+	const [result, setResult] = React.useState<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
@@ -57,11 +54,7 @@ export const useAction = <
 				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
-						if (isRedirectError(e) || isNotFoundError(e)) {
-							throw e;
-						}
-
-						setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
+						throw e;
 					})
 					.finally(() => {
 						setIsExecuting(false);
@@ -87,11 +80,6 @@ export const useAction = <
 							resolve(res);
 						})
 						.catch((e) => {
-							if (isRedirectError(e) || isNotFoundError(e)) {
-								throw e;
-							}
-
-							setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
 							reject(e);
 						})
 						.finally(() => {
@@ -163,7 +151,7 @@ export const useOptimisticAction = <
 		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ): UseOptimisticActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data, State> => {
 	const [isTransitioning, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<HookResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
+	const [result, setResult] = React.useState<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
@@ -187,11 +175,7 @@ export const useOptimisticAction = <
 				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
-						if (isRedirectError(e) || isNotFoundError(e)) {
-							throw e;
-						}
-
-						setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
+						throw e;
 					})
 					.finally(() => {
 						setIsExecuting(false);
@@ -218,11 +202,6 @@ export const useOptimisticAction = <
 							resolve(res);
 						})
 						.catch((e) => {
-							if (isRedirectError(e) || isNotFoundError(e)) {
-								throw e;
-							}
-
-							setResult({ fetchError: isError(e) ? e.message : "Something went wrong" });
 							reject(e);
 						})
 						.finally(() => {
