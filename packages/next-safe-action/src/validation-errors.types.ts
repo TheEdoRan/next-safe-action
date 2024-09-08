@@ -1,4 +1,4 @@
-import type { Infer, Schema } from "./adapters/types";
+import type { Infer, InferIn, Schema } from "./adapters/types";
 import type { Prettify } from "./utils.types";
 
 // Object with an optional list of validation errors.
@@ -46,8 +46,20 @@ export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationEr
 /**
  * Type of the function used to format validation errors.
  */
-export type HandleValidationErrorsShapeFn<S extends Schema | undefined, CVE> = (
-	validationErrors: ValidationErrors<S>
+export type HandleValidationErrorsShapeFn<
+	S extends Schema | undefined,
+	BAS extends readonly Schema[],
+	MD,
+	Ctx extends object,
+	CVE,
+> = (
+	validationErrors: ValidationErrors<S>,
+	utils: {
+		clientInput: S extends Schema ? InferIn<S> : undefined;
+		bindArgsClientInputs: BAS;
+		metadata: MD;
+		ctx: Prettify<Ctx>;
+	}
 ) => CVE;
 
 /**
