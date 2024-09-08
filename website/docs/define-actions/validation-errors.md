@@ -45,14 +45,14 @@ export const loginUser = actionClient
     // Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
     // validation errors object array to the client.
     // highlight-next-line
-    handleBindArgsValidationErrors: (ve, utils) => flattenBindArgsValidationErrors(ve),
+    handleBindArgsValidationErrorsShape: (ve, utils) => flattenBindArgsValidationErrors(ve),
   })
   .action(async ({ parsedInput: { username, password } }) => {
     // Your code here...
   });
 ```
 
-The second argument of both `handleValidationErrorsShape` and `handleBindArgsValidationErrors` functions is an `utils` object that contains info about the current action execution (`clientInput`, `bindArgsClientInputs`, `metadata` and `ctx` properties). It's passed to the functions to allow granular and dynamic customization of the validation errors shape.
+The second argument of both `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` functions is an `utils` object that contains info about the current action execution (`clientInput`, `bindArgsClientInputs`, `metadata` and `ctx` properties). It's passed to the functions to allow granular and dynamic customization of the validation errors shape.
 
 :::note
 If you chain multiple `schema` methods, as explained in the [Extend previous schema](/docs/define-actions/extend-previous-schemas) page, and want to override the default validation errors shape, you **must** use `handleValidationErrorsShape` inside the last `schema` method, otherwise there would be a type mismatch in the returned action result.
