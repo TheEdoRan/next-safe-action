@@ -272,3 +272,12 @@ export type InferServerError<T> = T extends
 	| SafeStateActionFn<infer ServerError, any, any, any, any, any>
 	? ServerError
 	: never;
+
+
+/**
+ * Type of the core safe action client.
+ */
+export {
+	SafeActionClient
+};
+
