@@ -1,3 +1,4 @@
+import type { BRAND } from 'zod';
 import type { Infer, InferIn, Schema } from "./adapters/types";
 import type { Prettify } from "./utils.types";
 
@@ -6,7 +7,13 @@ type VEList = Prettify<{ _errors?: string[] }>;
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends object | null | undefined ? Prettify<VEList & SchemaErrors<S[K]>> : VEList;
+	[K in keyof S]?: S[K] extends object | null | undefined
+    ? S[K] extends BRAND<infer branded_type>
+      ? branded_type extends object | null | undefined
+        ? Prettify<VEList & SchemaErrors<S[K]>>
+      : VEList
+    : Prettify<VEList & SchemaErrors<S[K]>>
+  : VEList;
 } & {};
 
 /**
