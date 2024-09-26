@@ -6,9 +6,10 @@ type VEList = Prettify<{ _errors?: string[] }>;
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends object | null | undefined ? Prettify<VEList & SchemaErrors<S[K]>> : VEList;
+  [K in keyof S]?: S[K] extends number | string | boolean | bigint
+    ? VEList
+    : Prettify<VEList & SchemaErrors<S[K]>>;
 } & {};
-
 /**
  * Type of the returned object when validation fails.
  */
