@@ -6,6 +6,9 @@ import type { MaybePromise, Prettify } from "./utils.types";
  * Type of base utils object passed to `useAction`, `useOptimisticAction` and `useStateAction` hooks.
  */
 export type HookBaseUtils<S extends Schema | undefined> = {
+	/**
+	 * @deprecated Actions should not execute on component mount, since they're used to mutate data.
+	 */
 	executeOnMount?: (undefined extends S
 		? { input?: undefined }
 		: {
