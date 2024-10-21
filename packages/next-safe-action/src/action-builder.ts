@@ -14,7 +14,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { DEFAULT_SERVER_ERROR_MESSAGE, isError } from "./utils";
+import { DEFAULT_SERVER_ERROR_MESSAGE, isError, winningBoolean } from "./utils";
 import type { MaybePromise } from "./utils.types";
 import {
 	ActionMetadataValidationError,
@@ -327,13 +327,9 @@ export function actionBuilder<
 					const actionResult: SafeActionResult<ServerError, IS, BAS, CVE, CBAVE, Data> = {};
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
-						// Throw validation errors if either `throwValidationErrors` property at the action or instance level is `true`.
-						// If `throwValidationErrors` property at the action is `false`, do not throw validation errors, since it
-						// has a higher priority than the instance one.
-						if (
-							(utils?.throwValidationErrors || args.throwValidationErrors) &&
-							utils?.throwValidationErrors !== false
-						) {
+						// `utils.throwValidationErrors` has higher priority since it's set at the action level.
+						// It overrides the client setting, if set.
+						if (winningBoolean(args.throwValidationErrors, utils?.throwValidationErrors)) {
 							throw new ActionValidationError(middlewareResult.validationErrors as CVE);
 						} else {
 							actionResult.validationErrors = middlewareResult.validationErrors as CVE;
