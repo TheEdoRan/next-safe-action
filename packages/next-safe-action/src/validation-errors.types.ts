@@ -1,21 +1,24 @@
 import type { Infer, InferIn, Schema } from "./adapters/types";
 import type { Prettify } from "./utils.types";
 
+// Basic types and arrays.
+type NotObject = number | string | boolean | bigint | symbol | null | undefined | any[];
+
 // Object with an optional list of validation errors.
 type VEList = Prettify<{ _errors?: string[] }>;
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends number | string | boolean | bigint | symbol ? VEList : Prettify<VEList & SchemaErrors<S[K]>>;
+	[K in keyof S]?: S[K] extends NotObject ? VEList : Prettify<VEList & SchemaErrors<S[K]>>;
 } & {};
 
 /**
  * Type of the returned object when validation fails.
  */
 export type ValidationErrors<S extends Schema | undefined> = S extends Schema
-	? Infer<S> extends object
-		? Prettify<VEList & SchemaErrors<Infer<S>>>
-		: VEList
+	? Infer<S> extends NotObject
+		? VEList
+		: Prettify<VEList & SchemaErrors<Infer<S>>>
 	: undefined;
 
 /**
