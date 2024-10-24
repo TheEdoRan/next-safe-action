@@ -63,7 +63,7 @@ export type HandleValidationErrorsShapeFn<
 		metadata: MD;
 		ctx: Prettify<Ctx>;
 	}
-) => CVE;
+) => CVE | Promise<CVE>;
 
 /**
  * Type of the function used to format bind arguments validation errors.
@@ -82,4 +82,4 @@ export type HandleBindArgsValidationErrorsShapeFn<
 		metadata: MD;
 		ctx: Prettify<Ctx>;
 	}
-) => CBAVE;
+) => CBAVE | Promise<CBAVE>;
