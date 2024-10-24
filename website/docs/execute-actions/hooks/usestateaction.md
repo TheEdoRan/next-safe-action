@@ -97,6 +97,7 @@ export default function StatefulFormPage() {
 ### `useStateAction` return object
 
 - `execute`: an action caller with no return. Input is the same as the safe action you passed to the hook.
+- `input`: the input passed to the `execute` function.
 - `result`: result of the action after its execution.
 - `status`: string that represents the current action status.
 - `isIdle`: true if the action status is `idle`.
