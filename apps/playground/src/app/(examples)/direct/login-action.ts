@@ -17,7 +17,7 @@ export const loginUser = action
 	.schema(schema, {
 		// Here we use the `flattenValidationErrors` function to customize the returned validation errors
 		// object to the client.
-		handleValidationErrorsShape: (ve) =>
+		handleValidationErrorsShape: async (ve) =>
 			flattenValidationErrors(ve).fieldErrors,
 	})
 	.action(
@@ -43,15 +43,15 @@ export const loginUser = action
 			});
 		},
 		{
-			onSuccess: (args) => {
+			onSuccess: async (args) => {
 				console.log("Logging from onSuccess callback:");
 				console.dir(args, { depth: null });
 			},
-			onError: (args) => {
+			onError: async (args) => {
 				console.log("Logging from onError callback:");
 				console.dir(args, { depth: null });
 			},
-			onSettled: (args) => {
+			onSettled: async (args) => {
 				console.log("Logging from onSettled callback:");
 				console.dir(args, { depth: null });
 			},

@@ -19,7 +19,7 @@ export const loginUser = action
 	.schema(getSchema, {
 		// Here we use the `flattenValidationErrors` function to customize the returned validation errors
 		// object to the client.
-		handleValidationErrorsShape: (ve) =>
+		handleValidationErrorsShape: async (ve) =>
 			flattenValidationErrors(ve).fieldErrors,
 	})
 	.action(async ({ parsedInput: { username, password } }) => {
