@@ -27,16 +27,16 @@ export type HookCallbacks<
 	CBAVE,
 	Data,
 > = {
-	onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
-	onSuccess?: (args: { data?: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<void>;
+	onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<unknown>;
+	onSuccess?: (args: { data?: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<unknown>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
 		input: S extends Schema ? InferIn<S> : undefined;
-	}) => MaybePromise<void>;
+	}) => MaybePromise<unknown>;
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 		input: S extends Schema ? InferIn<S> : undefined;
-	}) => MaybePromise<void>;
+	}) => MaybePromise<unknown>;
 };
 
 /**

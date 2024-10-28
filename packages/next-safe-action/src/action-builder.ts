@@ -289,7 +289,7 @@ export function actionBuilder<
 					// Execute middleware chain + action function.
 					await executeMiddlewareStack();
 
-					const callbacksToExecute: MaybePromise<void>[] = [];
+					const callbacksToExecute: MaybePromise<unknown>[] = [];
 
 					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
 					if (frameworkError) {
