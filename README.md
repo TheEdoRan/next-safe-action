@@ -43,6 +43,19 @@ npm i next-safe-action
 
 You can find a basic working implementation of the library [here](https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground).
 
+## Sponsors
+
+A big shout-out to all our [sponsors](https://github.com/sponsors/TheEdoRan)! You’re the driving force behind this library's growth, and we're truly grateful for your support. ❤️
+
+<table>
+  <tr>
+   <td align="center"><a href="https://arcjet.com/?ref=next-safe-action">  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://arcjet.com/logo/arcjet-dark-lockup-voyage-horizontal.svg">
+    <img src="https://arcjet.com/logo/arcjet-light-lockup-voyage-horizontal.svg" alt="Arcjet Logo" height="128" width="auto">
+  </picture><br />Arcjet</a></td>
+  </tr>
+</table>
+
 ## Contributing
 
 If you want to contribute to next-safe-action, please check out the [contributing guide](https://github.com/TheEdoRan/next-safe-action/blob/main/CONTRIBUTING.md).
