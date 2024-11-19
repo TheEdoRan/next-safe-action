@@ -24,8 +24,6 @@ jobs:
         with:
           fetch-depth: 2
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -44,8 +42,6 @@ jobs:
         with:
           fetch-depth: 2
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
