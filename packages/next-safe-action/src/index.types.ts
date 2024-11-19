@@ -273,11 +273,7 @@ export type InferServerError<T> = T extends
 	? ServerError
 	: never;
 
-
 /**
  * Type of the core safe action client.
  */
-export {
-	SafeActionClient
-};
-
+export { SafeActionClient };

@@ -1,4 +1,3 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 exec < /dev/tty && pnpm exec cz --hook || true
