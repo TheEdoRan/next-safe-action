@@ -175,6 +175,7 @@ export type SafeActionUtils<
 		bindArgsParsedInputs: InferArray<BAS>;
 		hasRedirected: boolean;
 		hasNotFound: boolean;
+		hasForbidden: boolean;
 	}) => MaybePromise<unknown>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
@@ -191,6 +192,7 @@ export type SafeActionUtils<
 		bindArgsClientInputs: InferInArray<BAS>;
 		hasRedirected: boolean;
 		hasNotFound: boolean;
+		hasForbidden: boolean;
 	}) => MaybePromise<unknown>;
 };
 

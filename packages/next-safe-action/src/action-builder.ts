@@ -1,6 +1,4 @@
 import { deepmerge } from "deepmerge-ts";
-import { isNotFoundError } from "next/dist/client/components/not-found.js";
-import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {} from "zod";
 import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
 import type {
@@ -14,7 +12,15 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { DEFAULT_SERVER_ERROR_MESSAGE, isError, winningBoolean } from "./utils";
+import {
+	DEFAULT_SERVER_ERROR_MESSAGE,
+	isError,
+	isForbiddenError,
+	isFrameworkError,
+	isNotFoundError,
+	isRedirectError,
+	winningBoolean,
+} from "./utils";
 import type { MaybePromise } from "./utils.types";
 import {
 	ActionMetadataValidationError,
@@ -249,7 +255,7 @@ export function actionBuilder<
 						} catch (e: unknown) {
 							// next/navigation functions work by throwing an error that will be
 							// processed internally by Next.js.
-							if (isRedirectError(e) || isNotFoundError(e)) {
+							if (isFrameworkError(e)) {
 								middlewareResult.success = true;
 								frameworkError = e;
 								return;
@@ -304,6 +310,7 @@ export function actionBuilder<
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								hasRedirected: isRedirectError(frameworkError),
 								hasNotFound: isNotFoundError(frameworkError),
+								hasForbidden: isForbiddenError(frameworkError),
 							})
 						);
 
@@ -316,6 +323,7 @@ export function actionBuilder<
 								result: {},
 								hasRedirected: isRedirectError(frameworkError),
 								hasNotFound: isNotFoundError(frameworkError),
+								hasForbidden: isForbiddenError(frameworkError),
 							})
 						);
 
@@ -364,6 +372,7 @@ export function actionBuilder<
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								hasRedirected: false,
 								hasNotFound: false,
+								hasForbidden: false,
 							})
 						);
 					} else {
@@ -388,6 +397,7 @@ export function actionBuilder<
 							result: actionResult,
 							hasRedirected: false,
 							hasNotFound: false,
+							hasForbidden: false,
 						})
 					);
 
