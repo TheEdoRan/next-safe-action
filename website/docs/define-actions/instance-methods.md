@@ -31,7 +31,7 @@ metadata(data: Metadata) => new SafeActionClient()
 schema(inputSchema: S, utils?: { handleValidationErrorsShape?: HandleValidationErrorsShapeFn } }) => new SafeActionClient()
 ```
 
-`schema` accepts an input schema of type `Schema` or a function that returns a promise of type `Schema` and an optional `utils` object that accepts a [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns a new instance of the safe action client.
+`schema` accepts an input schema of type `Schema` or a function that returns a promise of type `Schema` and an optional `utils` object that accepts an async [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns a new instance of the safe action client.
 
 ### `bindArgsSchemas`
 
@@ -39,7 +39,7 @@ schema(inputSchema: S, utils?: { handleValidationErrorsShape?: HandleValidationE
 bindArgsSchemas(bindArgsSchemas: BAS, bindArgsUtils?: { handleBindArgsValidationErrorsShape?: HandleBindArgsValidationErrorsShapeFn }) => new SafeActionClient()
 ```
 
-`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` and an optional `bindArgsUtils` object that accepts a `handleBindArgsValidationErrorsShape` function. The schema is used to define the bind arguments that the safe action will receive, the optional `handleBindArgsValidationErrorsShape` function is used to [return a custom format for bind arguments validation errors](/docs/define-actions/validation-errors#customize-validation-errors-format). It returns a new instance of the safe action client.
+`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` and an optional `bindArgsUtils` object that accepts an async [`handleBindArgsValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function. The schema is used to define the bind arguments that the safe action will receive, the optional [`handleBindArgsValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function is used to [return a custom format for bind arguments validation errors](/docs/define-actions/validation-errors#customize-validation-errors-format). It returns a new instance of the safe action client.
 
 ### `outputSchema`
 

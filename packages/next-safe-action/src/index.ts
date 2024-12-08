@@ -60,11 +60,13 @@ export const createSafeActionClient = <
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
 		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
 		throwValidationErrors: Boolean(createOpts?.throwValidationErrors),
-		handleValidationErrorsShape:
-			createOpts?.defaultValidationErrorsShape === "flattened" ? flattenValidationErrors : formatValidationErrors,
-		handleBindArgsValidationErrorsShape:
+		handleValidationErrorsShape: async (ve) =>
 			createOpts?.defaultValidationErrorsShape === "flattened"
-				? flattenBindArgsValidationErrors
-				: formatBindArgsValidationErrors,
+				? flattenValidationErrors(ve)
+				: formatValidationErrors(ve),
+		handleBindArgsValidationErrorsShape: async (ve) =>
+			createOpts?.defaultValidationErrorsShape === "flattened"
+				? flattenBindArgsValidationErrors(ve)
+				: formatBindArgsValidationErrors(ve),
 	});
 };

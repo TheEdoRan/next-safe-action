@@ -74,7 +74,9 @@ test("action with invalid bind args input and invalid main input gives back an o
 
 	const action = dac
 		.schema(schema)
-		.bindArgsSchemas(bindArgsSchemas, { handleBindArgsValidationErrorsShape: flattenBindArgsValidationErrors })
+		.bindArgsSchemas(bindArgsSchemas, {
+			handleBindArgsValidationErrorsShape: async (ve) => flattenBindArgsValidationErrors(ve),
+		})
 		.action(async () => {
 			return {
 				ok: true,
@@ -131,7 +133,7 @@ test("action with invalid bind args input and invalid main input gives back an o
 	];
 
 	const action = foac
-		.schema(schema, { handleValidationErrorsShape: flattenValidationErrors })
+		.schema(schema, { handleValidationErrorsShape: async (ve) => flattenValidationErrors(ve) })
 		.bindArgsSchemas(bindArgsSchemas)
 		.action(async () => {
 			return {
@@ -179,7 +181,9 @@ test("action with invalid bind args input and valid main input gives back an obj
 
 	const action = foac
 		.schema(schema)
-		.bindArgsSchemas(bindArgsSchemas, { handleBindArgsValidationErrorsShape: flattenBindArgsValidationErrors })
+		.bindArgsSchemas(bindArgsSchemas, {
+			handleBindArgsValidationErrorsShape: async (ve) => flattenBindArgsValidationErrors(ve),
+		})
 		.action(async () => {
 			return {
 				ok: true,
@@ -287,8 +291,10 @@ test("action with invalid bind args input, invalid main input and root level sch
 	];
 
 	const action = flac
-		.schema(schema, { handleValidationErrorsShape: formatValidationErrors })
-		.bindArgsSchemas(bindArgsSchemas, { handleBindArgsValidationErrorsShape: formatBindArgsValidationErrors })
+		.schema(schema, { handleValidationErrorsShape: async (ve) => formatValidationErrors(ve) })
+		.bindArgsSchemas(bindArgsSchemas, {
+			handleBindArgsValidationErrorsShape: async (ve) => formatBindArgsValidationErrors(ve),
+		})
 		.action(async () => {
 			return {
 				ok: true,

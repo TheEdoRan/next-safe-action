@@ -126,7 +126,7 @@ test("action with invalid input gives back an object with correct `validationErr
 
 	const action = dac
 		.schema(schema, {
-			handleValidationErrorsShape: flattenValidationErrors,
+			handleValidationErrorsShape: async (ve) => flattenValidationErrors(ve),
 		})
 		.action(async () => {
 			return {
@@ -318,7 +318,7 @@ test("action with invalid input gives back an object with correct `validationErr
 
 	const action = foac
 		.schema(schema, {
-			handleValidationErrorsShape: flattenValidationErrors,
+			handleValidationErrorsShape: async (ve) => flattenValidationErrors(ve),
 		})
 		.action(async () => {
 			return {
@@ -452,7 +452,7 @@ test("action with invalid input gives back an object with correct `validationErr
 
 	const action = flac
 		.schema(schema, {
-			handleValidationErrorsShape: formatValidationErrors,
+			handleValidationErrorsShape: async (ve) => formatValidationErrors(ve),
 		})
 		.action(async () => {
 			return {

@@ -175,14 +175,15 @@ export type SafeActionUtils<
 		bindArgsParsedInputs: InferArray<BAS>;
 		hasRedirected: boolean;
 		hasNotFound: boolean;
-	}) => MaybePromise<unknown>;
+		hasForbidden: boolean;
+	}) => Promise<unknown>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
 		metadata: MD;
 		ctx?: Prettify<Ctx>;
 		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsClientInputs: InferInArray<BAS>;
-	}) => MaybePromise<unknown>;
+	}) => Promise<unknown>;
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 		metadata: MD;
@@ -191,7 +192,8 @@ export type SafeActionUtils<
 		bindArgsClientInputs: InferInArray<BAS>;
 		hasRedirected: boolean;
 		hasNotFound: boolean;
-	}) => MaybePromise<unknown>;
+		hasForbidden: boolean;
+	}) => Promise<unknown>;
 };
 
 /**

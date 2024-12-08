@@ -27,13 +27,13 @@ test("action with no input schema and no server errors calls `onSuccess` and `on
 			return;
 		},
 		{
-			onSuccess: () => {
+			onSuccess: async () => {
 				executed++;
 			},
-			onError: () => {
+			onError: async () => {
 				executed++; // should not be called
 			},
-			onSettled: () => {
+			onSettled: async () => {
 				executed++;
 			},
 		}
@@ -57,7 +57,15 @@ test("action with input schemas and no errors calls `onSuccess` and `onSettled` 
 				};
 			},
 			{
-				onSuccess: ({ clientInput, bindArgsClientInputs, parsedInput, bindArgsParsedInputs, data, metadata, ctx }) => {
+				onSuccess: async ({
+					clientInput,
+					bindArgsClientInputs,
+					parsedInput,
+					bindArgsParsedInputs,
+					data,
+					metadata,
+					ctx,
+				}) => {
 					executed++;
 
 					assert.deepStrictEqual(
@@ -75,10 +83,10 @@ test("action with input schemas and no errors calls `onSuccess` and `onSettled` 
 						}
 					);
 				},
-				onError: () => {
+				onError: async () => {
 					executed++; // should not be called
 				},
-				onSettled: ({ clientInput, bindArgsClientInputs, result, metadata, ctx }) => {
+				onSettled: async ({ clientInput, bindArgsClientInputs, result, metadata, ctx }) => {
 					executed++;
 
 					assert.deepStrictEqual(
@@ -115,10 +123,10 @@ test("action with input schemas and server error calls `onError` and `onSettled`
 				throw new Error("Server error");
 			},
 			{
-				onSuccess: () => {
+				onSuccess: async () => {
 					executed++; // should not be called
 				},
-				onError({ error, clientInput, bindArgsClientInputs, metadata, ctx }) {
+				onError: async ({ error, clientInput, bindArgsClientInputs, metadata, ctx }) => {
 					executed++;
 
 					assert.deepStrictEqual(
@@ -134,7 +142,7 @@ test("action with input schemas and server error calls `onError` and `onSettled`
 						}
 					);
 				},
-				onSettled({ clientInput, bindArgsClientInputs, result, metadata, ctx }) {
+				onSettled: async ({ clientInput, bindArgsClientInputs, result, metadata, ctx }) => {
 					executed++;
 
 					assert.deepStrictEqual(
@@ -171,10 +179,10 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 				};
 			},
 			{
-				onSuccess: () => {
+				onSuccess: async () => {
 					executed++; // should not be called
 				},
-				onError({ error, clientInput, bindArgsClientInputs, metadata, ctx }) {
+				onError: async ({ error, clientInput, bindArgsClientInputs, metadata, ctx }) => {
 					executed++;
 
 					assert.deepStrictEqual(
@@ -202,7 +210,7 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 						}
 					);
 				},
-				onSettled({ clientInput, bindArgsClientInputs, result, metadata, ctx }) {
+				onSettled: async ({ clientInput, bindArgsClientInputs, result, metadata, ctx }) => {
 					executed++;
 
 					assert.deepStrictEqual(
@@ -252,10 +260,10 @@ test("action with server validation error calls `onError` and `onSettled` callba
 			});
 		},
 		{
-			onSuccess: () => {
+			onSuccess: async () => {
 				executed++; // should not be called
 			},
-			onError({ error, clientInput, bindArgsClientInputs, metadata, ctx }) {
+			onError: async ({ error, clientInput, bindArgsClientInputs, metadata, ctx }) => {
 				executed++;
 
 				assert.deepStrictEqual(
@@ -275,7 +283,7 @@ test("action with server validation error calls `onError` and `onSettled` callba
 					}
 				);
 			},
-			onSettled({ clientInput, bindArgsClientInputs, result, metadata, ctx }) {
+			onSettled: async ({ clientInput, bindArgsClientInputs, result, metadata, ctx }) => {
 				executed++;
 
 				assert.deepStrictEqual(
