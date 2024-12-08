@@ -21,7 +21,6 @@ import {
 	isRedirectError,
 	winningBoolean,
 } from "./utils";
-import type { MaybePromise } from "./utils.types";
 import {
 	ActionMetadataValidationError,
 	ActionOutputDataValidationError,
@@ -295,11 +294,11 @@ export function actionBuilder<
 					// Execute middleware chain + action function.
 					await executeMiddlewareStack();
 
-					const callbacksToExecute: MaybePromise<unknown>[] = [];
+					const callbackPromises: (Promise<unknown> | undefined)[] = [];
 
 					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
 					if (frameworkError) {
-						callbacksToExecute.push(
+						callbackPromises.push(
 							utils?.onSuccess?.({
 								data: undefined,
 								metadata: args.metadata,
@@ -314,7 +313,7 @@ export function actionBuilder<
 							})
 						);
 
-						callbacksToExecute.push(
+						callbackPromises.push(
 							utils?.onSettled?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -327,7 +326,7 @@ export function actionBuilder<
 							})
 						);
 
-						await Promise.all(callbacksToExecute);
+						await Promise.all(callbackPromises);
 
 						throw frameworkError;
 					}
@@ -361,7 +360,7 @@ export function actionBuilder<
 							actionResult.data = middlewareResult.data as Data;
 						}
 
-						callbacksToExecute.push(
+						callbackPromises.push(
 							utils?.onSuccess?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -376,7 +375,7 @@ export function actionBuilder<
 							})
 						);
 					} else {
-						callbacksToExecute.push(
+						callbackPromises.push(
 							utils?.onError?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -388,7 +387,7 @@ export function actionBuilder<
 					}
 
 					// onSettled, if provided, is always executed.
-					callbacksToExecute.push(
+					callbackPromises.push(
 						utils?.onSettled?.({
 							metadata: args.metadata,
 							ctx: currentCtx as Ctx,
@@ -401,7 +400,7 @@ export function actionBuilder<
 						})
 					);
 
-					await Promise.all(callbacksToExecute);
+					await Promise.all(callbackPromises);
 
 					return actionResult;
 				};
