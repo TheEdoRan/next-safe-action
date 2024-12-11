@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.1",
 		"lucide-react": "^0.460.0",
-		"next": "15.0.4-canary.45",
+		"next": "15.1.0",
 		"next-safe-action": "workspace:*",
 		"react": "^19",
 		"react-dom": "^19",
