@@ -1,6 +1,4 @@
 import { deepmerge } from "deepmerge-ts";
-import { isNotFoundError } from "next/dist/client/components/not-found.js";
-import { isRedirectError } from "next/dist/client/components/redirect.js";
 import type {} from "zod";
 import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
 import type {
@@ -14,8 +12,16 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { DEFAULT_SERVER_ERROR_MESSAGE, isError, winningBoolean } from "./utils";
-import type { MaybePromise } from "./utils.types";
+import {
+	DEFAULT_SERVER_ERROR_MESSAGE,
+	isError,
+	isForbiddenError,
+	isFrameworkError,
+	isNotFoundError,
+	isRedirectError,
+	isUnauthorizedError,
+	winningBoolean,
+} from "./utils";
 import {
 	ActionMetadataValidationError,
 	ActionOutputDataValidationError,
@@ -249,7 +255,7 @@ export function actionBuilder<
 						} catch (e: unknown) {
 							// next/navigation functions work by throwing an error that will be
 							// processed internally by Next.js.
-							if (isRedirectError(e) || isNotFoundError(e)) {
+							if (isFrameworkError(e)) {
 								middlewareResult.success = true;
 								frameworkError = e;
 								return;
@@ -289,11 +295,11 @@ export function actionBuilder<
 					// Execute middleware chain + action function.
 					await executeMiddlewareStack();
 
-					const callbacksToExecute: MaybePromise<unknown>[] = [];
+					const callbackPromises: (Promise<unknown> | undefined)[] = [];
 
 					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
 					if (frameworkError) {
-						callbacksToExecute.push(
+						callbackPromises.push(
 							utils?.onSuccess?.({
 								data: undefined,
 								metadata: args.metadata,
@@ -304,10 +310,12 @@ export function actionBuilder<
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								hasRedirected: isRedirectError(frameworkError),
 								hasNotFound: isNotFoundError(frameworkError),
+								hasForbidden: isForbiddenError(frameworkError),
+								hasUnauthorized: isUnauthorizedError(frameworkError),
 							})
 						);
 
-						callbacksToExecute.push(
+						callbackPromises.push(
 							utils?.onSettled?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -316,10 +324,12 @@ export function actionBuilder<
 								result: {},
 								hasRedirected: isRedirectError(frameworkError),
 								hasNotFound: isNotFoundError(frameworkError),
+								hasForbidden: isForbiddenError(frameworkError),
+								hasUnauthorized: isUnauthorizedError(frameworkError),
 							})
 						);
 
-						await Promise.all(callbacksToExecute);
+						await Promise.all(callbackPromises);
 
 						throw frameworkError;
 					}
@@ -353,7 +363,7 @@ export function actionBuilder<
 							actionResult.data = middlewareResult.data as Data;
 						}
 
-						callbacksToExecute.push(
+						callbackPromises.push(
 							utils?.onSuccess?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -364,10 +374,12 @@ export function actionBuilder<
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
 								hasRedirected: false,
 								hasNotFound: false,
+								hasForbidden: false,
+								hasUnauthorized: false,
 							})
 						);
 					} else {
-						callbacksToExecute.push(
+						callbackPromises.push(
 							utils?.onError?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
@@ -379,7 +391,7 @@ export function actionBuilder<
 					}
 
 					// onSettled, if provided, is always executed.
-					callbacksToExecute.push(
+					callbackPromises.push(
 						utils?.onSettled?.({
 							metadata: args.metadata,
 							ctx: currentCtx as Ctx,
@@ -388,10 +400,12 @@ export function actionBuilder<
 							result: actionResult,
 							hasRedirected: false,
 							hasNotFound: false,
+							hasForbidden: false,
+							hasUnauthorized: false,
 						})
 					);
 
-					await Promise.all(callbacksToExecute);
+					await Promise.all(callbackPromises);
 
 					return actionResult;
 				};

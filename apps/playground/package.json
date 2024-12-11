@@ -12,21 +12,21 @@
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.1",
 		"lucide-react": "^0.460.0",
-		"next": "15.0.3",
+		"next": "15.1.0",
 		"next-safe-action": "workspace:*",
-		"react": "19.0.0-rc-69d4b800-20241021",
-		"react-dom": "19.0.0-rc-69d4b800-20241021",
+		"react": "^19",
+		"react-dom": "^19",
 		"react-hook-form": "^7.53.2",
 		"zod": "^3.23.8",
 		"zod-form-data": "^2.0.2"
 	},
 	"devDependencies": {
 		"@types/node": "^22",
-		"@types/react": "^18.3.12",
-		"@types/react-dom": "18.3.1",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
 		"autoprefixer": "10.4.20",
 		"eslint": "^8.57.0",
-		"eslint-config-next": "15.0.3",
+		"eslint-config-next": "15.0.4-canary.45",
 		"postcss": "8.4.49",
 		"tailwindcss": "3.4.15",
 		"typescript": "^5.6.3"

@@ -56,7 +56,9 @@ test("action with invalid bind args input gives back an object with correct `bin
 	];
 
 	const action = dac
-		.bindArgsSchemas(bindArgsSchemas, { handleBindArgsValidationErrorsShape: flattenBindArgsValidationErrors })
+		.bindArgsSchemas(bindArgsSchemas, {
+			handleBindArgsValidationErrorsShape: async (ve) => flattenBindArgsValidationErrors(ve),
+		})
 		.action(async () => {
 			return {
 				ok: true,
@@ -138,7 +140,9 @@ test("action with invalid bind args input gives back an object with correct `bin
 	];
 
 	const action = foac
-		.bindArgsSchemas(bindArgsSchemas, { handleBindArgsValidationErrorsShape: flattenBindArgsValidationErrors })
+		.bindArgsSchemas(bindArgsSchemas, {
+			handleBindArgsValidationErrorsShape: async (ve) => flattenBindArgsValidationErrors(ve),
+		})
 		.action(async () => {
 			return {
 				ok: true,
@@ -225,7 +229,9 @@ test("action with invalid bind args input gives back an object with correct `bin
 	];
 
 	const action = flac
-		.bindArgsSchemas(bindArgsSchemas, { handleBindArgsValidationErrorsShape: formatBindArgsValidationErrors })
+		.bindArgsSchemas(bindArgsSchemas, {
+			handleBindArgsValidationErrorsShape: async (ve) => formatBindArgsValidationErrors(ve),
+		})
 		.action(async () => {
 			return {
 				ok: true,

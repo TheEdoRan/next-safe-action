@@ -18,7 +18,7 @@ Starting from v7.4.0, you can now pass optional `throwServerError` and `throwVal
 - `onError`: called when action execution fails (validation errors or server error).
 - `onSettled`: called when action execution succeeds or fails.
 
-With action callbacks you can perform custom logic after the action is executed, on the server side. You can pass them to [`action`/`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method in the second argument, after the server code function. They don't return anything and can be async or not.
+With action callbacks you can perform custom logic after the action is executed, on the server side. You can pass them to [`action`/`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method as the second argument, after the server code function. Their return value is not used and they **must** be async functions.
 
 ```tsx
 import { actionClient } from "@/lib/safe-action";
@@ -29,7 +29,7 @@ const action = actionClient
   .action(async () => {
     // ...
   }, {
-    onSuccess: ({
+    onSuccess: async ({
       data,
       ctx,
       metadata,
@@ -39,22 +39,26 @@ const action = actionClient
       bindArgsParsedInputs,
       hasRedirected,
       hasNotFound,
+      hasForbidden,
+      hasUnauthorized
     }) => {},
-    onError: ({
+    onError: async ({
       error,
       ctx,
       metadata,
       clientInput,
       bindArgsClientInputs
     }) => {},
-    onSettled: ({
+    onSettled: async ({
       result,
       ctx,
       metadata,
       clientInput,
       bindArgsClientInputs,
       hasRedirected,
-      hasNotFound
+      hasNotFound,
+      hasForbidden,
+      hasUnauthorized
     }) => {},
   });
 ```

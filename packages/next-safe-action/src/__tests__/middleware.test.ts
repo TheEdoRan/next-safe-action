@@ -357,10 +357,10 @@ test("overridden formatted validation errors in execution result from middleware
 				z.object({
 					username: z.string().max(3),
 				}),
-			{ handleValidationErrorsShape: formatValidationErrors }
+			{ handleValidationErrorsShape: async (ve) => formatValidationErrors(ve) }
 		)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })], {
-			handleBindArgsValidationErrorsShape: formatBindArgsValidationErrors,
+			handleBindArgsValidationErrorsShape: async (ve) => formatBindArgsValidationErrors(ve),
 		})
 		.use(async ({ next }) => {
 			// Await action execution.

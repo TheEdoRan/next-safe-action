@@ -11,7 +11,7 @@ next-safe-action, by default, emulates Zod's [`format`](https://zod.dev/ERROR_HA
 
 This can be customized both at the safe action client level and at the action level by:
 - using [`defaultValidationErrorsShape`](/docs/define-actions/create-the-client#defaultvalidationerrorsshape) optional property in `createSafeActionClient`;
-- using `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional functions in [`schema`](/docs/define-actions/instance-methods#schema) and [`bindArgsSchemas`](/docs/define-actions/instance-methods#bindargsschemas) methods.
+- using `handleValidationErrorsShape` and `handleBindArgsValidationErrorsShape` optional async functions in [`schema`](/docs/define-actions/instance-methods#schema) and [`bindArgsSchemas`](/docs/define-actions/instance-methods#bindargsschemas) methods.
 
 The second way overrides the shape set at the instance level, per action.
 
@@ -39,13 +39,13 @@ export const loginUser = actionClient
     // Here we use the `flattenValidationErrors` function to customize the returned validation errors
     // object to the client.
     // highlight-next-line
-    handleValidationErrorsShape: (ve, utils) => flattenValidationErrors(ve).fieldErrors,
+    handleValidationErrorsShape: async (ve, utils) => flattenValidationErrors(ve).fieldErrors,
   })
   .bindArgsSchemas(bindArgsSchemas, {
     // Here we use the `flattenBindArgsValidatonErrors` function to customize the returned bind args
     // validation errors object array to the client.
     // highlight-next-line
-    handleBindArgsValidationErrorsShape: (ve, utils) => flattenBindArgsValidationErrors(ve),
+    handleBindArgsValidationErrorsShape: async (ve, utils) => flattenBindArgsValidationErrors(ve),
   })
   .action(async ({ parsedInput: { username, password } }) => {
     // Your code here...
