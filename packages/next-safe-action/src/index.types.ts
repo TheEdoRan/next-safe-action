@@ -176,6 +176,7 @@ export type SafeActionUtils<
 		hasRedirected: boolean;
 		hasNotFound: boolean;
 		hasForbidden: boolean;
+		hasUnauthorized: boolean;
 	}) => Promise<unknown>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
@@ -193,6 +194,7 @@ export type SafeActionUtils<
 		hasRedirected: boolean;
 		hasNotFound: boolean;
 		hasForbidden: boolean;
+		hasUnauthorized: boolean;
 	}) => Promise<unknown>;
 };
 

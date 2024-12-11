@@ -19,6 +19,7 @@ import {
 	isFrameworkError,
 	isNotFoundError,
 	isRedirectError,
+	isUnauthorizedError,
 	winningBoolean,
 } from "./utils";
 import {
@@ -310,6 +311,7 @@ export function actionBuilder<
 								hasRedirected: isRedirectError(frameworkError),
 								hasNotFound: isNotFoundError(frameworkError),
 								hasForbidden: isForbiddenError(frameworkError),
+								hasUnauthorized: isUnauthorizedError(frameworkError),
 							})
 						);
 
@@ -323,6 +325,7 @@ export function actionBuilder<
 								hasRedirected: isRedirectError(frameworkError),
 								hasNotFound: isNotFoundError(frameworkError),
 								hasForbidden: isForbiddenError(frameworkError),
+								hasUnauthorized: isUnauthorizedError(frameworkError),
 							})
 						);
 
@@ -372,6 +375,7 @@ export function actionBuilder<
 								hasRedirected: false,
 								hasNotFound: false,
 								hasForbidden: false,
+								hasUnauthorized: false,
 							})
 						);
 					} else {
@@ -397,6 +401,7 @@ export function actionBuilder<
 							hasRedirected: false,
 							hasNotFound: false,
 							hasForbidden: false,
+							hasUnauthorized: false,
 						})
 					);
 

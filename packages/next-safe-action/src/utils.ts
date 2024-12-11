@@ -37,4 +37,8 @@ export function isForbiddenError(error: unknown): error is HTTPAccessFallbackErr
 	return isHTTPAccessFallbackError(error) && getAccessFallbackHTTPStatus(error) === 403;
 }
 
+export function isUnauthorizedError(error: unknown): error is HTTPAccessFallbackError {
+	return isHTTPAccessFallbackError(error) && getAccessFallbackHTTPStatus(error) === 401;
+}
+
 export { isRedirectError };
