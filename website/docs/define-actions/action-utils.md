@@ -39,7 +39,8 @@ const action = actionClient
       bindArgsParsedInputs,
       hasRedirected,
       hasNotFound,
-      hasForbidden
+      hasForbidden,
+      hasUnauthorized
     }) => {},
     onError: async ({
       error,
@@ -56,7 +57,8 @@ const action = actionClient
       bindArgsClientInputs,
       hasRedirected,
       hasNotFound,
-      hasForbidden
+      hasForbidden,
+      hasUnauthorized
     }) => {},
   });
 ```
