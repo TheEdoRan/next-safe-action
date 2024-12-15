@@ -73,13 +73,13 @@ Note that when you use `stateAction`, and also want to access `prevResult` in `s
 
 ```typescript title="Stateless action"
 serverCodeFn(
-  args: { parsedInput, bindArgsParsedInputs, ctx, metadata }
+  args: { parsedInput, bindArgsParsedInputs, clientInput, bindArgsClientInputs, ctx, metadata }
 ) => Promise<Data>;
 ```
 
 ```typescript title="Stateful action"
 serverCodeFn = (
-  args: { parsedInput, bindArgsParsedInputs, ctx, metadata },
+  args: { parsedInput, bindArgsParsedInputs, clientInput, bindArgsClientInputs, ctx, metadata },
   utils: { prevResult }
 ) => Promise<Data>;
 ```
