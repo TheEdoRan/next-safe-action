@@ -123,7 +123,9 @@ export type ServerCodeFn<
 	Data,
 > = (args: {
 	parsedInput: S extends Schema ? Infer<S> : undefined;
+	clientInput: S extends Schema ? InferIn<S> : undefined;
 	bindArgsParsedInputs: InferArray<BAS>;
+	bindArgsClientInputs: InferInArray<BAS>;
 	ctx: Prettify<Ctx>;
 	metadata: MD;
 }) => Promise<Data>;
@@ -143,7 +145,9 @@ export type StateServerCodeFn<
 > = (
 	args: {
 		parsedInput: S extends Schema ? Infer<S> : undefined;
+		clientInput: S extends Schema ? InferIn<S> : undefined;
 		bindArgsParsedInputs: InferArray<BAS>;
+		bindArgsClientInputs: InferInArray<BAS>;
 		ctx: Prettify<Ctx>;
 		metadata: MD;
 	},

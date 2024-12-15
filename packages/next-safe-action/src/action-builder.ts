@@ -224,6 +224,8 @@ export function actionBuilder<
 								scfArgs[0] = {
 									parsedInput: parsedInputDatas.at(-1) as IS extends Schema ? Infer<IS> : undefined,
 									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
+									clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
+									bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 									ctx: currentCtx as Ctx,
 									metadata: args.metadata,
 								};
