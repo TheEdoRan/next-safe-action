@@ -10,15 +10,15 @@
 	},
 	"author": "Edoardo Ranghieri",
 	"dependencies": {
-		"@hookform/resolvers": "^3.9.1",
-		"lucide-react": "^0.460.0",
-		"next": "15.1.0",
+		"@hookform/resolvers": "^3.10.0",
+		"lucide-react": "^0.474.0",
+		"next": "15.1.6",
 		"next-safe-action": "workspace:*",
 		"react": "^19",
 		"react-dom": "^19",
-		"react-hook-form": "^7.53.2",
-		"zod": "^3.23.8",
-		"zod-form-data": "^2.0.2"
+		"react-hook-form": "^7.54.2",
+		"zod": "^3.24.1",
+		"zod-form-data": "^2.0.5"
 	},
 	"devDependencies": {
 		"@types/node": "^22",
@@ -26,9 +26,9 @@
 		"@types/react-dom": "^19",
 		"autoprefixer": "10.4.20",
 		"eslint": "^8.57.0",
-		"eslint-config-next": "15.0.4-canary.45",
-		"postcss": "8.4.49",
-		"tailwindcss": "3.4.15",
-		"typescript": "^5.6.3"
+		"eslint-config-next": "15.1.6",
+		"postcss": "8.5.1",
+		"tailwindcss": "^3",
+		"typescript": "^5.7.3"
 	}
 }
