@@ -54,6 +54,7 @@ export const useAction = <
 				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
+						setResult({});
 						throw e;
 					})
 					.finally(() => {
@@ -80,6 +81,7 @@ export const useAction = <
 							resolve(res);
 						})
 						.catch((e) => {
+							setResult({});
 							reject(e);
 						})
 						.finally(() => {
@@ -175,6 +177,7 @@ export const useOptimisticAction = <
 				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
 					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
+						setResult({});
 						throw e;
 					})
 					.finally(() => {
@@ -202,6 +205,7 @@ export const useOptimisticAction = <
 							resolve(res);
 						})
 						.catch((e) => {
+							setResult({});
 							reject(e);
 						})
 						.finally(() => {
