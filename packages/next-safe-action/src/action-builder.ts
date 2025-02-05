@@ -236,10 +236,19 @@ export function actionBuilder<
 									scfArgs[1] = { prevResult: structuredClone(prevResult!) };
 								}
 
-								const data = await serverCodeFn(...scfArgs);
+								const data = await serverCodeFn(...scfArgs).catch((e) => {
+									// next/navigation functions work by throwing an error that will be
+									// processed internally by Next.js.
+									if (isFrameworkError(e)) {
+										frameworkError = e;
+										return undefined;
+									} else {
+										throw e;
+									}
+								});
 
 								// If a `outputSchema` is passed, validate the action return value.
-								if (typeof args.outputSchema !== "undefined") {
+								if (typeof args.outputSchema !== "undefined" && !frameworkError) {
 									const parsedData = await args.validationAdapter.validate(args.outputSchema, data);
 
 									if (!parsedData.success) {
@@ -253,14 +262,6 @@ export function actionBuilder<
 								middlewareResult.bindArgsParsedInputs = parsedInputDatas.slice(0, -1);
 							}
 						} catch (e: unknown) {
-							// next/navigation functions work by throwing an error that will be
-							// processed internally by Next.js.
-							if (isFrameworkError(e)) {
-								middlewareResult.success = true;
-								frameworkError = e;
-								return;
-							}
-
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
 							if (e instanceof ActionServerValidationError) {
 								const ve = e.validationErrors as ValidationErrors<IS>;
