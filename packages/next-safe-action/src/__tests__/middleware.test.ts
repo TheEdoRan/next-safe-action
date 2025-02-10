@@ -341,6 +341,24 @@ test("framework error result from middleware is correct", async () => {
 	assert.deepStrictEqual(middlewareResult, expectedResult);
 });
 
+test("framework error is thrown within middleware", async () => {
+	const action = ac
+		.use(async () => {
+			redirect("/newPath");
+		})
+		.action(async () => {
+			return null;
+		});
+
+	await assert.rejects(
+		async () => await action(),
+		(e) => {
+			return isFrameworkError(e);
+		},
+		"A framework error to be thrown"
+	);
+});
+
 // Flattened validation errors shape.
 
 const flac = createSafeActionClient({
