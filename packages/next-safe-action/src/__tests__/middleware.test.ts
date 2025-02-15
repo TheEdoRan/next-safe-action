@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
+import { redirect } from "next/navigation";
 import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
@@ -12,8 +13,7 @@ import {
 	returnValidationErrors,
 } from "..";
 import { zodAdapter } from "../adapters/zod";
-import { redirect } from "next/navigation";
-import { isFrameworkError } from "../next/errors";
+import { FrameworkErrorHandler } from "../next/errors";
 
 const ac = createSafeActionClient({
 	validationAdapter: zodAdapter(),
@@ -317,7 +317,7 @@ test("framework error result from middleware is correct", async () => {
 
 	const inputs = [{ age: 30 }, { username: "johndoe" }] as const;
 	await action(...inputs).catch((e) => {
-		if (!isFrameworkError(e)) {
+		if (!FrameworkErrorHandler.isFrameworkError(e)) {
 			throw e;
 		}
 	});
@@ -353,7 +353,7 @@ test("framework error is thrown within middleware", async () => {
 	await assert.rejects(
 		async () => await action(),
 		(e) => {
-			return isFrameworkError(e);
+			return FrameworkErrorHandler.isFrameworkError(e);
 		},
 		"A framework error to be thrown"
 	);
