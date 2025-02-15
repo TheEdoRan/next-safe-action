@@ -12,13 +12,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import {
-	isForbiddenError,
-	isFrameworkError,
-	isNotFoundError,
-	isRedirectError,
-	isUnauthorizedError,
-} from "./next/errors";
+import { FrameworkErrorHandler } from "./next/errors";
 import { DEFAULT_SERVER_ERROR_MESSAGE, isError, winningBoolean } from "./utils";
 import {
 	ActionMetadataValidationError,
@@ -87,7 +81,7 @@ export function actionBuilder<
 					type PrevResult = SafeActionResult<ServerError, IS, BAS, CVE, CBAVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
 					const parsedInputDatas: any[] = [];
-					let frameworkError: Error | null = null;
+					const frameworkErrorHandler = new FrameworkErrorHandler();
 
 					if (withState) {
 						// Previous state is placed between bind args and main arg inputs, so it's always at the index of
@@ -105,7 +99,7 @@ export function actionBuilder<
 
 					// Execute the middleware stack.
 					const executeMiddlewareStack = async (idx = 0) => {
-						if (frameworkError) {
+						if (frameworkErrorHandler.error) {
 							return;
 						}
 
@@ -136,7 +130,7 @@ export function actionBuilder<
 										await executeMiddlewareStack(idx + 1);
 										return middlewareResult;
 									},
-								});
+								}).catch((e) => frameworkErrorHandler.handleError(e));
 								// Action function.
 							} else {
 								// Validate the client inputs in parallel.
@@ -236,10 +230,10 @@ export function actionBuilder<
 									scfArgs[1] = { prevResult: structuredClone(prevResult!) };
 								}
 
-								const data = await serverCodeFn(...scfArgs);
+								const data = await serverCodeFn(...scfArgs).catch((e) => frameworkErrorHandler.handleError(e));
 
 								// If a `outputSchema` is passed, validate the action return value.
-								if (typeof args.outputSchema !== "undefined") {
+								if (typeof args.outputSchema !== "undefined" && !frameworkErrorHandler.error) {
 									const parsedData = await args.validationAdapter.validate(args.outputSchema, data);
 
 									if (!parsedData.success) {
@@ -253,14 +247,6 @@ export function actionBuilder<
 								middlewareResult.bindArgsParsedInputs = parsedInputDatas.slice(0, -1);
 							}
 						} catch (e: unknown) {
-							// next/navigation functions work by throwing an error that will be
-							// processed internally by Next.js.
-							if (isFrameworkError(e)) {
-								middlewareResult.success = true;
-								frameworkError = e;
-								return;
-							}
-
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
 							if (e instanceof ActionServerValidationError) {
 								const ve = e.validationErrors as ValidationErrors<IS>;
@@ -298,7 +284,7 @@ export function actionBuilder<
 					const callbackPromises: (Promise<unknown> | undefined)[] = [];
 
 					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
-					if (frameworkError) {
+					if (frameworkErrorHandler.error) {
 						callbackPromises.push(
 							utils?.onSuccess?.({
 								data: undefined,
@@ -308,10 +294,10 @@ export function actionBuilder<
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								parsedInput: parsedInputDatas.at(-1) as IS extends Schema ? Infer<IS> : undefined,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
-								hasRedirected: isRedirectError(frameworkError),
-								hasNotFound: isNotFoundError(frameworkError),
-								hasForbidden: isForbiddenError(frameworkError),
-								hasUnauthorized: isUnauthorizedError(frameworkError),
+								hasRedirected: frameworkErrorHandler.isRedirectError,
+								hasNotFound: frameworkErrorHandler.isNotFoundError,
+								hasForbidden: frameworkErrorHandler.isForbiddenError,
+								hasUnauthorized: frameworkErrorHandler.isUnauthorizedError,
 							})
 						);
 
@@ -322,16 +308,16 @@ export function actionBuilder<
 								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
 								result: {},
-								hasRedirected: isRedirectError(frameworkError),
-								hasNotFound: isNotFoundError(frameworkError),
-								hasForbidden: isForbiddenError(frameworkError),
-								hasUnauthorized: isUnauthorizedError(frameworkError),
+								hasRedirected: frameworkErrorHandler.isRedirectError,
+								hasNotFound: frameworkErrorHandler.isNotFoundError,
+								hasForbidden: frameworkErrorHandler.isForbiddenError,
+								hasUnauthorized: frameworkErrorHandler.isUnauthorizedError,
 							})
 						);
 
 						await Promise.all(callbackPromises);
 
-						throw frameworkError;
+						throw frameworkErrorHandler.error;
 					}
 
 					const actionResult: SafeActionResult<ServerError, IS, BAS, CVE, CBAVE, Data> = {};
