@@ -130,7 +130,7 @@ export function actionBuilder<
 										await executeMiddlewareStack(idx + 1);
 										return middlewareResult;
 									},
-								}).catch(frameworkErrorHandler.handleError);
+								}).catch((e) => frameworkErrorHandler.handleError(e));
 								// Action function.
 							} else {
 								// Validate the client inputs in parallel.
@@ -230,7 +230,7 @@ export function actionBuilder<
 									scfArgs[1] = { prevResult: structuredClone(prevResult!) };
 								}
 
-								const data = await serverCodeFn(...scfArgs).catch(frameworkErrorHandler.handleError);
+								const data = await serverCodeFn(...scfArgs).catch((e) => frameworkErrorHandler.handleError(e));
 
 								// If a `outputSchema` is passed, validate the action return value.
 								if (typeof args.outputSchema !== "undefined" && !frameworkErrorHandler.error) {

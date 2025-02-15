@@ -12,7 +12,7 @@ export class FrameworkErrorHandler {
 		return isNextRouterError(error) || isBailoutToCSRError(error) || isDynamicUsageError(error) || isPostpone(error);
 	}
 
-	handleError = (e: unknown) => {
+	handleError(e: unknown) {
 		// next/navigation functions work by throwing an error that will be
 		// processed internally by Next.js.
 		if (FrameworkErrorHandler.isFrameworkError(e)) {
@@ -21,7 +21,7 @@ export class FrameworkErrorHandler {
 		}
 
 		throw e;
-	};
+	}
 
 	get error() {
 		return this.#frameworkError;
