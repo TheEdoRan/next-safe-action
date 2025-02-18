@@ -92,6 +92,10 @@ importers:
         version: 5.7.3
 
   packages/next-safe-action:
+    dependencies:
+      arktype:
+        specifier: '>= 2.0.0'
+        version: 2.0.4
     devDependencies:
       '@eslint/js':
         specifier: ^9.19.0
@@ -151,8 +155,8 @@ importers:
         specifier: ^8.22.0
         version: 8.22.0(eslint@8.57.1)(typescript@5.7.3)
       valibot:
-        specifier: ^0.42.1
-        version: 0.42.1(typescript@5.7.3)
+        specifier: ^1.0.0-rc.1
+        version: 1.0.0-rc.1(typescript@5.7.3)
       yup:
         specifier: ^1.6.1
         version: 1.6.1
@@ -165,6 +169,12 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+
+  '@ark/schema@0.39.0':
+    resolution: {integrity: sha512-LQbQUb3Sj461LgklXObAyUJNtsUUCBxZlO2HqRLYvRSqpStm0xTMrXn51DwBNNxeSULvKVpXFwoxiSec9kwKww==}
+
+  '@ark/util@0.39.0':
+    resolution: {integrity: sha512-90APHVklk8BP4kku7hIh1BgrhuyKYqoZ4O7EybtFRo7cDl9mIyc/QUbGvYDg//73s0J2H0I/gW9pzroA1R4IBQ==}
 
   '@babel/code-frame@7.26.2':
     resolution: {integrity: sha512-RJlIHRueQgwWitWgF8OdFYGZX328Ax5BCemNGlqHfplnRT9ESi8JkFlvaVYbS+UubVY6dpv87Fs2u5M29iNFVQ==}
@@ -1163,6 +1173,9 @@ packages:
   aria-query@5.3.2:
     resolution: {integrity: sha512-COROpnaoap1E2F000S62r6A60uHZnmlvomhfyT2DlTcrY1OrBKn2UhH7qn5wTC9zMvD0AY7csdPSNwKP+7WiQw==}
     engines: {node: '>= 0.4'}
+
+  arktype@2.0.4:
+    resolution: {integrity: sha512-S68rWVDnJauwH7/QCm8zCUM3aTe9Xk6oRihdcc3FSUAtxCo/q1Fwq46JhcwB5Ufv1YStwdQRz+00Y/URlvbhAQ==}
 
   array-buffer-byte-length@1.0.2:
     resolution: {integrity: sha512-LHE+8BuR7RYGDKvnrmcuSq3tDcKv9OFEXQt/HpbZhY7V6h0zlUXutnAD82GiFx9rdieCMjkvtcsPqBwgUl1Iiw==}
@@ -3721,8 +3734,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  valibot@0.42.1:
-    resolution: {integrity: sha512-3keXV29Ar5b//Hqi4MbSdV7lfVp6zuYLZuA9V1PvQUsXqogr+u5lvLPLk3A4f74VUXDnf/JfWMN6sB+koJ/FFw==}
+  valibot@1.0.0-rc.1:
+    resolution: {integrity: sha512-bTHNpeeQ403xS7qGHF/tw3EC/zkZOU5VdkfIsmRDu1Sp+BJNTNCm6m5HlwOgyW/03lofP+uQiq3R+Poo9wiCEg==}
     peerDependencies:
       typescript: '>=5'
     peerDependenciesMeta:
@@ -3843,6 +3856,12 @@ packages:
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
+
+  '@ark/schema@0.39.0':
+    dependencies:
+      '@ark/util': 0.39.0
+
+  '@ark/util@0.39.0': {}
 
   '@babel/code-frame@7.26.2':
     dependencies:
@@ -4722,6 +4741,11 @@ snapshots:
   argv-formatter@1.0.0: {}
 
   aria-query@5.3.2: {}
+
+  arktype@2.0.4:
+    dependencies:
+      '@ark/schema': 0.39.0
+      '@ark/util': 0.39.0
 
   array-buffer-byte-length@1.0.2:
     dependencies:
@@ -7540,7 +7564,7 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  valibot@0.42.1(typescript@5.7.3):
+  valibot@1.0.0-rc.1(typescript@5.7.3):
     optionalDependencies:
       typescript: 5.7.3
 

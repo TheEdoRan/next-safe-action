@@ -85,18 +85,19 @@
 		"tsx": "^4.19.2",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.22.0",
-		"valibot": "^0.42.1",
+		"valibot": "^1.0.0-rc.1",
 		"yup": "^1.6.1",
 		"zod": "^3.24.1"
 	},
 	"peerDependencies": {
 		"@sinclair/typebox": ">= 0.33.3",
+		"arktype": ">= 2.0.0",
 		"next": ">= 14.0.0",
 		"react": ">= 18.2.0",
 		"react-dom": ">= 18.2.0",
-		"valibot": ">= 0.36.0",
+		"valibot": ">= 1.0.0",
 		"yup": ">= 1.0.0",
-		"zod": ">= 3.0.0"
+		"zod": ">= 3.24.0"
 	},
 	"peerDependenciesMeta": {
 		"zod": {
@@ -109,6 +110,9 @@
 			"optional": true
 		},
 		"@sinclair/typebox": {
+			"optional": true
+		},
+		"arktype": {
 			"optional": true
 		}
 	},
