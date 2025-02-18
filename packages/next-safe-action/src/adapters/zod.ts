@@ -43,6 +43,11 @@ class ZodAdapter implements ValidationAdapter {
 	}
 }
 
+/**
+ * @deprecated
+ * No longer needed, due to Standard Schema support (requires Zod v3.24+).
+ * Will be removed in next major release.
+ */
 export function zodAdapter() {
 	return new ZodAdapter();
 }
