@@ -12,11 +12,9 @@ import {
 	formatValidationErrors,
 	returnValidationErrors,
 } from "..";
-import { zodAdapter } from "../adapters/zod";
 import { FrameworkErrorHandler } from "../next/errors";
 
 const ac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	handleServerError(e) {
 		// disable server error logging for these tests
 		return {
@@ -362,7 +360,6 @@ test("framework error is thrown within middleware", async () => {
 // Flattened validation errors shape.
 
 const flac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	handleServerError: () => DEFAULT_SERVER_ERROR_MESSAGE, // disable server errors logging for these tests
 	defaultValidationErrorsShape: "flattened",
 });

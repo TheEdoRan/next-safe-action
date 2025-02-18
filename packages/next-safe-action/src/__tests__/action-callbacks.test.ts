@@ -4,10 +4,8 @@ import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
 import { DEFAULT_SERVER_ERROR_MESSAGE, createSafeActionClient, returnValidationErrors } from "..";
-import { zodAdapter } from "../adapters/zod";
 
 const ac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	defineMetadataSchema() {
 		return z.object({
 			actionName: z.string(),

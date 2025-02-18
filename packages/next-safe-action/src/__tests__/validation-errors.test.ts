@@ -11,14 +11,11 @@ import {
 	formatValidationErrors,
 	returnValidationErrors,
 } from "..";
-import { zodAdapter } from "../adapters/zod";
 import { ActionOutputDataValidationError } from "../validation-errors";
 
 // Default client tests.
 
-const dac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
-});
+const dac = createSafeActionClient();
 
 test("action with invalid input gives back an object with correct `validationErrors` (default formatted shape)", async () => {
 	const schema = z.object({
@@ -170,7 +167,6 @@ test("action with invalid output data returns the default `serverError`", async 
 
 test("action with invalid output data throws an error of the correct type", async () => {
 	const tac = createSafeActionClient({
-		validationAdapter: zodAdapter(),
 		handleServerError: (e) => {
 			// disable server error logging for this test
 			throw e;
@@ -208,7 +204,6 @@ test("action with invalid output data throws an error of the correct type", asyn
 // Formatted shape tests (same as default).
 
 const foac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "formatted",
 });
 
@@ -347,7 +342,6 @@ test("action with invalid input gives back an object with correct `validationErr
 // Flattened shape tests.
 
 const flac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "flattened",
 });
 
@@ -622,7 +616,6 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 });
 
 const tveac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	throwValidationErrors: true,
 });
 

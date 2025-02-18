@@ -34,14 +34,25 @@ export const actionClient = createSafeActionClient({
 <TabItem value="typebox" label="TypeBox">
 ```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
-import { typeboxAdapter } from "next-safe-action/adapters/typebox";
 
-export const actionClient = createSafeActionClient({
-  validationAdapter: typeboxAdapter(),
-});
+export const actionClient = createSafeActionClient();
 ```
 
-With TypeBox, you can either use `typeboxAdapter` or use [TypeMap](https://github.com/sinclairzx81/typemap) to make it Standard Schema compatible, removing the need to use an adapter.
+With TypeBox, you should use [TypeMap](https://github.com/sinclairzx81/typemap) to make it Standard Schema compatible.
+
+```typescript
+import { Compile } from "@sinclair/typemap";
+import { Type } from "@sinclair/typebox";
+
+// can't be passed directly to `schema`
+const LoginSchema = Type.Object({
+  username: Type.String({ minLength: 3, maxLength: 10 }),
+  password: Type.String({ minLength: 8, maxLength: 100 }),
+});
+
+// can be passed directly to `schema`
+const StandardLoginSchema = Compile(LoginSchema);
+```
 
 </TabItem>
 </Tabs>

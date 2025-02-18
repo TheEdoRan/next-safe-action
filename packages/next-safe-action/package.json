@@ -67,7 +67,6 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.19.0",
-		"@sinclair/typebox": "^0.34.15",
 		"@types/node": "^22",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
@@ -85,12 +84,11 @@
 		"tsx": "^4.19.2",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.22.0",
-		"valibot": "^1.0.0-rc.1",
 		"yup": "^1.6.1",
 		"zod": "^3.24.1"
 	},
 	"peerDependencies": {
-		"@sinclair/typebox": ">= 0.33.3",
+		"@sinclair/typemap": ">= 0.8.0",
 		"arktype": ">= 2.0.0",
 		"next": ">= 14.0.0",
 		"react": ">= 18.2.0",
@@ -109,7 +107,7 @@
 		"yup": {
 			"optional": true
 		},
-		"@sinclair/typebox": {
+		"@sinclair/typemap": {
 			"optional": true
 		},
 		"arktype": {
