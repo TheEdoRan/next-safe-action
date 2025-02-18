@@ -1,5 +1,5 @@
+import { standardAdapter } from "./adapters/standard";
 import type { Infer, Schema } from "./adapters/types";
-import { zodAdapter } from "./adapters/zod";
 import type { DVES, SafeActionClientOpts } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
@@ -54,7 +54,7 @@ export const createSafeActionClient = <
 		inputSchemaFn: undefined,
 		bindArgsSchemas: [],
 		outputSchema: undefined,
-		validationAdapter: createOpts?.validationAdapter ?? zodAdapter(), // use zod adapter by default
+		validationAdapter: createOpts?.validationAdapter ?? standardAdapter(), // use standard adapter by default
 		ctxType: {},
 		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
 		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
