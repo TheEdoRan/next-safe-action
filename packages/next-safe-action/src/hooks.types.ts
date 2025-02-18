@@ -1,18 +1,18 @@
-import type { InferIn, Schema } from "./adapters/types";
 import type { SafeActionFn, SafeActionResult, SafeStateActionFn } from "./index.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 import type { MaybePromise, Prettify } from "./utils.types";
 
 /**
  * Type of base utils object passed to `useAction`, `useOptimisticAction` and `useStateAction` hooks.
  */
-export type HookBaseUtils<S extends Schema | undefined> = {
+export type HookBaseUtils<S extends StandardSchemaV1 | undefined> = {
 	/**
 	 * @deprecated Actions should not execute on component mount, since they're used to mutate data.
 	 */
 	executeOnMount?: (undefined extends S
 		? { input?: undefined }
 		: {
-				input: S extends Schema ? InferIn<S> : undefined;
+				input: InferInputOrDefault<S, undefined>;
 			}) & { delayMs?: number };
 };
 
@@ -21,21 +21,21 @@ export type HookBaseUtils<S extends Schema | undefined> = {
  */
 export type HookCallbacks<
 	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
 > = {
-	onExecute?: (args: { input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<unknown>;
-	onSuccess?: (args: { data?: Data; input: S extends Schema ? InferIn<S> : undefined }) => MaybePromise<unknown>;
+	onExecute?: (args: { input: InferInputOrDefault<S, undefined> }) => MaybePromise<unknown>;
+	onSuccess?: (args: { data?: Data; input: InferInputOrDefault<S, undefined> }) => MaybePromise<unknown>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
-		input: S extends Schema ? InferIn<S> : undefined;
+		input: InferInputOrDefault<S, undefined>;
 	}) => MaybePromise<unknown>;
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
-		input: S extends Schema ? InferIn<S> : undefined;
+		input: InferInputOrDefault<S, undefined>;
 	}) => MaybePromise<unknown>;
 };
 
@@ -45,13 +45,13 @@ export type HookCallbacks<
  */
 export type HookSafeActionFn<
 	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
 > = (
-	input: S extends Schema ? InferIn<S> : undefined
+	input: InferInputOrDefault<S, undefined>
 ) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 
 /**
@@ -60,14 +60,14 @@ export type HookSafeActionFn<
  */
 export type HookSafeStateActionFn<
 	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
 > = (
 	prevResult: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>,
-	input: S extends Schema ? InferIn<S> : undefined
+	input: InferInputOrDefault<S, undefined>
 ) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 
 /**
@@ -92,17 +92,17 @@ export type HookShorthandStatus = {
  */
 export type UseActionHookReturn<
 	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
 > = {
-	execute: (input: S extends Schema ? InferIn<S> : void) => void;
+	execute: (input: InferInputOrDefault<S, void>) => void;
 	executeAsync: (
-		input: S extends Schema ? InferIn<S> : void
+		input: InferInputOrDefault<S, void>
 	) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
-	input: S extends Schema ? InferIn<S> : undefined;
+	input: InferInputOrDefault<S, undefined>;
 	result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 	reset: () => void;
 	status: HookActionStatus;
@@ -113,8 +113,8 @@ export type UseActionHookReturn<
  */
 export type UseOptimisticActionHookReturn<
 	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
@@ -129,8 +129,8 @@ export type UseOptimisticActionHookReturn<
  */
 export type UseStateActionHookReturn<
 	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
@@ -142,8 +142,8 @@ export type UseStateActionHookReturn<
 export type InferUseActionHookReturn<T extends Function> =
 	T extends SafeActionFn<
 		infer ServerError,
-		infer S extends Schema | undefined,
-		infer BAS extends readonly Schema[],
+		infer S extends StandardSchemaV1 | undefined,
+		infer BAS extends readonly StandardSchemaV1[],
 		infer CVE,
 		infer CBAVE,
 		infer Data
@@ -157,8 +157,8 @@ export type InferUseActionHookReturn<T extends Function> =
 export type InferUseOptimisticActionHookReturn<T extends Function, State = any> =
 	T extends SafeActionFn<
 		infer ServerError,
-		infer S extends Schema | undefined,
-		infer BAS extends readonly Schema[],
+		infer S extends StandardSchemaV1 | undefined,
+		infer BAS extends readonly StandardSchemaV1[],
 		infer CVE,
 		infer CBAVE,
 		infer Data
@@ -172,8 +172,8 @@ export type InferUseOptimisticActionHookReturn<T extends Function, State = any> 
 export type InferUseStateActionHookReturn<T extends Function> =
 	T extends SafeStateActionFn<
 		infer ServerError,
-		infer S extends Schema | undefined,
-		infer BAS extends readonly Schema[],
+		infer S extends StandardSchemaV1 | undefined,
+		infer BAS extends readonly StandardSchemaV1[],
 		infer CVE,
 		infer CBAVE,
 		infer Data

@@ -1,5 +1,3 @@
-import type { ValidationAdapter } from "./types";
-
 /** The Standard Schema interface. */
 export interface StandardSchemaV1<Input = unknown, Output = Input> {
 	/** The Standard Schema properties. */
@@ -65,27 +63,24 @@ export declare namespace StandardSchemaV1 {
 	export type InferOutput<Schema extends StandardSchemaV1> = NonNullable<Schema["~standard"]["types"]>["output"];
 }
 
-class StandardAdapter implements ValidationAdapter {
-	async validate<S extends StandardSchemaV1>(schema: S, data: unknown) {
-		const result = await schema["~standard"].validate(data);
+// custom helpers
 
-		if (result.issues) {
-			return {
-				success: false,
-				issues: result.issues.map(({ message, path }) => ({
-					message,
-					path: path?.map((segment) => (typeof segment === "object" ? segment.key : segment)),
-				})),
-			} as const;
-		}
+/** Infer the input type of an array of Standard Schemas. */
+export type InferInputArray<Schemas extends readonly StandardSchemaV1[]> = {
+	[K in keyof Schemas]: StandardSchemaV1.InferInput<Schemas[K]>;
+};
 
-		return {
-			success: true,
-			data: result.value as StandardSchemaV1.InferOutput<S>,
-		} as const;
-	}
-}
+/** Infer the output type of an array of Standard Schemas. */
+export type InferOutputArray<Schemas extends readonly StandardSchemaV1[]> = {
+	[K in keyof Schemas]: StandardSchemaV1.InferOutput<Schemas[K]>;
+};
 
-export function standardAdapter() {
-	return new StandardAdapter();
-}
+/** Infer the input type of a Standard Schema, or a default type if the schema is undefined. */
+export type InferInputOrDefault<MaybeSchema, Default> = MaybeSchema extends StandardSchemaV1
+	? StandardSchemaV1.InferInput<MaybeSchema>
+	: Default;
+
+/** Infer the output type of a Standard Schema, or a default type if the schema is undefined. */
+export type InferOutputOrDefault<MaybeSchema, Default> = MaybeSchema extends StandardSchemaV1
+	? StandardSchemaV1.InferOutput<MaybeSchema>
+	: Default;

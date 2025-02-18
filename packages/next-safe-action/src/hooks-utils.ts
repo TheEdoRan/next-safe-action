@@ -1,14 +1,13 @@
 import * as React from "react";
 import {} from "react/experimental";
-import type {} from "zod";
-import type { InferIn, Schema } from "./adapters/types";
 import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookShorthandStatus } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
+import { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 
 export const getActionStatus = <
 	ServerError,
-	S extends Schema | undefined,
-	const BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	const BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
@@ -53,9 +52,9 @@ export const getActionShorthandStatusObject = ({
 	};
 };
 
-export const useExecuteOnMount = <S extends Schema | undefined>(
+export const useExecuteOnMount = <S extends StandardSchemaV1 | undefined>(
 	args: HookBaseUtils<S> & {
-		executeFn: (input: S extends Schema ? InferIn<S> : void) => void;
+		executeFn: (input: InferInputOrDefault<S, void>) => void;
 	}
 ) => {
 	const mounted = React.useRef(false);
@@ -63,7 +62,7 @@ export const useExecuteOnMount = <S extends Schema | undefined>(
 	React.useEffect(() => {
 		const t = setTimeout(() => {
 			if (args.executeOnMount && !mounted.current) {
-				args.executeFn(args.executeOnMount.input as S extends Schema ? InferIn<S> : void);
+				args.executeFn(args.executeOnMount.input as InferInputOrDefault<S, void>);
 				mounted.current = true;
 			}
 		}, args.executeOnMount?.delayMs ?? 0);
@@ -76,8 +75,8 @@ export const useExecuteOnMount = <S extends Schema | undefined>(
 
 export const useActionCallbacks = <
 	ServerError,
-	S extends Schema | undefined,
-	const BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	const BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
@@ -88,7 +87,7 @@ export const useActionCallbacks = <
 	cb,
 }: {
 	result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
-	input: S extends Schema ? InferIn<S> : undefined;
+	input: InferInputOrDefault<S, undefined>;
 	status: HookActionStatus;
 	cb?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>;
 }) => {

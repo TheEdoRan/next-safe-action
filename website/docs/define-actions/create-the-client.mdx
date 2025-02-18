@@ -3,67 +3,19 @@ sidebar_position: 1
 description: Learn how to create a safe action client,
 ---
 
-import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
-
 # Create the client
 
-After [installing the correct packages](/docs/getting-started#installation), the first thing you have to do is to create an instance of the safe action client, using the correct configuration based on your validation library of choice:
+After [installing the correct packages](/docs/getting-started#installation), the first thing you have to do is to create an instance of the safe action client:
 
-<Tabs groupId="validation-libraries">
-<TabItem value="standard" label="Standard Schema (Zod, Valibot, etc)" default>
 ```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
 
 export const actionClient = createSafeActionClient();
 ```
-
-When using a library that supports [Standard Schema](https://standardschema.dev/), you don't need to specify a `validationAdapter`, because it's supported by default for next-safe-action.
-
-</TabItem>
-<TabItem value="yup" label="Yup">
-```typescript title="src/lib/safe-action.ts"
-import { createSafeActionClient } from "next-safe-action";
-import { yupAdapter } from "next-safe-action/adapters/yup";
-
-export const actionClient = createSafeActionClient({
-  validationAdapter: yupAdapter(),
-});
-```
-</TabItem>
-<TabItem value="typebox" label="TypeBox">
-```typescript title="src/lib/safe-action.ts"
-import { createSafeActionClient } from "next-safe-action";
-
-export const actionClient = createSafeActionClient();
-```
-
-With TypeBox, you should use [TypeMap](https://github.com/sinclairzx81/typemap) to make it Standard Schema compatible.
-
-```typescript
-import { Compile } from "@sinclair/typemap";
-import { Type } from "@sinclair/typebox";
-
-// can't be passed directly to `schema`
-const LoginSchema = Type.Object({
-  username: Type.String({ minLength: 3, maxLength: 10 }),
-  password: Type.String({ minLength: 8, maxLength: 100 }),
-});
-
-// can be passed directly to `schema`
-const StandardLoginSchema = Compile(LoginSchema);
-```
-
-</TabItem>
-</Tabs>
 
 In the following section we will go through all the options that can be passed to the `createSafeActionClient` function to customize the client behavior for your needs.
 
 ## Initialization options
-
-### `validationAdapter?`
-
-This optional function is used to define which validation adapter should be used to validate the client input, based on the validation library of your choice. If not provided, the default `standardAdapter()` is used.
 
 ### `handleServerError?`
 

@@ -1,6 +1,5 @@
 import { deepmerge } from "deepmerge-ts";
 import type {} from "zod";
-import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
 import type {
 	MiddlewareFn,
 	MiddlewareResult,
@@ -13,6 +12,14 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
+import { parseWithSchema } from "./standard";
+import type {
+	InferInputArray,
+	InferInputOrDefault,
+	InferOutputArray,
+	InferOutputOrDefault,
+	StandardSchemaV1,
+} from "./standard.types";
 import { DEFAULT_SERVER_ERROR_MESSAGE, isError, winningBoolean } from "./utils";
 import {
 	ActionMetadataValidationError,
@@ -30,20 +37,19 @@ import type {
 
 export function actionBuilder<
 	ServerError,
-	MetadataSchema extends Schema | undefined = undefined,
-	MD = MetadataSchema extends Schema ? Infer<Schema> : undefined, // metadata type (inferred from metadata schema)
+	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
+	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
 	Ctx extends object = {},
-	ISF extends (() => Promise<Schema>) | undefined = undefined, // input schema function
-	IS extends Schema | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
-	OS extends Schema | undefined = undefined, // output schema
-	const BAS extends readonly Schema[] = [],
+	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
+	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
+	OS extends StandardSchemaV1 | undefined = undefined, // output schema
+	const BAS extends readonly StandardSchemaV1[] = [],
 	CVE = undefined,
 	CBAVE = undefined,
 >(args: {
 	inputSchemaFn?: ISF;
 	bindArgsSchemas?: BAS;
 	outputSchema?: OS;
-	validationAdapter: ValidationAdapter;
 	handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
 	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 	metadataSchema: MetadataSchema;
@@ -56,20 +62,20 @@ export function actionBuilder<
 	const bindArgsSchemas = (args.bindArgsSchemas ?? []) as BAS;
 
 	function buildAction({ withState }: { withState: false }): {
-		action: <Data extends OS extends Schema ? Infer<OS> : any>(
+		action: <Data extends InferOutputOrDefault<OS, any>>(
 			serverCodeFn: ServerCodeFn<MD, Ctx, IS, BAS, Data>,
 			utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
 		) => SafeActionFn<ServerError, IS, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
-		action: <Data extends OS extends Schema ? Infer<OS> : any>(
+		action: <Data extends InferOutputOrDefault<OS, any>>(
 			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
 			utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
 		) => SafeStateActionFn<ServerError, IS, BAS, CVE, CBAVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
 		return {
-			action: <Data extends OS extends Schema ? Infer<OS> : any>(
+			action: <Data extends InferOutputOrDefault<OS, any>>(
 				serverCodeFn:
 					| ServerCodeFn<MD, Ctx, IS, BAS, Data>
 					| StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
@@ -110,9 +116,9 @@ export function actionBuilder<
 							if (idx === 0) {
 								if (args.metadataSchema) {
 									// Validate metadata input.
-									const parsedMd = await args.validationAdapter.validate(args.metadataSchema, args.metadata);
+									const parsedMd = await parseWithSchema(args.metadataSchema, args.metadata);
 
-									if (!parsedMd.success) {
+									if (parsedMd.issues) {
 										throw new ActionMetadataValidationError<MetadataSchema>(buildValidationErrors(parsedMd.issues));
 									}
 								}
@@ -141,17 +147,16 @@ export function actionBuilder<
 											// If schema is undefined, set parsed data to undefined.
 											if (typeof args.inputSchemaFn === "undefined") {
 												return {
-													success: true,
-													data: undefined,
-												} as const;
+													value: undefined,
+												} as const satisfies StandardSchemaV1.Result<undefined>;
 											}
 
 											// Otherwise, parse input with the schema.
-											return args.validationAdapter.validate(await args.inputSchemaFn(), input);
+											return parseWithSchema(await args.inputSchemaFn(), input);
 										}
 
 										// Otherwise, we're processing bind args client inputs.
-										return args.validationAdapter.validate(bindArgsSchemas[i]!, input);
+										return parseWithSchema(bindArgsSchemas[i]!, input);
 									})
 								);
 
@@ -164,8 +169,8 @@ export function actionBuilder<
 								for (let i = 0; i < parsedInputs.length; i++) {
 									const parsedInput = parsedInputs[i]!;
 
-									if (parsedInput.success) {
-										parsedInputDatas.push(parsedInput.data);
+									if (!parsedInput.issues) {
+										parsedInputDatas.push(parsedInput.value);
 									} else {
 										// If we're processing a bind argument and there are validation errors for this one,
 										// we need to store them in the bind args validation errors array at this index.
@@ -178,12 +183,12 @@ export function actionBuilder<
 
 											middlewareResult.validationErrors = await Promise.resolve(
 												args.handleValidationErrorsShape(validationErrors, {
-													clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
+													clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
 													bindArgsClientInputs: (bindArgsSchemas.length
 														? clientInputs.slice(0, -1)
-														: []) as InferInArray<BAS>,
+														: []) as InferInputArray<BAS>,
 													ctx: currentCtx as Ctx,
-													metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+													metadata: args.metadata as MD,
 												})
 											);
 										}
@@ -196,12 +201,12 @@ export function actionBuilder<
 										args.handleBindArgsValidationErrorsShape(
 											bindArgsValidationErrors as BindArgsValidationErrors<BAS>,
 											{
-												clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
+												clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
 												bindArgsClientInputs: (bindArgsSchemas.length
 													? clientInputs.slice(0, -1)
-													: []) as InferInArray<BAS>,
+													: []) as InferInputArray<BAS>,
 												ctx: currentCtx as Ctx,
-												metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+												metadata: args.metadata as MD,
 											}
 										)
 									);
@@ -216,10 +221,12 @@ export function actionBuilder<
 
 								// Server code function always has this object as the first argument.
 								scfArgs[0] = {
-									parsedInput: parsedInputDatas.at(-1) as IS extends Schema ? Infer<IS> : undefined,
-									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
-									clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
-									bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+									parsedInput: parsedInputDatas.at(-1) as InferOutputOrDefault<IS, undefined>,
+									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferOutputArray<BAS>,
+									clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
+									bindArgsClientInputs: (bindArgsSchemas.length
+										? clientInputs.slice(0, -1)
+										: []) as InferInputArray<BAS>,
 									ctx: currentCtx as Ctx,
 									metadata: args.metadata,
 								};
@@ -234,9 +241,9 @@ export function actionBuilder<
 
 								// If a `outputSchema` is passed, validate the action return value.
 								if (typeof args.outputSchema !== "undefined" && !frameworkErrorHandler.error) {
-									const parsedData = await args.validationAdapter.validate(args.outputSchema, data);
+									const parsedData = await parseWithSchema(args.outputSchema, data);
 
-									if (!parsedData.success) {
+									if (parsedData.issues) {
 										throw new ActionOutputDataValidationError<OS>(buildValidationErrors(parsedData.issues));
 									}
 								}
@@ -252,12 +259,12 @@ export function actionBuilder<
 								const ve = e.validationErrors as ValidationErrors<IS>;
 								middlewareResult.validationErrors = await Promise.resolve(
 									args.handleValidationErrorsShape(ve, {
-										clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
+										clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
 										bindArgsClientInputs: (bindArgsSchemas.length
 											? clientInputs.slice(0, -1)
-											: []) as InferInArray<BAS>,
+											: []) as InferInputArray<BAS>,
 										ctx: currentCtx as Ctx,
-										metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+										metadata: args.metadata as MD,
 									})
 								);
 							} else {
@@ -269,7 +276,7 @@ export function actionBuilder<
 										clientInput: clientInputs.at(-1), // pass raw client input
 										bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
 										ctx: currentCtx,
-										metadata: args.metadata as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+										metadata: args.metadata as InferOutputOrDefault<MetadataSchema, undefined>,
 									})
 								);
 
@@ -290,10 +297,10 @@ export function actionBuilder<
 								data: undefined,
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
-								parsedInput: parsedInputDatas.at(-1) as IS extends Schema ? Infer<IS> : undefined,
-								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
+								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
+								parsedInput: parsedInputDatas.at(-1) as InferOutputOrDefault<IS, undefined>,
+								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferOutputArray<BAS>,
 								hasRedirected: frameworkErrorHandler.isRedirectError,
 								hasNotFound: frameworkErrorHandler.isNotFoundError,
 								hasForbidden: frameworkErrorHandler.isForbiddenError,
@@ -305,8 +312,8 @@ export function actionBuilder<
 							utils?.onSettled?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
 								result: {},
 								hasRedirected: frameworkErrorHandler.isRedirectError,
 								hasNotFound: frameworkErrorHandler.isNotFoundError,
@@ -354,10 +361,10 @@ export function actionBuilder<
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
 								data: actionResult.data as Data,
-								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
-								parsedInput: parsedInputDatas.at(-1) as IS extends Schema ? Infer<IS> : undefined,
-								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferArray<BAS>,
+								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
+								parsedInput: parsedInputDatas.at(-1) as InferOutputOrDefault<IS, undefined>,
+								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferOutputArray<BAS>,
 								hasRedirected: false,
 								hasNotFound: false,
 								hasForbidden: false,
@@ -369,8 +376,8 @@ export function actionBuilder<
 							utils?.onError?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
+								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
 								error: actionResult,
 							})
 						);
@@ -381,8 +388,8 @@ export function actionBuilder<
 						utils?.onSettled?.({
 							metadata: args.metadata,
 							ctx: currentCtx as Ctx,
-							clientInput: clientInputs.at(-1) as IS extends Schema ? InferIn<IS> : undefined,
-							bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInArray<BAS>,
+							clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
+							bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
 							result: actionResult,
 							hasRedirected: false,
 							hasNotFound: false,

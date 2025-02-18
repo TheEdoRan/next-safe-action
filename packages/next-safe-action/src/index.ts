@@ -1,7 +1,6 @@
-import { standardAdapter } from "./adapters/standard";
-import type { Infer, Schema } from "./adapters/types";
 import type { DVES, SafeActionClientOpts } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
+import { InferOutputOrDefault, StandardSchemaV1 } from "./standard.types";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 import {
 	flattenBindArgsValidationErrors,
@@ -36,7 +35,7 @@ export type * from "./validation-errors.types";
 export const createSafeActionClient = <
 	ODVES extends DVES | undefined = undefined,
 	ServerError = string,
-	MetadataSchema extends Schema | undefined = undefined,
+	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
 >(
 	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
 ) => {
@@ -54,10 +53,9 @@ export const createSafeActionClient = <
 		inputSchemaFn: undefined,
 		bindArgsSchemas: [],
 		outputSchema: undefined,
-		validationAdapter: createOpts?.validationAdapter ?? standardAdapter(), // use standard adapter by default
 		ctxType: {},
 		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
-		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+		metadata: undefined as InferOutputOrDefault<MetadataSchema, undefined>,
 		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
 		throwValidationErrors: Boolean(createOpts?.throwValidationErrors),
 		handleValidationErrorsShape: async (ve) =>

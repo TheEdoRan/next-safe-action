@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import {} from "react/experimental";
-import type {} from "zod";
-import type { InferIn, Schema } from "./adapters/types";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
 import type { HookBaseUtils, HookCallbacks, HookSafeStateActionFn, UseStateActionHookReturn } from "./hooks.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
+
 /**
  * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction).
  * @param safeActionFn The action function
@@ -15,8 +15,8 @@ import type { HookBaseUtils, HookCallbacks, HookSafeStateActionFn, UseStateActio
  */
 export const useStateAction = <
 	ServerError,
-	S extends Schema | undefined,
-	const BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	const BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
@@ -35,7 +35,7 @@ export const useStateAction = <
 	);
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [isTransitioning, startTransition] = React.useTransition();
-	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
+	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
 	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
 		isExecuting,
 		result: result ?? {},
@@ -43,14 +43,14 @@ export const useStateAction = <
 	});
 
 	const execute = React.useCallback(
-		(input: S extends Schema ? InferIn<S> : void) => {
+		(input: InferInputOrDefault<S, void>) => {
 			setTimeout(() => {
 				setIsIdle(false);
 				setClientInput(input);
 			}, 0);
 
 			startTransition(() => {
-				dispatcher(input as S extends Schema ? InferIn<S> : undefined);
+				dispatcher(input as InferInputOrDefault<S, undefined>);
 			});
 		},
 		[dispatcher]
@@ -63,7 +63,7 @@ export const useStateAction = <
 
 	useActionCallbacks({
 		result: result ?? {},
-		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		input: clientInput as InferInputOrDefault<S, undefined>,
 		status,
 		cb: {
 			onExecute: utils?.onExecute,
@@ -75,7 +75,7 @@ export const useStateAction = <
 
 	return {
 		execute,
-		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		input: clientInput as InferInputOrDefault<S, undefined>,
 		result,
 		status,
 		...getActionShorthandStatusObject({ status, isTransitioning }),

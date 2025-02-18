@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
-
-import type { Schema, ValidationIssue } from "./adapters/types";
+import type { StandardSchemaV1 } from "./standard.types";
 import type {
 	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,
 	ValidationErrors,
 } from "./validation-errors.types";
 
+const getKey = (segment: PropertyKey | StandardSchemaV1.PathSegment) =>
+	typeof segment === "object" ? segment.key : segment;
+
 // This function is used internally to build the validation errors object from a list of validation issues.
-export const buildValidationErrors = <S extends Schema | undefined>(issues: ValidationIssue[]) => {
+export const buildValidationErrors = <S extends StandardSchemaV1 | undefined>(
+	issues: readonly StandardSchemaV1.Issue[]
+) => {
 	const ve: any = {};
 
 	for (const issue of issues) {
@@ -25,7 +29,7 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Vali
 
 		// Set object for the path, if it doesn't exist.
 		for (let i = 0; i < path.length - 1; i++) {
-			const k = path[i]!;
+			const k = getKey(path[i]!);
 
 			if (!ref[k]) {
 				ref[k] = {};
@@ -35,7 +39,7 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Vali
 		}
 
 		// Key is always the last element of the path.
-		const key = path[path.length - 1]!;
+		const key = getKey(path[path.length - 1]!);
 
 		// Set error for the current path. If `_errors` array exists, add the message to it.
 		ref[key] = ref[key]?._errors
@@ -51,7 +55,7 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Vali
 
 // This class is internally used to throw validation errors in action's server code function, using
 // `returnValidationErrors`.
-export class ActionServerValidationError<S extends Schema> extends Error {
+export class ActionServerValidationError<S extends StandardSchemaV1> extends Error {
 	public validationErrors: ValidationErrors<S>;
 	constructor(validationErrors: ValidationErrors<S>) {
 		super("Server Action server validation error(s) occurred");
@@ -78,8 +82,8 @@ export class ActionValidationError<CVE> extends Error {
  * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#returnvalidationerrors See docs for more information}
  */
 export function returnValidationErrors<
-	S extends Schema | (() => Promise<Schema>),
-	AS extends Schema = S extends () => Promise<Schema> ? Awaited<ReturnType<S>> : S, // actual schema
+	S extends StandardSchemaV1 | (() => Promise<StandardSchemaV1>),
+	AS extends StandardSchemaV1 = S extends () => Promise<StandardSchemaV1> ? Awaited<ReturnType<S>> : S, // actual schema
 >(schema: S, validationErrors: ValidationErrors<AS>): never {
 	throw new ActionServerValidationError<AS>(validationErrors);
 }
@@ -149,7 +153,7 @@ export function flattenBindArgsValidationErrors<BAVE extends readonly Validation
  * This error is thrown when an action metadata is invalid, i.e. when there's a mismatch between the
  * type of the metadata schema returned from `defineMetadataSchema` and the actual data passed.
  */
-export class ActionMetadataValidationError<MDS extends Schema | undefined> extends Error {
+export class ActionMetadataValidationError<MDS extends StandardSchemaV1 | undefined> extends Error {
 	public validationErrors: ValidationErrors<MDS>;
 
 	constructor(validationErrors: ValidationErrors<MDS>) {
@@ -163,7 +167,7 @@ export class ActionMetadataValidationError<MDS extends Schema | undefined> exten
  * This error is thrown when an action's data (output) is invalid, i.e. when there's a mismatch between the
  * type of the data schema passed to `dataSchema` method and the actual return of the action.
  */
-export class ActionOutputDataValidationError<DS extends Schema | undefined> extends Error {
+export class ActionOutputDataValidationError<DS extends StandardSchemaV1 | undefined> extends Error {
 	public validationErrors: ValidationErrors<DS>;
 
 	constructor(validationErrors: ValidationErrors<DS>) {

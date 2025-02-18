@@ -2,8 +2,6 @@
 
 import * as React from "react";
 import {} from "react/experimental";
-import type {} from "zod";
-import type { InferIn, Schema } from "./adapters/types";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
 import type {
 	HookBaseUtils,
@@ -13,6 +11,7 @@ import type {
 	UseOptimisticActionHookReturn,
 } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 
 // HOOKS
 
@@ -25,8 +24,8 @@ import type { SafeActionResult } from "./index.types";
  */
 export const useAction = <
 	ServerError,
-	S extends Schema | undefined,
-	const BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	const BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
@@ -36,14 +35,14 @@ export const useAction = <
 ): UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
-	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
+	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
 
 	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
 
 	const execute = React.useCallback(
-		(input: S extends Schema ? InferIn<S> : void) => {
+		(input: InferInputOrDefault<S, void>) => {
 			setTimeout(() => {
 				setIsIdle(false);
 				setClientInput(input);
@@ -51,7 +50,7 @@ export const useAction = <
 			}, 0);
 
 			startTransition(() => {
-				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
+				safeActionFn(input as InferInputOrDefault<S, undefined>)
 					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
 						setResult({});
@@ -66,7 +65,7 @@ export const useAction = <
 	);
 
 	const executeAsync = React.useCallback(
-		(input: S extends Schema ? InferIn<S> : void) => {
+		(input: InferInputOrDefault<S, void>) => {
 			const fn = new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
 				setTimeout(() => {
 					setIsIdle(false);
@@ -75,7 +74,7 @@ export const useAction = <
 				}, 0);
 
 				startTransition(() => {
-					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
+					safeActionFn(input as InferInputOrDefault<S, undefined>)
 						.then((res) => {
 							setResult(res ?? {});
 							resolve(res);
@@ -108,7 +107,7 @@ export const useAction = <
 
 	useActionCallbacks({
 		result: result ?? {},
-		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		input: clientInput as InferInputOrDefault<S, undefined>,
 		status,
 		cb: {
 			onExecute: utils?.onExecute,
@@ -121,7 +120,7 @@ export const useAction = <
 	return {
 		execute,
 		executeAsync,
-		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		input: clientInput as InferInputOrDefault<S, undefined>,
 		result,
 		reset,
 		status,
@@ -138,8 +137,8 @@ export const useAction = <
  */
 export const useOptimisticAction = <
 	ServerError,
-	S extends Schema | undefined,
-	const BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	const BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
@@ -148,16 +147,16 @@ export const useOptimisticAction = <
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
 	utils: {
 		currentState: State;
-		updateFn: (state: State, input: S extends Schema ? InferIn<S> : undefined) => State;
+		updateFn: (state: State, input: InferInputOrDefault<S, void>) => State;
 	} & HookBaseUtils<S> &
 		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ): UseOptimisticActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data, State> => {
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
-	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
+	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [isIdle, setIsIdle] = React.useState(true);
-	const [optimisticState, setOptimisticValue] = React.useOptimistic<State, S extends Schema ? InferIn<S> : undefined>(
+	const [optimisticState, setOptimisticValue] = React.useOptimistic<State, InferInputOrDefault<S, undefined>>(
 		utils.currentState,
 		utils.updateFn
 	);
@@ -165,7 +164,7 @@ export const useOptimisticAction = <
 	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
 
 	const execute = React.useCallback(
-		(input: S extends Schema ? InferIn<S> : void) => {
+		(input: InferInputOrDefault<S, void>) => {
 			setTimeout(() => {
 				setIsIdle(false);
 				setClientInput(input);
@@ -173,8 +172,8 @@ export const useOptimisticAction = <
 			}, 0);
 
 			startTransition(() => {
-				setOptimisticValue(input as S extends Schema ? InferIn<S> : undefined);
-				safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
+				setOptimisticValue(input as InferInputOrDefault<S, undefined>);
+				safeActionFn(input as InferInputOrDefault<S, undefined>)
 					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
 						setResult({});
@@ -189,7 +188,7 @@ export const useOptimisticAction = <
 	);
 
 	const executeAsync = React.useCallback(
-		(input: S extends Schema ? InferIn<S> : void) => {
+		(input: InferInputOrDefault<S, void>) => {
 			const fn = new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
 				setTimeout(() => {
 					setIsIdle(false);
@@ -198,8 +197,8 @@ export const useOptimisticAction = <
 				}, 0);
 
 				startTransition(() => {
-					setOptimisticValue(input as S extends Schema ? InferIn<S> : undefined);
-					safeActionFn(input as S extends Schema ? InferIn<S> : undefined)
+					setOptimisticValue(input as InferInputOrDefault<S, undefined>);
+					safeActionFn(input as InferInputOrDefault<S, undefined>)
 						.then((res) => {
 							setResult(res ?? {});
 							resolve(res);
@@ -232,7 +231,7 @@ export const useOptimisticAction = <
 
 	useActionCallbacks({
 		result: result ?? {},
-		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		input: clientInput as InferInputOrDefault<S, undefined>,
 		status,
 		cb: {
 			onExecute: utils.onExecute,
@@ -245,7 +244,7 @@ export const useOptimisticAction = <
 	return {
 		execute,
 		executeAsync,
-		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		input: clientInput as InferInputOrDefault<S, undefined>,
 		result,
 		optimisticState,
 		reset,

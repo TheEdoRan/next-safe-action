@@ -1,5 +1,11 @@
-import type { Infer, InferArray, InferIn, InferInArray, Schema, ValidationAdapter } from "./adapters/types";
 import type { SafeActionClient } from "./safe-action-client";
+import {
+	InferInputArray,
+	InferInputOrDefault,
+	InferOutputArray,
+	InferOutputOrDefault,
+	StandardSchemaV1,
+} from "./standard.types";
 import type { MaybePromise, Prettify } from "./utils.types";
 import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
 
@@ -12,11 +18,11 @@ export type DVES = "formatted" | "flattened";
 /**
  * Type of the util properties passed to server error handler functions.
  */
-export type ServerErrorFunctionUtils<MetadataSchema extends Schema | undefined> = {
+export type ServerErrorFunctionUtils<MetadataSchema extends StandardSchemaV1 | undefined> = {
 	clientInput: unknown;
 	bindArgsClientInputs: unknown[];
 	ctx: object;
-	metadata: MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined;
+	metadata: InferOutputOrDefault<MetadataSchema, undefined>;
 };
 
 /**
@@ -24,10 +30,9 @@ export type ServerErrorFunctionUtils<MetadataSchema extends Schema | undefined> 
  */
 export type SafeActionClientOpts<
 	ServerError,
-	MetadataSchema extends Schema | undefined,
+	MetadataSchema extends StandardSchemaV1 | undefined,
 	ODVES extends DVES | undefined,
 > = {
-	validationAdapter?: ValidationAdapter;
 	defineMetadataSchema?: () => MetadataSchema;
 	handleServerError?: (error: Error, utils: ServerErrorFunctionUtils<MetadataSchema>) => MaybePromise<ServerError>;
 	throwValidationErrors?: boolean;
@@ -39,8 +44,8 @@ export type SafeActionClientOpts<
  */
 export type SafeActionResult<
 	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE = ValidationErrors<S>,
 	CBAVE = BindArgsValidationErrors<BAS>,
 	Data = unknown,
@@ -56,8 +61,15 @@ export type SafeActionResult<
 /**
  * Type of the function called from components with type safe input data.
  */
-export type SafeActionFn<ServerError, S extends Schema | undefined, BAS extends readonly Schema[], CVE, CBAVE, Data> = (
-	...clientInputs: [...bindArgsInputs: InferInArray<BAS>, input: S extends Schema ? InferIn<S> : void]
+export type SafeActionFn<
+	ServerError,
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
+	CVE,
+	CBAVE,
+	Data,
+> = (
+	...clientInputs: [...bindArgsInputs: InferInputArray<BAS>, input: InferInputOrDefault<S, void>]
 ) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
 
 /**
@@ -65,16 +77,16 @@ export type SafeActionFn<ServerError, S extends Schema | undefined, BAS extends 
  */
 export type SafeStateActionFn<
 	ServerError,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
 > = (
 	...clientInputs: [
-		...bindArgsInputs: InferInArray<BAS>,
+		...bindArgsInputs: InferInputArray<BAS>,
 		prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>,
-		input: S extends Schema ? InferIn<S> : void,
+		input: InferInputOrDefault<S, void>,
 	]
 ) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 
@@ -118,14 +130,14 @@ export type MiddlewareFn<ServerError, MD, Ctx extends object, NextCtx extends ob
 export type ServerCodeFn<
 	MD,
 	Ctx extends object,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	Data,
 > = (args: {
-	parsedInput: S extends Schema ? Infer<S> : undefined;
-	clientInput: S extends Schema ? InferIn<S> : undefined;
-	bindArgsParsedInputs: InferArray<BAS>;
-	bindArgsClientInputs: InferInArray<BAS>;
+	parsedInput: InferOutputOrDefault<S, undefined>;
+	clientInput: InferInputOrDefault<S, undefined>;
+	bindArgsParsedInputs: InferOutputArray<BAS>;
+	bindArgsClientInputs: InferInputArray<BAS>;
 	ctx: Prettify<Ctx>;
 	metadata: MD;
 }) => Promise<Data>;
@@ -137,17 +149,17 @@ export type StateServerCodeFn<
 	ServerError,
 	MD,
 	Ctx extends object,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
 > = (
 	args: {
-		parsedInput: S extends Schema ? Infer<S> : undefined;
-		clientInput: S extends Schema ? InferIn<S> : undefined;
-		bindArgsParsedInputs: InferArray<BAS>;
-		bindArgsClientInputs: InferInArray<BAS>;
+		parsedInput: InferOutputOrDefault<S, undefined>;
+		clientInput: InferInputOrDefault<S, undefined>;
+		bindArgsParsedInputs: InferOutputArray<BAS>;
+		bindArgsClientInputs: InferInputArray<BAS>;
 		ctx: Prettify<Ctx>;
 		metadata: MD;
 	},
@@ -161,8 +173,8 @@ export type SafeActionUtils<
 	ServerError,
 	MD,
 	Ctx extends object,
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	CVE,
 	CBAVE,
 	Data,
@@ -173,10 +185,10 @@ export type SafeActionUtils<
 		data?: Data;
 		metadata: MD;
 		ctx?: Prettify<Ctx>;
-		clientInput: S extends Schema ? InferIn<S> : undefined;
-		bindArgsClientInputs: InferInArray<BAS>;
-		parsedInput: S extends Schema ? Infer<S> : undefined;
-		bindArgsParsedInputs: InferArray<BAS>;
+		clientInput: InferInputOrDefault<S, undefined>;
+		bindArgsClientInputs: InferInputArray<BAS>;
+		parsedInput: InferOutputOrDefault<S, undefined>;
+		bindArgsParsedInputs: InferOutputArray<BAS>;
 		hasRedirected: boolean;
 		hasNotFound: boolean;
 		hasForbidden: boolean;
@@ -186,15 +198,15 @@ export type SafeActionUtils<
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
 		metadata: MD;
 		ctx?: Prettify<Ctx>;
-		clientInput: S extends Schema ? InferIn<S> : undefined;
-		bindArgsClientInputs: InferInArray<BAS>;
+		clientInput: InferInputOrDefault<S, undefined>;
+		bindArgsClientInputs: InferInputArray<BAS>;
 	}) => Promise<unknown>;
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
 		metadata: MD;
 		ctx?: Prettify<Ctx>;
-		clientInput: S extends Schema ? InferIn<S> : undefined;
-		bindArgsClientInputs: InferInArray<BAS>;
+		clientInput: InferInputOrDefault<S, undefined>;
+		bindArgsClientInputs: InferInputArray<BAS>;
 		hasRedirected: boolean;
 		hasNotFound: boolean;
 		hasForbidden: boolean;
@@ -206,20 +218,34 @@ export type SafeActionUtils<
  * Infer input types of a safe action.
  */
 export type InferSafeActionFnInput<T extends Function> = T extends
-	| SafeActionFn<any, infer S extends Schema | undefined, infer BAS extends readonly Schema[], any, any, any>
-	| SafeStateActionFn<any, infer S extends Schema | undefined, infer BAS extends readonly Schema[], any, any, any>
-	? S extends Schema
+	| SafeActionFn<
+			any,
+			infer S extends StandardSchemaV1 | undefined,
+			infer BAS extends readonly StandardSchemaV1[],
+			any,
+			any,
+			any
+	  >
+	| SafeStateActionFn<
+			any,
+			infer S extends StandardSchemaV1 | undefined,
+			infer BAS extends readonly StandardSchemaV1[],
+			any,
+			any,
+			any
+	  >
+	? S extends StandardSchemaV1
 		? {
-				clientInput: InferIn<S>;
-				bindArgsClientInputs: InferInArray<BAS>;
-				parsedInput: Infer<S>;
-				bindArgsParsedInputs: InferArray<BAS>;
+				clientInput: StandardSchemaV1.InferInput<S>;
+				bindArgsClientInputs: InferInputArray<BAS>;
+				parsedInput: StandardSchemaV1.InferOutput<S>;
+				bindArgsParsedInputs: InferOutputArray<BAS>;
 			}
 		: {
 				clientInput: undefined;
-				bindArgsClientInputs: InferInArray<BAS>;
+				bindArgsClientInputs: InferInputArray<BAS>;
 				parsedInput: undefined;
-				bindArgsParsedInputs: InferArray<BAS>;
+				bindArgsParsedInputs: InferOutputArray<BAS>;
 			}
 	: never;
 
@@ -229,16 +255,16 @@ export type InferSafeActionFnInput<T extends Function> = T extends
 export type InferSafeActionFnResult<T extends Function> = T extends
 	| SafeActionFn<
 			infer ServerError,
-			infer S extends Schema | undefined,
-			infer BAS extends readonly Schema[],
+			infer S extends StandardSchemaV1 | undefined,
+			infer BAS extends readonly StandardSchemaV1[],
 			infer CVE,
 			infer CBAVE,
 			infer Data
 	  >
 	| SafeStateActionFn<
 			infer ServerError,
-			infer S extends Schema | undefined,
-			infer BAS extends readonly Schema[],
+			infer S extends StandardSchemaV1 | undefined,
+			infer BAS extends readonly StandardSchemaV1[],
 			infer CVE,
 			infer CBAVE,
 			infer Data
