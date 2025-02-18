@@ -4,18 +4,21 @@ import type { Static, TSchema } from "@sinclair/typebox";
 import type { GenericSchema, GenericSchemaAsync, InferInput, InferOutput } from "valibot";
 import type { InferType, Schema as YupSchema } from "yup";
 import type { z } from "zod";
+import type { StandardSchemaV1 } from "./standard";
 
 export type IfInstalled<T> = any extends T ? never : T;
 
 export type Schema =
+	| StandardSchemaV1
 	| IfInstalled<z.ZodType>
 	| IfInstalled<GenericSchema>
 	| IfInstalled<GenericSchemaAsync>
 	| IfInstalled<YupSchema>
 	| IfInstalled<TSchema>;
 
-export type Infer<S extends Schema> =
-	S extends IfInstalled<z.ZodType>
+export type Infer<S extends Schema> = S extends StandardSchemaV1
+	? StandardSchemaV1.InferOutput<S>
+	: S extends IfInstalled<z.ZodType>
 		? z.infer<S>
 		: S extends IfInstalled<GenericSchema>
 			? InferOutput<S>
@@ -27,8 +30,9 @@ export type Infer<S extends Schema> =
 						? Static<S>
 						: never;
 
-export type InferIn<S extends Schema> =
-	S extends IfInstalled<z.ZodType>
+export type InferIn<S extends Schema> = S extends StandardSchemaV1
+	? StandardSchemaV1.InferInput<S>
+	: S extends IfInstalled<z.ZodType>
 		? z.input<S>
 		: S extends IfInstalled<GenericSchema>
 			? InferInput<S>
@@ -55,6 +59,11 @@ export type ValidationIssue = {
 export interface ValidationAdapter {
 	// generic
 	validate<S extends Schema>(
+		schema: S,
+		data: unknown
+	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	// standard
+	validate<S extends StandardSchemaV1>(
 		schema: S,
 		data: unknown
 	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
