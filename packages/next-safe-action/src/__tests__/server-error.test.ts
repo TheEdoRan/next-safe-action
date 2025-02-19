@@ -99,7 +99,7 @@ test("error occurred with `throwServerError` set to true at the action level thr
 		{ throwServerError: true }
 	);
 
-	assert.rejects(async () => await action());
+	await assert.rejects(async () => await action());
 });
 
 // Server error is an object with a 'message' property.
@@ -160,7 +160,7 @@ test("action throws if an error occurred in server code function and `handleServ
 		throw new Error("Something bad happened");
 	});
 
-	assert.rejects(() => action());
+	await assert.rejects(() => action());
 });
 
 test("action throws if an error occurred in middleware function and `handleServerError` rethrows it", async () => {
@@ -175,5 +175,5 @@ test("action throws if an error occurred in middleware function and `handleServe
 			};
 		});
 
-	assert.rejects(() => action());
+	await assert.rejects(() => action());
 });

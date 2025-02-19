@@ -612,7 +612,7 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		{ throwValidationErrors: true }
 	);
 
-	assert.rejects(async () => await action({ username: "12", password: "34" }));
+	await assert.rejects(async () => await action({ username: "12", password: "34" }));
 });
 
 const tveac = createSafeActionClient({
@@ -631,7 +631,7 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		};
 	});
 
-	assert.rejects(async () => await action({ username: "12", password: "34" }));
+	await assert.rejects(async () => await action({ username: "12", password: "34" }));
 });
 
 test("action with server validation errors and `throwValidationErrors` option set to true in client throws", async () => {
@@ -651,7 +651,7 @@ test("action with server validation errors and `throwValidationErrors` option se
 		};
 	});
 
-	assert.rejects(async () => await action({ username: "1234", password: "5678" }));
+	await assert.rejects(async () => await action({ username: "1234", password: "5678" }));
 });
 
 test("action with validation errors and `throwValidationErrors` option set to true both in client and action throws", async () => {
@@ -669,7 +669,7 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		{ throwValidationErrors: true }
 	);
 
-	assert.rejects(async () => await action({ username: "12", password: "34" }));
+	await assert.rejects(async () => await action({ username: "12", password: "34" }));
 });
 
 test("action with validation errors and overridden `throwValidationErrors` set to false at the action level doesn't throw", async () => {
