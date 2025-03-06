@@ -12,7 +12,7 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
-import { parseWithSchema } from "./standard";
+import { standardParse } from "./standard";
 import type {
 	InferInputArray,
 	InferInputOrDefault,
@@ -116,7 +116,7 @@ export function actionBuilder<
 							if (idx === 0) {
 								if (args.metadataSchema) {
 									// Validate metadata input.
-									const parsedMd = await parseWithSchema(args.metadataSchema, args.metadata);
+									const parsedMd = await standardParse(args.metadataSchema, args.metadata);
 
 									if (parsedMd.issues) {
 										throw new ActionMetadataValidationError<MetadataSchema>(buildValidationErrors(parsedMd.issues));
@@ -152,11 +152,11 @@ export function actionBuilder<
 											}
 
 											// Otherwise, parse input with the schema.
-											return parseWithSchema(await args.inputSchemaFn(), input);
+											return standardParse(await args.inputSchemaFn(), input);
 										}
 
 										// Otherwise, we're processing bind args client inputs.
-										return parseWithSchema(bindArgsSchemas[i]!, input);
+										return standardParse(bindArgsSchemas[i]!, input);
 									})
 								);
 
@@ -188,7 +188,7 @@ export function actionBuilder<
 														? clientInputs.slice(0, -1)
 														: []) as InferInputArray<BAS>,
 													ctx: currentCtx as Ctx,
-													metadata: args.metadata as MD,
+													metadata: args.metadata,
 												})
 											);
 										}
@@ -206,7 +206,7 @@ export function actionBuilder<
 													? clientInputs.slice(0, -1)
 													: []) as InferInputArray<BAS>,
 												ctx: currentCtx as Ctx,
-												metadata: args.metadata as MD,
+												metadata: args.metadata,
 											}
 										)
 									);
@@ -241,7 +241,7 @@ export function actionBuilder<
 
 								// If a `outputSchema` is passed, validate the action return value.
 								if (typeof args.outputSchema !== "undefined" && !frameworkErrorHandler.error) {
-									const parsedData = await parseWithSchema(args.outputSchema, data);
+									const parsedData = await standardParse(args.outputSchema, data);
 
 									if (parsedData.issues) {
 										throw new ActionOutputDataValidationError<OS>(buildValidationErrors(parsedData.issues));
@@ -264,7 +264,7 @@ export function actionBuilder<
 											? clientInputs.slice(0, -1)
 											: []) as InferInputArray<BAS>,
 										ctx: currentCtx as Ctx,
-										metadata: args.metadata as MD,
+										metadata: args.metadata,
 									})
 								);
 							} else {

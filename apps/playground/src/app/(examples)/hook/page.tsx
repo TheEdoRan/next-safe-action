@@ -62,13 +62,9 @@ export default function Hook() {
 					// which is synchronous.
 					const r = await executeAsync(input);
 					console.log("r", r);
-				}}>
-				<StyledInput
-					type="text"
-					name="userId"
-					id="userId"
-					placeholder="User ID"
-				/>
+				}}
+			>
+				<StyledInput type="text" name="userId" id="userId" placeholder="User ID" />
 				<StyledButton type="submit">Delete user</StyledButton>
 				<StyledButton type="button" onClick={reset}>
 					Reset

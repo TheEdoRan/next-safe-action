@@ -1,5 +1,5 @@
 import type { SafeActionClient } from "./safe-action-client";
-import {
+import type {
 	InferInputArray,
 	InferInputOrDefault,
 	InferOutputArray,

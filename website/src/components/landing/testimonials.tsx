@@ -59,9 +59,7 @@ export function Testimonials() {
 			<div className="mx-auto w-full max-w-6xl">
 				<div className="flex-col flex gap-y-20 max-[479px]:gap-[60px] items-center lg:items-center py-20 lg:py-24">
 					<div className="flex-col flex items-center justify-center gap-y-[60px] max-[479px]:gap-[60px]">
-						<div className="text-center font-bold text-3xl sm:text-4xl lg:text-5xl">
-							Coolest web devs say:
-						</div>
+						<div className="text-center font-bold text-3xl sm:text-4xl lg:text-5xl">Coolest web devs say:</div>
 						<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 							{tweets.map((tweet, idx) => (
 								<Tweet key={idx} {...tweet} />

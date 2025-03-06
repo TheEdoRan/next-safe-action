@@ -17,12 +17,7 @@ export default function FileUploadPage() {
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>File upload action</StyledHeading>
 			<form action={execute} className="flex flex-col mt-8 space-y-4">
-				<StyledInput
-					type="file"
-					name="image"
-					placeholder="Image"
-					accept="image/*"
-				/>
+				<StyledInput type="file" name="image" placeholder="Image" accept="image/*" />
 				<StyledButton type="submit">Submit</StyledButton>
 			</form>
 			<ResultBox result={result} status={status} />

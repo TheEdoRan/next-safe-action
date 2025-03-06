@@ -26,7 +26,8 @@ export default function ReactHookFormPage() {
 				onSubmit={handleSubmit(async (data) => {
 					const res = await buyProduct(data);
 					setResult(res);
-				})}>
+				})}
+			>
 				<StyledInput {...register("productId")} placeholder="Product ID" />
 				<StyledButton type="submit">Buy product</StyledButton>
 			</form>

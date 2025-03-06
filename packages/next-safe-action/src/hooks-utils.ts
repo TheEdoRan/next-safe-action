@@ -2,7 +2,7 @@ import * as React from "react";
 import {} from "react/experimental";
 import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookShorthandStatus } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
-import { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 
 export const getActionStatus = <
 	ServerError,

@@ -19,7 +19,8 @@ export default function EmptyResponse() {
 				className="mt-4"
 				onClick={() => {
 					execute({ userId: crypto.randomUUID() });
-				}}>
+				}}
+			>
 				Execute action
 			</StyledButton>
 			<StyledButton className="mt-4" type="button" onClick={reset}>
