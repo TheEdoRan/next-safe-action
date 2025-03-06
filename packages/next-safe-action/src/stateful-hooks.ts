@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import {} from "react/experimental";
-import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
-import type { HookBaseUtils, HookCallbacks, HookSafeStateActionFn, UseStateActionHookReturn } from "./hooks.types";
+import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
+import type { HookCallbacks, HookSafeStateActionFn, UseStateActionHookReturn } from "./hooks.types";
 import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 
 /**
@@ -25,8 +25,7 @@ export const useStateAction = <
 	utils?: {
 		initResult?: Awaited<ReturnType<typeof safeActionFn>>;
 		permalink?: string;
-	} & HookBaseUtils<S> &
-		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+	} & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ): UseStateActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
 	const [result, dispatcher, isExecuting] = React.useActionState(
 		safeActionFn,
@@ -55,11 +54,6 @@ export const useStateAction = <
 		},
 		[dispatcher]
 	);
-
-	useExecuteOnMount({
-		executeOnMount: utils?.executeOnMount,
-		executeFn: execute,
-	});
 
 	useActionCallbacks({
 		result: result ?? {},

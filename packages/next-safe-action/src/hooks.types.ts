@@ -3,20 +3,6 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 import type { MaybePromise, Prettify } from "./utils.types";
 
 /**
- * Type of base utils object passed to `useAction`, `useOptimisticAction` and `useStateAction` hooks.
- */
-export type HookBaseUtils<S extends StandardSchemaV1 | undefined> = {
-	/**
-	 * @deprecated Actions should not execute on component mount, since they're used to mutate data.
-	 */
-	executeOnMount?: (undefined extends S
-		? { input?: undefined }
-		: {
-				input: InferInputOrDefault<S, undefined>;
-			}) & { delayMs?: number };
-};
-
-/**
  * Type of hooks callbacks. These are executed when action is in a specific state.
  */
 export type HookCallbacks<

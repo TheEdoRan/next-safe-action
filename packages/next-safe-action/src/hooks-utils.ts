@@ -1,6 +1,6 @@
 import * as React from "react";
 import {} from "react/experimental";
-import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookShorthandStatus } from "./hooks.types";
+import type { HookActionStatus, HookCallbacks, HookShorthandStatus } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
 import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 
@@ -50,27 +50,6 @@ export const getActionShorthandStatusObject = ({
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
 	};
-};
-
-export const useExecuteOnMount = <S extends StandardSchemaV1 | undefined>(
-	args: HookBaseUtils<S> & {
-		executeFn: (input: InferInputOrDefault<S, void>) => void;
-	}
-) => {
-	const mounted = React.useRef(false);
-
-	React.useEffect(() => {
-		const t = setTimeout(() => {
-			if (args.executeOnMount && !mounted.current) {
-				args.executeFn(args.executeOnMount.input as InferInputOrDefault<S, void>);
-				mounted.current = true;
-			}
-		}, args.executeOnMount?.delayMs ?? 0);
-
-		return () => {
-			clearTimeout(t);
-		};
-	}, [args]);
 };
 
 export const useActionCallbacks = <

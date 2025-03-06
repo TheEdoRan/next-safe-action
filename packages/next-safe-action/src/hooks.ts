@@ -2,9 +2,8 @@
 
 import * as React from "react";
 import {} from "react/experimental";
-import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
+import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
 import type {
-	HookBaseUtils,
 	HookCallbacks,
 	HookSafeActionFn,
 	UseActionHookReturn,
@@ -31,7 +30,7 @@ export const useAction = <
 	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
-	utils?: HookBaseUtils<S> & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+	utils?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ): UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
@@ -100,11 +99,6 @@ export const useAction = <
 		setResult({});
 	}, []);
 
-	useExecuteOnMount({
-		executeOnMount: utils?.executeOnMount,
-		executeFn: execute,
-	});
-
 	useActionCallbacks({
 		result: result ?? {},
 		input: clientInput as InferInputOrDefault<S, undefined>,
@@ -148,8 +142,7 @@ export const useOptimisticAction = <
 	utils: {
 		currentState: State;
 		updateFn: (state: State, input: InferInputOrDefault<S, void>) => State;
-	} & HookBaseUtils<S> &
-		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+	} & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ): UseOptimisticActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data, State> => {
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
@@ -223,11 +216,6 @@ export const useOptimisticAction = <
 		setClientInput(undefined);
 		setResult({});
 	}, []);
-
-	useExecuteOnMount({
-		executeOnMount: utils?.executeOnMount,
-		executeFn: execute,
-	});
 
 	useActionCallbacks({
 		result: result ?? {},
