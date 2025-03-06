@@ -25,7 +25,8 @@ export default function NestedSchemaPage() {
 						user: { id: userId },
 						product: { deeplyNested: { id: productId } },
 					}); // this is the typesafe action called from client
-				}}>
+				}}
+			>
 				<StyledButton type="submit">Buy product</StyledButton>
 			</form>
 			<ResultBox result={result} status={status} />

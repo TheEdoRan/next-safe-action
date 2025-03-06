@@ -1,14 +1,9 @@
-import {
-	DEFAULT_SERVER_ERROR_MESSAGE,
-	createSafeActionClient,
-} from "next-safe-action";
-import { zodAdapter } from "next-safe-action/adapters/zod";
+import { DEFAULT_SERVER_ERROR_MESSAGE, createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 
 export class ActionError extends Error {}
 
 export const action = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	// You can provide a custom handler for server errors, otherwise the lib will use `console.error`
 	// as the default logging mechanism and will return the DEFAULT_SERVER_ERROR_MESSAGE for all server errors.
 	handleServerError: (e) => {
@@ -73,16 +68,11 @@ export const authAction = action
 	// Here we get `userId` from the previous context, and it's all type safe.
 	.use(async ({ ctx, next }) => {
 		// Emulate a slow server.
-		await new Promise((res) =>
-			setTimeout(res, Math.max(Math.random() * 2000, 500))
-		);
+		await new Promise((res) => setTimeout(res, Math.max(Math.random() * 2000, 500)));
 
 		const sessionId = await getSessionId();
 
-		console.log(
-			"HELLO FROM SECOND AUTH ACTION MIDDLEWARE, SESSION ID:",
-			sessionId
-		);
+		console.log("HELLO FROM SECOND AUTH ACTION MIDDLEWARE, SESSION ID:", sessionId);
 
 		return next({
 			ctx: {

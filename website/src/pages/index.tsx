@@ -7,7 +7,8 @@ export default function Home(): JSX.Element {
 	return (
 		<Layout
 			title={siteConfig.tagline}
-			description="next-safe-action is a library for defining end-to-end typesafe and validated Server Actions in Next.js App Router projects.">
+			description="next-safe-action is a library for defining end-to-end typesafe and validated Server Actions in Next.js App Router projects."
+		>
 			<Landing />
 		</Layout>
 	);

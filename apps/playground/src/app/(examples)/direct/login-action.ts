@@ -1,10 +1,7 @@
 "use server";
 
 import { action } from "@/lib/safe-action";
-import {
-	flattenValidationErrors,
-	returnValidationErrors,
-} from "next-safe-action";
+import { flattenValidationErrors, returnValidationErrors } from "next-safe-action";
 import { z } from "zod";
 
 const schema = z.object({
@@ -17,8 +14,7 @@ export const loginUser = action
 	.schema(schema, {
 		// Here we use the `flattenValidationErrors` function to customize the returned validation errors
 		// object to the client.
-		handleValidationErrorsShape: async (ve) =>
-			flattenValidationErrors(ve).fieldErrors,
+		handleValidationErrorsShape: async (ve) => flattenValidationErrors(ve).fieldErrors,
 	})
 	.action(
 		async ({ parsedInput: { username, password } }) => {

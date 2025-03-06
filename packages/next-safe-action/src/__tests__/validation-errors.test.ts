@@ -11,14 +11,11 @@ import {
 	formatValidationErrors,
 	returnValidationErrors,
 } from "..";
-import { zodAdapter } from "../adapters/zod";
 import { ActionOutputDataValidationError } from "../validation-errors";
 
 // Default client tests.
 
-const dac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
-});
+const dac = createSafeActionClient();
 
 test("action with invalid input gives back an object with correct `validationErrors` (default formatted shape)", async () => {
 	const schema = z.object({
@@ -170,7 +167,6 @@ test("action with invalid output data returns the default `serverError`", async 
 
 test("action with invalid output data throws an error of the correct type", async () => {
 	const tac = createSafeActionClient({
-		validationAdapter: zodAdapter(),
 		handleServerError: (e) => {
 			// disable server error logging for this test
 			throw e;
@@ -208,7 +204,6 @@ test("action with invalid output data throws an error of the correct type", asyn
 // Formatted shape tests (same as default).
 
 const foac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "formatted",
 });
 
@@ -347,7 +342,6 @@ test("action with invalid input gives back an object with correct `validationErr
 // Flattened shape tests.
 
 const flac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "flattened",
 });
 
@@ -618,11 +612,10 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		{ throwValidationErrors: true }
 	);
 
-	assert.rejects(async () => await action({ username: "12", password: "34" }));
+	await assert.rejects(async () => await action({ username: "12", password: "34" }));
 });
 
 const tveac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	throwValidationErrors: true,
 });
 
@@ -638,7 +631,7 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		};
 	});
 
-	assert.rejects(async () => await action({ username: "12", password: "34" }));
+	await assert.rejects(async () => await action({ username: "12", password: "34" }));
 });
 
 test("action with server validation errors and `throwValidationErrors` option set to true in client throws", async () => {
@@ -658,7 +651,7 @@ test("action with server validation errors and `throwValidationErrors` option se
 		};
 	});
 
-	assert.rejects(async () => await action({ username: "1234", password: "5678" }));
+	await assert.rejects(async () => await action({ username: "1234", password: "5678" }));
 });
 
 test("action with validation errors and `throwValidationErrors` option set to true both in client and action throws", async () => {
@@ -676,7 +669,7 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		{ throwValidationErrors: true }
 	);
 
-	assert.rejects(async () => await action({ username: "12", password: "34" }));
+	await assert.rejects(async () => await action({ username: "12", password: "34" }));
 });
 
 test("action with validation errors and overridden `throwValidationErrors` set to false at the action level doesn't throw", async () => {

@@ -10,13 +10,10 @@ import {
 	formatBindArgsValidationErrors,
 	formatValidationErrors,
 } from "..";
-import { zodAdapter } from "../adapters/zod";
 
 // Default client tests.
 
-const dac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
-});
+const dac = createSafeActionClient();
 
 test("action with invalid bind args input and valid main input gives back an object with correct `bindArgsValidationErrors` (default formatted shape)", async () => {
 	const schema = z.object({
@@ -115,7 +112,6 @@ test("action with invalid bind args input and invalid main input gives back an o
 // Formatted shape tests (same as default).
 
 const foac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "formatted",
 });
 
@@ -217,7 +213,6 @@ test("action with invalid bind args input and valid main input gives back an obj
 // Flattened shape tests.
 
 const flac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	defaultValidationErrorsShape: "flattened",
 });
 

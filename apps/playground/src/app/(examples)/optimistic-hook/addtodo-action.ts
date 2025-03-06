@@ -22,9 +22,7 @@ export const addTodo = action
 		await new Promise((res) => setTimeout(res, 500));
 
 		if (Math.random() > 0.5) {
-			throw new ActionError(
-				"Could not add todo right now, please try again later."
-			);
+			throw new ActionError("Could not add todo right now, please try again later.");
 		}
 
 		todos.push(parsedInput);

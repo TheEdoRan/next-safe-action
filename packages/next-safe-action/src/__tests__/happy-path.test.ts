@@ -4,11 +4,8 @@ import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
 import { createSafeActionClient } from "..";
-import { zodAdapter } from "../adapters/zod";
 
-const ac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
-});
+const ac = createSafeActionClient();
 
 test("action with no input schema returns empty object", async () => {
 	const action = ac.action(async () => {

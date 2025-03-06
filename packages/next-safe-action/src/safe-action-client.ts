@@ -1,6 +1,4 @@
-import type {} from "zod";
 import { actionBuilder } from "./action-builder";
-import type { Infer, Schema, ValidationAdapter } from "./adapters/types";
 import type {
 	DVES,
 	MiddlewareFn,
@@ -9,6 +7,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
+import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard.types";
 import type {
 	BindArgsValidationErrors,
 	FlattenedBindArgsValidationErrors,
@@ -21,13 +20,13 @@ import type {
 export class SafeActionClient<
 	ServerError,
 	ODVES extends DVES | undefined, // override default validation errors shape
-	MetadataSchema extends Schema | undefined = undefined,
-	MD = MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined, // metadata type (inferred from metadata schema)
+	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
+	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
 	Ctx extends object = {},
-	ISF extends (() => Promise<Schema>) | undefined = undefined, // input schema function
-	IS extends Schema | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
-	OS extends Schema | undefined = undefined, // output schema
-	const BAS extends readonly Schema[] = [],
+	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
+	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
+	OS extends StandardSchemaV1 | undefined = undefined, // output schema
+	const BAS extends readonly StandardSchemaV1[] = [],
 	CVE = undefined,
 	const CBAVE = undefined,
 > {
@@ -41,7 +40,6 @@ export class SafeActionClient<
 	readonly #outputSchema: OS;
 	readonly #ctxType: Ctx;
 	readonly #bindArgsSchemas: BAS;
-	readonly #validationAdapter: ValidationAdapter;
 	readonly #handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
 	readonly #handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 	readonly #defaultValidationErrorsShape: ODVES;
@@ -55,7 +53,6 @@ export class SafeActionClient<
 			inputSchemaFn: ISF;
 			outputSchema: OS;
 			bindArgsSchemas: BAS;
-			validationAdapter: ValidationAdapter;
 			handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
 			handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 			ctxType: Ctx;
@@ -73,7 +70,6 @@ export class SafeActionClient<
 		this.#inputSchemaFn = (opts.inputSchemaFn ?? undefined) as ISF;
 		this.#outputSchema = opts.outputSchema;
 		this.#bindArgsSchemas = opts.bindArgsSchemas ?? [];
-		this.#validationAdapter = opts.validationAdapter;
 		this.#ctxType = opts.ctxType as unknown as Ctx;
 		this.#handleValidationErrorsShape = opts.handleValidationErrorsShape;
 		this.#handleBindArgsValidationErrorsShape = opts.handleBindArgsValidationErrorsShape;
@@ -96,7 +92,6 @@ export class SafeActionClient<
 			inputSchemaFn: this.#inputSchemaFn,
 			outputSchema: this.#outputSchema,
 			bindArgsSchemas: this.#bindArgsSchemas,
-			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: {} as Ctx & NextCtx,
@@ -120,7 +115,6 @@ export class SafeActionClient<
 			inputSchemaFn: this.#inputSchemaFn,
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: this.#outputSchema,
-			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: {} as Ctx,
@@ -137,8 +131,10 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#inputschema See docs for more information}
 	 */
 	schema<
-		OIS extends Schema | ((prevSchema: IS) => Promise<Schema>), // override input schema
-		AIS extends Schema = OIS extends (prevSchema: IS) => Promise<Schema> ? Awaited<ReturnType<OIS>> : OIS, // actual input schema
+		OIS extends StandardSchemaV1 | ((prevSchema: IS) => Promise<StandardSchemaV1>), // override input schema
+		AIS extends StandardSchemaV1 = OIS extends (prevSchema: IS) => Promise<StandardSchemaV1>
+			? Awaited<ReturnType<OIS>>
+			: OIS, // actual input schema
 		OCVE = ODVES extends "flattened" ? FlattenedValidationErrors<ValidationErrors<AIS>> : ValidationErrors<AIS>,
 	>(
 		inputSchema: OIS,
@@ -161,11 +157,16 @@ export class SafeActionClient<
 				: async () => inputSchema) as ISF,
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: this.#outputSchema,
-			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
 			handleBindArgsValidationErrorsShape: this
-				.#handleBindArgsValidationErrorsShape as HandleBindArgsValidationErrorsShapeFn<AIS, BAS, MD, Ctx, CBAVE>,
+				.#handleBindArgsValidationErrorsShape as unknown as HandleBindArgsValidationErrorsShapeFn<
+				AIS,
+				BAS,
+				MD,
+				Ctx,
+				CBAVE
+			>,
 			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -180,7 +181,7 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#bindargsschemas See docs for more information}
 	 */
 	bindArgsSchemas<
-		const OBAS extends readonly Schema[],
+		const OBAS extends readonly StandardSchemaV1[],
 		OCBAVE = ODVES extends "flattened"
 			? FlattenedBindArgsValidationErrors<BindArgsValidationErrors<OBAS>>
 			: BindArgsValidationErrors<OBAS>,
@@ -196,7 +197,6 @@ export class SafeActionClient<
 			inputSchemaFn: this.#inputSchemaFn,
 			bindArgsSchemas,
 			outputSchema: this.#outputSchema,
-			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape as unknown as HandleValidationErrorsShapeFn<
 				IS,
 				OBAS,
@@ -218,7 +218,7 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#outputschema See docs for more information}
 	 */
-	outputSchema<OOS extends Schema>(dataSchema: OOS) {
+	outputSchema<OOS extends StandardSchemaV1>(dataSchema: OOS) {
 		return new SafeActionClient({
 			middlewareFns: this.#middlewareFns,
 			handleServerError: this.#handleServerError,
@@ -227,7 +227,6 @@ export class SafeActionClient<
 			inputSchemaFn: this.#inputSchemaFn,
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: dataSchema,
-			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: {} as Ctx,
@@ -243,7 +242,7 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction See docs for more information}
 	 */
-	action<Data extends OS extends Schema ? Infer<OS> : any>(
+	action<Data extends InferOutputOrDefault<OS, any>>(
 		serverCodeFn: ServerCodeFn<MD, Ctx, IS, BAS, Data>,
 		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
 	) {
@@ -256,7 +255,6 @@ export class SafeActionClient<
 			inputSchemaFn: this.#inputSchemaFn,
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: this.#outputSchema,
-			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -271,7 +269,7 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction See docs for more information}
 	 */
-	stateAction<Data extends OS extends Schema ? Infer<OS> : any>(
+	stateAction<Data extends InferOutputOrDefault<OS, any>>(
 		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
 		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
 	) {
@@ -284,7 +282,6 @@ export class SafeActionClient<
 			inputSchemaFn: this.#inputSchemaFn,
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: this.#outputSchema,
-			validationAdapter: this.#validationAdapter,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
