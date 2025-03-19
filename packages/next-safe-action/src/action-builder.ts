@@ -290,21 +290,15 @@ export function actionBuilder<
 
 					const callbackPromises: (Promise<unknown> | undefined)[] = [];
 
-					// If an internal framework error occurred, throw it, so it will be processed by Next.js.
+					// If an internal (navigation) framework error occurred, throw it, so it will be processed by Next.js.
 					if (frameworkErrorHandler.error) {
 						callbackPromises.push(
-							utils?.onSuccess?.({
-								data: undefined,
+							utils?.onNavigation?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
 								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
-								parsedInput: parsedInputDatas.at(-1) as InferOutputOrDefault<IS, undefined>,
-								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferOutputArray<BAS>,
-								hasRedirected: frameworkErrorHandler.isRedirectError,
-								hasNotFound: frameworkErrorHandler.isNotFoundError,
-								hasForbidden: frameworkErrorHandler.isForbiddenError,
-								hasUnauthorized: frameworkErrorHandler.isUnauthorizedError,
+								navigationType: FrameworkErrorHandler.getNavigationType(frameworkErrorHandler.error),
 							})
 						);
 
@@ -315,10 +309,7 @@ export function actionBuilder<
 								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
 								result: {},
-								hasRedirected: frameworkErrorHandler.isRedirectError,
-								hasNotFound: frameworkErrorHandler.isNotFoundError,
-								hasForbidden: frameworkErrorHandler.isForbiddenError,
-								hasUnauthorized: frameworkErrorHandler.isUnauthorizedError,
+								navigationType: FrameworkErrorHandler.getNavigationType(frameworkErrorHandler.error),
 							})
 						);
 
@@ -365,10 +356,6 @@ export function actionBuilder<
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
 								parsedInput: parsedInputDatas.at(-1) as InferOutputOrDefault<IS, undefined>,
 								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferOutputArray<BAS>,
-								hasRedirected: false,
-								hasNotFound: false,
-								hasForbidden: false,
-								hasUnauthorized: false,
 							})
 						);
 					} else {
@@ -391,10 +378,6 @@ export function actionBuilder<
 							clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
 							bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
 							result: actionResult,
-							hasRedirected: false,
-							hasNotFound: false,
-							hasForbidden: false,
-							hasUnauthorized: false,
 						})
 					);
 
