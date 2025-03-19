@@ -21,6 +21,7 @@ export default function Home() {
 				<ExampleLink href="/stateful-form">
 					Stateful form (<span className="font-mono">useStateAction</span> hook)
 				</ExampleLink>
+				<ExampleLink href="/navigation">Navigation</ExampleLink>
 				<ExampleLink href="/file-upload">File upload</ExampleLink>
 				<ExampleLink href="/bind-arguments">Bind arguments</ExampleLink>
 				<ExampleLink href="/no-arguments">No arguments</ExampleLink>
