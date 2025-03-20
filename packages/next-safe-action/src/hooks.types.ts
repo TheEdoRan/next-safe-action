@@ -1,4 +1,4 @@
-import type { SafeActionFn, SafeActionResult, SafeStateActionFn } from "./index.types";
+import type { NavigationKind, SafeActionFn, SafeActionResult, SafeStateActionFn } from "./index.types";
 import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 import type { MaybePromise, Prettify } from "./utils.types";
 
@@ -18,6 +18,10 @@ export type HookCallbacks<
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
 		input: InferInputOrDefault<S, undefined>;
+	}) => MaybePromise<unknown>;
+	onNavigation?: (args: {
+		input: InferInputOrDefault<S, undefined>;
+		navigationKind: NavigationKind;
 	}) => MaybePromise<unknown>;
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
@@ -59,7 +63,7 @@ export type HookSafeStateActionFn<
 /**
  * Type of the action status returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
  */
-export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
+export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored" | "hasNavigated";
 
 /**
  * Type of the shorthand status object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
@@ -71,6 +75,7 @@ export type HookShorthandStatus = {
 	isPending: boolean;
 	hasSucceeded: boolean;
 	hasErrored: boolean;
+	hasNavigated: boolean;
 };
 
 /**

@@ -10,6 +10,7 @@ import type {
 	UseOptimisticActionHookReturn,
 } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
+import { FrameworkErrorHandler } from "./next/errors";
 import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 
 // HOOKS
@@ -17,7 +18,7 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 /**
  * Use the action from a Client Component via hook.
  * @param safeActionFn The action function
- * @param utils Optional base utils and callbacks
+ * @param cb Optional base utils and callbacks
  *
  * {@link https://next-safe-action.dev/docs/execute-actions/hooks/useaction See docs for more information}
  */
@@ -30,20 +31,27 @@ export const useAction = <
 	Data,
 >(
 	safeActionFn: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
-	utils?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
+	cb?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
 ): UseActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
+	const [navigationError, setNavigationError] = React.useState<Error | null>(null);
 	const [isIdle, setIsIdle] = React.useState(true);
 
-	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
+	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
+		isExecuting,
+		result,
+		isIdle,
+		hasNavigated: navigationError !== null,
+	});
 
 	const execute = React.useCallback(
 		(input: InferInputOrDefault<S, void>) => {
 			setTimeout(() => {
 				setIsIdle(false);
+				setNavigationError(null);
 				setClientInput(input);
 				setIsExecuting(true);
 			}, 0);
@@ -53,6 +61,12 @@ export const useAction = <
 					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
 						setResult({});
+
+						if (FrameworkErrorHandler.isNavigationError(e)) {
+							setNavigationError(e);
+							return;
+						}
+
 						throw e;
 					})
 					.finally(() => {
@@ -68,6 +82,7 @@ export const useAction = <
 			const fn = new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
 				setTimeout(() => {
 					setIsIdle(false);
+					setNavigationError(null);
 					setClientInput(input);
 					setIsExecuting(true);
 				}, 0);
@@ -80,6 +95,12 @@ export const useAction = <
 						})
 						.catch((e) => {
 							setResult({});
+
+							if (FrameworkErrorHandler.isNavigationError(e)) {
+								setNavigationError(e);
+								return;
+							}
+
 							reject(e);
 						})
 						.finally(() => {
@@ -95,6 +116,7 @@ export const useAction = <
 
 	const reset = React.useCallback(() => {
 		setIsIdle(true);
+		setNavigationError(null);
 		setClientInput(undefined);
 		setResult({});
 	}, []);
@@ -103,12 +125,8 @@ export const useAction = <
 		result: result ?? {},
 		input: clientInput as InferInputOrDefault<S, undefined>,
 		status,
-		cb: {
-			onExecute: utils?.onExecute,
-			onSuccess: utils?.onSuccess,
-			onError: utils?.onError,
-			onSettled: utils?.onSettled,
-		},
+		navigationError,
+		cb,
 	});
 
 	return {
@@ -148,19 +166,26 @@ export const useOptimisticAction = <
 	const [result, setResult] = React.useState<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>({});
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
+	const [navigationError, setNavigationError] = React.useState<Error | null>(null);
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [optimisticState, setOptimisticValue] = React.useOptimistic<State, InferInputOrDefault<S, undefined>>(
 		utils.currentState,
 		utils.updateFn
 	);
 
-	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
+	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
+		isExecuting,
+		result,
+		isIdle,
+		hasNavigated: navigationError !== null,
+	});
 
 	const execute = React.useCallback(
 		(input: InferInputOrDefault<S, void>) => {
 			setTimeout(() => {
 				setIsIdle(false);
 				setClientInput(input);
+				setNavigationError(null);
 				setIsExecuting(true);
 			}, 0);
 
@@ -170,6 +195,12 @@ export const useOptimisticAction = <
 					.then((res) => setResult(res ?? {}))
 					.catch((e) => {
 						setResult({});
+
+						if (FrameworkErrorHandler.isNavigationError(e)) {
+							setNavigationError(e);
+							return;
+						}
+
 						throw e;
 					})
 					.finally(() => {
@@ -186,6 +217,7 @@ export const useOptimisticAction = <
 				setTimeout(() => {
 					setIsIdle(false);
 					setClientInput(input);
+					setNavigationError(null);
 					setIsExecuting(true);
 				}, 0);
 
@@ -198,6 +230,12 @@ export const useOptimisticAction = <
 						})
 						.catch((e) => {
 							setResult({});
+
+							if (FrameworkErrorHandler.isNavigationError(e)) {
+								setNavigationError(e);
+								return;
+							}
+
 							reject(e);
 						})
 						.finally(() => {
@@ -214,6 +252,7 @@ export const useOptimisticAction = <
 	const reset = React.useCallback(() => {
 		setIsIdle(true);
 		setClientInput(undefined);
+		setNavigationError(null);
 		setResult({});
 	}, []);
 
@@ -221,11 +260,13 @@ export const useOptimisticAction = <
 		result: result ?? {},
 		input: clientInput as InferInputOrDefault<S, undefined>,
 		status,
+		navigationError,
 		cb: {
 			onExecute: utils.onExecute,
 			onSuccess: utils.onSuccess,
 			onError: utils.onError,
 			onSettled: utils.onSettled,
+			onNavigation: utils.onNavigation,
 		},
 	});
 

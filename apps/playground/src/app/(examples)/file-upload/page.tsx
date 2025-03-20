@@ -10,7 +10,7 @@ import { fileUploadAction } from "./file-upload-action";
 export default function FileUploadPage() {
 	const { execute, result, status, input } = useAction(fileUploadAction);
 
-	console.log("INPUT ->", Object.fromEntries(input?.entries() ?? []));
+	console.log("INPUT ->", input);
 	console.log("RESULT ->", result);
 
 	return (

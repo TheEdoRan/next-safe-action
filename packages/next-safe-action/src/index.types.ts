@@ -167,6 +167,11 @@ export type StateServerCodeFn<
 ) => Promise<Data>;
 
 /**
+ * Possible types of navigation.
+ */
+export type NavigationKind = "redirect" | "notFound" | "forbidden" | "unauthorized" | "other";
+
+/**
  * Type of action execution utils. It includes action callbacks and other utils.
  */
 export type SafeActionUtils<
@@ -189,10 +194,13 @@ export type SafeActionUtils<
 		bindArgsClientInputs: InferInputArray<BAS>;
 		parsedInput: InferOutputOrDefault<S, undefined>;
 		bindArgsParsedInputs: InferOutputArray<BAS>;
-		hasRedirected: boolean;
-		hasNotFound: boolean;
-		hasForbidden: boolean;
-		hasUnauthorized: boolean;
+	}) => Promise<unknown>;
+	onNavigation?: (args: {
+		metadata: MD;
+		ctx?: Prettify<Ctx>;
+		clientInput: InferInputOrDefault<S, undefined>;
+		bindArgsClientInputs: InferInputArray<BAS>;
+		navigationKind: NavigationKind;
 	}) => Promise<unknown>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
@@ -207,10 +215,7 @@ export type SafeActionUtils<
 		ctx?: Prettify<Ctx>;
 		clientInput: InferInputOrDefault<S, undefined>;
 		bindArgsClientInputs: InferInputArray<BAS>;
-		hasRedirected: boolean;
-		hasNotFound: boolean;
-		hasForbidden: boolean;
-		hasUnauthorized: boolean;
+		navigationKind?: NavigationKind;
 	}) => Promise<unknown>;
 };
 
