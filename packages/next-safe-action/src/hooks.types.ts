@@ -1,4 +1,4 @@
-import type { SafeActionFn, SafeActionResult, SafeStateActionFn } from "./index.types";
+import type { NavigationType, SafeActionFn, SafeActionResult, SafeStateActionFn } from "./index.types";
 import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 import type { MaybePromise, Prettify } from "./utils.types";
 
@@ -18,6 +18,10 @@ export type HookCallbacks<
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
 		input: InferInputOrDefault<S, undefined>;
+	}) => MaybePromise<unknown>;
+	onNavigation?: (args: {
+		input: InferInputOrDefault<S, undefined>;
+		navigationType: NavigationType;
 	}) => MaybePromise<unknown>;
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;

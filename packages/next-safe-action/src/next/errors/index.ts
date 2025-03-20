@@ -9,7 +9,7 @@ import { isNextRouterError } from "./router";
 export class FrameworkErrorHandler {
 	#frameworkError: Error | undefined;
 
-	static isFrameworkError(error: unknown): error is Error {
+	static isNavigationError(error: unknown): error is Error {
 		return isNextRouterError(error) || isBailoutToCSRError(error) || isDynamicUsageError(error) || isPostpone(error);
 	}
 
@@ -29,7 +29,7 @@ export class FrameworkErrorHandler {
 
 	// Used in action builder.
 	handleError(e: unknown) {
-		if (FrameworkErrorHandler.isFrameworkError(e)) {
+		if (FrameworkErrorHandler.isNavigationError(e)) {
 			this.#frameworkError = e;
 			return;
 		}

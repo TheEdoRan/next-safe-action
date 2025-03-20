@@ -315,7 +315,7 @@ test("framework error result from middleware is correct", async () => {
 
 	const inputs = [{ age: 30 }, { username: "johndoe" }] as const;
 	await action(...inputs).catch((e) => {
-		if (!FrameworkErrorHandler.isFrameworkError(e)) {
+		if (!FrameworkErrorHandler.isNavigationError(e)) {
 			throw e;
 		}
 	});
@@ -351,7 +351,7 @@ test("framework error is thrown within middleware", async () => {
 	await assert.rejects(
 		async () => await action(),
 		(e) => {
-			return FrameworkErrorHandler.isFrameworkError(e);
+			return FrameworkErrorHandler.isNavigationError(e);
 		},
 		"A framework error to be thrown"
 	);
