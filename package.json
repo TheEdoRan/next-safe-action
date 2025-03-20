@@ -37,7 +37,8 @@
 		"husky": "^9.1.7",
 		"is-ci": "^4.1.0",
 		"prettier": "^3.4.2",
-		"turbo": "^2.4.4"
+		"turbo": "^2.4.4",
+		"typescript": "catalog:"
 	},
 	"packageManager": "pnpm@10.6.5"
 }

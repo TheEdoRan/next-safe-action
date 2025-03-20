@@ -39,6 +39,8 @@ export const useStateAction = <
 		isExecuting,
 		result: result ?? {},
 		isIdle,
+		// FIXME: This is a workaround to avoid the status being "hasNavigated" when the action is executed.
+		hasNavigated: false,
 	});
 
 	const execute = React.useCallback(

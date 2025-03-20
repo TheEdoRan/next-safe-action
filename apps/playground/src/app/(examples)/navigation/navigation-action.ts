@@ -5,7 +5,7 @@ import { forbidden, notFound, redirect, unauthorized } from "next/navigation";
 import { z } from "zod";
 
 const schema = z.object({
-	kind: z.enum(["redirect", "notFound", "forbidden", "unauthorized"]),
+	kind: z.enum(["redirect", "notFound", "forbidden", "unauthorized", "happy-path"]),
 });
 
 export const testNavigate = action

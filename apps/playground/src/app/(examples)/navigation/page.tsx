@@ -64,6 +64,9 @@ export default function Navigation() {
 				<StyledButton type="button" onClick={() => execute({ kind: "unauthorized" })}>
 					Unauthorized
 				</StyledButton>
+				<StyledButton type="button" onClick={() => execute({ kind: "happy-path" })}>
+					Happy path
+				</StyledButton>
 				<StyledButton type="button" onClick={reset}>
 					Reset
 				</StyledButton>

@@ -63,7 +63,7 @@ export type HookSafeStateActionFn<
 /**
  * Type of the action status returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
  */
-export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored";
+export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored" | "hasNavigated";
 
 /**
  * Type of the shorthand status object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
@@ -75,6 +75,7 @@ export type HookShorthandStatus = {
 	isPending: boolean;
 	hasSucceeded: boolean;
 	hasErrored: boolean;
+	hasNavigated: boolean;
 };
 
 /**

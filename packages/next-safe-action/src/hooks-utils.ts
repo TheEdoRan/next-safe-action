@@ -16,9 +16,11 @@ export const getActionStatus = <
 	isIdle,
 	isExecuting,
 	result,
+	hasNavigated,
 }: {
 	isIdle: boolean;
 	isExecuting: boolean;
+	hasNavigated: boolean;
 	result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
 }): HookActionStatus => {
 	if (isIdle) {
@@ -31,6 +33,8 @@ export const getActionStatus = <
 		typeof result.serverError !== "undefined"
 	) {
 		return "hasErrored";
+	} else if (hasNavigated) {
+		return "hasNavigated";
 	} else {
 		return "hasSucceeded";
 	}
@@ -50,6 +54,7 @@ export const getActionShorthandStatusObject = ({
 		isPending: status === "executing" || isTransitioning,
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
+		hasNavigated: status === "hasNavigated",
 	};
 };
 
@@ -88,30 +93,43 @@ export const useActionCallbacks = <
 		const onNavigation = onNavigationRef.current;
 
 		const executeCallbacks = async () => {
-			if (status === "executing") {
-				await Promise.resolve(onExecute?.({ input }));
-			} else if (navigationError) {
+			switch (status) {
+				case "executing":
+					await Promise.resolve(onExecute?.({ input })).then(() => {});
+					break;
+				case "hasSucceeded":
+					if (navigationError) {
+						break;
+					}
+
+					await Promise.all([
+						Promise.resolve(onSuccess?.({ data: result?.data, input })),
+						Promise.resolve(onSettled?.({ result, input })),
+					]);
+					break;
+				case "hasErrored":
+					await Promise.all([
+						Promise.resolve(onError?.({ error: result, input })),
+						Promise.resolve(onSettled?.({ result, input })),
+					]);
+					break;
+			}
+
+			if (navigationError) {
 				await Promise.all([
 					Promise.resolve(
-						onNavigation?.({ input, navigationType: FrameworkErrorHandler.getNavigationType(navigationError) })
+						onNavigation?.({
+							input,
+							navigationType: FrameworkErrorHandler.getNavigationType(navigationError),
+						})
 					),
 					Promise.resolve(onSettled?.({ result, input })),
 				]);
 
 				throw navigationError;
-			} else if (status === "hasSucceeded") {
-				await Promise.all([
-					Promise.resolve(onSuccess?.({ data: result?.data, input })),
-					Promise.resolve(onSettled?.({ result, input })),
-				]);
-			} else if (status === "hasErrored") {
-				await Promise.all([
-					Promise.resolve(onError?.({ error: result, input })),
-					Promise.resolve(onSettled?.({ result, input })),
-				]);
 			}
 		};
 
 		executeCallbacks().catch(console.error);
-	}, [input, status, navigationError, result]);
+	}, [input, status, result, navigationError]);
 };

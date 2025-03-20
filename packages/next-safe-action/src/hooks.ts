@@ -40,7 +40,12 @@ export const useAction = <
 	const [navigationError, setNavigationError] = React.useState<Error | null>(null);
 	const [isIdle, setIsIdle] = React.useState(true);
 
-	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
+	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
+		isExecuting,
+		result,
+		isIdle,
+		hasNavigated: navigationError !== null,
+	});
 
 	const execute = React.useCallback(
 		(input: InferInputOrDefault<S, void>) => {
@@ -168,7 +173,12 @@ export const useOptimisticAction = <
 		utils.updateFn
 	);
 
-	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({ isExecuting, result, isIdle });
+	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
+		isExecuting,
+		result,
+		isIdle,
+		hasNavigated: navigationError !== null,
+	});
 
 	const execute = React.useCallback(
 		(input: InferInputOrDefault<S, void>) => {
