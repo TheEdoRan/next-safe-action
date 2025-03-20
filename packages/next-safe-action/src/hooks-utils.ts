@@ -120,7 +120,7 @@ export const useActionCallbacks = <
 					Promise.resolve(
 						onNavigation?.({
 							input,
-							navigationType: FrameworkErrorHandler.getNavigationType(navigationError),
+							navigationKind: FrameworkErrorHandler.getNavigationKind(navigationError),
 						})
 					),
 					Promise.resolve(onSettled?.({ result, input })),

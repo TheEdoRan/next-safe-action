@@ -169,7 +169,7 @@ export type StateServerCodeFn<
 /**
  * Possible types of navigation.
  */
-export type NavigationType = "redirect" | "notFound" | "forbidden" | "unauthorized" | "other";
+export type NavigationKind = "redirect" | "notFound" | "forbidden" | "unauthorized" | "other";
 
 /**
  * Type of action execution utils. It includes action callbacks and other utils.
@@ -200,7 +200,7 @@ export type SafeActionUtils<
 		ctx?: Prettify<Ctx>;
 		clientInput: InferInputOrDefault<S, undefined>;
 		bindArgsClientInputs: InferInputArray<BAS>;
-		navigationType: NavigationType;
+		navigationKind: NavigationKind;
 	}) => Promise<unknown>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
@@ -215,7 +215,7 @@ export type SafeActionUtils<
 		ctx?: Prettify<Ctx>;
 		clientInput: InferInputOrDefault<S, undefined>;
 		bindArgsClientInputs: InferInputArray<BAS>;
-		navigationType?: NavigationType;
+		navigationKind?: NavigationKind;
 	}) => Promise<unknown>;
 };
 

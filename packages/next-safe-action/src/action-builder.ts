@@ -298,7 +298,7 @@ export function actionBuilder<
 								ctx: currentCtx as Ctx,
 								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
-								navigationType: FrameworkErrorHandler.getNavigationType(frameworkErrorHandler.error),
+								navigationKind: FrameworkErrorHandler.getNavigationKind(frameworkErrorHandler.error),
 							})
 						);
 
@@ -309,7 +309,7 @@ export function actionBuilder<
 								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
 								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
 								result: {},
-								navigationType: FrameworkErrorHandler.getNavigationType(frameworkErrorHandler.error),
+								navigationKind: FrameworkErrorHandler.getNavigationKind(frameworkErrorHandler.error),
 							})
 						);
 

@@ -1,4 +1,4 @@
-import type { NavigationType } from "../../index.types";
+import type { NavigationKind } from "../../index.types";
 import { isBailoutToCSRError } from "./bailout-to-csr";
 import { isDynamicUsageError } from "./dynamic-usage";
 import { getAccessFallbackHTTPStatus, isHTTPAccessFallbackError } from "./http-access-fallback";
@@ -13,7 +13,7 @@ export class FrameworkErrorHandler {
 		return isNextRouterError(error) || isBailoutToCSRError(error) || isDynamicUsageError(error) || isPostpone(error);
 	}
 
-	static getNavigationType(error: Error): NavigationType {
+	static getNavigationKind(error: Error): NavigationKind {
 		if (isRedirectError(error)) {
 			return "redirect";
 		} else if (isHTTPAccessFallbackError(error) && getAccessFallbackHTTPStatus(error) === 404) {
