@@ -13,20 +13,13 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
  *
  * {@link https://next-safe-action.dev/docs/execute-actions/hooks/usestateaction See docs for more information}
  */
-export const useStateAction = <
-	ServerError,
-	S extends StandardSchemaV1 | undefined,
-	const BAS extends readonly StandardSchemaV1[],
-	CVE,
-	CBAVE,
-	Data,
->(
-	safeActionFn: HookSafeStateActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
+export const useStateAction = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>(
+	safeActionFn: HookSafeStateActionFn<ServerError, S, CVE, Data>,
 	utils?: {
 		initResult?: Awaited<ReturnType<typeof safeActionFn>>;
 		permalink?: string;
-	} & HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
-): UseStateActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
+	} & HookCallbacks<ServerError, S, CVE, Data>
+): UseStateActionHookReturn<ServerError, S, CVE, Data> => {
 	const [result, dispatcher, isExecuting] = React.useActionState(
 		safeActionFn,
 		utils?.initResult ?? {},
@@ -35,7 +28,7 @@ export const useStateAction = <
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
-	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
+	const status = getActionStatus<ServerError, S, CVE, Data>({
 		isExecuting,
 		result: result ?? {},
 		isIdle,

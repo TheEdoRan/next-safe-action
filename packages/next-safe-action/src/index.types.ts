@@ -7,7 +7,7 @@ import type {
 	StandardSchemaV1,
 } from "./standard.types";
 import type { MaybePromise, Prettify } from "./utils.types";
-import type { BindArgsValidationErrors, ValidationErrors } from "./validation-errors.types";
+import type { ValidationErrors } from "./validation-errors.types";
 
 /**
  * Type of the default validation errors shape passed to `createSafeActionClient` via `defaultValidationErrorsShape`
@@ -45,9 +45,7 @@ export type SafeActionClientOpts<
 export type SafeActionResult<
 	ServerError,
 	S extends StandardSchemaV1 | undefined,
-	BAS extends readonly StandardSchemaV1[],
 	CVE = ValidationErrors<S>,
-	CBAVE = BindArgsValidationErrors<BAS>,
 	Data = unknown,
 	// eslint-disable-next-line
 	NextCtx = object,
@@ -55,7 +53,6 @@ export type SafeActionResult<
 	data?: Data;
 	serverError?: ServerError;
 	validationErrors?: CVE;
-	bindArgsValidationErrors?: CBAVE;
 };
 
 /**
@@ -66,11 +63,10 @@ export type SafeActionFn<
 	S extends StandardSchemaV1 | undefined,
 	BAS extends readonly StandardSchemaV1[],
 	CVE,
-	CBAVE,
 	Data,
 > = (
 	...clientInputs: [...bindArgsInputs: InferInputArray<BAS>, input: InferInputOrDefault<S, void>]
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data> | undefined>;
+) => Promise<SafeActionResult<ServerError, S, CVE, Data> | undefined>;
 
 /**
  * Type of the stateful function called from components with type safe input data.
@@ -80,15 +76,14 @@ export type SafeStateActionFn<
 	S extends StandardSchemaV1 | undefined,
 	BAS extends readonly StandardSchemaV1[],
 	CVE,
-	CBAVE,
 	Data,
 > = (
 	...clientInputs: [
 		...bindArgsInputs: InferInputArray<BAS>,
-		prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>,
+		prevResult: Prettify<SafeActionResult<ServerError, S, CVE, Data>>,
 		input: InferInputOrDefault<S, void>,
 	]
-) => Promise<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+) => Promise<SafeActionResult<ServerError, S, CVE, Data>>;
 
 /**
  * Type of the result of a middleware function. It extends the result of a safe action with
@@ -96,8 +91,6 @@ export type SafeStateActionFn<
  */
 export type MiddlewareResult<ServerError, NextCtx extends object> = SafeActionResult<
 	ServerError,
-	any,
-	any,
 	any,
 	any,
 	any,
@@ -152,7 +145,6 @@ export type StateServerCodeFn<
 	S extends StandardSchemaV1 | undefined,
 	BAS extends readonly StandardSchemaV1[],
 	CVE,
-	CBAVE,
 	Data,
 > = (
 	args: {
@@ -163,7 +155,7 @@ export type StateServerCodeFn<
 		ctx: Prettify<Ctx>;
 		metadata: MD;
 	},
-	utils: { prevResult: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>> }
+	utils: { prevResult: Prettify<SafeActionResult<ServerError, S, CVE, Data>> }
 ) => Promise<Data>;
 
 /**
@@ -181,7 +173,6 @@ export type SafeActionUtils<
 	S extends StandardSchemaV1 | undefined,
 	BAS extends readonly StandardSchemaV1[],
 	CVE,
-	CBAVE,
 	Data,
 > = {
 	throwServerError?: boolean;
@@ -203,14 +194,14 @@ export type SafeActionUtils<
 		navigationKind: NavigationKind;
 	}) => Promise<unknown>;
 	onError?: (args: {
-		error: Prettify<Omit<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>, "data">>;
+		error: Prettify<Omit<SafeActionResult<ServerError, S, CVE, Data>, "data">>;
 		metadata: MD;
 		ctx?: Prettify<Ctx>;
 		clientInput: InferInputOrDefault<S, undefined>;
 		bindArgsClientInputs: InferInputArray<BAS>;
 	}) => Promise<unknown>;
 	onSettled?: (args: {
-		result: Prettify<SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>>;
+		result: Prettify<SafeActionResult<ServerError, S, CVE, Data>>;
 		metadata: MD;
 		ctx?: Prettify<Ctx>;
 		clientInput: InferInputOrDefault<S, undefined>;
@@ -228,14 +219,12 @@ export type InferSafeActionFnInput<T extends Function> = T extends
 			infer S extends StandardSchemaV1 | undefined,
 			infer BAS extends readonly StandardSchemaV1[],
 			any,
-			any,
 			any
 	  >
 	| SafeStateActionFn<
 			any,
 			infer S extends StandardSchemaV1 | undefined,
 			infer BAS extends readonly StandardSchemaV1[],
-			any,
 			any,
 			any
 	  >
@@ -258,23 +247,9 @@ export type InferSafeActionFnInput<T extends Function> = T extends
  * Infer the result type of a safe action.
  */
 export type InferSafeActionFnResult<T extends Function> = T extends
-	| SafeActionFn<
-			infer ServerError,
-			infer S extends StandardSchemaV1 | undefined,
-			infer BAS extends readonly StandardSchemaV1[],
-			infer CVE,
-			infer CBAVE,
-			infer Data
-	  >
-	| SafeStateActionFn<
-			infer ServerError,
-			infer S extends StandardSchemaV1 | undefined,
-			infer BAS extends readonly StandardSchemaV1[],
-			infer CVE,
-			infer CBAVE,
-			infer Data
-	  >
-	? SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>
+	| SafeActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any[], infer CVE, infer Data>
+	| SafeStateActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any[], infer CVE, infer Data>
+	? SafeActionResult<ServerError, S, CVE, Data>
 	: never;
 
 /**
@@ -307,8 +282,8 @@ export type InferMetadata<T> = T extends
 export type InferServerError<T> = T extends
 	| SafeActionClient<infer ServerError, any, any, any, any, any, any, any, any, any>
 	| MiddlewareFn<infer ServerError, any, any, any>
-	| SafeActionFn<infer ServerError, any, any, any, any, any>
-	| SafeStateActionFn<infer ServerError, any, any, any, any, any>
+	| SafeActionFn<infer ServerError, any, any, any, any>
+	| SafeStateActionFn<infer ServerError, any, any, any, any>
 	? ServerError
 	: never;
 

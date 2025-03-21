@@ -9,10 +9,7 @@ import type {
 } from "./index.types";
 import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard.types";
 import type {
-	BindArgsValidationErrors,
-	FlattenedBindArgsValidationErrors,
 	FlattenedValidationErrors,
-	HandleBindArgsValidationErrorsShapeFn,
 	HandleValidationErrorsShapeFn,
 	ValidationErrors,
 } from "./validation-errors.types";
@@ -28,7 +25,6 @@ export class SafeActionClient<
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	const BAS extends readonly StandardSchemaV1[] = [],
 	CVE = undefined,
-	const CBAVE = undefined,
 > {
 	readonly #handleServerError: NonNullable<
 		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerError"]
@@ -41,7 +37,6 @@ export class SafeActionClient<
 	readonly #ctxType: Ctx;
 	readonly #bindArgsSchemas: BAS;
 	readonly #handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
-	readonly #handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 	readonly #defaultValidationErrorsShape: ODVES;
 	readonly #throwValidationErrors: boolean;
 
@@ -54,7 +49,6 @@ export class SafeActionClient<
 			outputSchema: OS;
 			bindArgsSchemas: BAS;
 			handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
-			handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 			ctxType: Ctx;
 		} & Required<
 			Pick<
@@ -72,7 +66,6 @@ export class SafeActionClient<
 		this.#bindArgsSchemas = opts.bindArgsSchemas ?? [];
 		this.#ctxType = opts.ctxType as unknown as Ctx;
 		this.#handleValidationErrorsShape = opts.handleValidationErrorsShape;
-		this.#handleBindArgsValidationErrorsShape = opts.handleBindArgsValidationErrorsShape;
 		this.#defaultValidationErrorsShape = opts.defaultValidationErrorsShape;
 		this.#throwValidationErrors = opts.throwValidationErrors;
 	}
@@ -93,7 +86,6 @@ export class SafeActionClient<
 			outputSchema: this.#outputSchema,
 			bindArgsSchemas: this.#bindArgsSchemas,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
-			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: {} as Ctx & NextCtx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -116,7 +108,6 @@ export class SafeActionClient<
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: this.#outputSchema,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
-			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -159,14 +150,6 @@ export class SafeActionClient<
 			outputSchema: this.#outputSchema,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
-			handleBindArgsValidationErrorsShape: this
-				.#handleBindArgsValidationErrorsShape as unknown as HandleBindArgsValidationErrorsShapeFn<
-				AIS,
-				BAS,
-				MD,
-				Ctx,
-				CBAVE
-			>,
 			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -180,15 +163,7 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#bindargsschemas See docs for more information}
 	 */
-	bindArgsSchemas<
-		const OBAS extends readonly StandardSchemaV1[],
-		OCBAVE = ODVES extends "flattened"
-			? FlattenedBindArgsValidationErrors<BindArgsValidationErrors<OBAS>>
-			: BindArgsValidationErrors<OBAS>,
-	>(
-		bindArgsSchemas: OBAS,
-		utils?: { handleBindArgsValidationErrorsShape?: HandleBindArgsValidationErrorsShapeFn<IS, OBAS, MD, Ctx, OCBAVE> }
-	) {
+	bindArgsSchemas<const OBAS extends readonly StandardSchemaV1[]>(bindArgsSchemas: OBAS) {
 		return new SafeActionClient({
 			middlewareFns: this.#middlewareFns,
 			handleServerError: this.#handleServerError,
@@ -204,8 +179,6 @@ export class SafeActionClient<
 				Ctx,
 				CVE
 			>,
-			handleBindArgsValidationErrorsShape: (utils?.handleBindArgsValidationErrorsShape ??
-				this.#handleBindArgsValidationErrorsShape) as HandleBindArgsValidationErrorsShapeFn<IS, OBAS, MD, Ctx, OCBAVE>,
 			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -228,7 +201,6 @@ export class SafeActionClient<
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: dataSchema,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
-			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			ctxType: {} as Ctx,
 			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
@@ -244,7 +216,7 @@ export class SafeActionClient<
 	 */
 	action<Data extends InferOutputOrDefault<OS, any>>(
 		serverCodeFn: ServerCodeFn<MD, Ctx, IS, BAS, Data>,
-		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
+		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
 	) {
 		return actionBuilder({
 			handleServerError: this.#handleServerError,
@@ -256,7 +228,6 @@ export class SafeActionClient<
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: this.#outputSchema,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
-			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
 		}).action(serverCodeFn, utils);
 	}
@@ -270,8 +241,8 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction See docs for more information}
 	 */
 	stateAction<Data extends InferOutputOrDefault<OS, any>>(
-		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
-		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
+		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, Data>,
+		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
 	) {
 		return actionBuilder({
 			handleServerError: this.#handleServerError,
@@ -283,7 +254,6 @@ export class SafeActionClient<
 			bindArgsSchemas: this.#bindArgsSchemas,
 			outputSchema: this.#outputSchema,
 			handleValidationErrorsShape: this.#handleValidationErrorsShape,
-			handleBindArgsValidationErrorsShape: this.#handleBindArgsValidationErrorsShape,
 			throwValidationErrors: this.#throwValidationErrors,
 		}).stateAction(serverCodeFn, utils);
 	}

@@ -2,12 +2,7 @@ import type { DVES, SafeActionClientOpts } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
 import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard.types";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
-import {
-	flattenBindArgsValidationErrors,
-	flattenValidationErrors,
-	formatBindArgsValidationErrors,
-	formatValidationErrors,
-} from "./validation-errors";
+import { flattenValidationErrors, formatValidationErrors } from "./validation-errors";
 
 export { createMiddleware } from "./middleware";
 export { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
@@ -15,9 +10,7 @@ export {
 	ActionMetadataValidationError,
 	ActionOutputDataValidationError,
 	ActionValidationError,
-	flattenBindArgsValidationErrors,
 	flattenValidationErrors,
-	formatBindArgsValidationErrors,
 	formatValidationErrors,
 	returnValidationErrors,
 } from "./validation-errors";
@@ -62,9 +55,5 @@ export const createSafeActionClient = <
 			createOpts?.defaultValidationErrorsShape === "flattened"
 				? flattenValidationErrors(ve)
 				: formatValidationErrors(ve),
-		handleBindArgsValidationErrorsShape: async (ve) =>
-			createOpts?.defaultValidationErrorsShape === "flattened"
-				? flattenBindArgsValidationErrors(ve)
-				: formatBindArgsValidationErrors(ve),
 	});
 };
