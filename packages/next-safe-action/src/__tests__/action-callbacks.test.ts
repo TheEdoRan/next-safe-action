@@ -165,7 +165,7 @@ test("action with input schemas and server error calls `onError` and `onSettled`
 
 test("action with validation errors calls `onError` and `onSettled` callbacks with correct arguments", async () => {
 	let executed = 0;
-	const inputs = ["invalid_uuid", -30, { username: "j" }] as const;
+	const inputs = [crypto.randomUUID(), 30, { username: "j" }] as const;
 
 	const action = ac
 		.schema(z.object({ username: z.string().min(3) }))
@@ -194,14 +194,6 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 										_errors: ["String must contain at least 3 character(s)"],
 									},
 								},
-								bindArgsValidationErrors: [
-									{
-										_errors: ["Invalid uuid"],
-									},
-									{
-										_errors: ["Number must be greater than 0"],
-									},
-								],
 							},
 							clientInput: inputs[2],
 							bindArgsClientInputs: inputs.slice(0, 2),
@@ -222,14 +214,6 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 										_errors: ["String must contain at least 3 character(s)"],
 									},
 								},
-								bindArgsValidationErrors: [
-									{
-										_errors: ["Invalid uuid"],
-									},
-									{
-										_errors: ["Number must be greater than 0"],
-									},
-								],
 							},
 							clientInput: inputs[2],
 							bindArgsClientInputs: inputs.slice(0, 2),

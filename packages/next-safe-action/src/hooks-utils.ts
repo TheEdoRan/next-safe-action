@@ -5,14 +5,7 @@ import type { SafeActionResult } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
 import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
 
-export const getActionStatus = <
-	ServerError,
-	S extends StandardSchemaV1 | undefined,
-	const BAS extends readonly StandardSchemaV1[],
-	CVE,
-	CBAVE,
-	Data,
->({
+export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
 	isIdle,
 	isExecuting,
 	result,
@@ -21,17 +14,13 @@ export const getActionStatus = <
 	isIdle: boolean;
 	isExecuting: boolean;
 	hasNavigated: boolean;
-	result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
+	result: SafeActionResult<ServerError, S, CVE, Data>;
 }): HookActionStatus => {
 	if (isIdle) {
 		return "idle";
 	} else if (isExecuting) {
 		return "executing";
-	} else if (
-		typeof result.validationErrors !== "undefined" ||
-		typeof result.bindArgsValidationErrors !== "undefined" ||
-		typeof result.serverError !== "undefined"
-	) {
+	} else if (typeof result.validationErrors !== "undefined" || typeof result.serverError !== "undefined") {
 		return "hasErrored";
 	} else if (hasNavigated) {
 		return "hasNavigated";
@@ -58,24 +47,17 @@ export const getActionShorthandStatusObject = ({
 	};
 };
 
-export const useActionCallbacks = <
-	ServerError,
-	S extends StandardSchemaV1 | undefined,
-	const BAS extends readonly StandardSchemaV1[],
-	CVE,
-	CBAVE,
-	Data,
->({
+export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
 	result,
 	input,
 	status,
 	cb,
 	navigationError,
 }: {
-	result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
+	result: SafeActionResult<ServerError, S, CVE, Data>;
 	input: InferInputOrDefault<S, undefined>;
 	status: HookActionStatus;
-	cb?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>;
+	cb?: HookCallbacks<ServerError, S, CVE, Data>;
 	navigationError?: Error | null;
 }) => {
 	const onExecuteRef = React.useRef(cb?.onExecute);

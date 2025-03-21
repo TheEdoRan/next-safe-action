@@ -8,7 +8,6 @@ import {
 	createMiddleware,
 	createSafeActionClient,
 	DEFAULT_SERVER_ERROR_MESSAGE,
-	formatBindArgsValidationErrors,
 	formatValidationErrors,
 	returnValidationErrors,
 } from "..";
@@ -122,6 +121,37 @@ test("action client inputs are passed to middleware", async () => {
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
+test("invalid bind args give back a serverError result", async () => {
+	const action = ac
+		.schema(async () =>
+			z.object({
+				username: z.string(),
+			})
+		)
+		.bindArgsSchemas([z.object({ age: z.number().positive() })])
+		.use(async ({ clientInput, bindArgsClientInputs, next }) => {
+			return next({ ctx: { clientInput, bindArgsClientInputs } });
+		})
+		.action(async ({ ctx }) => {
+			return {
+				clientInput: ctx.clientInput,
+				bindArgsClientInputs: ctx.bindArgsClientInputs,
+			};
+		});
+
+	const inputs = [{ age: -1 }, { username: "johndoe" }] as const;
+
+	const actualResult = await action(...inputs);
+
+	const expectedResult = {
+		serverError: {
+			message: "Server Action bind args validation error(s) occurred",
+		},
+	};
+
+	assert.deepStrictEqual(actualResult, expectedResult);
+});
+
 test("happy path execution result from middleware is correct", async () => {
 	let middlewareResult = {};
 
@@ -213,7 +243,6 @@ test("validation errors in execution result from middleware are correct", async 
 				username: z.string().max(3),
 			})
 		)
-		.bindArgsSchemas([z.object({ age: z.number().positive() })])
 		.use(async ({ next }) => {
 			// Await action execution.
 			const res = await next();
@@ -226,8 +255,7 @@ test("validation errors in execution result from middleware are correct", async 
 			};
 		});
 
-	const inputs = [{ age: -30 }, { username: "johndoe" }] as const;
-	await action(...inputs);
+	await action({ username: "johndoe" });
 
 	const expectedResult = {
 		success: false,
@@ -239,13 +267,6 @@ test("validation errors in execution result from middleware are correct", async 
 				_errors: ["String must contain at most 3 character(s)"],
 			},
 		},
-		bindArgsValidationErrors: [
-			{
-				age: {
-					_errors: ["Number must be greater than 0"],
-				},
-			},
-		],
 	};
 
 	assert.deepStrictEqual(middlewareResult, expectedResult);
@@ -373,7 +394,6 @@ test("flattened validation errors in execution result from middleware are correc
 				username: z.string().max(3),
 			})
 		)
-		.bindArgsSchemas([z.object({ age: z.number().positive() })])
 		.use(async ({ next }) => {
 			// Await action execution.
 			const res = await next();
@@ -386,8 +406,7 @@ test("flattened validation errors in execution result from middleware are correc
 			};
 		});
 
-	const inputs = [{ age: -30 }, { username: "johndoe" }] as const;
-	await action(...inputs);
+	await action({ username: "johndoe" });
 
 	const expectedResult = {
 		success: false,
@@ -398,14 +417,6 @@ test("flattened validation errors in execution result from middleware are correc
 				username: ["String must contain at most 3 character(s)"],
 			},
 		},
-		bindArgsValidationErrors: [
-			{
-				formErrors: [],
-				fieldErrors: {
-					age: ["Number must be greater than 0"],
-				},
-			},
-		],
 	};
 
 	assert.deepStrictEqual(middlewareResult, expectedResult);
@@ -422,9 +433,6 @@ test("overridden formatted validation errors in execution result from middleware
 				}),
 			{ handleValidationErrorsShape: async (ve) => formatValidationErrors(ve) }
 		)
-		.bindArgsSchemas([z.object({ age: z.number().positive() })], {
-			handleBindArgsValidationErrorsShape: async (ve) => formatBindArgsValidationErrors(ve),
-		})
 		.use(async ({ next }) => {
 			// Await action execution.
 			const res = await next();
@@ -437,8 +445,7 @@ test("overridden formatted validation errors in execution result from middleware
 			};
 		});
 
-	const inputs = [{ age: -30 }, { username: "johndoe" }] as const;
-	await action(...inputs);
+	await action({ username: "johndoe" });
 
 	const expectedResult = {
 		success: false,
@@ -448,13 +455,6 @@ test("overridden formatted validation errors in execution result from middleware
 				_errors: ["String must contain at most 3 character(s)"],
 			},
 		},
-		bindArgsValidationErrors: [
-			{
-				age: {
-					_errors: ["Number must be greater than 0"],
-				},
-			},
-		],
 	};
 
 	assert.deepStrictEqual(middlewareResult, expectedResult);

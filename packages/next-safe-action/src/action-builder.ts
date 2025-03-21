@@ -22,18 +22,14 @@ import type {
 } from "./standard.types";
 import { DEFAULT_SERVER_ERROR_MESSAGE, isError, winningBoolean } from "./utils";
 import {
+	ActionBindArgsValidationError,
 	ActionMetadataValidationError,
 	ActionOutputDataValidationError,
 	ActionServerValidationError,
 	ActionValidationError,
 	buildValidationErrors,
 } from "./validation-errors";
-import type {
-	BindArgsValidationErrors,
-	HandleBindArgsValidationErrorsShapeFn,
-	HandleValidationErrorsShapeFn,
-	ValidationErrors,
-} from "./validation-errors.types";
+import type { HandleValidationErrorsShapeFn, ValidationErrors } from "./validation-errors.types";
 
 export function actionBuilder<
 	ServerError,
@@ -45,13 +41,11 @@ export function actionBuilder<
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	const BAS extends readonly StandardSchemaV1[] = [],
 	CVE = undefined,
-	CBAVE = undefined,
 >(args: {
 	inputSchemaFn?: ISF;
 	bindArgsSchemas?: BAS;
 	outputSchema?: OS;
 	handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
-	handleBindArgsValidationErrorsShape: HandleBindArgsValidationErrorsShapeFn<IS, BAS, MD, Ctx, CBAVE>;
 	metadataSchema: MetadataSchema;
 	metadata: MD;
 	handleServerError: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, any>["handleServerError"]>;
@@ -64,27 +58,27 @@ export function actionBuilder<
 	function buildAction({ withState }: { withState: false }): {
 		action: <Data extends InferOutputOrDefault<OS, any>>(
 			serverCodeFn: ServerCodeFn<MD, Ctx, IS, BAS, Data>,
-			utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
-		) => SafeActionFn<ServerError, IS, BAS, CVE, CBAVE, Data>;
+			utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
+		) => SafeActionFn<ServerError, IS, BAS, CVE, Data>;
 	};
 	function buildAction({ withState }: { withState: true }): {
 		action: <Data extends InferOutputOrDefault<OS, any>>(
-			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
-			utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
-		) => SafeStateActionFn<ServerError, IS, BAS, CVE, CBAVE, Data>;
+			serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, Data>,
+			utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
+		) => SafeStateActionFn<ServerError, IS, BAS, CVE, Data>;
 	};
 	function buildAction({ withState }: { withState: boolean }) {
 		return {
 			action: <Data extends InferOutputOrDefault<OS, any>>(
 				serverCodeFn:
 					| ServerCodeFn<MD, Ctx, IS, BAS, Data>
-					| StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>,
-				utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>
+					| StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, Data>,
+				utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
 			) => {
 				return async (...clientInputs: unknown[]) => {
 					let currentCtx: object = {};
 					const middlewareResult: MiddlewareResult<ServerError, object> = { success: false };
-					type PrevResult = SafeActionResult<ServerError, IS, BAS, CVE, CBAVE, Data> | undefined;
+					type PrevResult = SafeActionResult<ServerError, IS, CVE, Data> | undefined;
 					let prevResult: PrevResult | undefined = undefined;
 					const parsedInputDatas: any[] = [];
 					const frameworkErrorHandler = new FrameworkErrorHandler();
@@ -195,29 +189,17 @@ export function actionBuilder<
 									}
 								}
 
-								// If there are bind args validation errors, format them and store them in the middleware result.
+								// If there are bind args validation errors, throw an error.
 								if (hasBindValidationErrors) {
-									middlewareResult.bindArgsValidationErrors = await Promise.resolve(
-										args.handleBindArgsValidationErrorsShape(
-											bindArgsValidationErrors as BindArgsValidationErrors<BAS>,
-											{
-												clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-												bindArgsClientInputs: (bindArgsSchemas.length
-													? clientInputs.slice(0, -1)
-													: []) as InferInputArray<BAS>,
-												ctx: currentCtx as Ctx,
-												metadata: args.metadata,
-											}
-										)
-									);
+									throw new ActionBindArgsValidationError(bindArgsValidationErrors);
 								}
 
-								if (middlewareResult.validationErrors || middlewareResult.bindArgsValidationErrors) {
+								if (middlewareResult.validationErrors) {
 									return;
 								}
 
 								// @ts-expect-error
-								const scfArgs: Parameters<StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, CBAVE, Data>> = [];
+								const scfArgs: Parameters<StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, Data>> = [];
 
 								// Server code function always has this object as the first argument.
 								scfArgs[0] = {
@@ -318,7 +300,7 @@ export function actionBuilder<
 						throw frameworkErrorHandler.error;
 					}
 
-					const actionResult: SafeActionResult<ServerError, IS, BAS, CVE, CBAVE, Data> = {};
+					const actionResult: SafeActionResult<ServerError, IS, CVE, Data> = {};
 
 					if (typeof middlewareResult.validationErrors !== "undefined") {
 						// `utils.throwValidationErrors` has higher priority since it's set at the action level.
@@ -328,10 +310,6 @@ export function actionBuilder<
 						} else {
 							actionResult.validationErrors = middlewareResult.validationErrors as CVE;
 						}
-					}
-
-					if (typeof middlewareResult.bindArgsValidationErrors !== "undefined") {
-						actionResult.bindArgsValidationErrors = middlewareResult.bindArgsValidationErrors as CBAVE;
 					}
 
 					if (typeof middlewareResult.serverError !== "undefined") {

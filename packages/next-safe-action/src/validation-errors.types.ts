@@ -22,13 +22,6 @@ export type ValidationErrors<S extends StandardSchemaV1 | undefined> = S extends
 	: undefined;
 
 /**
- * Type of the array of bind arguments validation errors.
- */
-export type BindArgsValidationErrors<BAS extends readonly StandardSchemaV1[]> = {
-	[K in keyof BAS]: ValidationErrors<BAS[K]>;
-};
-
-/**
  * Type of flattened validation errors. `formErrors` contains global errors, and `fieldErrors`
  * contains errors for each field, one level deep.
  */
@@ -38,13 +31,6 @@ export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = Pretti
 		[K in keyof Omit<VE, "_errors">]?: string[];
 	};
 }>;
-
-/**
- * Type of flattened bind arguments validation errors.
- */
-export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]> = {
-	[K in keyof BAVE]: FlattenedValidationErrors<BAVE[K]>;
-};
 
 /**
  * Type of the function used to format validation errors.
@@ -64,22 +50,3 @@ export type HandleValidationErrorsShapeFn<
 		ctx: Prettify<Ctx>;
 	}
 ) => Promise<CVE>;
-
-/**
- * Type of the function used to format bind arguments validation errors.
- */
-export type HandleBindArgsValidationErrorsShapeFn<
-	S extends StandardSchemaV1 | undefined,
-	BAS extends readonly StandardSchemaV1[],
-	MD,
-	Ctx extends object,
-	CBAVE,
-> = (
-	bindArgsValidationErrors: BindArgsValidationErrors<BAS>,
-	utils: {
-		clientInput: InferInputOrDefault<S, undefined>;
-		bindArgsClientInputs: InferInputArray<BAS>;
-		metadata: MD;
-		ctx: Prettify<Ctx>;
-	}
-) => Promise<CBAVE>;

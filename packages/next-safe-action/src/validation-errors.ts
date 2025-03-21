@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 import type { StandardSchemaV1 } from "./standard.types";
-import type {
-	FlattenedBindArgsValidationErrors,
-	FlattenedValidationErrors,
-	ValidationErrors,
-} from "./validation-errors.types";
+import type { FlattenedValidationErrors, ValidationErrors } from "./validation-errors.types";
 
 const getKey = (segment: PropertyKey | StandardSchemaV1.PathSegment) =>
 	typeof segment === "object" ? segment.key : segment;
@@ -73,6 +69,16 @@ export class ActionValidationError<CVE> extends Error {
 	}
 }
 
+// This class is internally used to throw validation errors in action's server code function, using
+// `returnValidationErrors`.
+export class ActionBindArgsValidationError extends Error {
+	public validationErrors: unknown[];
+	constructor(validationErrors: unknown[]) {
+		super("Server Action bind args validation error(s) occurred");
+		this.validationErrors = validationErrors;
+	}
+}
+
 /**
  * Return custom validation errors to the client from the action's server code function.
  * Code declared after this function invocation will not be executed.
@@ -94,16 +100,6 @@ export function returnValidationErrors<
  */
 export function formatValidationErrors<VE extends ValidationErrors<any>>(validationErrors: VE) {
 	return validationErrors;
-}
-
-/**
- * Default bind args validation errors format.
- * Emulation of `zod`'s [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) function.
- */
-export function formatBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]>(
-	bindArgsValidationErrors: BAVE
-) {
-	return bindArgsValidationErrors;
 }
 
 /**
@@ -132,21 +128,6 @@ export function flattenValidationErrors<VE extends ValidationErrors<any>>(valida
 	}
 
 	return flattened;
-}
-
-/**
- * Transform default formatted bind arguments validation errors into flattened structure.
- * `formErrors` contains global errors, and `fieldErrors` contains errors for each field,
- * one level deep. It discards errors for nested fields.
- * Emulation of `zod`'s [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) function.
- * @param {ValidationErrors[]} [bindArgsValidationErrors] Bind arguments validation errors object
- *
- * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
- */
-export function flattenBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]>(
-	bindArgsValidationErrors: BAVE
-) {
-	return bindArgsValidationErrors.map((ve) => flattenValidationErrors(ve)) as FlattenedBindArgsValidationErrors<BAVE>;
 }
 
 /**
