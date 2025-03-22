@@ -10,6 +10,7 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
  * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction).
  * @param safeActionFn The action function
  * @param utils Optional `initResult`, `permalink`, base utils and callbacks
+ * @deprecated Directly use `useActionState` hook from `react` instead.
  *
  * {@link https://next-safe-action.dev/docs/execute-actions/hooks/usestateaction See docs for more information}
  */
