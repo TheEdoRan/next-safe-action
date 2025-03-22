@@ -22,17 +22,20 @@ export default function Hook() {
 		hasSucceeded,
 		hasErrored,
 	} = useAction(deleteUser, {
-		onSuccess({ data, input }) {
-			console.log("HELLO FROM ONSUCCESS", data, input);
+		onSuccess(args) {
+			console.log("HELLO FROM ONSUCCESS", args);
 		},
-		onError({ error, input }) {
-			console.log("OH NO FROM ONERROR", error, input);
+		onError(args) {
+			console.log("OH NO FROM ONERROR", args);
 		},
-		onSettled({ result, input }) {
-			console.log("HELLO FROM ONSETTLED", result, input);
+		onNavigation(args) {
+			console.log("OH NO FROM ONNAVIGATION", args);
 		},
-		onExecute({ input }) {
-			console.log("HELLO FROM ONEXECUTE", input);
+		onSettled(args) {
+			console.log("HELLO FROM ONSETTLED", args);
+		},
+		onExecute(args) {
+			console.log("HELLO FROM ONEXECUTE", args);
 		},
 	});
 

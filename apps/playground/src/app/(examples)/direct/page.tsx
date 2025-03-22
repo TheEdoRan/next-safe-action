@@ -8,7 +8,7 @@ import { ResultBox } from "../../_components/result-box";
 import { loginUser } from "./login-action";
 
 export default function DirectExamplePage() {
-	const [result, setResult] = useState<any>(undefined);
+	const [result, setResult] = useState<any>({});
 
 	return (
 		<main className="w-96 max-w-full px-4">
