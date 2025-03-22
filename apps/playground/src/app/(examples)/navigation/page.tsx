@@ -39,6 +39,7 @@ export default function Navigation() {
 	});
 
 	console.dir({
+		result,
 		status,
 		isIdle,
 		isExecuting,
