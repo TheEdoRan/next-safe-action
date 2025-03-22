@@ -11,7 +11,7 @@ const bindArgsSchemas: [userId: z.ZodString, age: z.ZodNumber] = [z.string().uui
 
 export const onboardUser = action
 	.metadata({ actionName: "onboardUser" })
-	.schema(schema)
+	.inputSchema(schema)
 	.bindArgsSchemas(bindArgsSchemas)
 	.action(async ({ parsedInput: { username }, bindArgsParsedInputs: [userId, age] }) => {
 		await new Promise((res) => setTimeout(res, 1000));

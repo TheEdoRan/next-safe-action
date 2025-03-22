@@ -9,7 +9,7 @@ const schema = zfd.formData({
 
 export const fileUploadAction = action
 	.metadata({ actionName: "fileUploadAction" })
-	.schema(schema)
+	.inputSchema(schema)
 	.action(async ({ parsedInput }) => {
 		await new Promise((res) => setTimeout(res, 1000));
 
