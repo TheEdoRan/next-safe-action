@@ -121,7 +121,7 @@ export class SafeActionClient<
 	 *
 	 * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#inputschema See docs for more information}
 	 */
-	schema<
+	inputSchema<
 		OIS extends StandardSchemaV1 | ((prevSchema: IS) => Promise<StandardSchemaV1>), // override input schema
 		AIS extends StandardSchemaV1 = OIS extends (prevSchema: IS) => Promise<StandardSchemaV1>
 			? Awaited<ReturnType<OIS>>
@@ -155,6 +155,11 @@ export class SafeActionClient<
 			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
+
+	/**
+	 * @deprecated Alias for `inputSchema` method. Use that instead.
+	 */
+	schema = this.inputSchema;
 
 	/**
 	 * Define the bind args input validation schema for the action.
