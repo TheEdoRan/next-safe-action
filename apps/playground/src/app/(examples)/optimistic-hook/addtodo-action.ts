@@ -17,7 +17,7 @@ export const getTodos = async () => todos;
 
 export const addTodo = action
 	.metadata({ actionName: "" })
-	.schema(schema)
+	.inputSchema(schema)
 	.action(async ({ parsedInput }) => {
 		await new Promise((res) => setTimeout(res, 500));
 

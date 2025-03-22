@@ -9,7 +9,7 @@ const schema = z.object({
 
 export const deleteUser = action
 	.metadata({ actionName: "deleteUser" })
-	.schema(schema)
+	.inputSchema(schema)
 	.action(async ({ parsedInput: { userId } }) => {
 		await new Promise((res) => setTimeout(res, 1000));
 

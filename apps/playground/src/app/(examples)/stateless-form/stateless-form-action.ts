@@ -10,7 +10,7 @@ const schema = zfd.formData({
 
 export const statelessFormAction = action
 	.metadata({ actionName: "statelessFormAction" })
-	.schema(schema)
+	.inputSchema(schema)
 	.action(async ({ parsedInput }) => {
 		await new Promise((res) => setTimeout(res, 1000));
 

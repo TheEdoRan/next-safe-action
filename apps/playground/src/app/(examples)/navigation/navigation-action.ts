@@ -10,7 +10,7 @@ const schema = z.object({
 
 export const testNavigate = action
 	.metadata({ actionName: "testNavigate" })
-	.schema(schema)
+	.inputSchema(schema)
 	.action(
 		async ({ parsedInput: { kind } }) => {
 			await new Promise((res) => setTimeout(res, 1000));

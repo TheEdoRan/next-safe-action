@@ -11,7 +11,7 @@ const schema = z.object({
 
 export const loginUser = action
 	.metadata({ actionName: "loginUser" })
-	.schema(schema, {
+	.inputSchema(schema, {
 		// Here we use the `flattenValidationErrors` function to customize the returned validation errors
 		// object to the client.
 		handleValidationErrorsShape: async (ve) => flattenValidationErrors(ve).fieldErrors,
