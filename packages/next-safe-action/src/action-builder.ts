@@ -78,8 +78,8 @@ export function actionBuilder<
 				return async (...clientInputs: unknown[]) => {
 					let currentCtx: object = {};
 					const middlewareResult: MiddlewareResult<ServerError, object> = { success: false };
-					type PrevResult = SafeActionResult<ServerError, IS, CVE, Data> | undefined;
-					let prevResult: PrevResult | undefined = undefined;
+					type PrevResult = SafeActionResult<ServerError, IS, CVE, Data>;
+					let prevResult: PrevResult = {};
 					const parsedInputDatas: any[] = [];
 					const frameworkErrorHandler = new FrameworkErrorHandler();
 
@@ -216,7 +216,7 @@ export function actionBuilder<
 								// If this action is stateful, server code function also has a `prevResult` property inside the second
 								// argument object.
 								if (withState) {
-									scfArgs[1] = { prevResult: structuredClone(prevResult!) };
+									scfArgs[1] = { prevResult: structuredClone(prevResult) };
 								}
 
 								const data = await serverCodeFn(...scfArgs).catch((e) => frameworkErrorHandler.handleError(e));

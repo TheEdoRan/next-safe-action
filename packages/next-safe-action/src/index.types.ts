@@ -66,7 +66,7 @@ export type SafeActionFn<
 	Data,
 > = (
 	...clientInputs: [...bindArgsInputs: InferInputArray<BAS>, input: InferInputOrDefault<S, void>]
-) => Promise<SafeActionResult<ServerError, S, CVE, Data> | undefined>;
+) => Promise<SafeActionResult<ServerError, S, CVE, Data>>;
 
 /**
  * Type of the stateful function called from components with type safe input data.

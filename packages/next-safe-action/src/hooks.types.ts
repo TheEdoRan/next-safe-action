@@ -28,7 +28,7 @@ export type HookCallbacks<ServerError, S extends StandardSchemaV1 | undefined, C
  */
 export type HookSafeActionFn<ServerError, S extends StandardSchemaV1 | undefined, CVE, Data> = (
 	input: InferInputOrDefault<S, undefined>
-) => Promise<SafeActionResult<ServerError, S, CVE, Data> | undefined>;
+) => Promise<SafeActionResult<ServerError, S, CVE, Data>>;
 
 /**
  * Type of the stateful safe action function passed to hooks. Same as `SafeStateActionFn` except it accepts
@@ -62,9 +62,7 @@ export type HookShorthandStatus = {
  */
 export type UseActionHookReturn<ServerError, S extends StandardSchemaV1 | undefined, CVE, Data> = {
 	execute: (input: InferInputOrDefault<S, void>) => void;
-	executeAsync: (
-		input: InferInputOrDefault<S, void>
-	) => Promise<SafeActionResult<ServerError, S, CVE, Data> | undefined>;
+	executeAsync: (input: InferInputOrDefault<S, void>) => Promise<SafeActionResult<ServerError, S, CVE, Data>>;
 	input: InferInputOrDefault<S, undefined>;
 	result: Prettify<SafeActionResult<ServerError, S, CVE, Data>>;
 	reset: () => void;
