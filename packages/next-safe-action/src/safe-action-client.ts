@@ -69,9 +69,10 @@ export class SafeActionClient<
 	 */
 	inputSchema<
 		OIS extends StandardSchemaV1 | ((prevSchema: IS) => Promise<StandardSchemaV1>), // override input schema
-		AIS extends StandardSchemaV1 = OIS extends (prevSchema: IS) => Promise<StandardSchemaV1>
+		AIS extends StandardSchemaV1 = OIS extends (prevSchema: IS) => Promise<StandardSchemaV1> // actual input schema
 			? Awaited<ReturnType<OIS>>
-			: OIS, // actual input schema
+			: OIS,
+		// override custom validation errors shape
 		OCVE = ODVES extends "flattened" ? FlattenedValidationErrors<ValidationErrors<AIS>> : ValidationErrors<AIS>,
 	>(
 		inputSchema: OIS,
