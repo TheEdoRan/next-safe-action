@@ -40,17 +40,9 @@ export class SafeActionClient<
 	 */
 	use<NextCtx extends object>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, Ctx & NextCtx>) {
 		return new SafeActionClient({
+			...this.#args,
 			middlewareFns: [...this.#args.middlewareFns, middlewareFn],
-			handleServerError: this.#args.handleServerError,
-			metadataSchema: this.#args.metadataSchema,
-			metadata: this.#args.metadata,
-			inputSchemaFn: this.#args.inputSchemaFn,
-			outputSchema: this.#args.outputSchema,
-			bindArgsSchemas: this.#args.bindArgsSchemas,
-			handleValidationErrorsShape: this.#args.handleValidationErrorsShape,
 			ctxType: {} as Ctx & NextCtx,
-			defaultValidationErrorsShape: this.#args.defaultValidationErrorsShape,
-			throwValidationErrors: this.#args.throwValidationErrors,
 		});
 	}
 
@@ -62,17 +54,9 @@ export class SafeActionClient<
 	 */
 	metadata(data: MD) {
 		return new SafeActionClient({
-			middlewareFns: this.#args.middlewareFns,
-			handleServerError: this.#args.handleServerError,
-			metadataSchema: this.#args.metadataSchema,
+			...this.#args,
 			metadata: data,
-			inputSchemaFn: this.#args.inputSchemaFn,
-			bindArgsSchemas: this.#args.bindArgsSchemas,
-			outputSchema: this.#args.outputSchema,
-			handleValidationErrorsShape: this.#args.handleValidationErrorsShape,
 			ctxType: {} as Ctx,
-			defaultValidationErrorsShape: this.#args.defaultValidationErrorsShape,
-			throwValidationErrors: this.#args.throwValidationErrors,
 		});
 	}
 
@@ -96,10 +80,7 @@ export class SafeActionClient<
 		}
 	) {
 		return new SafeActionClient({
-			middlewareFns: this.#args.middlewareFns,
-			handleServerError: this.#args.handleServerError,
-			metadataSchema: this.#args.metadataSchema,
-			metadata: this.#args.metadata,
+			...this.#args,
 			// @ts-expect-error
 			inputSchemaFn: (inputSchema[Symbol.toStringTag] === "AsyncFunction"
 				? async () => {
@@ -108,13 +89,8 @@ export class SafeActionClient<
 						return inputSchema(prevSchema as IS) as AIS;
 					}
 				: async () => inputSchema) as ISF,
-			bindArgsSchemas: this.#args.bindArgsSchemas,
-			outputSchema: this.#args.outputSchema,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#args.handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
-			ctxType: {} as Ctx,
-			defaultValidationErrorsShape: this.#args.defaultValidationErrorsShape,
-			throwValidationErrors: this.#args.throwValidationErrors,
 		});
 	}
 
@@ -132,13 +108,8 @@ export class SafeActionClient<
 	 */
 	bindArgsSchemas<const OBAS extends readonly StandardSchemaV1[]>(bindArgsSchemas: OBAS) {
 		return new SafeActionClient({
-			middlewareFns: this.#args.middlewareFns,
-			handleServerError: this.#args.handleServerError,
-			metadataSchema: this.#args.metadataSchema,
-			metadata: this.#args.metadata,
-			inputSchemaFn: this.#args.inputSchemaFn,
+			...this.#args,
 			bindArgsSchemas,
-			outputSchema: this.#args.outputSchema,
 			handleValidationErrorsShape: this.#args.handleValidationErrorsShape as unknown as HandleValidationErrorsShapeFn<
 				IS,
 				OBAS,
@@ -146,9 +117,6 @@ export class SafeActionClient<
 				Ctx,
 				CVE
 			>,
-			ctxType: {} as Ctx,
-			defaultValidationErrorsShape: this.#args.defaultValidationErrorsShape,
-			throwValidationErrors: this.#args.throwValidationErrors,
 		});
 	}
 
@@ -160,17 +128,8 @@ export class SafeActionClient<
 	 */
 	outputSchema<OOS extends StandardSchemaV1>(dataSchema: OOS) {
 		return new SafeActionClient({
-			middlewareFns: this.#args.middlewareFns,
-			handleServerError: this.#args.handleServerError,
-			metadataSchema: this.#args.metadataSchema,
-			metadata: this.#args.metadata,
-			inputSchemaFn: this.#args.inputSchemaFn,
-			bindArgsSchemas: this.#args.bindArgsSchemas,
+			...this.#args,
 			outputSchema: dataSchema,
-			handleValidationErrorsShape: this.#args.handleValidationErrorsShape,
-			ctxType: {} as Ctx,
-			defaultValidationErrorsShape: this.#args.defaultValidationErrorsShape,
-			throwValidationErrors: this.#args.throwValidationErrors,
 		});
 	}
 
