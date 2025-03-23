@@ -7,7 +7,7 @@ import type {
 	StandardSchemaV1,
 } from "./standard.types";
 import type { MaybePromise, Prettify } from "./utils.types";
-import type { ValidationErrors } from "./validation-errors.types";
+import type { HandleValidationErrorsShapeFn, ValidationErrors } from "./validation-errors.types";
 
 /**
  * Type of the default validation errors shape passed to `createSafeActionClient` via `defaultValidationErrorsShape`
@@ -25,18 +25,51 @@ export type ServerErrorFunctionUtils<MetadataSchema extends StandardSchemaV1 | u
 	metadata: InferOutputOrDefault<MetadataSchema, undefined>;
 };
 
+export type HandleServerErrorFn<
+	ServerError = string,
+	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
+> = (error: Error, utils: ServerErrorFunctionUtils<MetadataSchema>) => MaybePromise<ServerError>;
+
+/**
+ * Type of the arguments passed to the `SafeActionClient` constructor.
+ */
+export type SafeActionClientArgs<
+	ServerError,
+	ODVES extends DVES | undefined, // override default validation errors shape
+	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
+	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
+	Ctx extends object = {},
+	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
+	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
+	OS extends StandardSchemaV1 | undefined = undefined, // output schema
+	BAS extends readonly StandardSchemaV1[] = [], // bind args schemas
+	CVE = undefined, // custom validation errors shape
+> = {
+	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
+	metadataSchema: MetadataSchema;
+	metadata: MD;
+	inputSchemaFn: ISF;
+	outputSchema: OS;
+	bindArgsSchemas: BAS;
+	handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
+	ctxType: Ctx;
+	handleServerError: HandleServerErrorFn<ServerError, MetadataSchema>;
+	defaultValidationErrorsShape: ODVES;
+	throwValidationErrors: boolean;
+};
+
 /**
  * Type of options when creating a new safe action client.
  */
-export type SafeActionClientOpts<
-	ServerError,
-	MetadataSchema extends StandardSchemaV1 | undefined,
-	ODVES extends DVES | undefined,
+export type CreateClientOpts<
+	ODVES extends DVES | undefined = undefined,
+	ServerError = string,
+	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
 > = {
 	defineMetadataSchema?: () => MetadataSchema;
-	handleServerError?: (error: Error, utils: ServerErrorFunctionUtils<MetadataSchema>) => MaybePromise<ServerError>;
-	throwValidationErrors?: boolean;
+	handleServerError?: HandleServerErrorFn<ServerError, MetadataSchema>;
 	defaultValidationErrorsShape?: ODVES;
+	throwValidationErrors?: boolean;
 };
 
 /**
