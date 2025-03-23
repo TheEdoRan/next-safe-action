@@ -1,4 +1,4 @@
-import type { DVES, SafeActionClientOpts } from "./index.types";
+import type { CreateClientOpts, DVES, HandleServerErrorFn } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
 import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard.types";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
@@ -30,10 +30,10 @@ export const createSafeActionClient = <
 	ServerError = string,
 	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
 >(
-	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
+	createOpts?: CreateClientOpts<ODVES, ServerError, MetadataSchema>
 ) => {
 	// If `handleServerError` is provided, use it, otherwise default to log to console and generic error message.
-	const handleServerError: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerError"]> =
+	const handleServerError: HandleServerErrorFn<ServerError, MetadataSchema> =
 		createOpts?.handleServerError ||
 		((e) => {
 			console.error("Action error:", e.message);

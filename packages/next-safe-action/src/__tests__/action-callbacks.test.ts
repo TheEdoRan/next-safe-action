@@ -46,7 +46,7 @@ test("action with input schemas and no errors calls `onSuccess` and `onSettled` 
 	const inputs = [crypto.randomUUID(), 30, { username: "johndoe" }] as const;
 
 	const action = ac
-		.schema(z.object({ username: z.string().min(3) }))
+		.inputSchema(z.object({ username: z.string().min(3) }))
 		.bindArgsSchemas([z.string().uuid(), z.number().positive()])
 		.action(
 			async () => {
@@ -114,7 +114,7 @@ test("action with input schemas and server error calls `onError` and `onSettled`
 	const inputs = [crypto.randomUUID(), 30, { username: "johndoe" }] as const;
 
 	const action = ac
-		.schema(z.object({ username: z.string().min(3) }))
+		.inputSchema(z.object({ username: z.string().min(3) }))
 		.bindArgsSchemas([z.string().uuid(), z.number().positive()])
 		.action(
 			async () => {
@@ -168,7 +168,7 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 	const inputs = [crypto.randomUUID(), 30, { username: "j" }] as const;
 
 	const action = ac
-		.schema(z.object({ username: z.string().min(3) }))
+		.inputSchema(z.object({ username: z.string().min(3) }))
 		.bindArgsSchemas([z.string().uuid(), z.number().positive()])
 		.action(
 			async () => {
@@ -233,7 +233,7 @@ test("action with server validation error calls `onError` and `onSettled` callba
 	const schema = z.object({
 		username: z.string(),
 	});
-	const action = ac.schema(z.object({ username: z.string().min(3) })).action(
+	const action = ac.inputSchema(z.object({ username: z.string().min(3) })).action(
 		async () => {
 			returnValidationErrors(schema, {
 				username: {

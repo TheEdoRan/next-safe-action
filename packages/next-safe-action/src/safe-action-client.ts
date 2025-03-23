@@ -2,7 +2,7 @@ import { actionBuilder } from "./action-builder";
 import type {
 	DVES,
 	MiddlewareFn,
-	SafeActionClientOpts,
+	SafeActionClientArgs,
 	SafeActionUtils,
 	ServerCodeFn,
 	StateServerCodeFn,
@@ -26,48 +26,10 @@ export class SafeActionClient<
 	const BAS extends readonly StandardSchemaV1[] = [],
 	CVE = undefined,
 > {
-	readonly #handleServerError: NonNullable<
-		SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerError"]
-	>;
-	readonly #middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
-	readonly #metadataSchema: MetadataSchema;
-	readonly #metadata: MD;
-	readonly #inputSchemaFn: ISF;
-	readonly #outputSchema: OS;
-	readonly #ctxType: Ctx;
-	readonly #bindArgsSchemas: BAS;
-	readonly #handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
-	readonly #defaultValidationErrorsShape: ODVES;
-	readonly #throwValidationErrors: boolean;
+	readonly #args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, Ctx, ISF, IS, OS, BAS, CVE>;
 
-	constructor(
-		opts: {
-			middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
-			metadataSchema: MetadataSchema;
-			metadata: MD;
-			inputSchemaFn: ISF;
-			outputSchema: OS;
-			bindArgsSchemas: BAS;
-			handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
-			ctxType: Ctx;
-		} & Required<
-			Pick<
-				SafeActionClientOpts<ServerError, MetadataSchema, ODVES>,
-				"handleServerError" | "defaultValidationErrorsShape" | "throwValidationErrors"
-			>
-		>
-	) {
-		this.#middlewareFns = opts.middlewareFns;
-		this.#handleServerError = opts.handleServerError;
-		this.#metadataSchema = opts.metadataSchema;
-		this.#metadata = opts.metadata;
-		this.#inputSchemaFn = (opts.inputSchemaFn ?? undefined) as ISF;
-		this.#outputSchema = opts.outputSchema;
-		this.#bindArgsSchemas = opts.bindArgsSchemas ?? [];
-		this.#ctxType = opts.ctxType as unknown as Ctx;
-		this.#handleValidationErrorsShape = opts.handleValidationErrorsShape;
-		this.#defaultValidationErrorsShape = opts.defaultValidationErrorsShape;
-		this.#throwValidationErrors = opts.throwValidationErrors;
+	constructor(args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, Ctx, ISF, IS, OS, BAS, CVE>) {
+		this.#args = args;
 	}
 
 	/**
@@ -78,17 +40,9 @@ export class SafeActionClient<
 	 */
 	use<NextCtx extends object>(middlewareFn: MiddlewareFn<ServerError, MD, Ctx, Ctx & NextCtx>) {
 		return new SafeActionClient({
-			middlewareFns: [...this.#middlewareFns, middlewareFn],
-			handleServerError: this.#handleServerError,
-			metadataSchema: this.#metadataSchema,
-			metadata: this.#metadata,
-			inputSchemaFn: this.#inputSchemaFn,
-			outputSchema: this.#outputSchema,
-			bindArgsSchemas: this.#bindArgsSchemas,
-			handleValidationErrorsShape: this.#handleValidationErrorsShape,
+			...this.#args,
+			middlewareFns: [...this.#args.middlewareFns, middlewareFn],
 			ctxType: {} as Ctx & NextCtx,
-			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
-			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
 
@@ -100,17 +54,9 @@ export class SafeActionClient<
 	 */
 	metadata(data: MD) {
 		return new SafeActionClient({
-			middlewareFns: this.#middlewareFns,
-			handleServerError: this.#handleServerError,
-			metadataSchema: this.#metadataSchema,
+			...this.#args,
 			metadata: data,
-			inputSchemaFn: this.#inputSchemaFn,
-			bindArgsSchemas: this.#bindArgsSchemas,
-			outputSchema: this.#outputSchema,
-			handleValidationErrorsShape: this.#handleValidationErrorsShape,
 			ctxType: {} as Ctx,
-			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
-			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
 
@@ -123,9 +69,10 @@ export class SafeActionClient<
 	 */
 	inputSchema<
 		OIS extends StandardSchemaV1 | ((prevSchema: IS) => Promise<StandardSchemaV1>), // override input schema
-		AIS extends StandardSchemaV1 = OIS extends (prevSchema: IS) => Promise<StandardSchemaV1>
+		AIS extends StandardSchemaV1 = OIS extends (prevSchema: IS) => Promise<StandardSchemaV1> // actual input schema
 			? Awaited<ReturnType<OIS>>
-			: OIS, // actual input schema
+			: OIS,
+		// override custom validation errors shape
 		OCVE = ODVES extends "flattened" ? FlattenedValidationErrors<ValidationErrors<AIS>> : ValidationErrors<AIS>,
 	>(
 		inputSchema: OIS,
@@ -134,25 +81,17 @@ export class SafeActionClient<
 		}
 	) {
 		return new SafeActionClient({
-			middlewareFns: this.#middlewareFns,
-			handleServerError: this.#handleServerError,
-			metadataSchema: this.#metadataSchema,
-			metadata: this.#metadata,
+			...this.#args,
 			// @ts-expect-error
 			inputSchemaFn: (inputSchema[Symbol.toStringTag] === "AsyncFunction"
 				? async () => {
-						const prevSchema = await this.#inputSchemaFn?.();
+						const prevSchema = await this.#args.inputSchemaFn?.();
 						// @ts-expect-error
 						return inputSchema(prevSchema as IS) as AIS;
 					}
 				: async () => inputSchema) as ISF,
-			bindArgsSchemas: this.#bindArgsSchemas,
-			outputSchema: this.#outputSchema,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
-				this.#handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
-			ctxType: {} as Ctx,
-			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
-			throwValidationErrors: this.#throwValidationErrors,
+				this.#args.handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
 		});
 	}
 
@@ -170,23 +109,15 @@ export class SafeActionClient<
 	 */
 	bindArgsSchemas<const OBAS extends readonly StandardSchemaV1[]>(bindArgsSchemas: OBAS) {
 		return new SafeActionClient({
-			middlewareFns: this.#middlewareFns,
-			handleServerError: this.#handleServerError,
-			metadataSchema: this.#metadataSchema,
-			metadata: this.#metadata,
-			inputSchemaFn: this.#inputSchemaFn,
+			...this.#args,
 			bindArgsSchemas,
-			outputSchema: this.#outputSchema,
-			handleValidationErrorsShape: this.#handleValidationErrorsShape as unknown as HandleValidationErrorsShapeFn<
+			handleValidationErrorsShape: this.#args.handleValidationErrorsShape as unknown as HandleValidationErrorsShapeFn<
 				IS,
 				OBAS,
 				MD,
 				Ctx,
 				CVE
 			>,
-			ctxType: {} as Ctx,
-			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
-			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
 
@@ -198,17 +129,8 @@ export class SafeActionClient<
 	 */
 	outputSchema<OOS extends StandardSchemaV1>(dataSchema: OOS) {
 		return new SafeActionClient({
-			middlewareFns: this.#middlewareFns,
-			handleServerError: this.#handleServerError,
-			metadataSchema: this.#metadataSchema,
-			metadata: this.#metadata,
-			inputSchemaFn: this.#inputSchemaFn,
-			bindArgsSchemas: this.#bindArgsSchemas,
+			...this.#args,
 			outputSchema: dataSchema,
-			handleValidationErrorsShape: this.#handleValidationErrorsShape,
-			ctxType: {} as Ctx,
-			defaultValidationErrorsShape: this.#defaultValidationErrorsShape,
-			throwValidationErrors: this.#throwValidationErrors,
 		});
 	}
 
@@ -223,18 +145,7 @@ export class SafeActionClient<
 		serverCodeFn: ServerCodeFn<MD, Ctx, IS, BAS, Data>,
 		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
 	) {
-		return actionBuilder({
-			handleServerError: this.#handleServerError,
-			middlewareFns: this.#middlewareFns,
-			ctxType: this.#ctxType,
-			metadataSchema: this.#metadataSchema,
-			metadata: this.#metadata,
-			inputSchemaFn: this.#inputSchemaFn,
-			bindArgsSchemas: this.#bindArgsSchemas,
-			outputSchema: this.#outputSchema,
-			handleValidationErrorsShape: this.#handleValidationErrorsShape,
-			throwValidationErrors: this.#throwValidationErrors,
-		}).action(serverCodeFn, utils);
+		return actionBuilder(this.#args).action(serverCodeFn, utils);
 	}
 
 	/**
@@ -249,17 +160,6 @@ export class SafeActionClient<
 		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, Data>,
 		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
 	) {
-		return actionBuilder({
-			handleServerError: this.#handleServerError,
-			middlewareFns: this.#middlewareFns,
-			ctxType: this.#ctxType,
-			metadataSchema: this.#metadataSchema,
-			metadata: this.#metadata,
-			inputSchemaFn: this.#inputSchemaFn,
-			bindArgsSchemas: this.#bindArgsSchemas,
-			outputSchema: this.#outputSchema,
-			handleValidationErrorsShape: this.#handleValidationErrorsShape,
-			throwValidationErrors: this.#throwValidationErrors,
-		}).stateAction(serverCodeFn, utils);
+		return actionBuilder(this.#args).stateAction(serverCodeFn, utils);
 	}
 }

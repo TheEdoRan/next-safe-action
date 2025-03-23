@@ -1,9 +1,9 @@
 import { deepmerge } from "deepmerge-ts";
 import type {} from "zod";
 import type {
-	MiddlewareFn,
+	DVES,
 	MiddlewareResult,
-	SafeActionClientOpts,
+	SafeActionClientArgs,
 	SafeActionFn,
 	SafeActionResult,
 	SafeActionUtils,
@@ -29,10 +29,11 @@ import {
 	ActionValidationError,
 	buildValidationErrors,
 } from "./validation-errors";
-import type { HandleValidationErrorsShapeFn, ValidationErrors } from "./validation-errors.types";
+import type { ValidationErrors } from "./validation-errors.types";
 
 export function actionBuilder<
 	ServerError,
+	ODVES extends DVES | undefined, // override default validation errors shape
 	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
 	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
 	Ctx extends object = {},
@@ -41,19 +42,8 @@ export function actionBuilder<
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	const BAS extends readonly StandardSchemaV1[] = [],
 	CVE = undefined,
->(args: {
-	inputSchemaFn?: ISF;
-	bindArgsSchemas?: BAS;
-	outputSchema?: OS;
-	handleValidationErrorsShape: HandleValidationErrorsShapeFn<IS, BAS, MD, Ctx, CVE>;
-	metadataSchema: MetadataSchema;
-	metadata: MD;
-	handleServerError: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, any>["handleServerError"]>;
-	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
-	ctxType: Ctx;
-	throwValidationErrors: boolean;
-}) {
-	const bindArgsSchemas = (args.bindArgsSchemas ?? []) as BAS;
+>(args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, Ctx, ISF, IS, OS, BAS, CVE>) {
+	const bindArgsSchemas = args.bindArgsSchemas ?? [];
 
 	function buildAction({ withState }: { withState: false }): {
 		action: <Data extends InferOutputOrDefault<OS, any>>(
