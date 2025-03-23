@@ -24,7 +24,7 @@ test("action with invalid bind args input and valid main input gives back a serv
 	];
 
 	const action = dac
-		.schema(schema)
+		.inputSchema(schema)
 		.bindArgsSchemas(bindArgsSchemas)
 		.action(async () => {
 			return {

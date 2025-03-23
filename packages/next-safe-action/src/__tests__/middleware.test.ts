@@ -91,7 +91,7 @@ test("instance context value is correctly overridden in subsequent middleware", 
 
 test("action client inputs are passed to middleware", async () => {
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -123,7 +123,7 @@ test("action client inputs are passed to middleware", async () => {
 
 test("invalid bind args give back a serverError result", async () => {
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -156,7 +156,7 @@ test("happy path execution result from middleware is correct", async () => {
 	let middlewareResult = {};
 
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -202,7 +202,7 @@ test("server error execution result from middleware is correct", async () => {
 	let middlewareResult = {};
 
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -238,7 +238,7 @@ test("validation errors in execution result from middleware are correct", async 
 	let middlewareResult = {};
 
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string().max(3),
 			})
@@ -280,7 +280,7 @@ test("server validation errors in execution result from middleware are correct",
 	});
 
 	const action = ac
-		.schema(schema)
+		.inputSchema(schema)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })])
 		.use(async ({ next }) => {
 			// Await action execution.
@@ -318,7 +318,7 @@ test("framework error result from middleware is correct", async () => {
 	let middlewareResult = {};
 
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -389,7 +389,7 @@ test("flattened validation errors in execution result from middleware are correc
 	let middlewareResult = {};
 
 	const action = flac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string().max(3),
 			})
@@ -426,7 +426,7 @@ test("overridden formatted validation errors in execution result from middleware
 	let middlewareResult = {};
 
 	const action = flac
-		.schema(
+		.inputSchema(
 			async () =>
 				z.object({
 					username: z.string().max(3),

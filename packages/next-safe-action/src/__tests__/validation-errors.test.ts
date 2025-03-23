@@ -30,7 +30,7 @@ test("action with invalid input gives back an object with correct `validationErr
 		}),
 	});
 
-	const action = dac.schema(schema).action(async () => {
+	const action = dac.inputSchema(schema).action(async () => {
 		return {
 			ok: true,
 		};
@@ -87,7 +87,7 @@ test("action with root level schema error gives back an object with correct `val
 			});
 	}
 
-	const action = dac.schema(getSchema).action(async () => {
+	const action = dac.inputSchema(getSchema).action(async () => {
 		return {
 			ok: true,
 		};
@@ -122,7 +122,7 @@ test("action with invalid input gives back an object with correct `validationErr
 		});
 
 	const action = dac
-		.schema(schema, {
+		.inputSchema(schema, {
 			handleValidationErrorsShape: async (ve) => flattenValidationErrors(ve),
 		})
 		.action(async () => {
@@ -220,7 +220,7 @@ test("action with invalid input gives back an object with correct `validationErr
 		}),
 	});
 
-	const action = foac.schema(schema).action(async () => {
+	const action = foac.inputSchema(schema).action(async () => {
 		return {
 			ok: true,
 		};
@@ -277,7 +277,7 @@ test("action with root level schema error gives back an object with correct `val
 			message: "UUID mismatch",
 		});
 
-	const action = foac.schema(schema).action(async () => {
+	const action = foac.inputSchema(schema).action(async () => {
 		return {
 			ok: true,
 		};
@@ -312,7 +312,7 @@ test("action with invalid input gives back an object with correct `validationErr
 		});
 
 	const action = foac
-		.schema(schema, {
+		.inputSchema(schema, {
 			handleValidationErrorsShape: async (ve) => flattenValidationErrors(ve),
 		})
 		.action(async () => {
@@ -356,7 +356,7 @@ test("action with invalid input gives back an object with correct `validationErr
 		}),
 	});
 
-	const action = flac.schema(schema).action(async () => {
+	const action = flac.inputSchema(schema).action(async () => {
 		return {
 			ok: true,
 		};
@@ -404,7 +404,7 @@ test("action with root level schema error gives back an object with correct `val
 			message: "Another cool global error",
 		});
 
-	const action = flac.schema(schema).action(async () => {
+	const action = flac.inputSchema(schema).action(async () => {
 		return {
 			ok: true,
 		};
@@ -445,7 +445,7 @@ test("action with invalid input gives back an object with correct `validationErr
 		});
 
 	const action = flac
-		.schema(schema, {
+		.inputSchema(schema, {
 			handleValidationErrorsShape: async (ve) => formatValidationErrors(ve),
 		})
 		.action(async () => {
@@ -492,7 +492,7 @@ test("action with errors set via `returnValidationErrors` gives back an object w
 		},
 	};
 
-	const action = dac.schema(schema).action(async ({ parsedInput }) => {
+	const action = dac.inputSchema(schema).action(async ({ parsedInput }) => {
 		if (parsedInput.username !== "johndoe" && parsedInput.password !== "password") {
 			returnValidationErrors(schema, structuredClone(errorsObject));
 		}
@@ -530,7 +530,7 @@ test("action with errors set via `returnValidationErrors` gives back an object w
 		},
 	};
 
-	const action = foac.schema(schema).action(async ({ parsedInput }) => {
+	const action = foac.inputSchema(schema).action(async ({ parsedInput }) => {
 		if (parsedInput.username !== "johndoe" && parsedInput.password !== "password") {
 			returnValidationErrors(schema, structuredClone(errorsObject));
 		}
@@ -558,7 +558,7 @@ test("action with errors set via `returnValidationErrors` gives back an object w
 		password: z.string(),
 	});
 
-	const action = flac.schema(schema).action(async ({ parsedInput }) => {
+	const action = flac.inputSchema(schema).action(async ({ parsedInput }) => {
 		if (parsedInput.username !== "johndoe" && parsedInput.password !== "password") {
 			returnValidationErrors(schema, {
 				_errors: ["incorrect_credentials", "another_error"],
@@ -603,7 +603,7 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		password: z.string().min(3),
 	});
 
-	const action = dac.schema(schema).action(
+	const action = dac.inputSchema(schema).action(
 		async () => {
 			return {
 				ok: true,
@@ -625,7 +625,7 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		password: z.string().min(3),
 	});
 
-	const action = tveac.schema(schema).action(async () => {
+	const action = tveac.inputSchema(schema).action(async () => {
 		return {
 			ok: true,
 		};
@@ -640,7 +640,7 @@ test("action with server validation errors and `throwValidationErrors` option se
 		password: z.string().min(3),
 	});
 
-	const action = tveac.schema(schema).action(async () => {
+	const action = tveac.inputSchema(schema).action(async () => {
 		returnValidationErrors(schema, {
 			username: {
 				_errors: ["user_suspended"],
@@ -660,7 +660,7 @@ test("action with validation errors and `throwValidationErrors` option set to tr
 		password: z.string().min(3),
 	});
 
-	const action = tveac.schema(schema).action(
+	const action = tveac.inputSchema(schema).action(
 		async () => {
 			return {
 				ok: true,
@@ -685,7 +685,7 @@ test("action with validation errors and overridden `throwValidationErrors` set t
 		}),
 	});
 
-	const action = tveac.schema(schema).action(
+	const action = tveac.inputSchema(schema).action(
 		async () => {
 			return {
 				ok: true,
