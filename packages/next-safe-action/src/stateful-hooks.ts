@@ -4,7 +4,7 @@ import * as React from "react";
 import {} from "react/experimental";
 import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
 import type { HookCallbacks, HookSafeStateActionFn, UseStateActionHookReturn } from "./hooks.types";
-import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 
 /**
  * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction).

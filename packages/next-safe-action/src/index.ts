@@ -1,6 +1,6 @@
 import type { CreateClientOpts, DVES, HandleServerErrorFn } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
-import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard.types";
+import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard-schema";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 import { flattenValidationErrors, formatValidationErrors } from "./validation-errors";
 

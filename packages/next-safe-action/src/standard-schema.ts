@@ -85,3 +85,7 @@ export type InferInputOrDefault<MaybeSchema, Default> = MaybeSchema extends Stan
 export type InferOutputOrDefault<MaybeSchema, Default> = MaybeSchema extends StandardSchemaV1
 	? StandardSchemaV1.InferOutput<MaybeSchema>
 	: Default;
+
+export async function standardParse<Output>(schema: StandardSchemaV1<unknown, Output>, value: unknown) {
+	return schema["~standard"].validate(value);
+}

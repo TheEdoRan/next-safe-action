@@ -11,7 +11,7 @@ import type {
 } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
-import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 
 // HOOKS
 

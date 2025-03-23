@@ -1,4 +1,4 @@
-import type { InferInputArray, InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
+import type { InferInputArray, InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 import type { Prettify } from "./utils.types";
 
 // Basic types and arrays.

@@ -5,7 +5,7 @@ import type {
 	InferOutputArray,
 	InferOutputOrDefault,
 	StandardSchemaV1,
-} from "./standard.types";
+} from "./standard-schema";
 import type { MaybePromise, Prettify } from "./utils.types";
 import type { HandleValidationErrorsShapeFn, ValidationErrors } from "./validation-errors.types";
 

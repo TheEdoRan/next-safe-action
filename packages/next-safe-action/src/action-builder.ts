@@ -12,14 +12,14 @@ import type {
 	StateServerCodeFn,
 } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
-import { standardParse } from "./standard";
 import type {
 	InferInputArray,
 	InferInputOrDefault,
 	InferOutputArray,
 	InferOutputOrDefault,
 	StandardSchemaV1,
-} from "./standard.types";
+} from "./standard-schema";
+import { standardParse } from "./standard-schema";
 import { DEFAULT_SERVER_ERROR_MESSAGE, isError, winningBoolean } from "./utils";
 import {
 	ActionBindArgsValidationError,

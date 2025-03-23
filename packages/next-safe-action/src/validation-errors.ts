@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
-import type { StandardSchemaV1 } from "./standard.types";
+import type { StandardSchemaV1 } from "./standard-schema";
 import type { FlattenedValidationErrors, ValidationErrors } from "./validation-errors.types";
 
 const getKey = (segment: PropertyKey | StandardSchemaV1.PathSegment) =>

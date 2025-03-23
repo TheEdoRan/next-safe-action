@@ -7,7 +7,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard.types";
+import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard-schema";
 import type {
 	FlattenedValidationErrors,
 	HandleValidationErrorsShapeFn,

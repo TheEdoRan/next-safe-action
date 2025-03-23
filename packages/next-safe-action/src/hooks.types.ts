@@ -1,5 +1,5 @@
 import type { NavigationKind, SafeActionFn, SafeActionResult, SafeStateActionFn } from "./index.types";
-import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 import type { MaybePromise, Prettify } from "./utils.types";
 
 /**

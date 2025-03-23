@@ -3,7 +3,7 @@ import {} from "react/experimental";
 import type { HookActionStatus, HookCallbacks, HookShorthandStatus } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
-import type { InferInputOrDefault, StandardSchemaV1 } from "./standard.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 
 export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
 	isIdle,
