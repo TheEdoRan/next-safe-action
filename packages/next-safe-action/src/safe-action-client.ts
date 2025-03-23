@@ -56,7 +56,6 @@ export class SafeActionClient<
 		return new SafeActionClient({
 			...this.#args,
 			metadata: data,
-			ctxType: {} as Ctx,
 		});
 	}
 
