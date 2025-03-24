@@ -38,6 +38,7 @@ export type SafeActionClientArgs<
 	ODVES extends DVES | undefined, // override default validation errors shape
 	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
 	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
+	MDProvided extends boolean = MetadataSchema extends undefined ? true : false,
 	Ctx extends object = {},
 	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
 	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
@@ -48,6 +49,7 @@ export type SafeActionClientArgs<
 	middlewareFns: MiddlewareFn<ServerError, any, any, any>[];
 	metadataSchema: MetadataSchema;
 	metadata: MD;
+	metadataProvided?: MDProvided;
 	inputSchemaFn: ISF;
 	outputSchema: OS;
 	bindArgsSchemas: BAS;
@@ -295,7 +297,7 @@ export type InferMiddlewareFnNextCtx<T> =
  * Infer the context type of a safe action client or middleware function.
  */
 export type InferCtx<T> = T extends
-	| SafeActionClient<any, any, any, any, infer Ctx extends object, any, any, any, any, any>
+	| SafeActionClient<any, any, any, any, false, infer Ctx extends object, any, any, any, any, any>
 	| MiddlewareFn<any, any, infer Ctx extends object, any>
 	? Ctx
 	: never;
@@ -304,7 +306,7 @@ export type InferCtx<T> = T extends
  * Infer the metadata type of a safe action client or middleware function.
  */
 export type InferMetadata<T> = T extends
-	| SafeActionClient<any, any, any, infer MD, any, any, any, any, any, any>
+	| SafeActionClient<any, any, any, infer MD, false, any, any, any, any, any, any>
 	| MiddlewareFn<any, infer MD, any, any>
 	? MD
 	: never;
@@ -313,7 +315,7 @@ export type InferMetadata<T> = T extends
  * Infer the server error type from a safe action client or a middleware function or a safe action function.
  */
 export type InferServerError<T> = T extends
-	| SafeActionClient<infer ServerError, any, any, any, any, any, any, any, any, any>
+	| SafeActionClient<infer ServerError, any, any, any, any, any, any, any, any, any, any>
 	| MiddlewareFn<infer ServerError, any, any, any>
 	| SafeActionFn<infer ServerError, any, any, any, any>
 	| SafeStateActionFn<infer ServerError, any, any, any, any>

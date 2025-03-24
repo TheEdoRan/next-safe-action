@@ -19,6 +19,7 @@ export class SafeActionClient<
 	ODVES extends DVES | undefined, // override default validation errors shape
 	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
 	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
+	MDProvided extends boolean = MetadataSchema extends undefined ? true : false,
 	Ctx extends object = {},
 	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
 	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
@@ -26,9 +27,11 @@ export class SafeActionClient<
 	const BAS extends readonly StandardSchemaV1[] = [],
 	CVE = undefined,
 > {
-	readonly #args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, Ctx, ISF, IS, OS, BAS, CVE>;
+	readonly #args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, MDProvided, Ctx, ISF, IS, OS, BAS, CVE>;
 
-	constructor(args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, Ctx, ISF, IS, OS, BAS, CVE>) {
+	constructor(
+		args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, MDProvided, Ctx, ISF, IS, OS, BAS, CVE>
+	) {
 		this.#args = args;
 	}
 
@@ -56,6 +59,7 @@ export class SafeActionClient<
 		return new SafeActionClient({
 			...this.#args,
 			metadata: data,
+			metadataProvided: true,
 		});
 	}
 
@@ -141,6 +145,9 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction See docs for more information}
 	 */
 	action<Data extends InferOutputOrDefault<OS, any>>(
+		this: MDProvided extends true
+			? SafeActionClient<ServerError, ODVES, MetadataSchema, MD, MDProvided, Ctx, ISF, IS, OS, BAS, CVE>
+			: never,
 		serverCodeFn: ServerCodeFn<MD, Ctx, IS, BAS, Data>,
 		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
 	) {
@@ -156,6 +163,9 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction See docs for more information}
 	 */
 	stateAction<Data extends InferOutputOrDefault<OS, any>>(
+		this: MDProvided extends true
+			? SafeActionClient<ServerError, ODVES, MetadataSchema, MD, MDProvided, Ctx, ISF, IS, OS, BAS, CVE>
+			: never,
 		serverCodeFn: StateServerCodeFn<ServerError, MD, Ctx, IS, BAS, CVE, Data>,
 		utils?: SafeActionUtils<ServerError, MD, Ctx, IS, BAS, CVE, Data>
 	) {

@@ -42,7 +42,7 @@ export function actionBuilder<
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	const BAS extends readonly StandardSchemaV1[] = [],
 	CVE = undefined,
->(args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, Ctx, ISF, IS, OS, BAS, CVE>) {
+>(args: SafeActionClientArgs<ServerError, ODVES, MetadataSchema, MD, true, Ctx, ISF, IS, OS, BAS, CVE>) {
 	const bindArgsSchemas = args.bindArgsSchemas ?? [];
 
 	function buildAction({ withState }: { withState: false }): {
