@@ -33,6 +33,7 @@ test("action with expected metadata format works", async () => {
 });
 
 test("action without expected metadata returns server error", async () => {
+	// @ts-expect-error
 	const action = ac.action(async ({ metadata }) => {
 		return {
 			metadata,
