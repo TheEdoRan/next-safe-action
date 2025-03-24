@@ -32,6 +32,11 @@ class ActionError extends Error {}
 
 // Base client.
 const actionClient = createSafeActionClient({
+  defineMetadataSchema() {
+    return z.object({
+      actionName: z.string(),
+    });
+  },
   handleServerError(e) {
     console.error("Action error:", e.message);
 
@@ -40,11 +45,6 @@ const actionClient = createSafeActionClient({
     }
 
     return DEFAULT_SERVER_ERROR_MESSAGE;
-  },
-  defineMetadataSchema() {
-    return z.object({
-      actionName: z.string(),
-    });
   },
   // Define logging middleware.
   // highlight-start
