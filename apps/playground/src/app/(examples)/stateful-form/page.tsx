@@ -8,12 +8,9 @@ import { useStateAction } from "next-safe-action/stateful-hooks";
 import { statefulFormAction } from "./stateful-form-action";
 
 export default function StatefulFormPage() {
-	const { execute, result, status, input } = useStateAction(
-		statefulFormAction,
-		{
-			initResult: { data: { newName: "jane" } }, // optionally pass initial state
-		}
-	);
+	const { execute, result, status, input } = useStateAction(statefulFormAction, {
+		initResult: { data: { newName: "jane" } }, // optionally pass initial state
+	});
 
 	return (
 		<main className="w-96 max-w-full px-4">

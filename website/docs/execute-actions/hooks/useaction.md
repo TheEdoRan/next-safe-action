@@ -64,7 +64,7 @@ As you can see, here we display a greet message after the action is performed, i
 ### `useAction` arguments
 
 - `safeActionFn`: the safe action that will be called via `execute` or `executeAsync` functions.
-- `utils?`: object with optional [base utils](/docs/execute-actions/hooks/hook-base-utils) and [callbacks](/docs/execute-actions/hooks/hook-callbacks).
+- `utils?`: object with [callbacks](/docs/execute-actions/hooks/hook-callbacks).
 
 ### `useAction` return object
 

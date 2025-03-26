@@ -71,11 +71,8 @@ export default {
 					sidebarPath: require.resolve("./sidebars.js"),
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
-					editUrl:
-						"https://github.com/TheEdoRan/next-safe-action/tree/main/website",
-					remarkPlugins: [
-						[require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
-					],
+					editUrl: "https://github.com/TheEdoRan/next-safe-action/tree/main/website",
+					remarkPlugins: [[require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }]],
 				},
 				blog: false,
 				theme: {

@@ -10,19 +10,14 @@ import { fileUploadAction } from "./file-upload-action";
 export default function FileUploadPage() {
 	const { execute, result, status, input } = useAction(fileUploadAction);
 
-	console.log("INPUT ->", Object.fromEntries(input?.entries() ?? []));
+	console.log("INPUT ->", input);
 	console.log("RESULT ->", result);
 
 	return (
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>File upload action</StyledHeading>
 			<form action={execute} className="flex flex-col mt-8 space-y-4">
-				<StyledInput
-					type="file"
-					name="image"
-					placeholder="Image"
-					accept="image/*"
-				/>
+				<StyledInput type="file" name="image" placeholder="Image" accept="image/*" />
 				<StyledButton type="submit">Submit</StyledButton>
 			</form>
 			<ResultBox result={result} status={status} />

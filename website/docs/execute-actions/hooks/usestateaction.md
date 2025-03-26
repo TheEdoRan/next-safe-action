@@ -92,7 +92,7 @@ export default function StatefulFormPage() {
 ### `useStateAction` arguments
 
 - `safeActionFn`: the safe stateful action that will be called via `execute` or `executeAsync` functions.
-- `utils`: object with optional `initResult`, `permalink`, [base utils](/docs/execute-actions/hooks/hook-base-utils) and [callbacks](/docs/execute-actions/hooks/hook-callbacks) properties. `initResult` is used to define the initial state of the stateful action. If not passed, the initial state will default to an empty object: `{}`. `permalink` is documented in [React docs](https://react.dev/reference/react/useActionState#parameters) for `useActionState` hook.
+- `utils`: object with optional `initResult`, `permalink`, and [callbacks](/docs/execute-actions/hooks/hook-callbacks) properties. `initResult` is used to define the initial state of the stateful action. If not passed, the initial state will default to an empty object: `{}`. `permalink` is documented in [React docs](https://react.dev/reference/react/useActionState#parameters) for `useActionState` hook.
 
 ### `useStateAction` return object
 

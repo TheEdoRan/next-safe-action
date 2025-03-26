@@ -117,7 +117,7 @@ export default function TodosBox({ todos }: Props) {
 ### `useOptimisticAction` arguments
 
 - `safeActionFn`: the safe action that will be called via `execute` or `executeAsync` functions.
-- `utils`: object with required `currentState` and `updateFn` properties and optional [base utils](/docs/execute-actions/hooks/hook-base-utils) and [callbacks](/docs/execute-actions/hooks/hook-callbacks). `currentState` is passed from the parent Server Component, and `updateFn` tells the hook how to update the optimistic state before receiving the server response.
+- `utils`: object with required `currentState` and `updateFn` properties and optional [callbacks](/docs/execute-actions/hooks/hook-callbacks). `currentState` is passed from the parent Server Component, and `updateFn` tells the hook how to update the optimistic state before receiving the server response.
 
 ### `useOptimisticAction` return object
 

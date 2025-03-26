@@ -3,63 +3,19 @@ sidebar_position: 1
 description: Learn how to create a safe action client,
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 # Create the client
 
-After [installing the correct packages](/docs/getting-started#installation), the first thing you have to do is to create an instance of the safe action client, using the correct configuration based on your validation library of choice:
+After [installing the correct packages](/docs/getting-started#installation), the first thing you have to do is to create an instance of the safe action client:
 
-<Tabs groupId="validation-libraries">
-<TabItem value="zod" label="Zod" default>
 ```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
 
 export const actionClient = createSafeActionClient();
 ```
 
-When using Zod, you don't need to specify a `validationAdapter`, because it's the default validation library for next-safe-action.
-</TabItem>
-<TabItem value="valibot" label="Valibot">
-```typescript title="src/lib/safe-action.ts"
-import { createSafeActionClient } from "next-safe-action";
-import { valibotAdapter } from "next-safe-action/adapters/valibot";
-
-export const actionClient = createSafeActionClient({
-  validationAdapter: valibotAdapter(),
-});
-```
-</TabItem>
-<TabItem value="yup" label="Yup">
-```typescript title="src/lib/safe-action.ts"
-import { createSafeActionClient } from "next-safe-action";
-import { yupAdapter } from "next-safe-action/adapters/yup";
-
-export const actionClient = createSafeActionClient({
-  validationAdapter: yupAdapter(),
-});
-```
-</TabItem>
-<TabItem value="typebox" label="TypeBox">
-```typescript title="src/lib/safe-action.ts"
-import { createSafeActionClient } from "next-safe-action";
-import { typeboxAdapter } from "next-safe-action/adapters/typebox";
-
-export const actionClient = createSafeActionClient({
-  validationAdapter: typeboxAdapter(),
-});
-```
-</TabItem>
-</Tabs>
-
-
 In the following section we will go through all the options that can be passed to the `createSafeActionClient` function to customize the client behavior for your needs.
 
 ## Initialization options
-
-### `validationAdapter?`
-
-This optional function is used to define which validation adapter should be used to validate the client input, based on the validation library of your choice. If not provided, the default `zodAdapter()` is used.
 
 ### `handleServerError?`
 
@@ -89,12 +45,15 @@ export const actionClient = createSafeActionClient({
 });
 ```
 
-<br/>
+<br />
 
 A more useful one would be to customize the message based on the error type. We can, for instance, create a custom error class and check the error type inside this function:
 
 ```typescript title=src/lib/safe-action.ts
-import { createSafeActionClient, DEFAULT_SERVER_ERROR_MESSAGE } from "next-safe-action";
+import {
+  createSafeActionClient,
+  DEFAULT_SERVER_ERROR_MESSAGE,
+} from "next-safe-action";
 
 class MyCustomError extends Error {}
 

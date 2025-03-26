@@ -6,9 +6,7 @@ export default function Home() {
 			<h1 className="text-4xl font-semibold">Playground</h1>
 			<div className="mt-4 flex flex-col space-y-2">
 				<ExampleLink href="/direct">Direct call</ExampleLink>
-				<ExampleLink href="/async-schema">
-					Direct call (async schema)
-				</ExampleLink>
+				<ExampleLink href="/async-schema">Direct call (async schema)</ExampleLink>
 				<ExampleLink href="/with-context">With Context</ExampleLink>
 				<ExampleLink href="/nested-schema">Nested schema</ExampleLink>
 				<ExampleLink href="/hook">
@@ -23,6 +21,7 @@ export default function Home() {
 				<ExampleLink href="/stateful-form">
 					Stateful form (<span className="font-mono">useStateAction</span> hook)
 				</ExampleLink>
+				<ExampleLink href="/navigation">Navigation</ExampleLink>
 				<ExampleLink href="/file-upload">File upload</ExampleLink>
 				<ExampleLink href="/bind-arguments">Bind arguments</ExampleLink>
 				<ExampleLink href="/no-arguments">No arguments</ExampleLink>

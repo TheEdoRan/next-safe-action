@@ -2,12 +2,11 @@
 
 import { StyledButton } from "@/app/_components/styled-button";
 import { StyledHeading } from "@/app/_components/styled-heading";
-import { StyledInput } from "@/app/_components/styled-input";
 import { useAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
-import { deleteUser } from "./deleteuser-action";
+import { testNavigate } from "./navigation-action";
 
-export default function Hook() {
+export default function Navigation() {
 	// Safe action (`deleteUser`) and optional callbacks passed to `useAction` hook.
 	const {
 		execute,
@@ -21,7 +20,7 @@ export default function Hook() {
 		isPending,
 		hasSucceeded,
 		hasErrored,
-	} = useAction(deleteUser, {
+	} = useAction(testNavigate, {
 		onSuccess(args) {
 			console.log("HELLO FROM ONSUCCESS", args);
 		},
@@ -29,7 +28,7 @@ export default function Hook() {
 			console.log("OH NO FROM ONERROR", args);
 		},
 		onNavigation(args) {
-			console.log("OH NO FROM ONNAVIGATION", args);
+			console.log("HELLO FROM ONNAVIGATION", args);
 		},
 		onSettled(args) {
 			console.log("HELLO FROM ONSETTLED", args);
@@ -40,6 +39,7 @@ export default function Hook() {
 	});
 
 	console.dir({
+		result,
 		status,
 		isIdle,
 		isExecuting,
@@ -52,27 +52,26 @@ export default function Hook() {
 	return (
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>Action using hook</StyledHeading>
-			<form
-				className="flex flex-col mt-8 space-y-4"
-				onSubmit={async (e) => {
-					e.preventDefault();
-					const formData = new FormData(e.currentTarget);
-					const input = Object.fromEntries(formData) as {
-						userId: string;
-					};
-
-					// Action call. Here we use `executeAsync` that lets us await the result. You can also use the `execute` function,
-					// which is synchronous.
-					const r = await executeAsync(input);
-					console.log("r", r);
-				}}
-			>
-				<StyledInput type="text" name="userId" id="userId" placeholder="User ID" />
-				<StyledButton type="submit">Delete user</StyledButton>
+			<div className="mt-8 flex flex-col space-y-4">
+				<StyledButton type="button" onClick={() => execute({ kind: "redirect" })}>
+					Redirect
+				</StyledButton>
+				<StyledButton type="button" onClick={() => execute({ kind: "notFound" })}>
+					Not found
+				</StyledButton>
+				<StyledButton type="button" onClick={() => execute({ kind: "forbidden" })}>
+					Forbidden
+				</StyledButton>
+				<StyledButton type="button" onClick={() => execute({ kind: "unauthorized" })}>
+					Unauthorized
+				</StyledButton>
+				<StyledButton type="button" onClick={() => execute({ kind: "happy-path" })}>
+					Happy path
+				</StyledButton>
 				<StyledButton type="button" onClick={reset}>
 					Reset
 				</StyledButton>
-			</form>
+			</div>
 			<ResultBox result={result} status={status} />
 		</main>
 	);

@@ -17,15 +17,15 @@ export function Hero() {
 										{siteConfig.tagline}
 									</h1>
 									<h2 className="text-zinc-700 dark:text-zinc-300 font-medium text-base sm:text-lg md:text-xl max-w-xl">
-										next-safe-action handles your Next.js app mutations type
-										safety, input/output validation, server errors and even
-										more!
+										next-safe-action handles your Next.js app mutations type safety, input/output validation, server
+										errors and even more!
 									</h2>
 								</div>
 								<div className="flex justify-center items-center gap-4">
 									<a
 										href="/docs/getting-started"
-										className="!no-underline hover:brightness-90 transition !text-zinc-100 cursor-pointer rounded-lg bg-zinc-800 px-3 py-2 font-bold inline-flex items-center justify-center text-sm sm:text-lg md:text-xl">
+										className="!no-underline hover:brightness-90 transition !text-zinc-100 cursor-pointer rounded-lg bg-zinc-800 px-3 py-2 font-bold inline-flex items-center justify-center text-sm sm:text-lg md:text-xl"
+									>
 										Getting started ➡️
 									</a>
 									<GitHubButton />

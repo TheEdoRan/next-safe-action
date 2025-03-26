@@ -1,4 +1,4 @@
-import type { Infer, InferIn, Schema } from "./adapters/types";
+import type { InferInputArray, InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 import type { Prettify } from "./utils.types";
 
 // Basic types and arrays.
@@ -15,18 +15,11 @@ type SchemaErrors<S> = {
 /**
  * Type of the returned object when validation fails.
  */
-export type ValidationErrors<S extends Schema | undefined> = S extends Schema
-	? Infer<S> extends NotObject
+export type ValidationErrors<S extends StandardSchemaV1 | undefined> = S extends StandardSchemaV1
+	? StandardSchemaV1.InferOutput<S> extends NotObject
 		? VEList
-		: Prettify<VEList & SchemaErrors<Infer<S>>>
+		: Prettify<VEList & SchemaErrors<StandardSchemaV1.InferOutput<S>>>
 	: undefined;
-
-/**
- * Type of the array of bind arguments validation errors.
- */
-export type BindArgsValidationErrors<BAS extends readonly Schema[]> = {
-	[K in keyof BAS]: ValidationErrors<BAS[K]>;
-};
 
 /**
  * Type of flattened validation errors. `formErrors` contains global errors, and `fieldErrors`
@@ -40,46 +33,20 @@ export type FlattenedValidationErrors<VE extends ValidationErrors<any>> = Pretti
 }>;
 
 /**
- * Type of flattened bind arguments validation errors.
- */
-export type FlattenedBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]> = {
-	[K in keyof BAVE]: FlattenedValidationErrors<BAVE[K]>;
-};
-
-/**
  * Type of the function used to format validation errors.
  */
 export type HandleValidationErrorsShapeFn<
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
+	S extends StandardSchemaV1 | undefined,
+	BAS extends readonly StandardSchemaV1[],
 	MD,
 	Ctx extends object,
 	CVE,
 > = (
 	validationErrors: ValidationErrors<S>,
 	utils: {
-		clientInput: S extends Schema ? InferIn<S> : undefined;
-		bindArgsClientInputs: BAS;
+		clientInput: InferInputOrDefault<S, undefined>;
+		bindArgsClientInputs: InferInputArray<BAS>;
 		metadata: MD;
 		ctx: Prettify<Ctx>;
 	}
 ) => Promise<CVE>;
-
-/**
- * Type of the function used to format bind arguments validation errors.
- */
-export type HandleBindArgsValidationErrorsShapeFn<
-	S extends Schema | undefined,
-	BAS extends readonly Schema[],
-	MD,
-	Ctx extends object,
-	CBAVE,
-> = (
-	bindArgsValidationErrors: BindArgsValidationErrors<BAS>,
-	utils: {
-		clientInput: S extends Schema ? InferIn<S> : undefined;
-		bindArgsClientInputs: BAS;
-		metadata: MD;
-		ctx: Prettify<Ctx>;
-	}
-) => Promise<CBAVE>;
