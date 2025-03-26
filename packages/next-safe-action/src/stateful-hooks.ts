@@ -35,6 +35,7 @@ export const useStateAction = <ServerError, S extends StandardSchemaV1 | undefin
 		isIdle,
 		// FIXME: This is a workaround to avoid the status being "hasNavigated" when the action is executed.
 		hasNavigated: false,
+		hasThrownError: false,
 	});
 
 	const execute = React.useCallback(
@@ -61,6 +62,8 @@ export const useStateAction = <ServerError, S extends StandardSchemaV1 | undefin
 			onError: utils?.onError,
 			onSettled: utils?.onSettled,
 		},
+		navigationError: null,
+		thrownError: null,
 	});
 
 	return {

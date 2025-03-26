@@ -31,6 +31,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [navigationError, setNavigationError] = React.useState<Error | null>(null);
+	const [thrownError, setThrownError] = React.useState<Error | null>(null);
 	const [isIdle, setIsIdle] = React.useState(true);
 
 	const status = getActionStatus<ServerError, S, CVE, Data>({
@@ -38,6 +39,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 		result,
 		isIdle,
 		hasNavigated: navigationError !== null,
+		hasThrownError: thrownError !== null,
 	});
 
 	const execute = React.useCallback(
@@ -45,6 +47,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 			setTimeout(() => {
 				setIsIdle(false);
 				setNavigationError(null);
+				setThrownError(null);
 				setClientInput(input);
 				setIsExecuting(true);
 			}, 0);
@@ -60,6 +63,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 							return;
 						}
 
+						setThrownError(e as Error);
 						throw e;
 					})
 					.finally(() => {
@@ -76,6 +80,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 				setTimeout(() => {
 					setIsIdle(false);
 					setNavigationError(null);
+					setThrownError(null);
 					setClientInput(input);
 					setIsExecuting(true);
 				}, 0);
@@ -94,6 +99,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 								return;
 							}
 
+							setThrownError(e as Error);
 							reject(e);
 						})
 						.finally(() => {
@@ -110,6 +116,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 	const reset = React.useCallback(() => {
 		setIsIdle(true);
 		setNavigationError(null);
+		setThrownError(null);
 		setClientInput(undefined);
 		setResult({});
 	}, []);
@@ -119,6 +126,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 		input: clientInput as InferInputOrDefault<S, undefined>,
 		status,
 		navigationError,
+		thrownError,
 		cb,
 	});
 
@@ -152,6 +160,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [navigationError, setNavigationError] = React.useState<Error | null>(null);
+	const [thrownError, setThrownError] = React.useState<Error | null>(null);
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [optimisticState, setOptimisticValue] = React.useOptimistic<State, InferInputOrDefault<S, undefined>>(
 		utils.currentState,
@@ -163,6 +172,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 		result,
 		isIdle,
 		hasNavigated: navigationError !== null,
+		hasThrownError: thrownError !== null,
 	});
 
 	const execute = React.useCallback(
@@ -171,6 +181,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 				setIsIdle(false);
 				setClientInput(input);
 				setNavigationError(null);
+				setThrownError(null);
 				setIsExecuting(true);
 			}, 0);
 
@@ -186,6 +197,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 							return;
 						}
 
+						setThrownError(e as Error);
 						throw e;
 					})
 					.finally(() => {
@@ -203,6 +215,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 					setIsIdle(false);
 					setClientInput(input);
 					setNavigationError(null);
+					setThrownError(null);
 					setIsExecuting(true);
 				}, 0);
 
@@ -221,6 +234,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 								return;
 							}
 
+							setThrownError(e as Error);
 							reject(e);
 						})
 						.finally(() => {
@@ -238,6 +252,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 		setIsIdle(true);
 		setClientInput(undefined);
 		setNavigationError(null);
+		setThrownError(null);
 		setResult({});
 	}, []);
 
@@ -246,6 +261,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 		input: clientInput as InferInputOrDefault<S, undefined>,
 		status,
 		navigationError,
+		thrownError,
 		cb: {
 			onExecute: utils.onExecute,
 			onSuccess: utils.onSuccess,

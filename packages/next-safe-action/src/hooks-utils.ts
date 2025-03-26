@@ -10,17 +10,23 @@ export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefi
 	isExecuting,
 	result,
 	hasNavigated,
+	hasThrownError,
 }: {
 	isIdle: boolean;
 	isExecuting: boolean;
 	hasNavigated: boolean;
+	hasThrownError: boolean;
 	result: SafeActionResult<ServerError, S, CVE, Data>;
 }): HookActionStatus => {
 	if (isIdle) {
 		return "idle";
 	} else if (isExecuting) {
 		return "executing";
-	} else if (typeof result.validationErrors !== "undefined" || typeof result.serverError !== "undefined") {
+	} else if (
+		hasThrownError ||
+		typeof result.validationErrors !== "undefined" ||
+		typeof result.serverError !== "undefined"
+	) {
 		return "hasErrored";
 	} else if (hasNavigated) {
 		return "hasNavigated";
@@ -53,12 +59,14 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 	status,
 	cb,
 	navigationError,
+	thrownError,
 }: {
 	result: SafeActionResult<ServerError, S, CVE, Data>;
 	input: InferInputOrDefault<S, undefined>;
 	status: HookActionStatus;
 	cb?: HookCallbacks<ServerError, S, CVE, Data>;
-	navigationError?: Error | null;
+	navigationError: Error | null;
+	thrownError: Error | null;
 }) => {
 	const onExecuteRef = React.useRef(cb?.onExecute);
 	const onSuccessRef = React.useRef(cb?.onSuccess);
@@ -80,7 +88,7 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 					await Promise.resolve(onExecute?.({ input })).then(() => {});
 					break;
 				case "hasSucceeded":
-					if (navigationError) {
+					if (navigationError || thrownError) {
 						break;
 					}
 
@@ -91,7 +99,7 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 					break;
 				case "hasErrored":
 					await Promise.all([
-						Promise.resolve(onError?.({ error: result, input })),
+						Promise.resolve(onError?.({ error: { ...result, ...(thrownError ? { thrownError } : {}) }, input })),
 						Promise.resolve(onSettled?.({ result, input })),
 					]);
 					break;
@@ -113,5 +121,5 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 		};
 
 		executeCallbacks().catch(console.error);
-	}, [input, status, result, navigationError]);
+	}, [input, status, result, navigationError, thrownError]);
 };
