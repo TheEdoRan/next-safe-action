@@ -211,7 +211,7 @@ export type SafeActionUtils<
 	Data,
 > = {
 	throwServerError?: boolean;
-	throwValidationErrors?: boolean;
+	throwValidationErrors?: boolean | { overrideErrorMessage: (validationErrors: CVE) => Promise<string> };
 	onSuccess?: (args: {
 		data?: Data;
 		metadata: MD;
