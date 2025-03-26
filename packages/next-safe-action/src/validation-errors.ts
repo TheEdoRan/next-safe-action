@@ -63,8 +63,8 @@ export class ActionServerValidationError<S extends StandardSchemaV1> extends Err
 // `returnValidationErrors`.
 export class ActionValidationError<CVE> extends Error {
 	public validationErrors: CVE;
-	constructor(validationErrors: CVE) {
-		super("Server Action validation error(s) occurred");
+	constructor(validationErrors: CVE, overriddenErrorMessage?: string) {
+		super(overriddenErrorMessage ?? "Server Action validation error(s) occurred");
 		this.validationErrors = validationErrors;
 	}
 }

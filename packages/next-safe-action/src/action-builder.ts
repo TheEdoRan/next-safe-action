@@ -295,8 +295,21 @@ export function actionBuilder<
 					if (typeof middlewareResult.validationErrors !== "undefined") {
 						// `utils.throwValidationErrors` has higher priority since it's set at the action level.
 						// It overrides the client setting, if set.
-						if (winningBoolean(args.throwValidationErrors, utils?.throwValidationErrors)) {
-							throw new ActionValidationError(middlewareResult.validationErrors as CVE);
+						if (
+							winningBoolean(
+								args.throwValidationErrors,
+								typeof utils?.throwValidationErrors === "undefined" ? undefined : Boolean(utils.throwValidationErrors)
+							)
+						) {
+							const overrideErrorMessageFn =
+								typeof utils?.throwValidationErrors === "object" && utils?.throwValidationErrors.overrideErrorMessage
+									? utils?.throwValidationErrors.overrideErrorMessage
+									: undefined;
+
+							throw new ActionValidationError(
+								middlewareResult.validationErrors as CVE,
+								await overrideErrorMessageFn?.(middlewareResult.validationErrors as CVE)
+							);
 						} else {
 							actionResult.validationErrors = middlewareResult.validationErrors as CVE;
 						}
