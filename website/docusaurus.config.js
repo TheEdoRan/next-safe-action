@@ -128,6 +128,14 @@ export default {
 				},
 			],
 		},
+		announcementBar: {
+			id: "next-safe-action-v8",
+			content:
+				"next-safe-action v8 is now available! Check out the <a href='/docs/migrations/v7-to-v8'>migration guide</a> to learn how to update your code for v8.",
+			backgroundColor: "#2B2B2B",
+			textColor: "#fff",
+			isCloseable: true,
+		},
 		prism: {
 			additionalLanguages: ["typescript"],
 			theme: themes.vsLight,
