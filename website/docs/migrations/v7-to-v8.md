@@ -8,9 +8,15 @@ sidebar_label: v7 to v8
 
 Version 8 introduces significant changes to the validation system, improves type safety for metadata, and fixes next/navigation behaviors.
 
+Legend:
+- ⚠️ Breaking change
+- 🆕 New feature
+- ⏳ Deprecation
+- ✨ Improvement
+
 ## What's new?
 
-### [BREAKING] Standard Schema support
+### ⚠️🆕 Standard Schema support
 
 The biggest change in v8 is the switch to [Standard Schema](https://github.com/standard-schema/standard-schema) for validation. This removes the need for internal custom validation adapters and simplifies the API. You can find the supported Standard Schema libraries [here](https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec).
 
@@ -29,7 +35,7 @@ import { createSafeActionClient } from "next-safe-action";
 export const actionClient = createSafeActionClient();
 ```
 
-### [BREAKING] Navigation status and callbacks
+### ⚠️🆕 Navigation status and callbacks
 
 The behavior when using functions from `next/navigation` was very unclear and confusing in v7 and below, since all functions from `next/navigation` produced a `hasSucceeded` status and triggered `onSuccess` callbacks.
 
@@ -61,9 +67,9 @@ const { execute, status } = useAction(action, {
 });
 ```
 
-### [BREAKING] Stricter bound args validation
+### ⚠️✨ Stricter bound args validation
 
-When using bound arguments with invalid data, errors are now thrown instead of being returned as part of the result object. This is because bound arguments should not be passed to the action from the user, instead they should be received from the server. So, this change aligns the behavior of bound arguments with the behavior of metadata, and prevents potential leakage of sensitive data on the client side.
+When using bound arguments with invalid data, errors are now thrown instead of being returned as part of the result object. This is because bound arguments should not be passed to the action from the user, instead they should be received from the server. So, this change aligns the behavior of bound arguments with the behavior of metadata and output validation, and prevents potential leakage of sensitive data on the client side.
 
 ```typescript title="v7"
 const boundAction = action.bind(null, invalidBindArg);
@@ -81,102 +87,89 @@ const boundAction = action.bind(null, invalidBindArg);
 const result = await boundAction(input);
 ```
 
-### [BREAKING] Removal of deprecated `executeOnMount` hook option
+### ⚠️✨ Removal of deprecated `executeOnMount` hook option
 
-The `executeOnMount` option has been removed from hooks:
+The deprecated `executeOnMount` hook functionality has been removed in v8. Server Actions should be used only for mutations, so it doesn't make sense to execute them on mount. Or at least, it shouldn't be a common case and, above all, a library job. If you still need to do it, just use `useEffect` to trigger the execution, however you want.
 
-```typescript
-// v7
-const { data } = useAction(action, {
-  executeOnMount: true,
-  initialInput: { name: "John" }
-});
+### ⏳ `schema` method renamed to `inputSchema`
 
-// v8 - no longer supported
-// You should execute the action manually when the component mounts
-const { execute, data } = useAction(action);
-useEffect(() => {
-  execute({ name: "John" });
-}, []);
+The library, since version 7.8.0, supports both input and output validation, respectively using the `schema` and `outputSchema` methods. In v8, the `schema` method has been renamed to `inputSchema` to better reflect its purpose, and avoid potential confusion.
+
+The `schema` method is deprecated and will be removed in a future version, but it's still available for backward compatibility. It's now just an alias for `inputSchema`:
+
+```typescript title="v7"
+actionClient.schema(/* ... */)
 ```
 
-### Type-checked metadata
+```typescript title="v8"
+actionClient.inputSchema(/* ... */)
+```
 
-Metadata is now type-checked when passed to actions. So, now if you forget to pass the expected metadata, you will get a type error.
+:::info UPDATE EXISTING ACTIONS
+To update your actions, you can just use the search and replace feature of your editor to replace all occurrences of `.schema` with `.inputSchema`.
+:::
+
+### ✨ Type-checked metadata
+
+This is a big improvement in type safety over v7. Metadata is now statically type-checked when passed to actions. So, now if you forget to pass the expected metadata shape, as defined by the `defineMetadataSchema` init option, you will get a type error immediately:
 
 <video controls autoPlay loop muted width="320" height="240">
   <source src="/vid/metadata-v8.mp4"/>
 </video>
 
-### Custom thrown validation error messages
+### ✨ Custom thrown validation error messages
 
-A new `overrideErrorMessage` function has been added to the `throwValidationErrors` utility, allowing you to customize error messages:
+The `throwValidationErrors` option now accepts both a boolean (just like in v7) and an object with a `overrideErrorMessage` function, that allows you to customize the thrown `Error` message on the client side.
 
 ```typescript
 import { throwValidationErrors, overrideErrorMessage } from "next-safe-action";
 
-actionClient
-  .inputSchema((s) => ({
-    username: s.string().minLength(3)
-  }))
-  .action(async ({ parsedInput: { username } }) => {
-    // Custom validation error with overridden message
-    if (usernameExists(username)) {
-      throwValidationErrors({
-        username: overrideErrorMessage("This username is already taken")
-      });
-    }
-    
-    // ...
-  });
-```
-### `schema` method renamed to `inputSchema`
-
-The `schema` method has been renamed to `inputSchema` to better reflect its purpose:
-
-```typescript
-// v7
-actionClient.schema(/* ... */)
-
-// v8
-actionClient.inputSchema(/* ... */)
+const action = actionClient
+  .inputSchema(z.object({ name: z.string() }))
+  .action(
+  async () => {
+    return {
+      success: true,
+    };
+  },
+  {
+    throwValidationErrors: {
+      // If input validation fails, here we can customize the error message
+      // returned to the client.
+      overrideErrorMessage: async (validationErrors) => {
+        return validationErrors.name?._errors?.join(" ") ?? "";
+      },
+    },
+  }
+);
 ```
 
-The `schema` method is deprecated and will be removed in a future version.
+### ✨ Safe action result always defined
 
+The action result object is now always defined. This allows you to destructure it without the need to check if it's defined or not first:
 
-### Safe action result always defined
-
-The result of action execution is now always defined, even when there are validation errors:
-
-```typescript
-// v7
+```typescript title="v7"
+// Cannot access data directly, we need to check if
+// result is defined first.
 const result = await action(input);
-if (result.data) {
-  // Only access data if it exists
+
+if (result?.data) {
+  // Do something with the data...
 }
-
-// v8
-const result = await action(input);
-// result.data is always defined (unless there's a server error)
 ```
 
+```typescript title="v8"
+// Now we can destructure the result object and
+// access data directly.
+const { data } = await action(input);
+```
 
 ### Deprecated `useStateAction` hook
 
-The `useStateAction` hook has been deprecated. Consider using the regular `useAction` hook instead.
+The `useStateAction` hook has been deprecated. It's always been kind of a hack to begin with, and it doesn't support progressive enhancement, since it tries to do what the `useAction` and `useOptimisticAction` hooks do.
 
-## Improved error handling
-
-Thrown errors in hooks now properly set the `hasErrored` status and trigger the `onError` callback:
-
-```typescript
-const { execute, hasErrored } = useAction(action, {
-  onError: (error) => {
-    console.error("Action failed:", error);
-  }
-});
-```
+So, from now one, the recommended way to use stateful actions is to do it with the React's built in `useActionState` hook, as explained in [this section](#) of the documentation.
+#### TODO: add link
 
 ## Requirements
 
@@ -184,4 +177,4 @@ next-safe-action version 8 requires Next.js 14 and React 18.2.0 or later to work
 
 ## What about v7?
 
-You can still keep using version 7 and eventually upgrade to version 8. Note that version 7 is frozen and no new features will be released in the future for it. v7 documentation can still be found [here](https://v7.next-safe-action.dev).
+You can find the v7 documentation [here](https://v7.next-safe-action.dev).
