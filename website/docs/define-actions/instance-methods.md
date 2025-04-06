@@ -25,21 +25,21 @@ metadata(data: Metadata) => new SafeActionClient()
 
 `metadata` lets you specify useful data about the safe action you're executing. You can access it in the `middlewareFn` passed to [`use`](#use) and in [`serverCodeFn`](#servercodefn) passed to [`action`/`stateAction`](#action--stateaction). If there's a mismatch between the metadata schema and the data you pass to `metadata`, the action will throw an error during execution. It returns a new instance of the safe action client.
 
-### `schema`
+### `inputSchema`
 
 ```typescript
-schema(inputSchema: S, utils?: { handleValidationErrorsShape?: HandleValidationErrorsShapeFn } }) => new SafeActionClient()
+inputSchema(inputSchema: S, utils?: { handleValidationErrorsShape?: HandleValidationErrorsShapeFn } }) => new SafeActionClient()
 ```
 
-`schema` accepts an input schema of type `Schema` or a function that returns a promise of type `Schema` and an optional `utils` object that accepts an async [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns a new instance of the safe action client.
+`inputSchema` accepts an input schema of type `Schema` or a function that returns a promise of type `Schema` and an optional `utils` object that accepts an async [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function. The schema is used to define the arguments that the safe action will receive, the optional [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function is used to return a custom format for validation errors. If you don't pass an input schema, `parsedInput` and validation errors will be typed `undefined`, and `clientInput` will be typed `void`. It returns a new instance of the safe action client.
 
 ### `bindArgsSchemas`
 
 ```typescript
-bindArgsSchemas(bindArgsSchemas: BAS, bindArgsUtils?: { handleBindArgsValidationErrorsShape?: HandleBindArgsValidationErrorsShapeFn }) => new SafeActionClient()
+bindArgsSchemas(bindArgsSchemas: BAS) => new SafeActionClient()
 ```
 
-`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]` and an optional `bindArgsUtils` object that accepts an async [`handleBindArgsValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function. The schema is used to define the bind arguments that the safe action will receive, the optional [`handleBindArgsValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function is used to [return a custom format for bind arguments validation errors](/docs/define-actions/validation-errors#customize-validation-errors-format). It returns a new instance of the safe action client.
+`bindArgsSchemas` accepts an array of bind input schemas of type `Schema[]`. It returns a new instance of the safe action client. If validation fails, an `ActionBindArgsValidationError` is thrown on the server side.
 
 ### `outputSchema`
 
@@ -87,3 +87,9 @@ serverCodeFn = (
 `serverCodeFn` is the async function of type `ServerCodeFn`/`StateServerCodeFn` that will be executed on the **server side** when the action is invoked. If input validation fails, or execution gets halted in a middleware function, the server code function will not be called.
 
 In the case of a stateful safe action, `serverCodeFn` will also receive the `prevResult` as a property of the second argument (`utils` object) from the previous action execution, thanks to the [`useStateAction`](/docs/execute-actions/hooks/usestateaction) hook (that uses React's [`useActionState`](https://react.dev/reference/react/useActionState) hook under the hood).
+
+## Deprecated methods
+
+### `schema`
+
+`schema` is deprecated in v8, and it's just an alias for [`inputSchema`](#inputschema), so use that instead.
