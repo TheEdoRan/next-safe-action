@@ -9,7 +9,7 @@ Next.js allows you to [pass additional arguments to your actions by using the `b
 
 next-safe-action exposes a [`bindArgsSchemas` method](/docs/define-actions/instance-methods#bindargsschemas) that expects an array of schemas for bind arguments.
 
-For example, here we're going to define an `onboardUser` action that has `userId` and `age` as bind arguments and an object with an `username` property as the main argument:
+For example, here we're going to define an `onboardUser` action that has `userId` and `age` as bound arguments and an object with an `username` property as the main argument:
 
 ```typescript title="src/app/onboard-action.ts"
 "use server";
