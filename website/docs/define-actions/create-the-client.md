@@ -17,7 +17,7 @@ In the following section we will go through all the options that can be passed t
 
 ## Initialization options
 
-### `handleServerError?`
+### `handleServerError()?`
 
 This optional function handles errors that occur during action's server execution, middleware included. It's used to customize logging and the shape of the server error returned to the client. You also have access to useful properties via the `utils` object, which is the second argument of the function. If not provided, it defaults to console logging the error message and returning a generic string to the client, for all the errors (`DEFAULT_SERVER_ERROR_MESSAGE`, exported from `next-safe-action`).
 
@@ -90,7 +90,7 @@ export const actionClient = createSafeActionClient({
 });
 ```
 
-### `defineMetadataSchema?`
+### `defineMetadataSchema()?`
 
 This optional function is used to define the type of the metadata for safe actions. If not provided, `metadata` will default to `undefined` value. You can find more information about metadata in the [`metadata()` instance method section](/docs/define-actions/instance-methods#metadata). If you define a metadata schema and you don't call the `metadata()` method before defining an action, an error will be thrown.
 
@@ -124,4 +124,4 @@ export const actionClient = createSafeActionClient({
 
 ### `throwValidationErrors?`
 
-This optional boolean property changes the default behavior of validation errors handling. When this option is set to `true`, the action will throw a `ActionValidationError` with the related validation errors in a `validationErrors` property. This option also works for server validation errors set with [`returnValidationErrors`](/docs/define-actions/validation-errors#returnvalidationerrors) function. The errors shape follows the `defaultValidationErrorsShape` option or the overridden one set in [`schema`](/docs/define-actions/instance-methods#schema) using the optional [`handleValidationErrorsShape`](/docs/define-actions/validation-errors#customize-validation-errors-format) function. The default value is `false`.
+This optional boolean property changes the default behavior of validation errors handling. When this option is set to `true`, the action will throw a `ActionValidationError` with the related validation errors in a `validationErrors` property. This option also works for server validation errors set with [`returnValidationErrors`](/docs/define-actions/validation-errors#returnvalidationerrors) function. The errors shape follows the `defaultValidationErrorsShape` option or the overridden one set in [`inputSchema()`](/docs/define-actions/instance-methods#inputschema) using the optional [`handleValidationErrorsShape()`](/docs/define-actions/validation-errors#customize-validation-errors-format) function. The default value is `false`.
