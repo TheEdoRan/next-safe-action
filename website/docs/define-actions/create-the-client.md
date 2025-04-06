@@ -5,7 +5,7 @@ description: Learn how to create a safe action client,
 
 # Create the client
 
-After [installing the correct packages](/docs/getting-started#installation), the first thing you have to do is to create an instance of the safe action client:
+After [installing the library](/docs/getting-started#installation), the first thing you have to do is to create an instance of the safe action client:
 
 ```typescript title="src/lib/safe-action.ts"
 import { createSafeActionClient } from "next-safe-action";
@@ -13,15 +13,11 @@ import { createSafeActionClient } from "next-safe-action";
 export const actionClient = createSafeActionClient();
 ```
 
-In the following section we will go through all the options that can be passed to the `createSafeActionClient` function to customize the client behavior for your needs.
+In the following section we will go through all the options that can be passed to the `createSafeActionClient()` function to customize the client behavior for your needs.
 
 ## Initialization options
 
 ### `handleServerError?`
-
-:::info
-This function has been introduced in v7.9.0. Previous versions had two separate functions: `handleServerErrorLog` and `handleReturnedServerError`. The `handleServerError` function is simply a merge of the two, since having two functions for this task was unnecessary. The refactoring is super simple, you just have to combine the two functions body into one. Find out more about this in the [v7.9.0 changelog](https://github.com/TheEdoRan/next-safe-action/releases/tag/v7.9.0).
-:::
 
 This optional function handles errors that occur during action's server execution, middleware included. It's used to customize logging and the shape of the server error returned to the client. You also have access to useful properties via the `utils` object, which is the second argument of the function. If not provided, it defaults to console logging the error message and returning a generic string to the client, for all the errors (`DEFAULT_SERVER_ERROR_MESSAGE`, exported from `next-safe-action`).
 
@@ -96,7 +92,7 @@ export const actionClient = createSafeActionClient({
 
 ### `defineMetadataSchema?`
 
-This optional function is used to define the type of the metadata for safe actions. If not provided, `metadata` will default to `undefined` value. You can find more information about metadata in the [`metadata` instance method section](/docs/define-actions/instance-methods#metadata). If you define a metadata schema and you don't call the `metadata` method before defining an action, an error will be thrown.
+This optional function is used to define the type of the metadata for safe actions. If not provided, `metadata` will default to `undefined` value. You can find more information about metadata in the [`metadata()` instance method section](/docs/define-actions/instance-methods#metadata). If you define a metadata schema and you don't call the `metadata()` method before defining an action, an error will be thrown.
 
 Here's an example defining a client with a metadata object containing `actionName` as a string, using a Zod schema:
 
@@ -115,7 +111,7 @@ export const actionClient = createSafeActionClient({
 
 ### `defaultValidationErrorsShape?`
 
-This optional property is used to specify the default shape of the validation errors. The two possible values are `flattened` and `formatted`. The first one emulates Zod [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method, the second one emulates Zod [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method, both for `validationErrors` and `bindArgsValidationErrors`. You can override the default shape in `schema` and `bindArgsSchemas` methods, more information about that [here](/docs/define-actions/validation-errors#customize-validation-errors-format). If this property is not provided, the default shape is `formatted`, as it also catches errors for nested schema objects.
+This optional property is used to specify the default shape of the validation errors. The two possible values are `flattened` and `formatted`. The first one emulates Zod [`flatten()`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) method, the second one emulates Zod [`format()`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method. You can override the default shape in `schema()` method, more information about that [here](/docs/define-actions/validation-errors#customize-validation-errors-format). If this property is not provided, the default shape is `formatted`, as it also catches errors for nested schema objects.
 
 ```typescript
 import { createSafeActionClient } from "next-safe-action";
