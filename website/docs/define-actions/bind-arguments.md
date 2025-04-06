@@ -55,7 +55,8 @@ import { onboardUser } from "./onboard-action";
 
 export default function OnboardPage() {
   // Here we bind `userId` and `age` to `onboardUser`.
-  // `boundOnboardUser` will have just `{ username: string }` as its argument, after this `bind` call.
+  // `boundOnboardUser` will have just `{ username: string }` as its argument,
+  // after this `bind` call.
   // highlight-start
   const boundOnboardUser = onboardUser.bind(
     null,
