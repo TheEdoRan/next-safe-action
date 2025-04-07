@@ -148,3 +148,7 @@ Note that:
 - Errors set using `returnValidationErrors()` will not be merged with the schema ones. If schema validation fails, the execution stops before reaching action's server code function. Otherwise, the action's backend code would receive invalid parsed input.
 - `returnValidationErrors()` returns `never`. This means that internally it throws an error that gets caught and processed by next-safe-action, so code declared below the `returnValidationErrors()` invocation will not be executed.
 - Since it returns `never`, you don't need to use `return` before this function call, and you can call it only once per execution path (it works the same way as Next.js `redirect()` and `notFound()` functions).
+
+### `throwValidationErrors`
+
+If you want to throw validation errors instead, you can pass this optional property both to [`createSafeActionClient()`](/docs/define-actions/create-the-client#throwvalidationerrors) and as the second argument of the `action()`/`stateAction()` method, in the [action utils object](/docs/define-actions/action-utils#throw-errors-when-they-occur).

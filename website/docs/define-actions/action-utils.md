@@ -11,6 +11,9 @@ Action utils is an object with some useful properties and callbacks passed as th
 
 Starting from v7.4.0, you can now pass optional `throwServerError` and `throwValidationErrors` properties at the action level, if you want or need that behavior. Note that the `throwValidationErrors` property set at the action level has a higher priority than the one at the instance level, so if you set it to `false` while the one at the instance level is `true`, validation errors will **not** be thrown.
 
+### Note on `throwValidationErrors`
+
+This property can be set either to a boolean value, or to an object that contains an `overrideErrorMessage()` function. If the `overrideErrorMessage()` function is provided, when validation errors occur, they will be passed to it as the first argument. The function must return a string, that will be used as the error message on the client, instead of the default one.
 
 ## Action callbacks
 
@@ -26,7 +29,7 @@ import { actionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
 const action = actionClient
-  .schema(z.object({ test: z.string() }))
+  .inputSchema(z.object({ test: z.string() }))
   .action(async () => {
     // ...
   }, {
