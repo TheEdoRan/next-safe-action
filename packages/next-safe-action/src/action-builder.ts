@@ -120,7 +120,15 @@ export function actionBuilder<
 										await executeMiddlewareStack(idx + 1);
 										return middlewareResult;
 									},
-								}).catch((e) => frameworkErrorHandler.handleError(e));
+								}).catch((e) => {
+									frameworkErrorHandler.handleError(e);
+									if (frameworkErrorHandler.error) {
+										middlewareResult.success = false;
+										middlewareResult.navigationKind = FrameworkErrorHandler.getNavigationKind(
+											frameworkErrorHandler.error
+										);
+									}
+								});
 								// Action function.
 							} else {
 								// Validate the client inputs in parallel.
@@ -220,8 +228,16 @@ export function actionBuilder<
 									}
 								}
 
-								middlewareResult.success = true;
-								middlewareResult.data = data;
+								if (frameworkErrorHandler.error) {
+									middlewareResult.success = false;
+									middlewareResult.navigationKind = FrameworkErrorHandler.getNavigationKind(
+										frameworkErrorHandler.error
+									);
+								} else {
+									middlewareResult.success = true;
+									middlewareResult.data = data;
+								}
+
 								middlewareResult.parsedInput = parsedInputDatas.at(-1);
 								middlewareResult.bindArgsParsedInputs = parsedInputDatas.slice(0, -1);
 							}

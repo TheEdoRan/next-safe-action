@@ -342,11 +342,11 @@ test("framework error result from middleware is correct", async () => {
 	});
 
 	const expectedResult = {
-		success: true,
+		success: false,
 		ctx: {
 			foo: "bar",
 		},
-		data: undefined,
+		navigationKind: "redirect",
 		parsedInput: {
 			username: "johndoe",
 		},

@@ -131,6 +131,7 @@ export type MiddlewareResult<ServerError, NextCtx extends object> = SafeActionRe
 	any,
 	NextCtx
 > & {
+	navigationKind?: NavigationKind;
 	parsedInput?: unknown;
 	bindArgsParsedInputs?: unknown[];
 	ctx?: object;
