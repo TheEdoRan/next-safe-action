@@ -10,7 +10,7 @@ description: Learn how to customize or manually creating validation errors.
 next-safe-action, by default, emulates Zod's [`format()`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method for building both validation and bind args validation errors and return them to the client.
 
 This can be customized both at the safe action client level and at the action level by:
-- using [`defaultValidationErrorsShape`](/docs/define-actions/create-the-client#defaultvalidationerrorsshape) optional property in `createSafeActionClient`;
+- using [`defaultValidationErrorsShape`](/docs/define-actions/create-the-client#defaultvalidationerrorsshape) optional property in `createSafeActionClient()`;
 - using `handleValidationErrorsShape()` optional async function in [`inputSchema()`](/docs/define-actions/instance-methods#inputschema) method.
 
 The second way overrides the shape set at the instance level, per action.
@@ -90,7 +90,7 @@ When input data fails schema validation, a `validationErrors` object is returned
 
 It's often useful to also define custom logic to set additional validation errors by ourselves, for example when a user is signing up and password/confirm password fields don't match, and/or when the email is already in use.
 
-Let's see how to implement this specific case in the optimal way, using both schema refinements and errors set in action's server code function, thanks to `returnValidationErrors`.
+Let's see how to implement this specific case in the optimal way, using both schema refinements and errors set in action's server code function, thanks to `returnValidationErrors()`.
 
 ### Schema refinements
 
@@ -144,7 +144,7 @@ const signupAction = actionClient
 
 Note that:
 
-- You're required to pass a schema as the first argument of `returnValidationErrors`. This is used to infer the type of the validation errors set via the second argument.
-- Errors set using `returnValidationErrors` will not be merged with the schema ones. If schema validation fails, the execution stops before reaching action's server code function. Otherwise, the action's backend code would receive invalid parsed input.
+- You're required to pass a schema as the first argument of `returnValidationErrors()`. This is used to infer the type of the validation errors set via the second argument.
+- Errors set using `returnValidationErrors()` will not be merged with the schema ones. If schema validation fails, the execution stops before reaching action's server code function. Otherwise, the action's backend code would receive invalid parsed input.
 - `returnValidationErrors()` returns `never`. This means that internally it throws an error that gets caught and processed by next-safe-action, so code declared below the `returnValidationErrors()` invocation will not be executed.
 - Since it returns `never`, you don't need to use `return` before this function call, and you can call it only once per execution path (it works the same way as Next.js `redirect()` and `notFound()` functions).

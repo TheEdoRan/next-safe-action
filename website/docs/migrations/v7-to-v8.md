@@ -11,8 +11,8 @@ Version 8 introduces significant changes to the validation system, improves type
 Legend:
 - ⚠️ Breaking change
 - 🆕 New feature
-- ⏳ Deprecation
 - ✨ Improvement
+- 🔄 Refactor
 
 ## What's new?
 
@@ -41,7 +41,8 @@ The behavior when using functions from `next/navigation` was very unclear and co
 
 This behavior has been changed in v8. Now, when you're using functions imported from `next/navigation` in an action:
 - the hooks `status` value will be `"hasNavigated"` instead of `"hasSucceeded"`;
-- a new `onNavigation` callback will be triggered, both for actions and hooks, instead of `onSuccess`. This callback receives a `navigationKind` value, that indicates the type of navigation that occurred.
+- a new `onNavigation` callback will be triggered, both for actions and hooks, instead of `onSuccess`. This callback receives a `navigationKind` value, that indicates the type of navigation that occurred;
+- the `success` property of the middleware result will now be `false`, instead of `true`, if a navigation function was called in a middleware function or in the action's server code function.
 
 ```typescript
 import { useAction } from "next-safe-action/hooks";
@@ -91,24 +92,6 @@ const result = await boundAction(input);
 
 The deprecated `executeOnMount` hook functionality has been removed in v8. Server Actions should be used only for mutations, so it doesn't make sense to execute them on mount. Or at least, it shouldn't be a common case and, above all, a library job. If you still need to do it, just use `useEffect` to trigger the execution, however you want.
 
-### ⏳ `schema` method renamed to `inputSchema`
-
-The library, since version 7.8.0, supports both input and output validation, respectively using the `schema` and `outputSchema` methods. In v8, the `schema` method has been renamed to `inputSchema` to better reflect its purpose, and avoid potential confusion.
-
-The `schema` method is deprecated and will be removed in a future version, but it's still available for backward compatibility. It's now just an alias for `inputSchema`:
-
-```typescript title="v7"
-actionClient.schema(/* ... */)
-```
-
-```typescript title="v8"
-actionClient.inputSchema(/* ... */)
-```
-
-:::info UPDATE EXISTING ACTIONS
-To update your actions, you can just use the search and replace feature of your editor to replace all occurrences of `.schema` with `.inputSchema`.
-:::
-
 ### ✨ Type-checked metadata
 
 This is a big improvement in type safety over v7. Metadata is now statically type-checked when passed to actions. So, now if you forget to pass the expected metadata shape, as defined by the `defineMetadataSchema` init option, you will get a type error immediately:
@@ -144,7 +127,7 @@ const action = actionClient
 );
 ```
 
-### ✨ Safe action result always defined
+### 🔄 Safe action result always defined
 
 The action result object is now always defined. This allows you to destructure it without the need to check if it's defined or not first:
 
@@ -164,7 +147,26 @@ if (result?.data) {
 const { data } = await action(input);
 ```
 
-### Deprecated `useStateAction` hook
+### 🔄 `schema` method renamed to `inputSchema`
+
+The library, since version 7.8.0, supports both input and output validation, respectively using the `schema` and `outputSchema` methods. In v8, the `schema` method has been renamed to `inputSchema` to better reflect its purpose, and avoid potential confusion.
+
+The `schema` method is deprecated and will be removed in a future version, but it's still available for backward compatibility. It's now just an alias for `inputSchema`:
+
+```typescript title="v7"
+actionClient.schema(/* ... */)
+```
+
+```typescript title="v8"
+actionClient.inputSchema(/* ... */)
+```
+
+:::info UPDATE EXISTING ACTIONS
+To update your actions, you can just use the search and replace feature of your editor to replace all occurrences of `.schema` with `.inputSchema`.
+:::
+
+
+### 🔄 Deprecation of `useStateAction` hook
 
 The `useStateAction` hook has been deprecated. It's always been kind of a hack to begin with, and it doesn't support progressive enhancement, since it tries to do what the `useAction` and `useOptimisticAction` hooks do.
 

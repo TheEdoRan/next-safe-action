@@ -5,7 +5,7 @@ description: Action utils is an object with useful properties and callbacks func
 
 # Action utils
 
-Action utils is an object with some useful properties and callbacks passed as the second argument of the [`action`/`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method.
+Action utils is an object with some useful properties and callbacks passed as the second argument of the [`action()`/`stateAction()`](/docs/define-actions/instance-methods#action--stateaction) method.
 
 ## Throw errors when they occur
 
@@ -14,11 +14,12 @@ Starting from v7.4.0, you can now pass optional `throwServerError` and `throwVal
 
 ## Action callbacks
 
-- `onSuccess`: called when action execution succeeds.
-- `onError`: called when action execution fails (validation errors or server error).
-- `onSettled`: called when action execution succeeds or fails.
+- `onSuccess()`: called when action execution succeeds.
+- `onError()`: called when action execution fails (validation errors or server error).
+- `onNavigation()`: called when a `next/navigation` function is called in a middleware function or in the action's server code function.
+- `onSettled()`: called when action execution succeeds or fails.
 
-With action callbacks you can perform custom logic after the action is executed, on the server side. You can pass them to [`action`/`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method as the second argument, after the server code function. Their return value is not used and they **must** be async functions.
+With action callbacks you can perform custom logic after the action is executed, on the server side. You can pass them to [`action()`/`stateAction()`](/docs/define-actions/instance-methods#action--stateaction) method as the second argument, after the server code function. Their return value is not used and they **must** be async functions.
 
 ```tsx
 import { actionClient } from "@/lib/safe-action";
@@ -48,6 +49,13 @@ const action = actionClient
       metadata,
       clientInput,
       bindArgsClientInputs
+    }) => {},
+    onNavigation: async ({
+      navigationKind,
+      ctx,
+      metadata,
+      clientInput,
+      bindArgsClientInputs,
     }) => {},
     onSettled: async ({
       result,
