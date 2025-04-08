@@ -33,7 +33,7 @@ export const useStateAction = <ServerError, S extends StandardSchemaV1 | undefin
 		isExecuting,
 		result: result ?? {},
 		isIdle,
-		// FIXME: This is a workaround to avoid the status being "hasNavigated" when the action is executed.
+		// HACK: This is a workaround to avoid the status being "hasNavigated" when the action is executed.
 		hasNavigated: false,
 		hasThrownError: false,
 	});
