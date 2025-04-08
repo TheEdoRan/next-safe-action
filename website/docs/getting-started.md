@@ -37,7 +37,7 @@ This is a basic client, without any options or middleware functions. If you want
 
 ### 2. Define a new action
 
-This is how a safe action is created. Providing a validation input schema to the function via [`inputSchema()`](/docs/define-actions/instance-methods#inputSchema), we're sure that data that comes in is type safe and validated.
+This is how a safe action is created. Providing a validation input schema to the function via [`inputSchema()`](/docs/define-actions/instance-methods#inputschema), we're sure that data that comes in is type safe and validated.
 The [`action()`](/docs/define-actions/instance-methods#action--stateaction) method lets you define what happens on the server when the action is called from client, via an async function that receives the parsed input and context as arguments. In short, this is your _server code_. **It never runs on the client.
 
 In this documentation, we'll use the Zod library to define our validation logic, but feel free to use any other library that implements the [Standard Schema](https://github.com/standard-schema/standard-schema) specification.

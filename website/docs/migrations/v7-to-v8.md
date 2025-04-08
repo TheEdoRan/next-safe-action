@@ -41,7 +41,7 @@ The behavior when using functions from `next/navigation` was very unclear and co
 
 This behavior has been changed in v8. Now, when you're using functions imported from `next/navigation` in an action:
 - the hooks `status` value will be `"hasNavigated"` instead of `"hasSucceeded"`;
-- a new `onNavigation` callback will be triggered, both for actions and hooks, instead of `onSuccess`. This callback receives a `navigationKind` value, that indicates the type of navigation that occurred;
+- a new `onNavigation()` callback will be triggered, both for actions and hooks, instead of `onSuccess()`. This callback receives a `navigationKind` value, that indicates the type of navigation that occurred;
 - the `success` property of the middleware result will now be `false`, instead of `true`, if a navigation function was called in a middleware function or in the action's server code function.
 
 ```typescript
@@ -90,7 +90,7 @@ const result = await boundAction(input);
 
 ### ⚠️✨ Removal of deprecated `executeOnMount` hook option
 
-The deprecated `executeOnMount` hook functionality has been removed in v8. Server Actions should be used only for mutations, so it doesn't make sense to execute them on mount. Or at least, it shouldn't be a common case and, above all, a library job. If you still need to do it, just use `useEffect` to trigger the execution, however you want.
+The deprecated `executeOnMount` hook functionality has been removed in v8. Server Actions should be used only for mutations, so it doesn't make sense to execute them on mount. Or at least, it shouldn't be a common case and, above all, a library job. If you still need to do it, just use `useEffect()` to trigger the execution, however you want.
 
 ### ✨ Type-checked metadata
 
@@ -102,7 +102,7 @@ This is a big improvement in type safety over v7. Metadata is now statically typ
 
 ### ✨ Custom thrown validation error messages
 
-The `throwValidationErrors` option now accepts both a boolean (just like in v7) and an object with a `overrideErrorMessage` function, that allows you to customize the thrown `Error` message on the client side.
+The `throwValidationErrors` option now accepts both a boolean (just like in v7) and an object with a `overrideErrorMessage()` function, that allows you to customize the thrown `Error` message on the client side.
 
 ```typescript
 import { throwValidationErrors, overrideErrorMessage } from "next-safe-action";
@@ -149,9 +149,9 @@ const { data } = await action(input);
 
 ### 🔄 `schema` method renamed to `inputSchema`
 
-The library, since version 7.8.0, supports both input and output validation, respectively using the `schema` and `outputSchema` methods. In v8, the `schema` method has been renamed to `inputSchema` to better reflect its purpose, and avoid potential confusion.
+The library, since version 7.8.0, supports both input and output validation, respectively using the `schema()` and `outputSchema()` methods. In v8, the `schema()` method has been renamed to `inputSchema()` to better reflect its purpose, and avoid potential confusion.
 
-The `schema` method is deprecated and will be removed in a future version, but it's still available for backward compatibility. It's now just an alias for `inputSchema`:
+The `schema()` method is deprecated and will be removed in a future version, but it's still available for backward compatibility. It's now just an alias for `inputSchema()`:
 
 ```typescript title="v7"
 actionClient.schema(/* ... */)
@@ -162,16 +162,15 @@ actionClient.inputSchema(/* ... */)
 ```
 
 :::info UPDATE EXISTING ACTIONS
-To update your actions, you can just use the search and replace feature of your editor to replace all occurrences of `.schema` with `.inputSchema`.
+To update your actions, you can just use the search and replace feature of your editor to replace all occurrences of `.schema()` with `.inputSchema()`.
 :::
 
 
 ### 🔄 Deprecation of `useStateAction` hook
 
-The `useStateAction` hook has been deprecated. It's always been kind of a hack to begin with, and it doesn't support progressive enhancement, since it tries to do what the `useAction` and `useOptimisticAction` hooks do.
+The `useStateAction()` hook has been deprecated. It's always been kind of a hack to begin with, and it doesn't support progressive enhancement, since it tries to do what the `useAction()` and `useOptimisticAction()` hooks do.
 
-So, from now one, the recommended way to use stateful actions is to do it with the React's built in `useActionState` hook, as explained in [this section](#) of the documentation.
-#### TODO: add link
+So, from now one, the recommended way to use stateful actions is to do it with the React's built in `useActionState()` hook, as explained in [this section](/docs/recipes/form-actions#stateful-form-actions) of the documentation.
 
 ## Requirements
 
