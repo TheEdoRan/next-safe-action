@@ -144,7 +144,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 /**
  * Use the action from a Client Component via hook, with optimistic data update.
  * @param safeActionFn The action function
- * @param utils Required `currentData` and `updateFn` and optional base utils and callbacks
+ * @param utils Required `currentData` and `updateFn` and optional callbacks
  *
  * {@link https://next-safe-action.dev/docs/execute-actions/hooks/useoptimisticaction See docs for more information}
  */

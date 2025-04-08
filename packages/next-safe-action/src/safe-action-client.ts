@@ -106,7 +106,6 @@ export class SafeActionClient<
 	/**
 	 * Define the bind args input validation schema for the action.
 	 * @param bindArgsSchemas Bind args input validation schemas
-	 * @param utils Optional utils object
 	 *
 	 * {@link https://next-safe-action.dev/docs/define-actions/instance-methods#bindargsschemas See docs for more information}
 	 */
