@@ -26,6 +26,11 @@ module.exports = {
 			range: "4.x",
 			channel: "4.x",
 		},
+		{
+			name: "7.x",
+			range: "7.x",
+			channel: "7.x",
+		},
 	],
 	plugins: [
 		[
