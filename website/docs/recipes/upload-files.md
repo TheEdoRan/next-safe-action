@@ -22,13 +22,13 @@ import { action } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
 
 // highlight-start
-const schema = zfd.formData({
+const inputSchema = zfd.formData({
   image: zfd.file(),
 });
 // highlight-end
 
 export const fileUploadAction = action
-  .schema(schema)
+  .inputSchema(inputSchema)
   .action(async ({ parsedInput }) => {
     await new Promise((res) => setTimeout(res, 1000));
 

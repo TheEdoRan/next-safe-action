@@ -3,17 +3,17 @@ sidebar_position: 2
 description: Learn how to use the useOptimisticAction hook.
 ---
 
-# `useOptimisticAction`
+# `useOptimisticAction()`
 
 :::info
-`useOptimisticAction` **does not wait** for the action to finish execution before returning the optimistic data. It is then synced with the real result from server when the action has finished its execution. If you need to perform normal mutations, use [`useAction`](/docs/execute-actions/hooks/useaction) instead.
+`useOptimisticAction()` **does not wait** for the action to finish execution before returning the optimistic data. It is then synced with the real result from server when the action has finished its execution. If you need to perform normal mutations, use [`useAction()`](/docs/execute-actions/hooks/useaction) instead.
 :::
 
-Let's say you have some todos in your database and want to add a new one. The following example shows how you can use `useOptimisticAction` to add a new todo item optimistically.
+Let's say you have some todos in your database and want to add a new one. The following example shows how you can use `useOptimisticAction()` to add a new todo item optimistically.
 
 ### Example
 
-1. Define a new action called `addTodo`, that takes a `Todo` object as input:
+1. Define a new action called `addTodo()`, that takes a `Todo` object as input:
 
 ```typescript title=src/app/addtodo-action.ts
 "use server";
@@ -22,20 +22,20 @@ import { action } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-const schema = z.object({
+const inputSchema = z.object({
   id: z.string().uuid(),
   body: z.string().min(1),
   completed: z.boolean(),
 });
 
-export type Todo = z.infer<typeof schema>;
+export type Todo = z.infer<typeof inputSchema>;
 
 let todos: Todo[] = [];
 export const getTodos = async () => todos;
 
 export const addTodo = action
   .metadata({ actionName: "" })
-  .schema(schema)
+  .inputSchema(inputSchema)
   .action(async ({ parsedInput }) => {
     await new Promise((res) => setTimeout(res, 500));
 
@@ -107,26 +107,26 @@ export default function TodosBox({ todos }: Props) {
         }}>
         Add todo
       </button>
-      {/* Optimistic state gets updated right after the `execute` call (next render), it doesn't wait for the server to respond. */}
+      {/* Optimistic state gets updated right after the `execute()` call (next render), it doesn't wait for the server to respond. */}
       <pre>Optimistic state: {optimisticState}</pre>
     </div>
   );
 }
 ```
 
-### `useOptimisticAction` arguments
+### `useOptimisticAction()` arguments
 
-- `safeActionFn`: the safe action that will be called via `execute` or `executeAsync` functions.
+- `safeActionFn`: the safe action that will be called via `execute()` or `executeAsync()` functions.
 - `utils`: object with required `currentState` and `updateFn` properties and optional [callbacks](/docs/execute-actions/hooks/hook-callbacks). `currentState` is passed from the parent Server Component, and `updateFn` tells the hook how to update the optimistic state before receiving the server response.
 
-### `useOptimisticAction` return object
+### `useOptimisticAction()` return object
 
-- `execute`: an action caller with no return. Input is the same as the safe action you passed to the hook.
-- `executeAsync`: an action caller that returns a promise with the return value of the safe action. Input is the same as the safe action you passed to the hook.
-- `input`: the input passed to the `execute` or `executeAsync` function.
+- `execute()`: an action caller with no return. Input is the same as the safe action you passed to the hook.
+- `executeAsync()`: an action caller that returns a promise with the return value of the safe action. Input is the same as the safe action you passed to the hook.
+- `input`: the input passed to the `execute()` or `executeAsync()` function.
 - `result`: result of the action after its execution.
-- `optimisticState`: the optimistic state updated right after `execute` call (on the next render), with the behavior defined in `updateFn`.
-- `reset`: programmatically reset execution state (`input`, `status` and `result`).
+- `optimisticState`: the optimistic state updated right after `execute()` call (on the next render), with the behavior defined in `updateFn`.
+- `reset()`: programmatically reset execution state (`input`, `status` and `result`).
 - `status`: string that represents the current action status.
 - `isIdle`: true if the action status is `idle`.
 - `isTransitioning`: true if the transition status  from the `useTransition` hook used under the hood is `true`.
@@ -134,6 +134,7 @@ export default function TodosBox({ todos }: Props) {
 - `isPending`: true if the action status is `executing` or `isTransitioning`.
 - `hasSucceeded`: true if the action status is `hasSucceeded`.
 - `hasErrored`: true if the action status is `hasErrored`.
+- `hasNavigated`: true if a `next/navigation` function was called inside the action.
 
 For checking the action status, the recommended way is to use the `isPending` shorthand property. Using `isExecuting` or checking if `status` is `"executing"` could cause race conditions when using navigation functions, such as `redirect`.
 
