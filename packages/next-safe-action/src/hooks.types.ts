@@ -110,6 +110,7 @@ export type InferUseOptimisticActionHookReturn<T extends Function, State = any> 
 
 /**
  * Type of the return object of the `useStateAction` hook.
+ * @deprecated The `useStateAction` hook is deprecated. Use React's `useActionState` hook instead.
  */
 export type InferUseStateActionHookReturn<T extends Function> =
 	T extends SafeStateActionFn<
