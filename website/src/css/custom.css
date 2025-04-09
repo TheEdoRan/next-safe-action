@@ -9,6 +9,10 @@
 
 /* You can override the default Infima variables here. */
 
+.debug {
+	border: 2px solid red;
+}
+
 .lib-logo > path {
 	color: white !important;
 }
@@ -44,14 +48,14 @@ div[role="banner"] > button > svg {
 :root {
 	--ifm-font-family-base: "Inter";
 	--ifm-heading-font-family: "Inter";
-	--ifm-color-primary: #da6f0c;
-	--ifm-color-primary-dark: #c4640b;
-	--ifm-color-primary-darker: #b95e0a;
-	--ifm-color-primary-darkest: #994e08;
-	--ifm-color-primary-light: #f07a0d;
-	--ifm-color-primary-lighter: #f28016;
-	--ifm-color-primary-lightest: #f49237;
-	--ifm-color-primary-lightest: #eea35d;
+	--ifm-color-primary: #0976a8;
+	--ifm-color-primary-dark: #086795;
+	--ifm-color-primary-darker: #07608c;
+	--ifm-color-primary-darkest: #064f73;
+	--ifm-color-primary-light: #0a85bb;
+	--ifm-color-primary-lighter: #0b8bc4;
+	--ifm-color-primary-lightest: #0c98d9;
+	--ifm-color-primary-lightest: #1ba7e8;
 	--ifm-code-font-size: 95%;
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 	--ifm-background-color: #fafaf9 !important;
@@ -60,13 +64,13 @@ div[role="banner"] > button > svg {
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme="dark"] {
-	--ifm-color-primary: #f79f2d;
-	--ifm-color-primary-dark: #f69211;
-	--ifm-color-primary-darker: #ef8b09;
-	--ifm-color-primary-darkest: #c57208;
-	--ifm-color-primary-light: #f8ac49;
-	--ifm-color-primary-lighter: #f9b257;
-	--ifm-color-primary-lightest: #fac681;
+	--ifm-color-primary: #2ddbf7;
+	--ifm-color-primary-dark: #11d6f6;
+	--ifm-color-primary-darker: #09cdef;
+	--ifm-color-primary-darkest: #08a9c5;
+	--ifm-color-primary-light: #49dff8;
+	--ifm-color-primary-lighter: #57e2f9;
+	--ifm-color-primary-lightest: #81e9fa;
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 	--ifm-background-color: #18181b !important;
 	--ifm-color-emphasis-200: #2b2e33 !important;
@@ -87,4 +91,15 @@ video {
 	max-width: 900px;
 	width: 100%;
 	height: auto;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
 }

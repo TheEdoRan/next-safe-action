@@ -24,12 +24,15 @@
 		"lucide-react": "^0.487.0",
 		"prism-react-renderer": "^2.4.1",
 		"react": "^19",
-		"react-dom": "^19"
+		"react-dom": "^19",
+		"react-syntax-highlighter": "^15.6.1"
 	},
 	"devDependencies": {
 		"@docusaurus/module-type-aliases": "3.7.0",
 		"@docusaurus/tsconfig": "^3.7.0",
 		"@docusaurus/types": "^3.7.0",
+		"@types/react": "^19",
+		"@types/react-syntax-highlighter": "^15.5.13",
 		"autoprefixer": "^10.4.21",
 		"postcss": "^8.5.3",
 		"postcss-nested": "^7.0.2",

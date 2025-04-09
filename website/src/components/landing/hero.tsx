@@ -1,43 +1,41 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { GitHubButton } from "./github-button";
+import { HeroExample } from "./hero-example";
+import { InstallBox } from "./install-box";
 
 export function Hero() {
 	const { siteConfig } = useDocusaurusContext();
 
 	return (
-		<header className="block bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 bg-center bg-cover overflow-hidden relative">
-			<div className="absolute inset-0 pattern-dots pattern-zinc-600 pattern-bg-transparent pattern-size-6 pattern-opacity-10" />
+		<header className="relative py-16 md:py-24 lg:py-32 bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 overflow-hidden">
 			<div className="px-5 md:px-10">
 				<div className="mx-auto w-full max-w-7xl">
-					<div className="pt-12 pb-4 md:pt-16 md:pb-8 lg:pt-20">
-						<div className="mx-auto flex max-w-3xl flex-col items-center text-center mb-8 md:mb-12 lg:mb-16">
-							<div className="text-center z-20">
-								<div className="mx-auto max-w-3xl mb-5 md:mb-6 lg:mb-8 flex flex-col items-center">
-									<h1 className="text-zinc-800 dark:text-zinc-50 text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight">
-										{siteConfig.tagline}
-									</h1>
-									<h2 className="text-zinc-700 dark:text-zinc-300 font-medium text-base sm:text-lg md:text-xl max-w-xl">
-										next-safe-action handles your Next.js app mutations type safety, input/output validation, server
-										errors and even more!
-									</h2>
-								</div>
-								<div className="flex justify-center items-center gap-4">
-									<a
-										href="/docs/getting-started"
-										className="!no-underline hover:brightness-90 transition !text-zinc-100 cursor-pointer rounded-lg bg-zinc-800 px-3 py-2 font-bold inline-flex items-center justify-center text-sm sm:text-lg md:text-xl"
-									>
-										Getting started ➡️
-									</a>
-									<GitHubButton />
-								</div>
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+						<div className="flex flex-col z-10">
+							<div>
+								<h1 className="py-1 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-zinc-800 to-zinc-600 dark:from-zinc-100 dark:to-zinc-400 mb-4">
+									{siteConfig.tagline}
+								</h1>
+								<h2 className="text-zinc-700 dark:text-zinc-300 text-base md:text-lg max-w-xl leading-relaxed font-medium">
+									next-safe-action handles your Next.js app mutations type safety, input/output validation, server
+									errors and even more!
+								</h2>
+							</div>
+
+							<InstallBox className="mt-6" />
+
+							<div className="flex gap-4 mt-8">
+								<a
+									href="/docs/getting-started"
+									className="!no-underline hover:translate-y-[-2px] transition-transform border border-zinc-300 dark:border-zinc-700 !text-zinc-800 dark:!text-zinc-200 cursor-pointer rounded-lg bg-white dark:bg-zinc-800 px-4 py-2 md:px-5 md:py-3 font-semibold inline-flex items-center justify-center space-x-2 text-sm md:text-base"
+								>
+									Getting started
+								</a>
+								<GitHubButton />
 							</div>
 						</div>
-					</div>
-					<div className="cursor-pointer relative z-20 flex items-center justify-center mb-8">
-						<video width="1280" height="720" controls muted autoPlay>
-							<source src="/vid/demo.mp4" type="video/mp4" />
-							Your browser does not support the video tag.
-						</video>
+
+						<HeroExample />
 					</div>
 				</div>
 			</div>
