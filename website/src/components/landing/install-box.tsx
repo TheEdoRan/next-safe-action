@@ -34,28 +34,28 @@ export function InstallBox({ className }: Props) {
 
 	return (
 		<div className={`flex flex-col ${className ?? ""}`}>
-			<div className="flex items-center gap-2">
+			<div className="flex items-center">
 				{packageManagers.map((pm) => (
 					<button
 						key={pm}
 						onClick={() => setPackageManager(pm)}
-						className={`cursor-pointer bg-zinc-100 dark:bg-zinc-800 border-none rounded py-2 px-6 text-sm font-medium transition-colors relative ${
+						className={`relative cursor-pointer border-none bg-transparent px-6 py-2 text-sm font-medium transition-colors ${
 							packageManager === pm
 								? "text-zinc-900 dark:text-zinc-100"
-								: "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
+								: "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
 						}`}
 					>
 						{pm}
 						{packageManager === pm && (
-							<span className="absolute bottom-0 left-0 w-full h-0.5 bg-zinc-800 dark:bg-zinc-200"></span>
+							<span className="absolute bottom-0 left-0 h-0.5 w-full bg-zinc-800 dark:bg-zinc-200"></span>
 						)}
 					</button>
 				))}
 			</div>
 
-			<div className="mt-2 relative bg-zinc-100 dark:bg-zinc-900 p-4 rounded-md">
-				<div className="font-mono text-sm flex items-center">
-					<span className="text-zinc-500 mr-3 select-none">$</span>
+			<div className="relative mt-2 rounded-md bg-zinc-100 p-4 dark:bg-zinc-900">
+				<div className="flex items-center font-mono text-sm">
+					<span className="mr-3 select-none text-zinc-500">$</span>
 					<div>
 						<span className="text-cyan-800 dark:text-cyan-200">{getPmInstall(packageManager)}</span>
 						<span> </span>
@@ -64,7 +64,7 @@ export function InstallBox({ className }: Props) {
 				</div>
 				<button
 					onClick={copyToClipboard}
-					className="cursor-pointer border-none absolute right-3 top-3 p-1.5 rounded-md bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
+					className="absolute right-3 top-3 cursor-pointer rounded-md border-none bg-zinc-200 p-1.5 transition-colors hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700"
 					title="Copy to clipboard"
 				>
 					{copied ? (

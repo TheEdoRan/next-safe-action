@@ -27,7 +27,7 @@ export function GitHubButton() {
 			href="https://github.com/TheEdoRan/next-safe-action"
 			target="_blank"
 			rel="noopener noreferrer"
-			className="!no-underline hover:translate-y-[-2px] transition-transform border border-zinc-700 dark:border-zinc-300 text-zinc-200 dark:text-zinc-800 cursor-pointer rounded-lg bg-zinc-800 dark:bg-zinc-200 px-4 py-2 md:px-5 md:py-3 font-bold inline-flex items-center justify-center gap-x-1 text-sm md:text-base"
+			className="inline-flex cursor-pointer items-center justify-center gap-x-1 rounded-lg bg-zinc-100 px-4 py-2 text-sm font-bold !text-zinc-800 !no-underline shadow-lg transition-transform hover:translate-y-[-2px] md:text-base"
 		>
 			<StarIcon className="size-4 md:size-5" />
 			<span>{starsCount ? Intl.NumberFormat("en", { notation: "compact" }).format(starsCount) : "..."} GitHub</span>

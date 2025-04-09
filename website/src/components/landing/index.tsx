@@ -8,9 +8,9 @@ export function Landing() {
 	return (
 		<main className="bg-white dark:bg-zinc-950">
 			<Hero />
+			<Testimonials />
 			<Playground />
 			<Features />
-			<Testimonials />
 			<GettingStarted />
 		</main>
 	);

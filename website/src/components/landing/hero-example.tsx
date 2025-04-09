@@ -57,33 +57,33 @@ export function Greet() {
 	};
 
 	return (
-		<div className="h-[30rem] relative hidden lg:block rounded-xl shadow-xl">
-			<div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-sky-700 to-purple-700 blur-lg rounded-xl" />
-			<div className="absolute inset-0 bg-zinc-900 text-white border-zinc-800 p-4 rounded-xl">
-				<div className="flex items-center mb-3 border-b border-zinc-800">
-					<div className="flex space-x-2 absolute left-4">
-						<div className="w-3 h-3 rounded-full bg-red-500"></div>
-						<div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-						<div className="w-3 h-3 rounded-full bg-green-500"></div>
+		<div className="group relative h-[30rem] rounded-xl shadow-xl">
+			<div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-blue-700 to-purple-700 blur-lg transition-all group-hover:brightness-75 dark:group-hover:brightness-125" />
+			<div className="absolute inset-0 rounded-xl border-zinc-800 bg-zinc-900 p-4 text-white">
+				<div className="mb-3 flex items-center border-b border-zinc-800">
+					<div className="xs:flex absolute left-4 hidden space-x-2">
+						<div className="h-3 w-3 rounded-full bg-red-500"></div>
+						<div className="h-3 w-3 rounded-full bg-yellow-500"></div>
+						<div className="h-3 w-3 rounded-full bg-green-500"></div>
 					</div>
-					<div className="flex mx-auto space-x-4">
+					<div className="mx-auto flex space-x-4">
 						<div className="flex items-center">
 							{tabs.map((tab) => (
 								<button
 									key={tab.id}
 									onClick={() => setActiveTab(tab.id)}
-									className={`cursor-pointer bg-transparent border-none rounded py-1 px-2 text-sm font-medium transition-colors relative ${
+									className={`relative cursor-pointer rounded border-none bg-transparent px-2 py-1 text-sm font-medium transition-colors ${
 										activeTab === tab.id ? "text-zinc-100" : "text-zinc-400 hover:text-zinc-300"
 									}`}
 								>
 									{tab.label}
-									{activeTab === tab.id && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-zinc-200"></span>}
+									{activeTab === tab.id && <span className="absolute bottom-0 left-0 h-0.5 w-full bg-zinc-200"></span>}
 								</button>
 							))}
 						</div>
 					</div>
 				</div>
-				<div className="overflow-auto h-[calc(100%-2.5rem)]">
+				<div className="h-[calc(100%-2.5rem)] overflow-auto">
 					<SyntaxHighlighter
 						language="typescript"
 						style={vscDarkPlus}
