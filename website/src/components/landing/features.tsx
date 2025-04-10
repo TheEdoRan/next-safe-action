@@ -42,7 +42,7 @@ const features: { title: string; description: string; icon?: string }[] = [
 
 export function Features() {
 	return (
-		<div className="bg-zinc-50 py-20 md:py-24 lg:py-32 dark:bg-zinc-900">
+		<div className="bg-gradient-to-b from-zinc-50 to-zinc-100 py-20 md:py-24 lg:py-32 dark:from-zinc-950 dark:to-zinc-900">
 			<div className="px-5 md:px-10">
 				<div className="mx-auto w-full max-w-6xl">
 					<div className="mb-12 text-center md:mb-16">

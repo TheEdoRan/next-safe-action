@@ -5,13 +5,6 @@ const libURLSpan = `<span class="text-blue-500 dark:text-blue-400">https://githu
 
 const tweets: TweetProps[] = [
 	{
-		tweetURL: "https://x.com/dihmeetree/status/1734512058597605854",
-		authorName: "Dmitry",
-		authorHandle: "dihmeetree",
-		date: "Dec 12, 2023",
-		textHTML: `Thank you <b>@TheEdoRan</b> for the "next-safe-action" package! It's super awesome!! Keep up the amazing work! 😊`,
-	},
-	{
 		tweetURL: "https://x.com/Kingsley_codes/status/1718282007510143183",
 		authorName: "Kingsley O.",
 		authorHandle: "Kingsley_codes",
@@ -111,33 +104,33 @@ export function Testimonials() {
 	}, []);
 
 	return (
-		<div className="py-20 md:py-24 lg:py-32">
+		<div className="bg-gradient-to-b from-zinc-100 to-zinc-50 py-20 md:py-24 lg:py-32 dark:from-zinc-950 dark:to-zinc-950">
 			<div className="px-5 md:px-10">
 				<div className="mx-auto w-full max-w-7xl">
-					<div className="text-center mb-10 md:mb-16">
-						<h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">What developers are saying</h2>
-						<p className="text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+					<div className="mb-10 text-center md:mb-16">
+						<h2 className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl">What developers are saying</h2>
+						<p className="mx-auto max-w-2xl text-zinc-600 dark:text-zinc-400">
 							Join thousands of developers who are already using next-safe-action in their projects
 						</p>
 					</div>
 
 					<div className="relative overflow-hidden">
 						{/* Left fade overlay */}
-						<div className="absolute left-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-r from-white to-transparent dark:from-zinc-950 dark:to-transparent z-10"></div>
+						<div className="absolute bottom-0 left-0 top-0 z-10 w-16 bg-gradient-to-r from-white to-transparent md:w-24 dark:from-zinc-950 dark:to-transparent"></div>
 
 						{/* Right fade overlay */}
-						<div className="absolute right-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-l from-white to-transparent dark:from-zinc-950 dark:to-transparent z-10"></div>
+						<div className="absolute bottom-0 right-0 top-0 z-10 w-16 bg-gradient-to-l from-white to-transparent md:w-24 dark:from-zinc-950 dark:to-transparent"></div>
 
 						<div
 							ref={scrollContainerRef}
-							className="flex overflow-x-auto gap-6 pb-4 no-scrollbar"
+							className="no-scrollbar flex gap-6 overflow-x-auto pb-4"
 							style={{
 								scrollbarWidth: "none",
 								msOverflowStyle: "none",
 							}}
 						>
 							{allTweets.map((tweet, idx) => (
-								<div key={idx} className="flex-shrink-0 w-[300px] md:w-[320px]">
+								<div key={idx} className="w-[300px] flex-shrink-0 md:w-[320px]">
 									<Tweet {...tweet} />
 								</div>
 							))}

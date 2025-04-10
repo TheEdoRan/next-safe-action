@@ -7,7 +7,7 @@ export function Hero() {
 	const { siteConfig } = useDocusaurusContext();
 
 	return (
-		<header className="relative overflow-hidden bg-gradient-to-br from-zinc-50 to-zinc-100 py-16 md:py-24 lg:py-32 dark:from-zinc-900 dark:to-zinc-950">
+		<header className="relative overflow-hidden bg-gradient-to-b from-zinc-50 to-zinc-100 py-16 md:py-24 lg:py-32 dark:from-zinc-900 dark:to-zinc-950">
 			<div className="px-5 md:px-10">
 				<div className="mx-auto w-full max-w-7xl">
 					<div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
