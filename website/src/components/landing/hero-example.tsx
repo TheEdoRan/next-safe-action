@@ -58,7 +58,7 @@ export function Greet() {
 
 	return (
 		<div className="group relative h-[30rem] rounded-xl shadow-xl">
-			<div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-blue-700 to-purple-700 blur-lg transition-all group-hover:brightness-75 dark:group-hover:brightness-125" />
+			<div className="animate-gradient-rotate bg-300% pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-padding blur-lg transition-all group-hover:brightness-75 dark:group-hover:brightness-125" />
 			<div className="absolute inset-0 rounded-xl border-zinc-800 bg-zinc-900 p-4 text-white">
 				<div className="mb-3 flex items-center border-b border-zinc-800">
 					<div className="xs:flex absolute left-4 hidden space-x-2">
