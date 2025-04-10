@@ -103,3 +103,27 @@ video {
 	-ms-overflow-style: none; /* IE and Edge */
 	scrollbar-width: none; /* Firefox */
 }
+
+.embla {
+	overflow: hidden;
+}
+.embla__container {
+	@apply flex;
+}
+.embla__slide {
+	flex: 0 0 100%;
+	min-width: 0;
+	margin-right: 15px;
+}
+
+@media (min-width: 670px) {
+	.embla__slide {
+		flex: 0 0 50%; /* Breakpoint SM slide covers 50% of the viewport */
+	}
+}
+
+@media (min-width: 1200px) {
+	.embla__slide {
+		flex: 0 0 30%; /* Breakpoint SM slide covers 50% of the viewport */
+	}
+}
