@@ -131,7 +131,7 @@ Highly recommend checking it out! 🤩`,
 ];
 
 export function Testimonials() {
-	const [emblaRef] = useEmblaCarousel({ watchDrag: false, loop: true }, [Autoscroll({ speed: 0.8, playOnInit: true })]);
+	const [emblaRef] = useEmblaCarousel({ watchDrag: false, loop: true }, [Autoscroll({ speed: 0.5, playOnInit: true })]);
 
 	return (
 		<div className="bg-gradient-to-b from-zinc-100 to-zinc-50 py-20 md:py-24 lg:py-32 dark:from-zinc-950 dark:to-zinc-950">
