@@ -4,10 +4,8 @@ import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
 import { DEFAULT_SERVER_ERROR_MESSAGE, createSafeActionClient } from "..";
-import { zodAdapter } from "../adapters/zod";
 
 const ac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	handleServerError: () => DEFAULT_SERVER_ERROR_MESSAGE, // disable server errors logging for these tests
 	defineMetadataSchema() {
 		return z.object({
@@ -35,6 +33,7 @@ test("action with expected metadata format works", async () => {
 });
 
 test("action without expected metadata returns server error", async () => {
+	// @ts-expect-error
 	const action = ac.action(async ({ metadata }) => {
 		return {
 			metadata,

@@ -71,11 +71,8 @@ export default {
 					sidebarPath: require.resolve("./sidebars.js"),
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
-					editUrl:
-						"https://github.com/TheEdoRan/next-safe-action/tree/main/website",
-					remarkPlugins: [
-						[require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
-					],
+					editUrl: "https://github.com/TheEdoRan/next-safe-action/tree/main/website",
+					remarkPlugins: [[require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }]],
 				},
 				blog: false,
 				theme: {
@@ -130,6 +127,14 @@ export default {
 					"aria-label": "next-safe-action's GitHub page",
 				},
 			],
+		},
+		announcementBar: {
+			id: "next-safe-action-v8",
+			content:
+				"next-safe-action v8 is now available! Check out the <a href='/docs/migrations/v7-to-v8'>migration guide</a> to learn how to update your code for v8.",
+			backgroundColor: "#2B2B2B",
+			textColor: "#fff",
+			isCloseable: true,
 		},
 		prism: {
 			additionalLanguages: ["typescript"],

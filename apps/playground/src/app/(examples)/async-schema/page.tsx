@@ -28,19 +28,10 @@ export default function AsyncSchemaPage() {
 					};
 					const res = await loginUser(input); // this is the type safe action directly called
 					setResult(res);
-				}}>
-				<StyledInput
-					type="text"
-					name="username"
-					id="username"
-					placeholder="Username"
-				/>
-				<StyledInput
-					type="password"
-					name="password"
-					id="password"
-					placeholder="Password"
-				/>
+				}}
+			>
+				<StyledInput type="text" name="username" id="username" placeholder="Username" />
+				<StyledInput type="password" name="password" id="password" placeholder="Password" />
 				<StyledButton type="submit">Log in</StyledButton>
 			</form>
 			<ResultBox result={result} />

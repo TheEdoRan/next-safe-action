@@ -1,11 +1,11 @@
 ---
 sidebar_position: 6
-description: Learn how to use next-safe-action with a i18n solution.
+description: Learn how to extend previous schema(s)
 ---
 
 # Extend previous schema(s)
 
-Sometimes it's useful to define an action "template" with a base schema and then extend it with additional properties. This can be done inside the [`schema`](/docs/define-actions/instance-methods#schema) method by passing an async function that has the previous schema as its argument. See the example below:
+Sometimes it's useful to define an action "template" with a base input schema and then extend it with additional properties. This can be done inside the [`inputSchema()`](/docs/define-actions/instance-methods#inputschema) method by passing an async function that has the previous schema as its argument. See the example below:
 
 ```typescript
 "use server";
@@ -13,18 +13,18 @@ Sometimes it's useful to define an action "template" with a base schema and then
 import { actionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
-const schema = z.object({
+const inputSchema = z.object({
   username: z.string(),
 });
 
 const myAction = actionClient
-  .schema(schema)
+  .inputSchema(inputSchema)
   // highlight-start
-  .schema(async (prevSchema) => {
+  .inputSchema(async (prevSchema) => {
     // Here we extend the previous schema with `password` property.
     return prevSchema.extend({ password: z.string() });
   })
-  .schema(async (prevSchema) => {
+  .inputSchema(async (prevSchema) => {
     // Here with `age` property.
     return prevSchema.extend({ age: z.number().positive() });
   })
@@ -35,4 +35,4 @@ const myAction = actionClient
   });
 ```
 
-Note that if you don't use `prevSchema` inside the `schema` method, the previous schema(s) will be overwritten.
+Note that if you don't use `prevSchema` inside the `inputSchema()` method, the previous schema(s) will be overwritten.

@@ -8,15 +8,12 @@ import {
 	createMiddleware,
 	createSafeActionClient,
 	DEFAULT_SERVER_ERROR_MESSAGE,
-	formatBindArgsValidationErrors,
 	formatValidationErrors,
 	returnValidationErrors,
 } from "..";
-import { zodAdapter } from "../adapters/zod";
 import { FrameworkErrorHandler } from "../next/errors";
 
 const ac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	handleServerError(e) {
 		// disable server error logging for these tests
 		return {
@@ -94,7 +91,7 @@ test("instance context value is correctly overridden in subsequent middleware", 
 
 test("action client inputs are passed to middleware", async () => {
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -124,11 +121,42 @@ test("action client inputs are passed to middleware", async () => {
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
+test("invalid bind args give back a serverError result", async () => {
+	const action = ac
+		.inputSchema(async () =>
+			z.object({
+				username: z.string(),
+			})
+		)
+		.bindArgsSchemas([z.object({ age: z.number().positive() })])
+		.use(async ({ clientInput, bindArgsClientInputs, next }) => {
+			return next({ ctx: { clientInput, bindArgsClientInputs } });
+		})
+		.action(async ({ ctx }) => {
+			return {
+				clientInput: ctx.clientInput,
+				bindArgsClientInputs: ctx.bindArgsClientInputs,
+			};
+		});
+
+	const inputs = [{ age: -1 }, { username: "johndoe" }] as const;
+
+	const actualResult = await action(...inputs);
+
+	const expectedResult = {
+		serverError: {
+			message: "Server Action bind args validation error(s) occurred",
+		},
+	};
+
+	assert.deepStrictEqual(actualResult, expectedResult);
+});
+
 test("happy path execution result from middleware is correct", async () => {
 	let middlewareResult = {};
 
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -174,7 +202,7 @@ test("server error execution result from middleware is correct", async () => {
 	let middlewareResult = {};
 
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -210,12 +238,11 @@ test("validation errors in execution result from middleware are correct", async 
 	let middlewareResult = {};
 
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string().max(3),
 			})
 		)
-		.bindArgsSchemas([z.object({ age: z.number().positive() })])
 		.use(async ({ next }) => {
 			// Await action execution.
 			const res = await next();
@@ -228,8 +255,7 @@ test("validation errors in execution result from middleware are correct", async 
 			};
 		});
 
-	const inputs = [{ age: -30 }, { username: "johndoe" }] as const;
-	await action(...inputs);
+	await action({ username: "johndoe" });
 
 	const expectedResult = {
 		success: false,
@@ -241,13 +267,6 @@ test("validation errors in execution result from middleware are correct", async 
 				_errors: ["String must contain at most 3 character(s)"],
 			},
 		},
-		bindArgsValidationErrors: [
-			{
-				age: {
-					_errors: ["Number must be greater than 0"],
-				},
-			},
-		],
 	};
 
 	assert.deepStrictEqual(middlewareResult, expectedResult);
@@ -261,7 +280,7 @@ test("server validation errors in execution result from middleware are correct",
 	});
 
 	const action = ac
-		.schema(schema)
+		.inputSchema(schema)
 		.bindArgsSchemas([z.object({ age: z.number().positive() })])
 		.use(async ({ next }) => {
 			// Await action execution.
@@ -299,7 +318,7 @@ test("framework error result from middleware is correct", async () => {
 	let middlewareResult = {};
 
 	const action = ac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string(),
 			})
@@ -317,17 +336,17 @@ test("framework error result from middleware is correct", async () => {
 
 	const inputs = [{ age: 30 }, { username: "johndoe" }] as const;
 	await action(...inputs).catch((e) => {
-		if (!FrameworkErrorHandler.isFrameworkError(e)) {
+		if (!FrameworkErrorHandler.isNavigationError(e)) {
 			throw e;
 		}
 	});
 
 	const expectedResult = {
-		success: true,
+		success: false,
 		ctx: {
 			foo: "bar",
 		},
-		data: undefined,
+		navigationKind: "redirect",
 		parsedInput: {
 			username: "johndoe",
 		},
@@ -353,7 +372,7 @@ test("framework error is thrown within middleware", async () => {
 	await assert.rejects(
 		async () => await action(),
 		(e) => {
-			return FrameworkErrorHandler.isFrameworkError(e);
+			return FrameworkErrorHandler.isNavigationError(e);
 		},
 		"A framework error to be thrown"
 	);
@@ -362,7 +381,6 @@ test("framework error is thrown within middleware", async () => {
 // Flattened validation errors shape.
 
 const flac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	handleServerError: () => DEFAULT_SERVER_ERROR_MESSAGE, // disable server errors logging for these tests
 	defaultValidationErrorsShape: "flattened",
 });
@@ -371,12 +389,11 @@ test("flattened validation errors in execution result from middleware are correc
 	let middlewareResult = {};
 
 	const action = flac
-		.schema(async () =>
+		.inputSchema(async () =>
 			z.object({
 				username: z.string().max(3),
 			})
 		)
-		.bindArgsSchemas([z.object({ age: z.number().positive() })])
 		.use(async ({ next }) => {
 			// Await action execution.
 			const res = await next();
@@ -389,8 +406,7 @@ test("flattened validation errors in execution result from middleware are correc
 			};
 		});
 
-	const inputs = [{ age: -30 }, { username: "johndoe" }] as const;
-	await action(...inputs);
+	await action({ username: "johndoe" });
 
 	const expectedResult = {
 		success: false,
@@ -401,14 +417,6 @@ test("flattened validation errors in execution result from middleware are correc
 				username: ["String must contain at most 3 character(s)"],
 			},
 		},
-		bindArgsValidationErrors: [
-			{
-				formErrors: [],
-				fieldErrors: {
-					age: ["Number must be greater than 0"],
-				},
-			},
-		],
 	};
 
 	assert.deepStrictEqual(middlewareResult, expectedResult);
@@ -418,16 +426,13 @@ test("overridden formatted validation errors in execution result from middleware
 	let middlewareResult = {};
 
 	const action = flac
-		.schema(
+		.inputSchema(
 			async () =>
 				z.object({
 					username: z.string().max(3),
 				}),
 			{ handleValidationErrorsShape: async (ve) => formatValidationErrors(ve) }
 		)
-		.bindArgsSchemas([z.object({ age: z.number().positive() })], {
-			handleBindArgsValidationErrorsShape: async (ve) => formatBindArgsValidationErrors(ve),
-		})
 		.use(async ({ next }) => {
 			// Await action execution.
 			const res = await next();
@@ -440,8 +445,7 @@ test("overridden formatted validation errors in execution result from middleware
 			};
 		});
 
-	const inputs = [{ age: -30 }, { username: "johndoe" }] as const;
-	await action(...inputs);
+	await action({ username: "johndoe" });
 
 	const expectedResult = {
 		success: false,
@@ -451,13 +455,6 @@ test("overridden formatted validation errors in execution result from middleware
 				_errors: ["String must contain at most 3 character(s)"],
 			},
 		},
-		bindArgsValidationErrors: [
-			{
-				age: {
-					_errors: ["Number must be greater than 0"],
-				},
-			},
-		],
 	};
 
 	assert.deepStrictEqual(middlewareResult, expectedResult);

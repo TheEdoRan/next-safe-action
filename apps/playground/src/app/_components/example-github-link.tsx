@@ -16,7 +16,8 @@ export function ExampleGithubLink({ className }: Props) {
 			target="_blank"
 			rel="noopener noreferrer"
 			aria-label="Example link to GitHub"
-			className={className}>
+			className={className}
+		>
 			<Link className="w-4 h-4" />
 			<span>View on GitHub</span>
 		</a>
