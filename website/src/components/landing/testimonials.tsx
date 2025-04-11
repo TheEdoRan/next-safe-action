@@ -54,7 +54,7 @@ const tweets: TweetProps[] = [
 	},
 	{
 		tweetURL: "https://x.com/zaphodias/status/1654158096048979973",
-		authorName: "zaphodias",
+		authorName: "Antonio 👾🛡️",
 		authorHandle: "zaphodias",
 		date: "May 4, 2023",
 		textHTML: `step 1: upgrade to next 13.4;<br>
