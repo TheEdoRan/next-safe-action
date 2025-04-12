@@ -88,7 +88,7 @@ const boundAction = action.bind(null, invalidBindArg);
 const result = await boundAction(input);
 ```
 
-### ⚠️✨ Removal of deprecated `executeOnMount` hook option
+### ⚠️ Removal of deprecated `executeOnMount` hook option
 
 The deprecated `executeOnMount` hook functionality has been removed in v8. Server Actions should be used only for mutations, so it doesn't make sense to execute them on mount. Or at least, it shouldn't be a common case and, above all, a library job. If you still need to do it, just use `useEffect()` to trigger the execution, however you want.
 

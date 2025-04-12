@@ -68,14 +68,12 @@ You can also find this example in the playground app: [stateless form action](ht
 ## Stateful form actions
 
 :::note
-The library leverages on React's [`useActionState()`](https://react.dev/reference/react/useActionState) hook to support stateful form actions, so much of the functionality of the `useAction()` and `useOptimisticAction()` is missing when using this approach.
+The library uses React's [`useActionState()`](https://react.dev/reference/react/useActionState) hook to support stateful form actions, which means much of the functionality provided by `useAction()` and `useOptimisticAction()` is unavailable with this approach.
 :::
 
 You can define a _stateful_ safe action using the [`stateAction()`](/docs/define-actions/instance-methods#action--stateaction) instance method, and then use it on the client via the [`useActionState()`](https://react.dev/reference/react/useActionState) hook from React.
 
 With this method, you can access previous result both from the client component, by using the `state` object returned by the hook, and on the server, where you define the action. More information about that in the [`stateAction()`](/docs/define-actions/instance-methods#action--stateaction) section.
-
-
 
 Note that if you want or need to use _stateful_ actions:
 1. You **must** define them with [`stateAction()`](/docs/define-actions/instance-methods#action--stateaction) instance method. This changes the signature of the Server Action function, placing the `prevResult` as the first argument.
