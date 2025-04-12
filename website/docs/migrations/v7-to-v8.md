@@ -170,7 +170,7 @@ To update your actions, you can just use the search and replace feature of your 
 
 The `useStateAction()` hook has been deprecated. It's always been kind of a hack to begin with, and it doesn't support progressive enhancement, since it tries to do what the `useAction()` and `useOptimisticAction()` hooks do, with JS functionality.
 
-So, from now one, the recommended way to use stateful actions is to do it with the React's built in `useActionState()` hook, as explained in [this section](/docs/recipes/form-actions#stateful-form-actions) of the documentation.
+So, from now on, the recommended way to use stateful actions is to do it with the React's built in `useActionState()` hook, as explained in [this section](/docs/recipes/form-actions#stateful-form-actions) of the documentation.
 
 ## Requirements
 
