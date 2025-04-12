@@ -52,20 +52,20 @@ export function Features() {
 						</p>
 					</div>
 
-					<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+					<div className="wfull flex flex-wrap justify-center gap-6">
 						{features.map((feature, index) => (
-							<div
-								key={index}
-								className="flex h-full flex-col rounded-xl border border-zinc-200 bg-white p-6 transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800"
-							>
-								<div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20">
-									<Check className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+							<div key={index} className="group relative h-[16rem] w-full max-w-[22rem] rounded-xl">
+								<div className="animate-gradient-rotate pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300 bg-clip-padding blur-sm transition-all group-hover:brightness-75 dark:from-blue-700 dark:via-indigo-700 dark:to-purple-700 dark:group-hover:brightness-125" />
+								<div className="absolute inset-0 flex flex-col rounded-xl bg-zinc-100 p-6 dark:bg-zinc-900">
+									<div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20">
+										<Check className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+									</div>
+									<h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
+									<div
+										className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400"
+										dangerouslySetInnerHTML={{ __html: feature.description }}
+									/>
 								</div>
-								<h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
-								<div
-									className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400"
-									dangerouslySetInnerHTML={{ __html: feature.description }}
-								/>
 							</div>
 						))}
 					</div>
