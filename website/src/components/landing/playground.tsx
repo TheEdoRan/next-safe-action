@@ -32,7 +32,7 @@ export function Playground() {
 				<div className="mb-12 text-center">
 					<h2 className="mb-4 text-2xl font-bold md:text-3xl">Try it out</h2>
 					<p className="mx-auto max-w-2xl text-zinc-600 dark:text-zinc-400">
-						See how next-safe-action lets you handle Server Actions in a type safe way.
+						See how next-safe-action lets you handle Server Actions in a type safe way
 					</p>
 				</div>
 				{isVisible && (
