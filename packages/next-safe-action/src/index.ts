@@ -1,14 +1,8 @@
-import type { Infer, Schema } from "./adapters/types";
-import { zodAdapter } from "./adapters/zod";
-import type { DVES, SafeActionClientOpts } from "./index.types";
+import type { CreateClientOpts, DVES, HandleServerErrorFn } from "./index.types";
 import { SafeActionClient } from "./safe-action-client";
+import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard-schema";
 import { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
-import {
-	flattenBindArgsValidationErrors,
-	flattenValidationErrors,
-	formatBindArgsValidationErrors,
-	formatValidationErrors,
-} from "./validation-errors";
+import { flattenValidationErrors, formatValidationErrors } from "./validation-errors";
 
 export { createMiddleware } from "./middleware";
 export { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
@@ -16,9 +10,7 @@ export {
 	ActionMetadataValidationError,
 	ActionOutputDataValidationError,
 	ActionValidationError,
-	flattenBindArgsValidationErrors,
 	flattenValidationErrors,
-	formatBindArgsValidationErrors,
 	formatValidationErrors,
 	returnValidationErrors,
 } from "./validation-errors";
@@ -36,12 +28,12 @@ export type * from "./validation-errors.types";
 export const createSafeActionClient = <
 	ODVES extends DVES | undefined = undefined,
 	ServerError = string,
-	MetadataSchema extends Schema | undefined = undefined,
+	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
 >(
-	createOpts?: SafeActionClientOpts<ServerError, MetadataSchema, ODVES>
+	createOpts?: CreateClientOpts<ODVES, ServerError, MetadataSchema>
 ) => {
 	// If `handleServerError` is provided, use it, otherwise default to log to console and generic error message.
-	const handleServerError: NonNullable<SafeActionClientOpts<ServerError, MetadataSchema, ODVES>["handleServerError"]> =
+	const handleServerError: HandleServerErrorFn<ServerError, MetadataSchema> =
 		createOpts?.handleServerError ||
 		((e) => {
 			console.error("Action error:", e.message);
@@ -54,19 +46,14 @@ export const createSafeActionClient = <
 		inputSchemaFn: undefined,
 		bindArgsSchemas: [],
 		outputSchema: undefined,
-		validationAdapter: createOpts?.validationAdapter ?? zodAdapter(), // use zod adapter by default
 		ctxType: {},
 		metadataSchema: (createOpts?.defineMetadataSchema?.() ?? undefined) as MetadataSchema,
-		metadata: undefined as MetadataSchema extends Schema ? Infer<MetadataSchema> : undefined,
+		metadata: undefined as InferOutputOrDefault<MetadataSchema, undefined>,
 		defaultValidationErrorsShape: (createOpts?.defaultValidationErrorsShape ?? "formatted") as ODVES,
 		throwValidationErrors: Boolean(createOpts?.throwValidationErrors),
 		handleValidationErrorsShape: async (ve) =>
 			createOpts?.defaultValidationErrorsShape === "flattened"
 				? flattenValidationErrors(ve)
 				: formatValidationErrors(ve),
-		handleBindArgsValidationErrorsShape: async (ve) =>
-			createOpts?.defaultValidationErrorsShape === "flattened"
-				? flattenBindArgsValidationErrors(ve)
-				: formatBindArgsValidationErrors(ve),
 	});
 };

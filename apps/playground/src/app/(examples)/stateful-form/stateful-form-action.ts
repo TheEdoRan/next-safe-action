@@ -14,7 +14,7 @@ const schema = zfd.formData({
 // though, you can omit the type here, since it will be inferred just like with `action` method.
 export const statefulFormAction = action
 	.metadata({ actionName: "statefulFormAction" })
-	.schema(schema)
+	.inputSchema(schema)
 	.stateAction<{
 		prevName?: string;
 		newName: string;

@@ -25,13 +25,13 @@ https://github.com/TheEdoRan/next-safe-action/assets/1337629/664eb3ee-92f3-4d4a-
 
 **Explore the documentation for the current stable version of the library on the [next-safe-action v7 website](https://next-safe-action.dev).** ✨
 
-### Looking for v6 docs?
+### Looking for v7 docs?
 
-You can keep using version 6 and eventually upgrade to version 7. Check out the v6 documentation [here](https://v6.next-safe-action.dev).
+You can keep using version 6 and eventually upgrade to version 7. Check out the v7 documentation [here](https://v7.next-safe-action.dev).
 
-## Migrate from v6 to v7
+## Migrate from v7 to v8
 
-Check out the [v6 to v7 migration guide](https://next-safe-action.dev/docs/migrations/v6-to-v7) to learn how to update your code for v7.
+Check out the [v7 to v8 migration guide](https://next-safe-action.dev/docs/migrations/v7-to-v8) to learn how to update your code for v8.
 
 ## Installation
 
