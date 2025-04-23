@@ -38,7 +38,9 @@ class ZodAdapter implements ValidationAdapter {
 
 		return {
 			success: false,
-			issues: result.error.issues.map(({ message, path }) => ({ message, path })),
+			// @ts-expect-error
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			issues: result.error.issues.map(({ message, path, unionErrors }) => ({ message, path, unionErrors })),
 		} as const;
 	}
 }

@@ -1,23 +1,27 @@
-import type { Infer, InferIn, Schema } from "./adapters/types";
-import type { Prettify } from "./utils.types";
+import type { Infer, InferIn, Schema, ValidationIssue } from "./adapters/types";
+import type { MaybeArray, Prettify } from "./utils.types";
 
 // Basic types and arrays.
 type NotObject = number | string | boolean | bigint | symbol | null | undefined | any[];
 
 // Object with an optional list of validation errors.
-type VEList = Prettify<{ _errors?: string[] }>;
+type VEList<K = undefined> = K extends any[] ? MaybeArray<{ _errors?: string[] }> : { _errors?: string[] };
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends NotObject ? VEList : Prettify<VEList & SchemaErrors<S[K]>>;
+	[K in keyof S]?: S[K] extends NotObject ? VEList<S[K]> : Prettify<VEList & SchemaErrors<S[K]>>;
 } & {};
+
+export type IssueWithUnionErrors = ValidationIssue & {
+	unionErrors?: { issues: ValidationIssue[] }[];
+};
 
 /**
  * Type of the returned object when validation fails.
  */
 export type ValidationErrors<S extends Schema | undefined> = S extends Schema
 	? Infer<S> extends NotObject
-		? VEList
+		? Prettify<VEList>
 		: Prettify<VEList & SchemaErrors<Infer<S>>>
 	: undefined;
 

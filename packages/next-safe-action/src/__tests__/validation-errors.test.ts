@@ -74,6 +74,44 @@ test("action with invalid input gives back an object with correct `validationErr
 	assert.deepStrictEqual(actualResult, expectedResult);
 });
 
+test("action with invalid enum input gives back an object with correct `validationErrors` (default formatted shape)", async () => {
+	const schema = z.object({
+		foo: z.object({
+			bar: z.union([z.literal("a"), z.literal("b")]),
+		}),
+		baz: z.string().min(3),
+	});
+
+	const action = dac.schema(schema).action(async () => {
+		return {
+			ok: true,
+		};
+	});
+
+	const actualResult = await action({
+		foo: {
+			// @ts-expect-error
+			bar: "c",
+		},
+		baz: "a",
+	});
+
+	const expectedResult = {
+		validationErrors: {
+			foo: {
+				bar: {
+					_errors: ['Invalid literal value, expected "a"', 'Invalid literal value, expected "b"'],
+				},
+			},
+			baz: {
+				_errors: ["String must contain at least 3 character(s)"],
+			},
+		},
+	};
+
+	assert.deepStrictEqual(actualResult, expectedResult);
+});
+
 test("action with root level schema error gives back an object with correct `validationErrors` (default formatted shape)", async () => {
 	const userId = "invalid_uuid";
 
