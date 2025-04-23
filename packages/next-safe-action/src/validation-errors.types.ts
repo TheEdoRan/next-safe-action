@@ -5,11 +5,11 @@ import type { Prettify } from "./utils.types";
 type NotObject = number | string | boolean | bigint | symbol | null | undefined | any[];
 
 // Object with an optional list of validation errors.
-type VEList = Prettify<{ _errors?: string[] }>;
+type VEList<K = undefined> = K extends any[] ? { _errors?: string[] }[] : { _errors?: string[] };
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {
-	[K in keyof S]?: S[K] extends NotObject ? VEList : Prettify<VEList & SchemaErrors<S[K]>>;
+	[K in keyof S]?: S[K] extends NotObject ? Prettify<VEList<S[K]>> : Prettify<VEList> & SchemaErrors<S[K]>;
 } & {};
 
 export type IssueWithUnionErrors = StandardSchemaV1.Issue & {
@@ -21,8 +21,8 @@ export type IssueWithUnionErrors = StandardSchemaV1.Issue & {
  */
 export type ValidationErrors<S extends StandardSchemaV1 | undefined> = S extends StandardSchemaV1
 	? StandardSchemaV1.InferOutput<S> extends NotObject
-		? VEList
-		: Prettify<VEList & SchemaErrors<StandardSchemaV1.InferOutput<S>>>
+		? Prettify<VEList>
+		: Prettify<VEList> & SchemaErrors<StandardSchemaV1.InferOutput<S>>
 	: undefined;
 
 /**
