@@ -57,29 +57,47 @@ export interface ValidationAdapter {
 	validate<S extends Schema>(
 		schema: S,
 		data: unknown
-	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	): Promise<
+		| { success: true; data: Infer<S> }
+		| { success: false; issues: ValidationIssue[]; unionErrors?: { issues: ValidationIssue[] }[] }
+	>;
 	// zod
 	validate<S extends IfInstalled<z.ZodType>>(
 		schema: S,
 		data: unknown
-	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	): Promise<
+		| { success: true; data: Infer<S> }
+		| { success: false; issues: ValidationIssue[]; unionErrors?: { issues: ValidationIssue[] }[] }
+	>;
 	// valibot
 	validate<S extends IfInstalled<GenericSchema>>(
 		schema: S,
 		data: unknown
-	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	): Promise<
+		| { success: true; data: Infer<S> }
+		| { success: false; issues: ValidationIssue[]; unionErrors?: { issues: ValidationIssue[] }[] }
+	>;
 	validate<S extends IfInstalled<GenericSchemaAsync>>(
 		schema: S,
 		data: unknown
-	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	): Promise<
+		| { success: true; data: Infer<S> }
+		| { success: false; issues: ValidationIssue[]; unionErrors?: { issues: ValidationIssue[] }[] }
+	>;
 	// yup
 	validate<S extends IfInstalled<YupSchema>>(
 		schema: S,
 		data: unknown
-	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	): Promise<
+		| { success: true; data: Infer<S> }
+		| { success: false; issues: ValidationIssue[]; unionErrors?: { issues: ValidationIssue[] }[] }
+	>;
 	// typebox
 	validate<S extends IfInstalled<TSchema>>(
 		schema: S,
 		data: unknown
-	): Promise<{ success: true; data: Infer<S> } | { success: false; issues: ValidationIssue[] }>;
+	): Promise<
+		| { success: true; data: Infer<S> }
+		| { success: false; issues: ValidationIssue[]; unionErrors?: { issues: ValidationIssue[] }[] }
+	>;
 }
