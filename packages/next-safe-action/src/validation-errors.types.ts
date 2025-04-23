@@ -1,11 +1,11 @@
 import type { InferInputArray, InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
-import type { Prettify } from "./utils.types";
+import type { MaybeArray, Prettify } from "./utils.types";
 
 // Basic types and arrays.
 type NotObject = number | string | boolean | bigint | symbol | null | undefined | any[];
 
 // Object with an optional list of validation errors.
-type VEList<K = undefined> = K extends any[] ? { _errors?: string[] }[] : { _errors?: string[] };
+type VEList<K = undefined> = K extends any[] ? MaybeArray<{ _errors?: string[] }> : { _errors?: string[] };
 
 // Creates nested schema validation errors type using recursion.
 type SchemaErrors<S> = {

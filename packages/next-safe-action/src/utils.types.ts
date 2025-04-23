@@ -5,3 +5,6 @@ export type Prettify<T> = {
 
 // Returns type or promise of type.
 export type MaybePromise<T> = Promise<T> | T;
+
+// Returns type or array of type.
+export type MaybeArray<T> = T | T[];
