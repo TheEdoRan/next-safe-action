@@ -12,6 +12,10 @@ type SchemaErrors<S> = {
 	[K in keyof S]?: S[K] extends NotObject ? VEList : Prettify<VEList & SchemaErrors<S[K]>>;
 } & {};
 
+export type IssueWithUnionErrors = StandardSchemaV1.Issue & {
+	unionErrors?: { issues: StandardSchemaV1.Issue[] }[];
+};
+
 /**
  * Type of the returned object when validation fails.
  */

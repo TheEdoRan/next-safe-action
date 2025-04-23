@@ -1,18 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 import type { StandardSchemaV1 } from "./standard-schema";
-import type { FlattenedValidationErrors, ValidationErrors } from "./validation-errors.types";
+import type { FlattenedValidationErrors, IssueWithUnionErrors, ValidationErrors } from "./validation-errors.types";
 
 const getKey = (segment: PropertyKey | StandardSchemaV1.PathSegment) =>
 	typeof segment === "object" ? segment.key : segment;
 
+const getIssueMessage = (issue: IssueWithUnionErrors) => {
+	if (issue.unionErrors) {
+		return issue.unionErrors.map((u) => u.issues.map((i) => i.message)).flat();
+	}
+	return issue.message;
+};
+
 // This function is used internally to build the validation errors object from a list of validation issues.
 export const buildValidationErrors = <S extends StandardSchemaV1 | undefined>(
-	issues: readonly StandardSchemaV1.Issue[]
+	issues: readonly IssueWithUnionErrors[]
 ) => {
 	const ve: any = {};
 
 	for (const issue of issues) {
-		const { path, message } = issue;
+		const { path, message, unionErrors } = issue;
 
 		// When path is undefined or empty, set root errors.
 		if (!path || path.length === 0) {
@@ -37,13 +44,15 @@ export const buildValidationErrors = <S extends StandardSchemaV1 | undefined>(
 		// Key is always the last element of the path.
 		const key = getKey(path[path.length - 1]!);
 
+		const issueMessage = getIssueMessage(issue);
+
 		// Set error for the current path. If `_errors` array exists, add the message to it.
 		ref[key] = ref[key]?._errors
 			? {
 					...structuredClone(ref[key]),
-					_errors: [...ref[key]._errors, message],
+					_errors: [...ref[key]._errors, issueMessage],
 				}
-			: { ...structuredClone(ref[key]), _errors: [message] };
+			: { ...structuredClone(ref[key]), _errors: unionErrors ? issueMessage : [issueMessage] };
 	}
 
 	return ve as ValidationErrors<S>;
