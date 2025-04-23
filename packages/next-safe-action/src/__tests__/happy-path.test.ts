@@ -10,6 +10,10 @@ const ac = createSafeActionClient({
 	validationAdapter: zodAdapter(),
 });
 
+test("pass", () => {
+	assert.equal(1, 1);
+});
+
 test("action with no input schema returns empty object", async () => {
 	const action = ac.action(async () => {
 		return;
