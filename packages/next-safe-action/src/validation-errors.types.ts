@@ -1,4 +1,4 @@
-import type { Infer, InferIn, Schema } from "./adapters/types";
+import type { Infer, InferIn, Schema, ValidationIssue } from "./adapters/types";
 import type { MaybeArray, Prettify } from "./utils.types";
 
 // Basic types and arrays.
@@ -11,6 +11,10 @@ type VEList<K = undefined> = K extends any[] ? MaybeArray<{ _errors?: string[] }
 type SchemaErrors<S> = {
 	[K in keyof S]?: S[K] extends NotObject ? VEList<S[K]> : Prettify<VEList & SchemaErrors<S[K]>>;
 } & {};
+
+export type IssueWithUnionErrors = ValidationIssue & {
+	unionErrors?: { issues: ValidationIssue[] }[];
+};
 
 /**
  * Type of the returned object when validation fails.
