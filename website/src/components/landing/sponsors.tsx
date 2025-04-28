@@ -25,7 +25,7 @@ export function Sponsors() {
 
 					<div className="mt-10 text-center">
 						<a
-							href="/docs/getting-started"
+							href="https://github.com/sponsors/theedoran"
 							className="inline-flex cursor-pointer items-center justify-center rounded-lg bg-zinc-900 px-6 py-3 text-base font-semibold !text-white !no-underline transition-all after:ml-2 hover:translate-y-[-2px] hover:shadow-lg hover:after:content-['🚀'] md:text-lg dark:bg-white dark:!text-zinc-900"
 						>
 							Sponsor the project
