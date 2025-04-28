@@ -5,12 +5,6 @@
 
 **next-safe-action** is a library that takes full advantage of the latest and greatest Next.js, React and TypeScript features to let you define **type safe** Server Actions and execute them inside React Components.
 
-## How does it work?
-
-Like magic. 🪄
-
-https://github.com/TheEdoRan/next-safe-action/assets/1337629/664eb3ee-92f3-4d4a-ba1b-a3b1c13fff04
-
 ## Features
 
 - ✅ Pretty simple
@@ -36,7 +30,7 @@ Check out the [v7 to v8 migration guide](https://next-safe-action.dev/docs/migra
 ## Installation
 
 ```bash
-npm i next-safe-action
+npm i next-safe-action@beta
 ```
 
 ## Playground
@@ -47,14 +41,11 @@ You can find a basic working implementation of the library [here](https://github
 
 A big shout-out to all our [sponsors](https://github.com/sponsors/TheEdoRan)! You’re the driving force behind this library's growth, and we're truly grateful for your support. ❤️
 
-<table>
-  <tr>
-   <td align="center"><a href="https://arcjet.com/?ref=next-safe-action">  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://arcjet.com/logo/arcjet-dark-lockup-voyage-horizontal.svg">
-    <img src="https://arcjet.com/logo/arcjet-light-lockup-voyage-horizontal.svg" alt="Arcjet Logo" height="128" width="auto">
-  </picture><br />Arcjet</a></td>
-  </tr>
-</table>
+<p align="center">
+<a href="https://cdn.jsdelivr.net/gh/theedoran/sponsors-img/sponsorkit/sponsors.svg" target="_blank">
+<img src="https://cdn.jsdelivr.net/gh/theedoran/sponsors-img/sponsorkit/sponsors.svg" />
+</a>
+</p>
 
 ## Contributing
 
