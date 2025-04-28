@@ -27,7 +27,7 @@ export function Playground() {
 	}, []);
 
 	return (
-		<div className="w-full bg-zinc-50 py-6 dark:bg-zinc-950" ref={containerRef}>
+		<div className="min-h-[40rem] w-full bg-zinc-50 py-6 dark:bg-zinc-950" ref={containerRef}>
 			<div className="mx-auto w-full max-w-7xl">
 				<div className="mb-12 text-center">
 					<h2 className="mb-4 text-2xl font-bold md:text-3xl">Try it out</h2>
