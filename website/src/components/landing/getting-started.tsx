@@ -1,6 +1,6 @@
 export function GettingStarted() {
 	return (
-		<div className="relative bg-gradient-to-b from-zinc-100 to-zinc-50 py-24 md:py-32 dark:from-zinc-900 dark:to-zinc-950">
+		<div className="relative bg-gradient-to-b from-zinc-50 to-white py-24 md:py-32 dark:from-zinc-950 dark:to-black">
 			{/* Bubblegum background elements */}
 			<div className="absolute -left-24 -top-24 size-64 rounded-full bg-gradient-to-r from-blue-300 to-purple-300 opacity-60 blur-3xl dark:from-blue-700 dark:to-purple-700 dark:opacity-10"></div>
 			<div className="absolute inset-0 overflow-hidden">
