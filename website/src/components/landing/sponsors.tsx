@@ -6,7 +6,7 @@ export function Sponsors() {
 					<div className="mb-10 text-center md:mb-16">
 						<h2 className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl">Our sponsors</h2>
 						<p className="mx-auto max-w-2xl text-zinc-600 dark:text-zinc-400">
-							Thanks to these amazing sponsors who help make this project possible! ❤️
+							These amazing people and companies help keep next-safe-action running! ❤️
 						</p>
 					</div>
 

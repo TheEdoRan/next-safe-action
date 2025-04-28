@@ -48,7 +48,7 @@ export function Features() {
 					<div className="mb-12 text-center md:mb-16">
 						<h2 className="mb-4 text-2xl font-bold md:text-3xl lg:text-4xl">Why choose next-safe-action?</h2>
 						<p className="mx-auto max-w-2xl text-zinc-600 dark:text-zinc-400">
-							A modern, type-safe approach to handling server actions in your Next.js applications
+							A type-safe approach to handling Server Actions in your Next.js applications
 						</p>
 					</div>
 
