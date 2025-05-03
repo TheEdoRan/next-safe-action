@@ -53,7 +53,7 @@ export function InstallBox({ className }: Props) {
 				))}
 			</div>
 
-			<div className="relative mt-2 rounded-md bg-zinc-100 p-4 dark:bg-zinc-900">
+			<div className="relative mt-2 rounded-md bg-zinc-200/40 p-4 dark:bg-zinc-900">
 				<div className="flex items-center font-mono text-sm">
 					<span className="mr-3 select-none text-zinc-500">$</span>
 					<div>
