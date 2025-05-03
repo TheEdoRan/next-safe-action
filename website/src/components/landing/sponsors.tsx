@@ -10,7 +10,7 @@ export function Sponsors() {
 						</p>
 					</div>
 
-					<div className="mx-auto flex w-full justify-center overflow-auto">
+					<div className="mx-auto flex w-full justify-center overflow-hidden">
 						<div className="inline-block rounded-lg">
 							<a href="https://cdn.jsdelivr.net/gh/theedoran/sponsors-img/sponsorkit/sponsors.svg" target="_blank">
 								<img
