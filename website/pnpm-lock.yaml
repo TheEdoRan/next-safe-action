@@ -10,25 +10,31 @@ importers:
     dependencies:
       '@docusaurus/core':
         specifier: 3.7.0
-        version: 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+        version: 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/preset-classic':
         specifier: 3.7.0
-        version: 3.7.0(@algolia/client-search@5.20.0)(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(@types/react@18.2.79)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)(typescript@5.7.3)
+        version: 3.7.0(@algolia/client-search@5.20.0)(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(@types/react@19.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)(typescript@5.8.2)
       '@docusaurus/remark-plugin-npm2yarn':
         specifier: ^3.7.0
         version: 3.7.0
       '@mdx-js/react':
         specifier: ^3.1.0
-        version: 3.1.0(@types/react@18.2.79)(react@19.0.0)
+        version: 3.1.0(@types/react@19.1.0)(react@19.0.0)
       acorn:
-        specifier: 8.14.0
-        version: 8.14.0
+        specifier: 8.14.1
+        version: 8.14.1
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      embla-carousel-auto-scroll:
+        specifier: ^8.6.0
+        version: 8.6.0(embla-carousel@8.6.0)
+      embla-carousel-react:
+        specifier: ^8.6.0
+        version: 8.6.0(react@19.0.0)
       lucide-react:
-        specifier: ^0.474.0
-        version: 0.474.0(react@19.0.0)
+        specifier: ^0.487.0
+        version: 0.487.0(react@19.0.0)
       prism-react-renderer:
         specifier: ^2.4.1
         version: 2.4.1(react@19.0.0)
@@ -38,6 +44,9 @@ importers:
       react-dom:
         specifier: ^19
         version: 19.0.0(react@19.0.0)
+      react-syntax-highlighter:
+        specifier: ^15.6.1
+        version: 15.6.1(react@19.0.0)
     devDependencies:
       '@docusaurus/module-type-aliases':
         specifier: 3.7.0
@@ -48,15 +57,21 @@ importers:
       '@docusaurus/types':
         specifier: ^3.7.0
         version: 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@types/react':
+        specifier: ^19
+        version: 19.1.0
+      '@types/react-syntax-highlighter':
+        specifier: ^15.5.13
+        version: 15.5.13
       autoprefixer:
-        specifier: ^10.4.20
-        version: 10.4.20(postcss@8.5.1)
+        specifier: ^10.4.21
+        version: 10.4.21(postcss@8.5.3)
       postcss:
-        specifier: ^8.5.1
-        version: 8.5.1
+        specifier: ^8.5.3
+        version: 8.5.3
       postcss-nested:
         specifier: ^7.0.2
-        version: 7.0.2(postcss@8.5.1)
+        version: 7.0.2(postcss@8.5.3)
       tailwindcss:
         specifier: ^3
         version: 3.4.16
@@ -64,8 +79,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0(tailwindcss@3.4.16)
       typescript:
-        specifier: ^5.7.3
-        version: 5.7.3
+        specifier: ^5.8.2
+        version: 5.8.2
 
 packages:
 
@@ -1406,6 +1421,9 @@ packages:
   '@types/gtag.js@0.0.12':
     resolution: {integrity: sha512-YQV9bUsemkzG81Ea295/nF/5GijnD2Af7QhEofh7xu+kvCN6RdodgNwwGWXB5GMI3NoyvQo0odNctoH/qLMIpg==}
 
+  '@types/hast@2.3.10':
+    resolution: {integrity: sha512-McWspRw8xx8J9HurkVBfYj0xKoE25tOFlHGdx4MJ5xORQrMGZNqJhVQWaIbm6Oyla5kYOXtDiopzKRJzEOkwJw==}
+
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
 
@@ -1463,9 +1481,6 @@ packages:
   '@types/prismjs@1.26.3':
     resolution: {integrity: sha512-A0D0aTXvjlqJ5ZILMz3rNfDBOx9hHxLZYv2by47Sm/pqW35zzjusrZTryatjN/Rf8Us2gZrJD+KeHbUSTux1Cw==}
 
-  '@types/prop-types@15.7.12':
-    resolution: {integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==}
-
   '@types/qs@6.9.15':
     resolution: {integrity: sha512-uXHQKES6DQKKCLh441Xv/dwxOq1TVS3JPUMlEqoEglvlhR6Mxnlew/Xq/LRVHpLyk7iK3zODe1qYHIMltO7XGg==}
 
@@ -1481,8 +1496,11 @@ packages:
   '@types/react-router@5.1.20':
     resolution: {integrity: sha512-jGjmu/ZqS7FjSH6owMcD5qpq19+1RS9DeVRqfl1FeBMxTDQAGwlMWOcs52NDoXaNKyG3d1cYQFMs9rCrb88o9Q==}
 
-  '@types/react@18.2.79':
-    resolution: {integrity: sha512-RwGAGXPl9kSXwdNTafkOEuFrTBD5SA2B3iEB96xi8+xu5ddUa/cpvyVCSNn+asgLCTHkb5ZxN8gbuibYJi4s1w==}
+  '@types/react-syntax-highlighter@15.5.13':
+    resolution: {integrity: sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==}
+
+  '@types/react@19.1.0':
+    resolution: {integrity: sha512-UaicktuQI+9UKyA4njtDOGBD/67t8YEBt2xdfqu8+gP9hqPUPsiXlNPcpS2gVdjmis5GKPG3fCxbQLVgxsQZ8w==}
 
   '@types/retry@0.12.0':
     resolution: {integrity: sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==}
@@ -1584,8 +1602,8 @@ packages:
     resolution: {integrity: sha512-cjkyv4OtNCIeqhHrfS81QWXoCBPExR/J62oyEqepVw8WaQeSqpW2uhuLPh1m9eWhDuOo/jUXVTlifvesOWp/4A==}
     engines: {node: '>=0.4.0'}
 
-  acorn@8.14.0:
-    resolution: {integrity: sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==}
+  acorn@8.14.1:
+    resolution: {integrity: sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -1689,8 +1707,8 @@ packages:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
     engines: {node: '>= 4.0.0'}
 
-  autoprefixer@10.4.20:
-    resolution: {integrity: sha512-XY25y5xSv/wEoqzDyXXME4AFfkZI0P23z6Fs3YgymDnKJkCGOnkL0iTxCa85UTqaSgfcqyf3UA6+c7wUvx/16g==}
+  autoprefixer@10.4.21:
+    resolution: {integrity: sha512-O+A6LWV5LDHSJD3LjHYoNi4VLsj/Whi7k6zG12xTYaU4cQ8oxQGckXNX8cRHK5yOZ/ppVHe0ZBXGzSV9jXdVbQ==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
@@ -1765,13 +1783,13 @@ packages:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
 
-  browserslist@4.23.3:
-    resolution: {integrity: sha512-btwCFJVjI4YWDNfau8RhZ+B1Q/VLoUITrm3RlP6y1tYGWIOa+InuYiRGXUBXo8nA1qKmHMyLB/iVQg5TT4eFoA==}
+  browserslist@4.24.2:
+    resolution: {integrity: sha512-ZIc+Q62revdMcqC6aChtW4jz3My3klmCO1fEmINZY/8J3EpBg5/A/D0AKmBveUh6pgoeycoMkVMko84tuYS+Gg==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
-  browserslist@4.24.2:
-    resolution: {integrity: sha512-ZIc+Q62revdMcqC6aChtW4jz3My3klmCO1fEmINZY/8J3EpBg5/A/D0AKmBveUh6pgoeycoMkVMko84tuYS+Gg==}
+  browserslist@4.24.4:
+    resolution: {integrity: sha512-KDi1Ny1gSePi1vm0q4oxSF8b4DR44GF4BbmS2YdhPLOEqd8pDviZOGH/GsmRwoWJ2+5Lr085X7naowMwKHDG1A==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
@@ -1820,11 +1838,11 @@ packages:
   caniuse-api@3.0.0:
     resolution: {integrity: sha512-bsTwuIg/BZZK/vreVTYYbSWoe2F+71P7K5QGEX+pT250DZbfU1MQ5prOKpPR+LL6uWKK3KMwMCAS74QB3Um1uw==}
 
-  caniuse-lite@1.0.30001651:
-    resolution: {integrity: sha512-9Cf+Xv1jJNe1xPZLGuUXLNkE1BoDkqRqYyFJ9TDYSqhduqA4hu4oR9HluGoWYQC/aj8WHjsGVV+bwkh0+tegRg==}
-
   caniuse-lite@1.0.30001680:
     resolution: {integrity: sha512-rPQy70G6AGUMnbwS1z6Xg+RkHYPAi18ihs47GH0jcxIG7wArmPgY3XbS2sRdBbxJljp3thdT8BIqv9ccCypiPA==}
+
+  caniuse-lite@1.0.30001709:
+    resolution: {integrity: sha512-NgL3vUTnDrPCZ3zTahp4fsugQ4dc7EKTSzwQDPEel6DMoMnfH2jhry9n2Zm8onbSR+f/QtKHFOA+iAQu4kbtWA==}
 
   ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
@@ -1844,11 +1862,20 @@ packages:
   character-entities-html4@2.1.0:
     resolution: {integrity: sha512-1v7fgQRj6hnSwFpq1Eu0ynr/CDEw0rXo2B61qXrLNdHZmPKgb7fqS1a2JwF0rISo9q77jDI8VMEHoApn8qDoZA==}
 
+  character-entities-legacy@1.1.4:
+    resolution: {integrity: sha512-3Xnr+7ZFS1uxeiUDvV02wQ+QDbc55o97tIV5zHScSPJpcLm/r0DFPcoY3tYRp+VZukxuMeKgXYmsXQHO05zQeA==}
+
   character-entities-legacy@3.0.0:
     resolution: {integrity: sha512-RpPp0asT/6ufRm//AJVwpViZbGM/MkjQFxJccQRHmISF/22NBtsHqAWmL+/pmkPWoIUJdWyeVleTl1wydHATVQ==}
 
+  character-entities@1.2.4:
+    resolution: {integrity: sha512-iBMyeEHxfVnIakwOuDXpVkc54HijNgCyQB2w0VfGQThle6NXn50zU6V/u+LDhxHcDUPojn6Kpga3PTAD8W1bQw==}
+
   character-entities@2.0.2:
     resolution: {integrity: sha512-shx7oQ0Awen/BRIdkjkvz54PnEEI/EjwXDSIZp86/KKdbafHh1Df/RYGBhn4hbe2+uKC9FnT5UCEdyPz3ai9hQ==}
+
+  character-reference-invalid@1.1.4:
+    resolution: {integrity: sha512-mKKUkUbhPpQlCOfIuZkvSEgktjPFIsZKRRbC6KWVEMvlzblj3i3asQv5ODsrwt0N3pHAEvjP8KTQPHkp0+6jOg==}
 
   character-reference-invalid@2.0.1:
     resolution: {integrity: sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw==}
@@ -1915,6 +1942,9 @@ packages:
   combine-promises@1.2.0:
     resolution: {integrity: sha512-VcQB1ziGD0NXrhKxiwyNbCDmRzs/OShMs2GqW2DlU2A/Sd0nQxE1oWDAE5O0ygSx5mgQOn9eIFh7yKPgFRVkPQ==}
     engines: {node: '>=10'}
+
+  comma-separated-tokens@1.0.8:
+    resolution: {integrity: sha512-GHuDRO12Sypu2cV70d1dkA2EUmXHgntrzbpvOB+Qy+49ypNfGgFQIC2fhhXbnyrJRynDCAARsT7Ou0M6hirpfw==}
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
@@ -2300,11 +2330,29 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.6:
-    resolution: {integrity: sha512-jwXWsM5RPf6j9dPYzaorcBSUg6AiqocPEyMpkchkvntaH9HGfOOMZwxMJjDY/XEs3T5dM7uyH1VhRMkqUU9qVw==}
+  electron-to-chromium@1.5.130:
+    resolution: {integrity: sha512-Ou2u7L9j2XLZbhqzyX0jWDj6gA8D3jIfVzt4rikLf3cGBa0VdReuFimBKS9tQJA4+XpeCxj1NoWlfBXzbMa9IA==}
 
   electron-to-chromium@1.5.63:
     resolution: {integrity: sha512-ddeXKuY9BHo/mw145axlyWjlJ1UBt4WK3AlvkT7W2AbqfRQoacVoRUCF6wL3uIx/8wT9oLKXzI+rFqHHscByaA==}
+
+  embla-carousel-auto-scroll@8.6.0:
+    resolution: {integrity: sha512-WT9fWhNXFpbQ6kP+aS07oF5IHYLZ1Dx4DkwgCY8Hv2ZyYd2KMCPfMV1q/cA3wFGuLO7GMgKiySLX90/pQkcOdQ==}
+    peerDependencies:
+      embla-carousel: 8.6.0
+
+  embla-carousel-react@8.6.0:
+    resolution: {integrity: sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.1 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+
+  embla-carousel-reactive-utils@8.6.0:
+    resolution: {integrity: sha512-fMVUDUEx0/uIEDM0Mz3dHznDhfX+znCCDCeIophYb1QGVM7YThSWX+wz11zlYwWFOr74b4QLGg0hrGPJeG2s4A==}
+    peerDependencies:
+      embla-carousel: 8.6.0
+
+  embla-carousel@8.6.0:
+    resolution: {integrity: sha512-SjWyZBHJPbqxHOzckOfo8lHisEaJWmwd23XppYFYVh10bU66/Pn5tkVkbkCMZVdbUE5eTCI2nD8OyIP4Z+uwkA==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -2350,10 +2398,6 @@ packages:
 
   es-module-lexer@1.5.0:
     resolution: {integrity: sha512-pqrTKmwEIgafsYZAGw9kszYzmagcE/n4dbgwGWLEXg7J4QFJVQRBld8j3Q3GNez79jzxZshq0bcT962QHOghjw==}
-
-  escalade@3.1.2:
-    resolution: {integrity: sha512-ErCHMCae19vR8vQGe50xIsVomy19rg6gFu3+r3jkEO46suLMWBksvVyoGgQV+jOfl84ZSOSlmv6Gxa89PmTGmA==}
-    engines: {node: '>=6'}
 
   escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==}
@@ -2470,6 +2514,9 @@ packages:
 
   fastq@1.17.1:
     resolution: {integrity: sha512-sRVD3lWVIXWg6By68ZN7vho9a1pQcN/WBFaAAsDDFzlJjvoGx0P8z7V1t72grFJfJhu3YPZBuu25f7Kaw2jN1w==}
+
+  fault@1.0.4:
+    resolution: {integrity: sha512-CJ0HCB5tL5fYTEA7ToAq5+kTwd++Borf1/bifxd9iT70QcXr4MRrO3Llf8Ifs70q+SJcGHFtnIE/Nw6giCtECA==}
 
   fault@2.0.1:
     resolution: {integrity: sha512-WtySTkS4OKev5JtpHXnib4Gxiurzh5NCGvWrFaZ34m6JehfTUhKZvn9njTfw48t6JumVQOmrKqpmGcdwxnhqBQ==}
@@ -2704,6 +2751,9 @@ packages:
   hast-util-from-parse5@8.0.1:
     resolution: {integrity: sha512-Er/Iixbc7IEa7r/XLtuG52zoqn/b3Xng/w6aZQ0xGVxzhw5xUFxcRqdPzP6yFi/4HBYRaifaI5fQ1RH8n0ZeOQ==}
 
+  hast-util-parse-selector@2.2.5:
+    resolution: {integrity: sha512-7j6mrk/qqkSehsM92wQjdIgWM2/BW61u/53G6xmC8i1OmEdKLHbk419QKQUjz6LglWsfqoiHmyMRkP1BGjecNQ==}
+
   hast-util-parse-selector@4.0.0:
     resolution: {integrity: sha512-wkQCkSYoOGCRKERFWcxMVMOcYE2K1AaNLU8DXS9arxnLOUEWbOXKXiJUNzEpqZ3JOKpnha3jkFrumEjVliDe7A==}
 
@@ -2722,12 +2772,21 @@ packages:
   hast-util-whitespace@3.0.0:
     resolution: {integrity: sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==}
 
+  hastscript@6.0.0:
+    resolution: {integrity: sha512-nDM6bvd7lIqDUiYEiu5Sl/+6ReP0BMk/2f4U/Rooccxkj0P5nm+acM5PrGJ/t5I8qPGiqZSE6hVAwZEdZIvP4w==}
+
   hastscript@8.0.0:
     resolution: {integrity: sha512-dMOtzCEd3ABUeSIISmrETiKuyydk1w0pa+gE/uormcTpSYuaNJPbX1NU3JLyscSLjwAQM8bWMhhIlnCqnRvDTw==}
 
   he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
+
+  highlight.js@10.7.3:
+    resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
+
+  highlightjs-vue@1.0.0:
+    resolution: {integrity: sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==}
 
   history@4.10.1:
     resolution: {integrity: sha512-36nwAD620w12kuzPAsyINPWJqlNbij+hpK1k9XRloDtym8mxzGYl2c17LnV6IAGB2Dmg4tEa7G7DlawS0+qjew==}
@@ -2897,8 +2956,14 @@ packages:
     resolution: {integrity: sha512-Ag3wB2o37wslZS19hZqorUnrnzSkpOVy+IiiDEiTqNubEYpYuHWIf6K4psgN2ZWKExS4xhVCrRVfb/wfW8fWJA==}
     engines: {node: '>= 10'}
 
+  is-alphabetical@1.0.4:
+    resolution: {integrity: sha512-DwzsA04LQ10FHTZuL0/grVDk4rFoVH1pjAToYwBrHSxcrBIGQuXrQMtD5U1b0U2XVgKZCTLLP8u2Qxqhy3l2Vg==}
+
   is-alphabetical@2.0.1:
     resolution: {integrity: sha512-FWyyY60MeTNyeSRpkM2Iry0G9hpr7/9kD40mD/cGQEuilcZYS4okz8SN2Q6rLCJ8gbCt6fN+rC+6tMGS99LaxQ==}
+
+  is-alphanumerical@1.0.4:
+    resolution: {integrity: sha512-UzoZUr+XfVz3t3v4KyGEniVL9BDRoQtY7tOyrRybkVNjDFWyo1yhXNGrrBTQxp3ib9BLAWs7k2YKBQsFRkZG9A==}
 
   is-alphanumerical@2.0.1:
     resolution: {integrity: sha512-hmbYhX/9MUMF5uh7tOXyK/n0ZvWpad5caBA17GsC6vyuCqaWliRG5K1qS9inmUhEMaOBIW7/whAnSwveW/LtZw==}
@@ -2916,6 +2981,9 @@ packages:
 
   is-core-module@2.13.1:
     resolution: {integrity: sha512-hHrIjvZsftOsvKSn2TRYl63zvxsgE0K+0mYMoH6gD4omR5IWB2KynivBQczo3+wF1cCkjzvptnI9Q0sPU66ilw==}
+
+  is-decimal@1.0.4:
+    resolution: {integrity: sha512-RGdriMmQQvZ2aqaQq3awNA6dCGtKpiDFcOzrTWrDAT2MiWrKQVPmxLGHl7Y2nNu6led0kEyoX0enY0qXYsv9zw==}
 
   is-decimal@2.0.1:
     resolution: {integrity: sha512-AAB9hiomQs5DXWcRB1rqsxGUstbRroFOPPVAomNk/3XHR5JyEZChOyTWe2oayKnsSsr/kcGqF+z6yuH6HHpN0A==}
@@ -2940,6 +3008,9 @@ packages:
   is-glob@4.0.3:
     resolution: {integrity: sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==}
     engines: {node: '>=0.10.0'}
+
+  is-hexadecimal@1.0.4:
+    resolution: {integrity: sha512-gyPJuv83bHMpocVYoqof5VDiZveEoGoFL8m3BXNb2VW8Xs+rz9kqO8LOQ5DH6EsuvilT1ApazU0pyl+ytbPtlw==}
 
   is-hexadecimal@2.0.1:
     resolution: {integrity: sha512-DgZQp241c8oO6cA1SbTEWiXeoxV42vlcJxgH+B3hi1AiqqKruZR3ZGF8In3fj4+/y/7rHvlOZLZtgJ/4ttYGZg==}
@@ -3161,6 +3232,9 @@ packages:
     resolution: {integrity: sha512-ozCC6gdQ+glXOQsveKD0YsDy8DSQFjDTz4zyzEHNV5+JP5D62LmfDZ6o1cycFx9ouG940M5dE8C8CTewdj2YWQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
+  lowlight@1.20.0:
+    resolution: {integrity: sha512-8Ktj+prEb1RoCPkEOrPMYUN/nCggB7qAWe3a7OpMjWQkh3l2RD5wKRQ+o8Q8YuI9RG/xs95waaI/E6ym/7NsTw==}
+
   lru-cache@10.2.0:
     resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
     engines: {node: 14 || >=16.14}
@@ -3172,8 +3246,8 @@ packages:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
 
-  lucide-react@0.474.0:
-    resolution: {integrity: sha512-CmghgHkh0OJNmxGKWc0qfPJCYHASPMVSyGY8fj3xgk4v84ItqDg64JNKFZn5hC6E0vHi6gxnbCgwhyVB09wQtA==}
+  lucide-react@0.487.0:
+    resolution: {integrity: sha512-aKqhOQ+YmFnwq8dWgGjOuLc8V1R9/c/yOd+zDY4+ohsR2Jo05lSGc3WsstYPIzcTpeosN7LoCkLReUUITvaIvw==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -3498,6 +3572,9 @@ packages:
   node-releases@2.0.18:
     resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
 
+  node-releases@2.0.19:
+    resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
+
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
@@ -3626,6 +3703,9 @@ packages:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
 
+  parse-entities@2.0.0:
+    resolution: {integrity: sha512-kkywGpCcRYhqQIchaWqZ875wzpS/bMKhz5HnN3p7wveJTkTtyAB/AlnS0f8DFSqYW1T82t6yEAkEcB+A1I3MbQ==}
+
   parse-entities@4.0.1:
     resolution: {integrity: sha512-SWzvYcSJh4d/SGLIOQfZ/CoNv6BTlI6YEQ7Nj82oDVnRpwe/Z/F1EMx42x3JAOwGBlCjeCH0BRJQbQ/opHL17w==}
 
@@ -3694,9 +3774,6 @@ packages:
 
   periscopic@3.1.0:
     resolution: {integrity: sha512-vKiQ8RRtkl9P+r/+oefh25C3fhybptkHKCZSPlcXiJux2tJF55GnEj3BVn4A5gKfq9NWWXXrxkHBwVPUfH0opw==}
-
-  picocolors@1.0.1:
-    resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -4144,8 +4221,8 @@ packages:
     peerDependencies:
       postcss: ^8.4.31
 
-  postcss@8.5.1:
-    resolution: {integrity: sha512-6oz2beyjc5VMn/KV1pPw8fliQkhBXrVn1Z3TVyqZxU8kZpzEKhBdmCFqI6ZbmGtamQvQGuU1sgPTk8ZrXDD7jQ==}
+  postcss@8.5.3:
+    resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
 
   pretty-error@4.0.0:
@@ -4160,6 +4237,10 @@ packages:
     peerDependencies:
       react: '>=16.0.0'
 
+  prismjs@1.27.0:
+    resolution: {integrity: sha512-t13BGPUlFDR7wRB5kQDG4jjl7XeuH6jbJGt11JHPL96qwsEHNX2+68tFXqc1/k+/jALsbSWJKUOT/hcYAZ5LkA==}
+    engines: {node: '>=6'}
+
   prismjs@1.29.0:
     resolution: {integrity: sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==}
     engines: {node: '>=6'}
@@ -4173,6 +4254,9 @@ packages:
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
+
+  property-information@5.6.0:
+    resolution: {integrity: sha512-YUHSPk+A30YPv+0Qf8i9Mbfe/C0hdPXk1s1jPVToV8pk8BQtpw10ct89Eo7OWkutrwqvT0eicAxlOg3dOAu8JA==}
 
   property-information@6.5.0:
     resolution: {integrity: sha512-PgTgs/BlvHxOu8QuEN7wi5A0OmXaBcHpmCSTehcs6Uuu9IkDIEo13Hy7n898RHfrQ49vKCoGeWZSaAK01nwVig==}
@@ -4278,6 +4362,11 @@ packages:
     peerDependencies:
       react: '>=15'
 
+  react-syntax-highlighter@15.6.1:
+    resolution: {integrity: sha512-OqJ2/vL7lEeV5zTJyG7kmARppUjiB9h9udl4qHQjjgEos66z00Ia0OckwYfRxCSFrW8RJIBnsBwQsHZbVPspqg==}
+    peerDependencies:
+      react: '>= 0.14.0'
+
   react@19.0.0:
     resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
     engines: {node: '>=0.10.0'}
@@ -4306,6 +4395,9 @@ packages:
   recursive-readdir@2.2.3:
     resolution: {integrity: sha512-8HrF5ZsXk5FAH9dgsx3BlUer73nIhuj+9OrQwEbLTPOBzGkL1lsFCR01am+v+0m2Cmbs1nP12hLDl5FA7EszKA==}
     engines: {node: '>=6.0.0'}
+
+  refractor@3.6.0:
+    resolution: {integrity: sha512-MY9W41IOWxxk31o+YvFCNyNzdkc9M20NoZK5vq6jkv4I/uh2zkWcfudj0Q1fovjUQJrNewS9NMzeTtqPf+n5EA==}
 
   regenerate-unicode-properties@10.2.0:
     resolution: {integrity: sha512-DqHn3DwbmmPVzeKj9woBadqmXxLvQoQIwu7nopMc72ztvxVmVk2SBhSnx67zuye5TP+lJsb/TBQsjLKhnDf3MA==}
@@ -4592,6 +4684,9 @@ packages:
     resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
     engines: {node: '>= 8'}
 
+  space-separated-tokens@1.1.5:
+    resolution: {integrity: sha512-q/JSVd1Lptzhf5bkYm4ob4iWPjx0KiRe3sRFBNrVqbJkFaBm5vbbowy1mymoPNLRa52+oadOhJ+K49wsSeSjTA==}
+
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
 
@@ -4803,8 +4898,8 @@ packages:
   typedarray-to-buffer@3.1.5:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
 
-  typescript@5.7.3:
-    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
+  typescript@5.8.2:
+    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -4866,12 +4961,6 @@ packages:
   unpipe@1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
     engines: {node: '>= 0.8'}
-
-  update-browserslist-db@1.1.0:
-    resolution: {integrity: sha512-EdRAaAyk2cUE1wOf2DkEhzxqOQvFOoRJFNS6NeyJ01Gp2beMRpBAINjM2iDXE3KCuKhwnvHIQCJm6ThL2Z+HzQ==}
-    hasBin: true
-    peerDependencies:
-      browserslist: '>= 4.21.0'
 
   update-browserslist-db@1.1.1:
     resolution: {integrity: sha512-R8UzCaa9Az+38REPiJ1tXlImTJXlVfgHZsglwBD/k6nj76ctsH1E3q4doGrukiLQd3sGQYu56r5+lo5r94l29A==}
@@ -5061,6 +5150,10 @@ packages:
   xml-js@1.6.11:
     resolution: {integrity: sha512-7rVi2KMfwfWFl+GpPg6m80IVMWXLRjO+PxTq7V2CDhoGak0wzYzFgUY2m4XJ47OGdXd8eLE8EmwfAmdjw7lC1g==}
     hasBin: true
+
+  xtend@4.0.2:
+    resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
+    engines: {node: '>=0.4'}
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
@@ -5994,215 +6087,215 @@ snapshots:
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
 
-  '@csstools/postcss-cascade-layers@5.0.1(postcss@8.5.1)':
+  '@csstools/postcss-cascade-layers@5.0.1(postcss@8.5.3)':
     dependencies:
       '@csstools/selector-specificity': 5.0.0(postcss-selector-parser@7.0.0)
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  '@csstools/postcss-color-function@4.0.6(postcss@8.5.1)':
+  '@csstools/postcss-color-function@4.0.6(postcss@8.5.3)':
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-color-mix-function@3.0.6(postcss@8.5.1)':
+  '@csstools/postcss-color-mix-function@3.0.6(postcss@8.5.3)':
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-content-alt-text@2.0.4(postcss@8.5.1)':
+  '@csstools/postcss-content-alt-text@2.0.4(postcss@8.5.3)':
     dependencies:
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-exponential-functions@2.0.5(postcss@8.5.1)':
+  '@csstools/postcss-exponential-functions@2.0.5(postcss@8.5.3)':
     dependencies:
       '@csstools/css-calc': 2.1.0(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-font-format-keywords@4.0.0(postcss@8.5.1)':
+  '@csstools/postcss-font-format-keywords@4.0.0(postcss@8.5.3)':
     dependencies:
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  '@csstools/postcss-gamut-mapping@2.0.6(postcss@8.5.1)':
+  '@csstools/postcss-gamut-mapping@2.0.6(postcss@8.5.3)':
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-gradients-interpolation-method@5.0.6(postcss@8.5.1)':
+  '@csstools/postcss-gradients-interpolation-method@5.0.6(postcss@8.5.3)':
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-hwb-function@4.0.6(postcss@8.5.1)':
+  '@csstools/postcss-hwb-function@4.0.6(postcss@8.5.3)':
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-ic-unit@4.0.0(postcss@8.5.1)':
+  '@csstools/postcss-ic-unit@4.0.0(postcss@8.5.3)':
     dependencies:
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  '@csstools/postcss-initial@2.0.0(postcss@8.5.1)':
+  '@csstools/postcss-initial@2.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-is-pseudo-class@5.0.1(postcss@8.5.1)':
+  '@csstools/postcss-is-pseudo-class@5.0.1(postcss@8.5.3)':
     dependencies:
       '@csstools/selector-specificity': 5.0.0(postcss-selector-parser@7.0.0)
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  '@csstools/postcss-light-dark-function@2.0.7(postcss@8.5.1)':
+  '@csstools/postcss-light-dark-function@2.0.7(postcss@8.5.3)':
     dependencies:
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-logical-float-and-clear@3.0.0(postcss@8.5.1)':
+  '@csstools/postcss-logical-float-and-clear@3.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-logical-overflow@2.0.0(postcss@8.5.1)':
+  '@csstools/postcss-logical-overflow@2.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-logical-overscroll-behavior@2.0.0(postcss@8.5.1)':
+  '@csstools/postcss-logical-overscroll-behavior@2.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-logical-resize@3.0.0(postcss@8.5.1)':
+  '@csstools/postcss-logical-resize@3.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  '@csstools/postcss-logical-viewport-units@3.0.3(postcss@8.5.1)':
+  '@csstools/postcss-logical-viewport-units@3.0.3(postcss@8.5.3)':
     dependencies:
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-media-minmax@2.0.5(postcss@8.5.1)':
+  '@csstools/postcss-media-minmax@2.0.5(postcss@8.5.3)':
     dependencies:
       '@csstools/css-calc': 2.1.0(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
       '@csstools/media-query-list-parser': 4.0.2(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-media-queries-aspect-ratio-number-values@3.0.4(postcss@8.5.1)':
+  '@csstools/postcss-media-queries-aspect-ratio-number-values@3.0.4(postcss@8.5.3)':
     dependencies:
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
       '@csstools/media-query-list-parser': 4.0.2(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-nested-calc@4.0.0(postcss@8.5.1)':
+  '@csstools/postcss-nested-calc@4.0.0(postcss@8.5.3)':
     dependencies:
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  '@csstools/postcss-normalize-display-values@4.0.0(postcss@8.5.1)':
+  '@csstools/postcss-normalize-display-values@4.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  '@csstools/postcss-oklab-function@4.0.6(postcss@8.5.1)':
+  '@csstools/postcss-oklab-function@4.0.6(postcss@8.5.3)':
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-progressive-custom-properties@4.0.0(postcss@8.5.1)':
+  '@csstools/postcss-progressive-custom-properties@4.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  '@csstools/postcss-random-function@1.0.1(postcss@8.5.1)':
+  '@csstools/postcss-random-function@1.0.1(postcss@8.5.3)':
     dependencies:
       '@csstools/css-calc': 2.1.0(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-relative-color-syntax@3.0.6(postcss@8.5.1)':
+  '@csstools/postcss-relative-color-syntax@3.0.6(postcss@8.5.3)':
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  '@csstools/postcss-scope-pseudo-class@4.0.1(postcss@8.5.1)':
+  '@csstools/postcss-scope-pseudo-class@4.0.1(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  '@csstools/postcss-sign-functions@1.1.0(postcss@8.5.1)':
+  '@csstools/postcss-sign-functions@1.1.0(postcss@8.5.3)':
     dependencies:
       '@csstools/css-calc': 2.1.0(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-stepped-value-functions@4.0.5(postcss@8.5.1)':
+  '@csstools/postcss-stepped-value-functions@4.0.5(postcss@8.5.3)':
     dependencies:
       '@csstools/css-calc': 2.1.0(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-text-decoration-shorthand@4.0.1(postcss@8.5.1)':
+  '@csstools/postcss-text-decoration-shorthand@4.0.1(postcss@8.5.3)':
     dependencies:
       '@csstools/color-helpers': 5.0.1
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  '@csstools/postcss-trigonometric-functions@4.0.5(postcss@8.5.1)':
+  '@csstools/postcss-trigonometric-functions@4.0.5(postcss@8.5.3)':
     dependencies:
       '@csstools/css-calc': 2.1.0(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  '@csstools/postcss-unset-value@4.0.0(postcss@8.5.1)':
+  '@csstools/postcss-unset-value@4.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
   '@csstools/selector-resolve-nested@3.0.0(postcss-selector-parser@7.0.0)':
     dependencies:
@@ -6212,22 +6305,22 @@ snapshots:
     dependencies:
       postcss-selector-parser: 7.0.0
 
-  '@csstools/utilities@2.0.0(postcss@8.5.1)':
+  '@csstools/utilities@2.0.0(postcss@8.5.3)':
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
   '@discoveryjs/json-ext@0.5.7': {}
 
   '@docsearch/css@3.8.3': {}
 
-  '@docsearch/react@3.8.3(@algolia/client-search@5.20.0)(@types/react@18.2.79)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)':
+  '@docsearch/react@3.8.3(@algolia/client-search@5.20.0)(@types/react@19.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)':
     dependencies:
       '@algolia/autocomplete-core': 1.17.9(@algolia/client-search@5.20.0)(algoliasearch@5.20.0)(search-insights@2.13.0)
       '@algolia/autocomplete-preset-algolia': 1.17.9(@algolia/client-search@5.20.0)(algoliasearch@5.20.0)
       '@docsearch/css': 3.8.3
       algoliasearch: 5.20.0
     optionalDependencies:
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       search-insights: 2.13.0
@@ -6260,7 +6353,7 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@docusaurus/bundler@3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/bundler@3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
       '@babel/core': 7.26.0
       '@docusaurus/babel': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -6273,15 +6366,15 @@ snapshots:
       copy-webpack-plugin: 11.0.0(webpack@5.96.1)
       css-loader: 6.11.0(webpack@5.96.1)
       css-minimizer-webpack-plugin: 5.0.1(clean-css@5.3.3)(webpack@5.96.1)
-      cssnano: 6.1.2(postcss@8.5.1)
+      cssnano: 6.1.2(postcss@8.5.3)
       file-loader: 6.2.0(webpack@5.96.1)
       html-minifier-terser: 7.2.0
       mini-css-extract-plugin: 2.9.2(webpack@5.96.1)
       null-loader: 4.0.1(webpack@5.96.1)
-      postcss: 8.5.1
-      postcss-loader: 7.3.4(postcss@8.5.1)(typescript@5.7.3)(webpack@5.96.1)
-      postcss-preset-env: 10.1.1(postcss@8.5.1)
-      react-dev-utils: 12.0.1(typescript@5.7.3)(webpack@5.96.1)
+      postcss: 8.5.3
+      postcss-loader: 7.3.4(postcss@8.5.3)(typescript@5.8.2)(webpack@5.96.1)
+      postcss-preset-env: 10.1.1(postcss@8.5.3)
+      react-dev-utils: 12.0.1(typescript@5.8.2)(webpack@5.96.1)
       terser-webpack-plugin: 5.3.10(webpack@5.96.1)
       tslib: 2.6.2
       url-loader: 4.1.1(file-loader@6.2.0(webpack@5.96.1))(webpack@5.96.1)
@@ -6304,16 +6397,16 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/core@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/core@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
       '@docusaurus/babel': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@docusaurus/bundler': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/bundler': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/logger': 3.7.0
       '@docusaurus/mdx-loader': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-common': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-validation': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mdx-js/react': 3.1.0(@types/react@18.2.79)(react@19.0.0)
+      '@mdx-js/react': 3.1.0(@types/react@19.1.0)(react@19.0.0)
       boxen: 6.2.1
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -6334,7 +6427,7 @@ snapshots:
       p-map: 4.0.0
       prompts: 2.4.2
       react: 19.0.0
-      react-dev-utils: 12.0.1(typescript@5.7.3)(webpack@5.96.1)
+      react-dev-utils: 12.0.1(typescript@5.8.2)(webpack@5.96.1)
       react-dom: 19.0.0(react@19.0.0)
       react-helmet-async: '@slorber/react-helmet-async@1.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)'
       react-loadable: '@docusaurus/react-loadable@6.0.0(react@19.0.0)'
@@ -6372,9 +6465,9 @@ snapshots:
 
   '@docusaurus/cssnano-preset@3.7.0':
     dependencies:
-      cssnano-preset-advanced: 6.1.2(postcss@8.5.1)
-      postcss: 8.5.1
-      postcss-sort-media-queries: 5.2.0(postcss@8.5.1)
+      cssnano-preset-advanced: 6.1.2(postcss@8.5.3)
+      postcss: 8.5.3
+      postcss-sort-media-queries: 5.2.0(postcss@8.5.3)
       tslib: 2.6.2
 
   '@docusaurus/logger@3.7.0':
@@ -6421,7 +6514,7 @@ snapshots:
     dependencies:
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@types/history': 4.7.11
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
       '@types/react-router-config': 5.0.11
       '@types/react-router-dom': 5.3.3
       react: 19.0.0
@@ -6435,13 +6528,13 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@docusaurus/plugin-content-blog@3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-content-blog@3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/logger': 3.7.0
       '@docusaurus/mdx-loader': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-common': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -6478,13 +6571,13 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/logger': 3.7.0
       '@docusaurus/mdx-loader': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/module-type-aliases': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-common': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -6519,9 +6612,9 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-content-pages@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-content-pages@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/mdx-loader': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -6551,9 +6644,9 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-debug@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-debug@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       fs-extra: 11.2.0
@@ -6581,9 +6674,9 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-google-analytics@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-google-analytics@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-validation': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
@@ -6609,9 +6702,9 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-google-gtag@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-google-gtag@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-validation': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@types/gtag.js': 0.0.12
@@ -6638,9 +6731,9 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-google-tag-manager@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-google-tag-manager@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-validation': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
@@ -6666,9 +6759,9 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-sitemap@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-sitemap@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/logger': 3.7.0
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -6699,14 +6792,14 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-svgr@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/plugin-svgr@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-validation': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@svgr/core': 8.1.0(typescript@5.7.3)
-      '@svgr/webpack': 8.1.0(typescript@5.7.3)
+      '@svgr/core': 8.1.0(typescript@5.8.2)
+      '@svgr/webpack': 8.1.0(typescript@5.8.2)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       tslib: 2.6.2
@@ -6731,21 +6824,21 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/preset-classic@3.7.0(@algolia/client-search@5.20.0)(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(@types/react@18.2.79)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)(typescript@5.7.3)':
+  '@docusaurus/preset-classic@3.7.0(@algolia/client-search@5.20.0)(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(@types/react@19.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-content-blog': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-content-pages': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-debug': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-google-analytics': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-google-gtag': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-google-tag-manager': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-sitemap': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-svgr': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/theme-classic': 3.7.0(@types/react@18.2.79)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@docusaurus/theme-search-algolia': 3.7.0(@algolia/client-search@5.20.0)(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(@types/react@18.2.79)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-content-blog': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-content-pages': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-debug': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-google-analytics': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-google-gtag': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-google-tag-manager': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-sitemap': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-svgr': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/theme-classic': 3.7.0(@types/react@19.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@docusaurus/theme-search-algolia': 3.7.0(@algolia/client-search@5.20.0)(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(@types/react@19.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)(typescript@5.8.2)
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -6774,7 +6867,7 @@ snapshots:
 
   '@docusaurus/react-loadable@6.0.0(react@19.0.0)':
     dependencies:
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
       react: 19.0.0
 
   '@docusaurus/remark-plugin-npm2yarn@3.7.0':
@@ -6787,28 +6880,28 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@docusaurus/theme-classic@3.7.0(@types/react@18.2.79)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+  '@docusaurus/theme-classic@3.7.0(@types/react@19.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)':
     dependencies:
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/logger': 3.7.0
       '@docusaurus/mdx-loader': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/module-type-aliases': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@docusaurus/plugin-content-blog': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/plugin-content-pages': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@docusaurus/plugin-content-blog': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/plugin-content-pages': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/theme-translations': 3.7.0
       '@docusaurus/types': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-common': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-validation': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mdx-js/react': 3.1.0(@types/react@18.2.79)(react@19.0.0)
+      '@mdx-js/react': 3.1.0(@types/react@19.1.0)(react@19.0.0)
       clsx: 2.1.1
       copy-text-to-clipboard: 3.2.0
       infima: 0.2.0-alpha.45
       lodash: 4.17.21
       nprogress: 0.2.0
-      postcss: 8.5.1
+      postcss: 8.5.3
       prism-react-renderer: 2.4.1(react@19.0.0)
       prismjs: 1.29.0
       react: 19.0.0
@@ -6837,15 +6930,15 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/theme-common@3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@docusaurus/theme-common@3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@docusaurus/mdx-loader': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/module-type-aliases': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-common': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@types/history': 4.7.11
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
       '@types/react-router-config': 5.0.11
       clsx: 2.1.1
       parse-numeric-range: 1.3.0
@@ -6861,13 +6954,13 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@docusaurus/theme-search-algolia@3.7.0(@algolia/client-search@5.20.0)(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(@types/react@18.2.79)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)(typescript@5.7.3)':
+  '@docusaurus/theme-search-algolia@3.7.0(@algolia/client-search@5.20.0)(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(@types/react@19.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)(typescript@5.8.2)':
     dependencies:
-      '@docsearch/react': 3.8.3(@algolia/client-search@5.20.0)(@types/react@18.2.79)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)
-      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@docsearch/react': 3.8.3(@algolia/client-search@5.20.0)(@types/react@19.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.13.0)
+      '@docusaurus/core': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       '@docusaurus/logger': 3.7.0
-      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
-      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@docusaurus/plugin-content-docs': 3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
+      '@docusaurus/theme-common': 3.7.0(@docusaurus/plugin-content-docs@3.7.0(@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.2))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/theme-translations': 3.7.0
       '@docusaurus/utils': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@docusaurus/utils-validation': 3.7.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -6915,7 +7008,7 @@ snapshots:
     dependencies:
       '@mdx-js/mdx': 3.0.1
       '@types/history': 4.7.11
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
       commander: 5.1.0
       joi: 17.13.0
       react: 19.0.0
@@ -7074,10 +7167,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mdx-js/react@3.1.0(@types/react@18.2.79)(react@19.0.0)':
+  '@mdx-js/react@3.1.0(@types/react@19.1.0)(react@19.0.0)':
     dependencies:
       '@types/mdx': 2.0.13
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
       react: 19.0.0
 
   '@nodelib/fs.scandir@2.1.5':
@@ -7183,12 +7276,12 @@ snapshots:
       '@svgr/babel-plugin-transform-react-native-svg': 8.1.0(@babel/core@7.26.0)
       '@svgr/babel-plugin-transform-svg-component': 8.0.0(@babel/core@7.26.0)
 
-  '@svgr/core@8.1.0(typescript@5.7.3)':
+  '@svgr/core@8.1.0(typescript@5.8.2)':
     dependencies:
       '@babel/core': 7.26.0
       '@svgr/babel-preset': 8.1.0(@babel/core@7.26.0)
       camelcase: 6.3.0
-      cosmiconfig: 8.3.6(typescript@5.7.3)
+      cosmiconfig: 8.3.6(typescript@5.8.2)
       snake-case: 3.0.4
     transitivePeerDependencies:
       - supports-color
@@ -7199,35 +7292,35 @@ snapshots:
       '@babel/types': 7.26.0
       entities: 4.5.0
 
-  '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.7.3))':
+  '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.8.2))':
     dependencies:
       '@babel/core': 7.26.0
       '@svgr/babel-preset': 8.1.0(@babel/core@7.26.0)
-      '@svgr/core': 8.1.0(typescript@5.7.3)
+      '@svgr/core': 8.1.0(typescript@5.8.2)
       '@svgr/hast-util-to-babel-ast': 8.0.0
       svg-parser: 2.0.4
     transitivePeerDependencies:
       - supports-color
 
-  '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@5.7.3))(typescript@5.7.3)':
+  '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@5.8.2))(typescript@5.8.2)':
     dependencies:
-      '@svgr/core': 8.1.0(typescript@5.7.3)
-      cosmiconfig: 8.3.6(typescript@5.7.3)
+      '@svgr/core': 8.1.0(typescript@5.8.2)
+      cosmiconfig: 8.3.6(typescript@5.8.2)
       deepmerge: 4.3.1
       svgo: 3.2.0
     transitivePeerDependencies:
       - typescript
 
-  '@svgr/webpack@8.1.0(typescript@5.7.3)':
+  '@svgr/webpack@8.1.0(typescript@5.8.2)':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/plugin-transform-react-constant-elements': 7.24.1(@babel/core@7.26.0)
       '@babel/preset-env': 7.26.0(@babel/core@7.26.0)
       '@babel/preset-react': 7.25.9(@babel/core@7.26.0)
       '@babel/preset-typescript': 7.26.0(@babel/core@7.26.0)
-      '@svgr/core': 8.1.0(typescript@5.7.3)
-      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.7.3))
-      '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.7.3))(typescript@5.7.3)
+      '@svgr/core': 8.1.0(typescript@5.8.2)
+      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.8.2))
+      '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.8.2))(typescript@5.8.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -7296,6 +7389,10 @@ snapshots:
 
   '@types/gtag.js@0.0.12': {}
 
+  '@types/hast@2.3.10':
+    dependencies:
+      '@types/unist': 2.0.10
+
   '@types/hast@3.0.4':
     dependencies:
       '@types/unist': 3.0.2
@@ -7348,8 +7445,6 @@ snapshots:
 
   '@types/prismjs@1.26.3': {}
 
-  '@types/prop-types@15.7.12': {}
-
   '@types/qs@6.9.15': {}
 
   '@types/range-parser@1.2.7': {}
@@ -7357,23 +7452,26 @@ snapshots:
   '@types/react-router-config@5.0.11':
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
       '@types/react-router': 5.1.20
 
   '@types/react-router-dom@5.3.3':
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
       '@types/react-router': 5.1.20
 
   '@types/react-router@5.1.20':
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 18.2.79
+      '@types/react': 19.1.0
 
-  '@types/react@18.2.79':
+  '@types/react-syntax-highlighter@15.5.13':
     dependencies:
-      '@types/prop-types': 15.7.12
+      '@types/react': 19.1.0
+
+  '@types/react@19.1.0':
+    dependencies:
       csstype: 3.1.3
 
   '@types/retry@0.12.0': {}
@@ -7502,13 +7600,13 @@ snapshots:
       mime-types: 2.1.35
       negotiator: 0.6.3
 
-  acorn-jsx@5.3.2(acorn@8.14.0):
+  acorn-jsx@5.3.2(acorn@8.14.1):
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
 
   acorn-walk@8.3.2: {}
 
-  acorn@8.14.0: {}
+  acorn@8.14.1: {}
 
   address@1.2.2: {}
 
@@ -7608,14 +7706,14 @@ snapshots:
 
   at-least-node@1.0.0: {}
 
-  autoprefixer@10.4.20(postcss@8.5.1):
+  autoprefixer@10.4.21(postcss@8.5.3):
     dependencies:
-      browserslist: 4.23.3
-      caniuse-lite: 1.0.30001651
+      browserslist: 4.24.4
+      caniuse-lite: 1.0.30001709
       fraction.js: 4.3.7
       normalize-range: 0.1.2
-      picocolors: 1.0.1
-      postcss: 8.5.1
+      picocolors: 1.1.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
   babel-loader@9.2.1(@babel/core@7.26.0)(webpack@5.96.1):
@@ -7722,19 +7820,19 @@ snapshots:
     dependencies:
       fill-range: 7.1.1
 
-  browserslist@4.23.3:
-    dependencies:
-      caniuse-lite: 1.0.30001651
-      electron-to-chromium: 1.5.6
-      node-releases: 2.0.18
-      update-browserslist-db: 1.1.0(browserslist@4.23.3)
-
   browserslist@4.24.2:
     dependencies:
       caniuse-lite: 1.0.30001680
       electron-to-chromium: 1.5.63
       node-releases: 2.0.18
       update-browserslist-db: 1.1.1(browserslist@4.24.2)
+
+  browserslist@4.24.4:
+    dependencies:
+      caniuse-lite: 1.0.30001709
+      electron-to-chromium: 1.5.130
+      node-releases: 2.0.19
+      update-browserslist-db: 1.1.1(browserslist@4.24.4)
 
   buffer-from@1.1.2: {}
 
@@ -7782,9 +7880,9 @@ snapshots:
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
 
-  caniuse-lite@1.0.30001651: {}
-
   caniuse-lite@1.0.30001680: {}
+
+  caniuse-lite@1.0.30001709: {}
 
   ccount@2.0.1: {}
 
@@ -7799,9 +7897,15 @@ snapshots:
 
   character-entities-html4@2.1.0: {}
 
+  character-entities-legacy@1.1.4: {}
+
   character-entities-legacy@3.0.0: {}
 
+  character-entities@1.2.4: {}
+
   character-entities@2.0.2: {}
+
+  character-reference-invalid@1.1.4: {}
 
   character-reference-invalid@2.0.1: {}
 
@@ -7875,6 +7979,8 @@ snapshots:
   colorette@2.0.20: {}
 
   combine-promises@1.2.0: {}
+
+  comma-separated-tokens@1.0.8: {}
 
   comma-separated-tokens@2.0.3: {}
 
@@ -7971,14 +8077,14 @@ snapshots:
       path-type: 4.0.0
       yaml: 1.10.2
 
-  cosmiconfig@8.3.6(typescript@5.7.3):
+  cosmiconfig@8.3.6(typescript@5.8.2):
     dependencies:
       import-fresh: 3.3.0
       js-yaml: 4.1.0
       parse-json: 5.2.0
       path-type: 4.0.0
     optionalDependencies:
-      typescript: 5.7.3
+      typescript: 5.8.2
 
   cross-spawn@7.0.3:
     dependencies:
@@ -7990,30 +8096,30 @@ snapshots:
     dependencies:
       type-fest: 1.4.0
 
-  css-blank-pseudo@7.0.1(postcss@8.5.1):
+  css-blank-pseudo@7.0.1(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  css-declaration-sorter@7.2.0(postcss@8.5.1):
+  css-declaration-sorter@7.2.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  css-has-pseudo@7.0.1(postcss@8.5.1):
+  css-has-pseudo@7.0.1(postcss@8.5.3):
     dependencies:
       '@csstools/selector-specificity': 5.0.0(postcss-selector-parser@7.0.0)
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
       postcss-value-parser: 4.2.0
 
   css-loader@6.11.0(webpack@5.96.1):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.1)
-      postcss: 8.5.1
-      postcss-modules-extract-imports: 3.1.0(postcss@8.5.1)
-      postcss-modules-local-by-default: 4.0.5(postcss@8.5.1)
-      postcss-modules-scope: 3.2.0(postcss@8.5.1)
-      postcss-modules-values: 4.0.0(postcss@8.5.1)
+      icss-utils: 5.1.0(postcss@8.5.3)
+      postcss: 8.5.3
+      postcss-modules-extract-imports: 3.1.0(postcss@8.5.3)
+      postcss-modules-local-by-default: 4.0.5(postcss@8.5.3)
+      postcss-modules-scope: 3.2.0(postcss@8.5.3)
+      postcss-modules-values: 4.0.0(postcss@8.5.3)
       postcss-value-parser: 4.2.0
       semver: 7.6.0
     optionalDependencies:
@@ -8022,18 +8128,18 @@ snapshots:
   css-minimizer-webpack-plugin@5.0.1(clean-css@5.3.3)(webpack@5.96.1):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
-      cssnano: 6.1.2(postcss@8.5.1)
+      cssnano: 6.1.2(postcss@8.5.3)
       jest-worker: 29.7.0
-      postcss: 8.5.1
+      postcss: 8.5.3
       schema-utils: 4.2.0
       serialize-javascript: 6.0.2
       webpack: 5.96.1
     optionalDependencies:
       clean-css: 5.3.3
 
-  css-prefers-color-scheme@10.0.0(postcss@8.5.1):
+  css-prefers-color-scheme@10.0.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
   css-select@4.3.0:
     dependencies:
@@ -8067,60 +8173,60 @@ snapshots:
 
   cssesc@3.0.0: {}
 
-  cssnano-preset-advanced@6.1.2(postcss@8.5.1):
+  cssnano-preset-advanced@6.1.2(postcss@8.5.3):
     dependencies:
-      autoprefixer: 10.4.20(postcss@8.5.1)
+      autoprefixer: 10.4.21(postcss@8.5.3)
       browserslist: 4.24.2
-      cssnano-preset-default: 6.1.2(postcss@8.5.1)
-      postcss: 8.5.1
-      postcss-discard-unused: 6.0.5(postcss@8.5.1)
-      postcss-merge-idents: 6.0.3(postcss@8.5.1)
-      postcss-reduce-idents: 6.0.3(postcss@8.5.1)
-      postcss-zindex: 6.0.2(postcss@8.5.1)
+      cssnano-preset-default: 6.1.2(postcss@8.5.3)
+      postcss: 8.5.3
+      postcss-discard-unused: 6.0.5(postcss@8.5.3)
+      postcss-merge-idents: 6.0.3(postcss@8.5.3)
+      postcss-reduce-idents: 6.0.3(postcss@8.5.3)
+      postcss-zindex: 6.0.2(postcss@8.5.3)
 
-  cssnano-preset-default@6.1.2(postcss@8.5.1):
+  cssnano-preset-default@6.1.2(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.2
-      css-declaration-sorter: 7.2.0(postcss@8.5.1)
-      cssnano-utils: 4.0.2(postcss@8.5.1)
-      postcss: 8.5.1
-      postcss-calc: 9.0.1(postcss@8.5.1)
-      postcss-colormin: 6.1.0(postcss@8.5.1)
-      postcss-convert-values: 6.1.0(postcss@8.5.1)
-      postcss-discard-comments: 6.0.2(postcss@8.5.1)
-      postcss-discard-duplicates: 6.0.3(postcss@8.5.1)
-      postcss-discard-empty: 6.0.3(postcss@8.5.1)
-      postcss-discard-overridden: 6.0.2(postcss@8.5.1)
-      postcss-merge-longhand: 6.0.5(postcss@8.5.1)
-      postcss-merge-rules: 6.1.1(postcss@8.5.1)
-      postcss-minify-font-values: 6.1.0(postcss@8.5.1)
-      postcss-minify-gradients: 6.0.3(postcss@8.5.1)
-      postcss-minify-params: 6.1.0(postcss@8.5.1)
-      postcss-minify-selectors: 6.0.4(postcss@8.5.1)
-      postcss-normalize-charset: 6.0.2(postcss@8.5.1)
-      postcss-normalize-display-values: 6.0.2(postcss@8.5.1)
-      postcss-normalize-positions: 6.0.2(postcss@8.5.1)
-      postcss-normalize-repeat-style: 6.0.2(postcss@8.5.1)
-      postcss-normalize-string: 6.0.2(postcss@8.5.1)
-      postcss-normalize-timing-functions: 6.0.2(postcss@8.5.1)
-      postcss-normalize-unicode: 6.1.0(postcss@8.5.1)
-      postcss-normalize-url: 6.0.2(postcss@8.5.1)
-      postcss-normalize-whitespace: 6.0.2(postcss@8.5.1)
-      postcss-ordered-values: 6.0.2(postcss@8.5.1)
-      postcss-reduce-initial: 6.1.0(postcss@8.5.1)
-      postcss-reduce-transforms: 6.0.2(postcss@8.5.1)
-      postcss-svgo: 6.0.3(postcss@8.5.1)
-      postcss-unique-selectors: 6.0.4(postcss@8.5.1)
+      css-declaration-sorter: 7.2.0(postcss@8.5.3)
+      cssnano-utils: 4.0.2(postcss@8.5.3)
+      postcss: 8.5.3
+      postcss-calc: 9.0.1(postcss@8.5.3)
+      postcss-colormin: 6.1.0(postcss@8.5.3)
+      postcss-convert-values: 6.1.0(postcss@8.5.3)
+      postcss-discard-comments: 6.0.2(postcss@8.5.3)
+      postcss-discard-duplicates: 6.0.3(postcss@8.5.3)
+      postcss-discard-empty: 6.0.3(postcss@8.5.3)
+      postcss-discard-overridden: 6.0.2(postcss@8.5.3)
+      postcss-merge-longhand: 6.0.5(postcss@8.5.3)
+      postcss-merge-rules: 6.1.1(postcss@8.5.3)
+      postcss-minify-font-values: 6.1.0(postcss@8.5.3)
+      postcss-minify-gradients: 6.0.3(postcss@8.5.3)
+      postcss-minify-params: 6.1.0(postcss@8.5.3)
+      postcss-minify-selectors: 6.0.4(postcss@8.5.3)
+      postcss-normalize-charset: 6.0.2(postcss@8.5.3)
+      postcss-normalize-display-values: 6.0.2(postcss@8.5.3)
+      postcss-normalize-positions: 6.0.2(postcss@8.5.3)
+      postcss-normalize-repeat-style: 6.0.2(postcss@8.5.3)
+      postcss-normalize-string: 6.0.2(postcss@8.5.3)
+      postcss-normalize-timing-functions: 6.0.2(postcss@8.5.3)
+      postcss-normalize-unicode: 6.1.0(postcss@8.5.3)
+      postcss-normalize-url: 6.0.2(postcss@8.5.3)
+      postcss-normalize-whitespace: 6.0.2(postcss@8.5.3)
+      postcss-ordered-values: 6.0.2(postcss@8.5.3)
+      postcss-reduce-initial: 6.1.0(postcss@8.5.3)
+      postcss-reduce-transforms: 6.0.2(postcss@8.5.3)
+      postcss-svgo: 6.0.3(postcss@8.5.3)
+      postcss-unique-selectors: 6.0.4(postcss@8.5.3)
 
-  cssnano-utils@4.0.2(postcss@8.5.1):
+  cssnano-utils@4.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  cssnano@6.1.2(postcss@8.5.1):
+  cssnano@6.1.2(postcss@8.5.3):
     dependencies:
-      cssnano-preset-default: 6.1.2(postcss@8.5.1)
+      cssnano-preset-default: 6.1.2(postcss@8.5.3)
       lilconfig: 3.1.3
-      postcss: 8.5.1
+      postcss: 8.5.3
 
   csso@5.0.5:
     dependencies:
@@ -8274,9 +8380,25 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.6: {}
+  electron-to-chromium@1.5.130: {}
 
   electron-to-chromium@1.5.63: {}
+
+  embla-carousel-auto-scroll@8.6.0(embla-carousel@8.6.0):
+    dependencies:
+      embla-carousel: 8.6.0
+
+  embla-carousel-react@8.6.0(react@19.0.0):
+    dependencies:
+      embla-carousel: 8.6.0
+      embla-carousel-reactive-utils: 8.6.0(embla-carousel@8.6.0)
+      react: 19.0.0
+
+  embla-carousel-reactive-utils@8.6.0(embla-carousel@8.6.0):
+    dependencies:
+      embla-carousel: 8.6.0
+
+  embla-carousel@8.6.0: {}
 
   emoji-regex@8.0.0: {}
 
@@ -8310,8 +8432,6 @@ snapshots:
   es-errors@1.3.0: {}
 
   es-module-lexer@1.5.0: {}
-
-  escalade@3.1.2: {}
 
   escalade@3.2.0: {}
 
@@ -8458,6 +8578,10 @@ snapshots:
     dependencies:
       reusify: 1.0.4
 
+  fault@1.0.4:
+    dependencies:
+      format: 0.2.2
+
   fault@2.0.1:
     dependencies:
       format: 0.2.2
@@ -8526,7 +8650,7 @@ snapshots:
       cross-spawn: 7.0.3
       signal-exit: 4.1.0
 
-  fork-ts-checker-webpack-plugin@6.5.3(typescript@5.7.3)(webpack@5.96.1):
+  fork-ts-checker-webpack-plugin@6.5.3(typescript@5.8.2)(webpack@5.96.1):
     dependencies:
       '@babel/code-frame': 7.26.2
       '@types/json-schema': 7.0.15
@@ -8541,7 +8665,7 @@ snapshots:
       schema-utils: 2.7.0
       semver: 7.6.0
       tapable: 1.1.3
-      typescript: 5.7.3
+      typescript: 5.8.2
       webpack: 5.96.1
 
   form-data-encoder@2.1.4: {}
@@ -8714,6 +8838,8 @@ snapshots:
       vfile-location: 5.0.2
       web-namespaces: 2.0.1
 
+  hast-util-parse-selector@2.2.5: {}
+
   hast-util-parse-selector@4.0.0:
     dependencies:
       '@types/hast': 3.0.4
@@ -8789,6 +8915,14 @@ snapshots:
     dependencies:
       '@types/hast': 3.0.4
 
+  hastscript@6.0.0:
+    dependencies:
+      '@types/hast': 2.3.10
+      comma-separated-tokens: 1.0.8
+      hast-util-parse-selector: 2.2.5
+      property-information: 5.6.0
+      space-separated-tokens: 1.1.5
+
   hastscript@8.0.0:
     dependencies:
       '@types/hast': 3.0.4
@@ -8798,6 +8932,10 @@ snapshots:
       space-separated-tokens: 2.0.2
 
   he@1.2.0: {}
+
+  highlight.js@10.7.3: {}
+
+  highlightjs-vue@1.0.0: {}
 
   history@4.10.1:
     dependencies:
@@ -8923,9 +9061,9 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  icss-utils@5.1.0(postcss@8.5.1):
+  icss-utils@5.1.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
   ignore@5.3.1: {}
 
@@ -8975,7 +9113,14 @@ snapshots:
 
   ipaddr.js@2.2.0: {}
 
+  is-alphabetical@1.0.4: {}
+
   is-alphabetical@2.0.1: {}
+
+  is-alphanumerical@1.0.4:
+    dependencies:
+      is-alphabetical: 1.0.4
+      is-decimal: 1.0.4
 
   is-alphanumerical@2.0.1:
     dependencies:
@@ -8996,6 +9141,8 @@ snapshots:
     dependencies:
       hasown: 2.0.2
 
+  is-decimal@1.0.4: {}
+
   is-decimal@2.0.1: {}
 
   is-docker@2.2.1: {}
@@ -9009,6 +9156,8 @@ snapshots:
   is-glob@4.0.3:
     dependencies:
       is-extglob: 2.1.1
+
+  is-hexadecimal@1.0.4: {}
 
   is-hexadecimal@2.0.1: {}
 
@@ -9196,6 +9345,11 @@ snapshots:
 
   lowercase-keys@3.0.0: {}
 
+  lowlight@1.20.0:
+    dependencies:
+      fault: 1.0.4
+      highlight.js: 10.7.3
+
   lru-cache@10.2.0: {}
 
   lru-cache@5.1.1:
@@ -9206,7 +9360,7 @@ snapshots:
     dependencies:
       yallist: 4.0.0
 
-  lucide-react@0.474.0(react@19.0.0):
+  lucide-react@0.487.0(react@19.0.0):
     dependencies:
       react: 19.0.0
 
@@ -9559,8 +9713,8 @@ snapshots:
 
   micromark-extension-mdxjs@3.0.0:
     dependencies:
-      acorn: 8.14.0
-      acorn-jsx: 5.3.2(acorn@8.14.0)
+      acorn: 8.14.1
+      acorn-jsx: 5.3.2(acorn@8.14.1)
       micromark-extension-mdx-expression: 3.0.0
       micromark-extension-mdx-jsx: 3.0.0
       micromark-extension-mdx-md: 2.0.0
@@ -9804,6 +9958,8 @@ snapshots:
 
   node-releases@2.0.18: {}
 
+  node-releases@2.0.19: {}
+
   normalize-path@3.0.0: {}
 
   normalize-range@0.1.2: {}
@@ -9920,6 +10076,15 @@ snapshots:
     dependencies:
       callsites: 3.1.0
 
+  parse-entities@2.0.0:
+    dependencies:
+      character-entities: 1.2.4
+      character-entities-legacy: 1.1.4
+      character-reference-invalid: 1.1.4
+      is-alphanumerical: 1.0.4
+      is-decimal: 1.0.4
+      is-hexadecimal: 1.0.4
+
   parse-entities@4.0.1:
     dependencies:
       '@types/unist': 2.0.10
@@ -9991,8 +10156,6 @@ snapshots:
       estree-walker: 3.0.3
       is-reference: 3.0.2
 
-  picocolors@1.0.1: {}
-
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
@@ -10009,428 +10172,428 @@ snapshots:
     dependencies:
       find-up: 3.0.0
 
-  postcss-attribute-case-insensitive@7.0.1(postcss@8.5.1):
+  postcss-attribute-case-insensitive@7.0.1(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  postcss-calc@9.0.1(postcss@8.5.1):
+  postcss-calc@9.0.1(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
       postcss-value-parser: 4.2.0
 
-  postcss-clamp@4.1.0(postcss@8.5.1):
+  postcss-clamp@4.1.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-color-functional-notation@7.0.6(postcss@8.5.1):
+  postcss-color-functional-notation@7.0.6(postcss@8.5.3):
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  postcss-color-hex-alpha@10.0.0(postcss@8.5.1):
+  postcss-color-hex-alpha@10.0.0(postcss@8.5.3):
     dependencies:
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-color-rebeccapurple@10.0.0(postcss@8.5.1):
+  postcss-color-rebeccapurple@10.0.0(postcss@8.5.3):
     dependencies:
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-colormin@6.1.0(postcss@8.5.1):
+  postcss-colormin@6.1.0(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.2
       caniuse-api: 3.0.0
       colord: 2.9.3
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-convert-values@6.1.0(postcss@8.5.1):
+  postcss-convert-values@6.1.0(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.2
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-custom-media@11.0.5(postcss@8.5.1):
+  postcss-custom-media@11.0.5(postcss@8.5.3):
     dependencies:
       '@csstools/cascade-layer-name-parser': 2.0.4(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
       '@csstools/media-query-list-parser': 4.0.2(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-custom-properties@14.0.4(postcss@8.5.1):
+  postcss-custom-properties@14.0.4(postcss@8.5.3):
     dependencies:
       '@csstools/cascade-layer-name-parser': 2.0.4(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-custom-selectors@8.0.4(postcss@8.5.1):
+  postcss-custom-selectors@8.0.4(postcss@8.5.3):
     dependencies:
       '@csstools/cascade-layer-name-parser': 2.0.4(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  postcss-dir-pseudo-class@9.0.1(postcss@8.5.1):
+  postcss-dir-pseudo-class@9.0.1(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  postcss-discard-comments@6.0.2(postcss@8.5.1):
+  postcss-discard-comments@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-discard-duplicates@6.0.3(postcss@8.5.1):
+  postcss-discard-duplicates@6.0.3(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-discard-empty@6.0.3(postcss@8.5.1):
+  postcss-discard-empty@6.0.3(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-discard-overridden@6.0.2(postcss@8.5.1):
+  postcss-discard-overridden@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-discard-unused@6.0.5(postcss@8.5.1):
+  postcss-discard-unused@6.0.5(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
 
-  postcss-double-position-gradients@6.0.0(postcss@8.5.1):
+  postcss-double-position-gradients@6.0.0(postcss@8.5.3):
     dependencies:
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-focus-visible@10.0.1(postcss@8.5.1):
+  postcss-focus-visible@10.0.1(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  postcss-focus-within@9.0.1(postcss@8.5.1):
+  postcss-focus-within@9.0.1(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  postcss-font-variant@5.0.0(postcss@8.5.1):
+  postcss-font-variant@5.0.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-gap-properties@6.0.0(postcss@8.5.1):
+  postcss-gap-properties@6.0.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-image-set-function@7.0.0(postcss@8.5.1):
+  postcss-image-set-function@7.0.0(postcss@8.5.3):
     dependencies:
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-import@15.1.0(postcss@8.5.1):
+  postcss-import@15.1.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.8
 
-  postcss-js@4.0.1(postcss@8.5.1):
+  postcss-js@4.0.1(postcss@8.5.3):
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-lab-function@7.0.6(postcss@8.5.1):
+  postcss-lab-function@7.0.6(postcss@8.5.3):
     dependencies:
       '@csstools/css-color-parser': 3.0.6(@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3))(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/utilities': 2.0.0(postcss@8.5.1)
-      postcss: 8.5.1
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/utilities': 2.0.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  postcss-load-config@4.0.2(postcss@8.5.1):
+  postcss-load-config@4.0.2(postcss@8.5.3):
     dependencies:
       lilconfig: 3.1.3
       yaml: 2.4.1
     optionalDependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-loader@7.3.4(postcss@8.5.1)(typescript@5.7.3)(webpack@5.96.1):
+  postcss-loader@7.3.4(postcss@8.5.3)(typescript@5.8.2)(webpack@5.96.1):
     dependencies:
-      cosmiconfig: 8.3.6(typescript@5.7.3)
+      cosmiconfig: 8.3.6(typescript@5.8.2)
       jiti: 1.21.6
-      postcss: 8.5.1
+      postcss: 8.5.3
       semver: 7.6.0
       webpack: 5.96.1
     transitivePeerDependencies:
       - typescript
 
-  postcss-logical@8.0.0(postcss@8.5.1):
+  postcss-logical@8.0.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-merge-idents@6.0.3(postcss@8.5.1):
+  postcss-merge-idents@6.0.3(postcss@8.5.3):
     dependencies:
-      cssnano-utils: 4.0.2(postcss@8.5.1)
-      postcss: 8.5.1
+      cssnano-utils: 4.0.2(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-merge-longhand@6.0.5(postcss@8.5.1):
+  postcss-merge-longhand@6.0.5(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
-      stylehacks: 6.1.1(postcss@8.5.1)
+      stylehacks: 6.1.1(postcss@8.5.3)
 
-  postcss-merge-rules@6.1.1(postcss@8.5.1):
+  postcss-merge-rules@6.1.1(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.2
       caniuse-api: 3.0.0
-      cssnano-utils: 4.0.2(postcss@8.5.1)
-      postcss: 8.5.1
+      cssnano-utils: 4.0.2(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
 
-  postcss-minify-font-values@6.1.0(postcss@8.5.1):
+  postcss-minify-font-values@6.1.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-minify-gradients@6.0.3(postcss@8.5.1):
+  postcss-minify-gradients@6.0.3(postcss@8.5.3):
     dependencies:
       colord: 2.9.3
-      cssnano-utils: 4.0.2(postcss@8.5.1)
-      postcss: 8.5.1
+      cssnano-utils: 4.0.2(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-minify-params@6.1.0(postcss@8.5.1):
+  postcss-minify-params@6.1.0(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.2
-      cssnano-utils: 4.0.2(postcss@8.5.1)
-      postcss: 8.5.1
+      cssnano-utils: 4.0.2(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-minify-selectors@6.0.4(postcss@8.5.1):
+  postcss-minify-selectors@6.0.4(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
 
-  postcss-modules-extract-imports@3.1.0(postcss@8.5.1):
+  postcss-modules-extract-imports@3.1.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-modules-local-by-default@4.0.5(postcss@8.5.1):
+  postcss-modules-local-by-default@4.0.5(postcss@8.5.3):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.1)
-      postcss: 8.5.1
+      icss-utils: 5.1.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
       postcss-value-parser: 4.2.0
 
-  postcss-modules-scope@3.2.0(postcss@8.5.1):
+  postcss-modules-scope@3.2.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
 
-  postcss-modules-values@4.0.0(postcss@8.5.1):
+  postcss-modules-values@4.0.0(postcss@8.5.3):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.1)
-      postcss: 8.5.1
+      icss-utils: 5.1.0(postcss@8.5.3)
+      postcss: 8.5.3
 
-  postcss-nested@6.2.0(postcss@8.5.1):
+  postcss-nested@6.2.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
 
-  postcss-nested@7.0.2(postcss@8.5.1):
+  postcss-nested@7.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  postcss-nesting@13.0.1(postcss@8.5.1):
+  postcss-nesting@13.0.1(postcss@8.5.3):
     dependencies:
       '@csstools/selector-resolve-nested': 3.0.0(postcss-selector-parser@7.0.0)
       '@csstools/selector-specificity': 5.0.0(postcss-selector-parser@7.0.0)
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  postcss-normalize-charset@6.0.2(postcss@8.5.1):
+  postcss-normalize-charset@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-normalize-display-values@6.0.2(postcss@8.5.1):
+  postcss-normalize-display-values@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-normalize-positions@6.0.2(postcss@8.5.1):
+  postcss-normalize-positions@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-normalize-repeat-style@6.0.2(postcss@8.5.1):
+  postcss-normalize-repeat-style@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-normalize-string@6.0.2(postcss@8.5.1):
+  postcss-normalize-string@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-normalize-timing-functions@6.0.2(postcss@8.5.1):
+  postcss-normalize-timing-functions@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-normalize-unicode@6.1.0(postcss@8.5.1):
+  postcss-normalize-unicode@6.1.0(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.2
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-normalize-url@6.0.2(postcss@8.5.1):
+  postcss-normalize-url@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-normalize-whitespace@6.0.2(postcss@8.5.1):
+  postcss-normalize-whitespace@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-opacity-percentage@3.0.0(postcss@8.5.1):
+  postcss-opacity-percentage@3.0.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-ordered-values@6.0.2(postcss@8.5.1):
+  postcss-ordered-values@6.0.2(postcss@8.5.3):
     dependencies:
-      cssnano-utils: 4.0.2(postcss@8.5.1)
-      postcss: 8.5.1
+      cssnano-utils: 4.0.2(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-overflow-shorthand@6.0.0(postcss@8.5.1):
+  postcss-overflow-shorthand@6.0.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-page-break@3.0.4(postcss@8.5.1):
+  postcss-page-break@3.0.4(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-place@10.0.0(postcss@8.5.1):
+  postcss-place@10.0.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-preset-env@10.1.1(postcss@8.5.1):
+  postcss-preset-env@10.1.1(postcss@8.5.3):
     dependencies:
-      '@csstools/postcss-cascade-layers': 5.0.1(postcss@8.5.1)
-      '@csstools/postcss-color-function': 4.0.6(postcss@8.5.1)
-      '@csstools/postcss-color-mix-function': 3.0.6(postcss@8.5.1)
-      '@csstools/postcss-content-alt-text': 2.0.4(postcss@8.5.1)
-      '@csstools/postcss-exponential-functions': 2.0.5(postcss@8.5.1)
-      '@csstools/postcss-font-format-keywords': 4.0.0(postcss@8.5.1)
-      '@csstools/postcss-gamut-mapping': 2.0.6(postcss@8.5.1)
-      '@csstools/postcss-gradients-interpolation-method': 5.0.6(postcss@8.5.1)
-      '@csstools/postcss-hwb-function': 4.0.6(postcss@8.5.1)
-      '@csstools/postcss-ic-unit': 4.0.0(postcss@8.5.1)
-      '@csstools/postcss-initial': 2.0.0(postcss@8.5.1)
-      '@csstools/postcss-is-pseudo-class': 5.0.1(postcss@8.5.1)
-      '@csstools/postcss-light-dark-function': 2.0.7(postcss@8.5.1)
-      '@csstools/postcss-logical-float-and-clear': 3.0.0(postcss@8.5.1)
-      '@csstools/postcss-logical-overflow': 2.0.0(postcss@8.5.1)
-      '@csstools/postcss-logical-overscroll-behavior': 2.0.0(postcss@8.5.1)
-      '@csstools/postcss-logical-resize': 3.0.0(postcss@8.5.1)
-      '@csstools/postcss-logical-viewport-units': 3.0.3(postcss@8.5.1)
-      '@csstools/postcss-media-minmax': 2.0.5(postcss@8.5.1)
-      '@csstools/postcss-media-queries-aspect-ratio-number-values': 3.0.4(postcss@8.5.1)
-      '@csstools/postcss-nested-calc': 4.0.0(postcss@8.5.1)
-      '@csstools/postcss-normalize-display-values': 4.0.0(postcss@8.5.1)
-      '@csstools/postcss-oklab-function': 4.0.6(postcss@8.5.1)
-      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.1)
-      '@csstools/postcss-random-function': 1.0.1(postcss@8.5.1)
-      '@csstools/postcss-relative-color-syntax': 3.0.6(postcss@8.5.1)
-      '@csstools/postcss-scope-pseudo-class': 4.0.1(postcss@8.5.1)
-      '@csstools/postcss-sign-functions': 1.1.0(postcss@8.5.1)
-      '@csstools/postcss-stepped-value-functions': 4.0.5(postcss@8.5.1)
-      '@csstools/postcss-text-decoration-shorthand': 4.0.1(postcss@8.5.1)
-      '@csstools/postcss-trigonometric-functions': 4.0.5(postcss@8.5.1)
-      '@csstools/postcss-unset-value': 4.0.0(postcss@8.5.1)
-      autoprefixer: 10.4.20(postcss@8.5.1)
+      '@csstools/postcss-cascade-layers': 5.0.1(postcss@8.5.3)
+      '@csstools/postcss-color-function': 4.0.6(postcss@8.5.3)
+      '@csstools/postcss-color-mix-function': 3.0.6(postcss@8.5.3)
+      '@csstools/postcss-content-alt-text': 2.0.4(postcss@8.5.3)
+      '@csstools/postcss-exponential-functions': 2.0.5(postcss@8.5.3)
+      '@csstools/postcss-font-format-keywords': 4.0.0(postcss@8.5.3)
+      '@csstools/postcss-gamut-mapping': 2.0.6(postcss@8.5.3)
+      '@csstools/postcss-gradients-interpolation-method': 5.0.6(postcss@8.5.3)
+      '@csstools/postcss-hwb-function': 4.0.6(postcss@8.5.3)
+      '@csstools/postcss-ic-unit': 4.0.0(postcss@8.5.3)
+      '@csstools/postcss-initial': 2.0.0(postcss@8.5.3)
+      '@csstools/postcss-is-pseudo-class': 5.0.1(postcss@8.5.3)
+      '@csstools/postcss-light-dark-function': 2.0.7(postcss@8.5.3)
+      '@csstools/postcss-logical-float-and-clear': 3.0.0(postcss@8.5.3)
+      '@csstools/postcss-logical-overflow': 2.0.0(postcss@8.5.3)
+      '@csstools/postcss-logical-overscroll-behavior': 2.0.0(postcss@8.5.3)
+      '@csstools/postcss-logical-resize': 3.0.0(postcss@8.5.3)
+      '@csstools/postcss-logical-viewport-units': 3.0.3(postcss@8.5.3)
+      '@csstools/postcss-media-minmax': 2.0.5(postcss@8.5.3)
+      '@csstools/postcss-media-queries-aspect-ratio-number-values': 3.0.4(postcss@8.5.3)
+      '@csstools/postcss-nested-calc': 4.0.0(postcss@8.5.3)
+      '@csstools/postcss-normalize-display-values': 4.0.0(postcss@8.5.3)
+      '@csstools/postcss-oklab-function': 4.0.6(postcss@8.5.3)
+      '@csstools/postcss-progressive-custom-properties': 4.0.0(postcss@8.5.3)
+      '@csstools/postcss-random-function': 1.0.1(postcss@8.5.3)
+      '@csstools/postcss-relative-color-syntax': 3.0.6(postcss@8.5.3)
+      '@csstools/postcss-scope-pseudo-class': 4.0.1(postcss@8.5.3)
+      '@csstools/postcss-sign-functions': 1.1.0(postcss@8.5.3)
+      '@csstools/postcss-stepped-value-functions': 4.0.5(postcss@8.5.3)
+      '@csstools/postcss-text-decoration-shorthand': 4.0.1(postcss@8.5.3)
+      '@csstools/postcss-trigonometric-functions': 4.0.5(postcss@8.5.3)
+      '@csstools/postcss-unset-value': 4.0.0(postcss@8.5.3)
+      autoprefixer: 10.4.21(postcss@8.5.3)
       browserslist: 4.24.2
-      css-blank-pseudo: 7.0.1(postcss@8.5.1)
-      css-has-pseudo: 7.0.1(postcss@8.5.1)
-      css-prefers-color-scheme: 10.0.0(postcss@8.5.1)
+      css-blank-pseudo: 7.0.1(postcss@8.5.3)
+      css-has-pseudo: 7.0.1(postcss@8.5.3)
+      css-prefers-color-scheme: 10.0.0(postcss@8.5.3)
       cssdb: 8.2.1
-      postcss: 8.5.1
-      postcss-attribute-case-insensitive: 7.0.1(postcss@8.5.1)
-      postcss-clamp: 4.1.0(postcss@8.5.1)
-      postcss-color-functional-notation: 7.0.6(postcss@8.5.1)
-      postcss-color-hex-alpha: 10.0.0(postcss@8.5.1)
-      postcss-color-rebeccapurple: 10.0.0(postcss@8.5.1)
-      postcss-custom-media: 11.0.5(postcss@8.5.1)
-      postcss-custom-properties: 14.0.4(postcss@8.5.1)
-      postcss-custom-selectors: 8.0.4(postcss@8.5.1)
-      postcss-dir-pseudo-class: 9.0.1(postcss@8.5.1)
-      postcss-double-position-gradients: 6.0.0(postcss@8.5.1)
-      postcss-focus-visible: 10.0.1(postcss@8.5.1)
-      postcss-focus-within: 9.0.1(postcss@8.5.1)
-      postcss-font-variant: 5.0.0(postcss@8.5.1)
-      postcss-gap-properties: 6.0.0(postcss@8.5.1)
-      postcss-image-set-function: 7.0.0(postcss@8.5.1)
-      postcss-lab-function: 7.0.6(postcss@8.5.1)
-      postcss-logical: 8.0.0(postcss@8.5.1)
-      postcss-nesting: 13.0.1(postcss@8.5.1)
-      postcss-opacity-percentage: 3.0.0(postcss@8.5.1)
-      postcss-overflow-shorthand: 6.0.0(postcss@8.5.1)
-      postcss-page-break: 3.0.4(postcss@8.5.1)
-      postcss-place: 10.0.0(postcss@8.5.1)
-      postcss-pseudo-class-any-link: 10.0.1(postcss@8.5.1)
-      postcss-replace-overflow-wrap: 4.0.0(postcss@8.5.1)
-      postcss-selector-not: 8.0.1(postcss@8.5.1)
+      postcss: 8.5.3
+      postcss-attribute-case-insensitive: 7.0.1(postcss@8.5.3)
+      postcss-clamp: 4.1.0(postcss@8.5.3)
+      postcss-color-functional-notation: 7.0.6(postcss@8.5.3)
+      postcss-color-hex-alpha: 10.0.0(postcss@8.5.3)
+      postcss-color-rebeccapurple: 10.0.0(postcss@8.5.3)
+      postcss-custom-media: 11.0.5(postcss@8.5.3)
+      postcss-custom-properties: 14.0.4(postcss@8.5.3)
+      postcss-custom-selectors: 8.0.4(postcss@8.5.3)
+      postcss-dir-pseudo-class: 9.0.1(postcss@8.5.3)
+      postcss-double-position-gradients: 6.0.0(postcss@8.5.3)
+      postcss-focus-visible: 10.0.1(postcss@8.5.3)
+      postcss-focus-within: 9.0.1(postcss@8.5.3)
+      postcss-font-variant: 5.0.0(postcss@8.5.3)
+      postcss-gap-properties: 6.0.0(postcss@8.5.3)
+      postcss-image-set-function: 7.0.0(postcss@8.5.3)
+      postcss-lab-function: 7.0.6(postcss@8.5.3)
+      postcss-logical: 8.0.0(postcss@8.5.3)
+      postcss-nesting: 13.0.1(postcss@8.5.3)
+      postcss-opacity-percentage: 3.0.0(postcss@8.5.3)
+      postcss-overflow-shorthand: 6.0.0(postcss@8.5.3)
+      postcss-page-break: 3.0.4(postcss@8.5.3)
+      postcss-place: 10.0.0(postcss@8.5.3)
+      postcss-pseudo-class-any-link: 10.0.1(postcss@8.5.3)
+      postcss-replace-overflow-wrap: 4.0.0(postcss@8.5.3)
+      postcss-selector-not: 8.0.1(postcss@8.5.3)
 
-  postcss-pseudo-class-any-link@10.0.1(postcss@8.5.1):
+  postcss-pseudo-class-any-link@10.0.1(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
-  postcss-reduce-idents@6.0.3(postcss@8.5.1):
+  postcss-reduce-idents@6.0.3(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-reduce-initial@6.1.0(postcss@8.5.1):
+  postcss-reduce-initial@6.1.0(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.2
       caniuse-api: 3.0.0
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-reduce-transforms@6.0.2(postcss@8.5.1):
+  postcss-reduce-transforms@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  postcss-replace-overflow-wrap@4.0.0(postcss@8.5.1):
+  postcss-replace-overflow-wrap@4.0.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss-selector-not@8.0.1(postcss@8.5.1):
+  postcss-selector-not@8.0.1(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
 
   postcss-selector-parser@6.1.2:
@@ -10443,29 +10606,29 @@ snapshots:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
 
-  postcss-sort-media-queries@5.2.0(postcss@8.5.1):
+  postcss-sort-media-queries@5.2.0(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       sort-css-media-queries: 2.2.0
 
-  postcss-svgo@6.0.3(postcss@8.5.1):
+  postcss-svgo@6.0.3(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
       svgo: 3.2.0
 
-  postcss-unique-selectors@6.0.4(postcss@8.5.1):
+  postcss-unique-selectors@6.0.4(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
 
   postcss-value-parser@4.2.0: {}
 
-  postcss-zindex@6.0.2(postcss@8.5.1):
+  postcss-zindex@6.0.2(postcss@8.5.3):
     dependencies:
-      postcss: 8.5.1
+      postcss: 8.5.3
 
-  postcss@8.5.1:
+  postcss@8.5.3:
     dependencies:
       nanoid: 3.3.8
       picocolors: 1.1.1
@@ -10484,6 +10647,8 @@ snapshots:
       clsx: 2.1.1
       react: 19.0.0
 
+  prismjs@1.27.0: {}
+
   prismjs@1.29.0: {}
 
   process-nextick-args@2.0.1: {}
@@ -10498,6 +10663,10 @@ snapshots:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
+
+  property-information@5.6.0:
+    dependencies:
+      xtend: 4.0.2
 
   property-information@6.5.0: {}
 
@@ -10548,7 +10717,7 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
-  react-dev-utils@12.0.1(typescript@5.7.3)(webpack@5.96.1):
+  react-dev-utils@12.0.1(typescript@5.8.2)(webpack@5.96.1):
     dependencies:
       '@babel/code-frame': 7.26.2
       address: 1.2.2
@@ -10559,7 +10728,7 @@ snapshots:
       escape-string-regexp: 4.0.0
       filesize: 8.0.7
       find-up: 5.0.0
-      fork-ts-checker-webpack-plugin: 6.5.3(typescript@5.7.3)(webpack@5.96.1)
+      fork-ts-checker-webpack-plugin: 6.5.3(typescript@5.8.2)(webpack@5.96.1)
       global-modules: 2.0.0
       globby: 11.1.0
       gzip-size: 6.0.0
@@ -10576,7 +10745,7 @@ snapshots:
       text-table: 0.2.0
       webpack: 5.96.1
     optionalDependencies:
-      typescript: 5.7.3
+      typescript: 5.8.2
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -10633,6 +10802,16 @@ snapshots:
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
 
+  react-syntax-highlighter@15.6.1(react@19.0.0):
+    dependencies:
+      '@babel/runtime': 7.26.0
+      highlight.js: 10.7.3
+      highlightjs-vue: 1.0.0
+      lowlight: 1.20.0
+      prismjs: 1.29.0
+      react: 19.0.0
+      refractor: 3.6.0
+
   react@19.0.0: {}
 
   read-cache@1.0.0:
@@ -10668,6 +10847,12 @@ snapshots:
   recursive-readdir@2.2.3:
     dependencies:
       minimatch: 3.1.2
+
+  refractor@3.6.0:
+    dependencies:
+      hastscript: 6.0.0
+      parse-entities: 2.0.0
+      prismjs: 1.27.0
 
   regenerate-unicode-properties@10.2.0:
     dependencies:
@@ -10823,7 +11008,7 @@ snapshots:
     dependencies:
       escalade: 3.2.0
       picocolors: 1.1.1
-      postcss: 8.5.1
+      postcss: 8.5.3
       strip-json-comments: 3.1.1
 
   run-parallel@1.2.0:
@@ -11027,6 +11212,8 @@ snapshots:
 
   source-map@0.7.4: {}
 
+  space-separated-tokens@1.1.5: {}
+
   space-separated-tokens@2.0.2: {}
 
   spdy-transport@3.0.0:
@@ -11115,10 +11302,10 @@ snapshots:
     dependencies:
       inline-style-parser: 0.2.3
 
-  stylehacks@6.1.1(postcss@8.5.1):
+  stylehacks@6.1.1(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.2
-      postcss: 8.5.1
+      postcss: 8.5.3
       postcss-selector-parser: 6.1.2
 
   sucrase@3.35.0:
@@ -11173,11 +11360,11 @@ snapshots:
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.1.1
-      postcss: 8.5.1
-      postcss-import: 15.1.0(postcss@8.5.1)
-      postcss-js: 4.0.1(postcss@8.5.1)
-      postcss-load-config: 4.0.2(postcss@8.5.1)
-      postcss-nested: 6.2.0(postcss@8.5.1)
+      postcss: 8.5.3
+      postcss-import: 15.1.0(postcss@8.5.3)
+      postcss-js: 4.0.1(postcss@8.5.3)
+      postcss-load-config: 4.0.2(postcss@8.5.3)
+      postcss-nested: 6.2.0(postcss@8.5.3)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.8
       sucrase: 3.35.0
@@ -11200,7 +11387,7 @@ snapshots:
   terser@5.30.4:
     dependencies:
       '@jridgewell/source-map': 0.3.6
-      acorn: 8.14.0
+      acorn: 8.14.1
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -11251,7 +11438,7 @@ snapshots:
     dependencies:
       is-typedarray: 1.0.0
 
-  typescript@5.7.3: {}
+  typescript@5.8.2: {}
 
   undici-types@5.26.5: {}
 
@@ -11318,15 +11505,15 @@ snapshots:
 
   unpipe@1.0.0: {}
 
-  update-browserslist-db@1.1.0(browserslist@4.23.3):
-    dependencies:
-      browserslist: 4.23.3
-      escalade: 3.1.2
-      picocolors: 1.0.1
-
   update-browserslist-db@1.1.1(browserslist@4.24.2):
     dependencies:
       browserslist: 4.24.2
+      escalade: 3.2.0
+      picocolors: 1.1.1
+
+  update-browserslist-db@1.1.1(browserslist@4.24.4):
+    dependencies:
+      browserslist: 4.24.4
       escalade: 3.2.0
       picocolors: 1.1.1
 
@@ -11404,7 +11591,7 @@ snapshots:
   webpack-bundle-analyzer@4.10.2:
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
-      acorn: 8.14.0
+      acorn: 8.14.1
       acorn-walk: 8.3.2
       commander: 7.2.0
       debounce: 1.2.1
@@ -11489,7 +11676,7 @@ snapshots:
       '@webassemblyjs/ast': 1.12.1
       '@webassemblyjs/wasm-edit': 1.12.1
       '@webassemblyjs/wasm-parser': 1.12.1
-      acorn: 8.14.0
+      acorn: 8.14.1
       browserslist: 4.24.2
       chrome-trace-event: 1.0.3
       enhanced-resolve: 5.17.1
@@ -11576,6 +11763,8 @@ snapshots:
   xml-js@1.6.11:
     dependencies:
       sax: 1.3.0
+
+  xtend@4.0.2: {}
 
   yallist@3.1.1: {}
 

@@ -8,11 +8,7 @@ import { ResultBox } from "../../_components/result-box";
 import { onboardUser } from "./onboard-action";
 
 export default function BindArguments() {
-	const boundOnboardUser = onboardUser.bind(
-		null,
-		crypto.randomUUID(),
-		Math.floor(Math.random() * 200)
-	);
+	const boundOnboardUser = onboardUser.bind(null, crypto.randomUUID(), Math.floor(Math.random() * 200));
 
 	const { execute, result, status, reset } = useAction(boundOnboardUser);
 
@@ -32,13 +28,9 @@ export default function BindArguments() {
 
 					// Action call.
 					execute(input);
-				}}>
-				<StyledInput
-					type="text"
-					name="username"
-					id="username"
-					placeholder="Username"
-				/>
+				}}
+			>
+				<StyledInput type="text" name="username" id="username" placeholder="Username" />
 				<StyledButton type="submit">Onboard user</StyledButton>
 				<StyledButton type="button" onClick={reset}>
 					Reset
