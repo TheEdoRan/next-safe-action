@@ -18,7 +18,6 @@ export default function Hook() {
 		isIdle,
 		isExecuting,
 		isTransitioning,
-		isPending,
 		hasSucceeded,
 		hasErrored,
 	} = useAction(deleteUser, {
@@ -44,7 +43,6 @@ export default function Hook() {
 		isIdle,
 		isExecuting,
 		isTransitioning,
-		isPending,
 		hasSucceeded,
 		hasErrored,
 	});
@@ -53,7 +51,7 @@ export default function Hook() {
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>Action using hook</StyledHeading>
 			<form
-				className="flex flex-col mt-8 space-y-4"
+				className="mt-8 flex flex-col space-y-4"
 				onSubmit={async (e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);

@@ -131,11 +131,10 @@ export default function TodosBox({ todos }: Props) {
 - `isIdle`: true if the action status is `idle`.
 - `isTransitioning`: true if the transition status  from the `useTransition` hook used under the hood is `true`.
 - `isExecuting`: true if the action status is `executing`.
-- `isPending`: true if the action status is `executing` or `isTransitioning`.
 - `hasSucceeded`: true if the action status is `hasSucceeded`.
 - `hasErrored`: true if the action status is `hasErrored`.
 - `hasNavigated`: true if a `next/navigation` function was called inside the action.
 
-For checking the action status, the recommended way is to use the `isPending` shorthand property. Using `isExecuting` or checking if `status` is `"executing"` could cause race conditions when using navigation functions, such as `redirect`.
+The `executing` status and `isExecuting` shorthand property include the transition state.
 
 Explore a working example [here](<https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)/optimistic-hook>).

@@ -8,19 +8,21 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
 	isIdle,
 	isExecuting,
+	isTransitioning,
 	result,
 	hasNavigated,
 	hasThrownError,
 }: {
 	isIdle: boolean;
 	isExecuting: boolean;
+	isTransitioning: boolean;
 	hasNavigated: boolean;
 	hasThrownError: boolean;
 	result: SafeActionResult<ServerError, S, CVE, Data>;
 }): HookActionStatus => {
 	if (isIdle) {
 		return "idle";
-	} else if (isExecuting) {
+	} else if (isExecuting || isTransitioning) {
 		return "executing";
 	} else if (
 		hasThrownError ||
@@ -46,7 +48,6 @@ export const getActionShorthandStatusObject = ({
 		isIdle: status === "idle",
 		isExecuting: status === "executing",
 		isTransitioning,
-		isPending: status === "executing" || isTransitioning,
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
 		hasNavigated: status === "hasNavigated",

@@ -17,7 +17,6 @@ export default function Navigation() {
 		isIdle,
 		isExecuting,
 		isTransitioning,
-		isPending,
 		hasSucceeded,
 		hasErrored,
 	} = useAction(testNavigate, {
@@ -44,7 +43,6 @@ export default function Navigation() {
 		isIdle,
 		isExecuting,
 		isTransitioning,
-		isPending,
 		hasSucceeded,
 		hasErrored,
 	});

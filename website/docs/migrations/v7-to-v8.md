@@ -92,6 +92,10 @@ const result = await boundAction(input);
 
 The deprecated `executeOnMount` hook functionality has been removed in v8. Server Actions should be used only for mutations, so it doesn't make sense to execute them on mount. Or at least, it shouldn't be a common case and, above all, a library job. If you still need to do it, just use `useEffect()` to trigger the execution, however you want.
 
+### ⚠️ Removal of `isPending` shorthand status property
+
+The `isPending` shorthand status property has been removed from hooks return objects in v8. Having both `isExecuting` and `isPending` properties was a bit confusing, so now both the `isExecuting` property and `"executing"` status value include the transition state of the action execution.
+
 ### ✨ Type-checked metadata
 
 This is a big improvement in type safety over v7. Metadata is now statically type-checked when passed to actions. So, now if you forget to pass the expected metadata shape, as defined by the `defineMetadataSchema` init option, you will get a type error immediately:
