@@ -18,21 +18,23 @@ export default function Hook() {
 		isIdle,
 		isExecuting,
 		isTransitioning,
-		isPending,
 		hasSucceeded,
 		hasErrored,
 	} = useAction(deleteUser, {
-		onSuccess({ data, input }) {
-			console.log("HELLO FROM ONSUCCESS", data, input);
+		onSuccess(args) {
+			console.log("onSuccess callback:", args);
 		},
-		onError({ error, input }) {
-			console.log("OH NO FROM ONERROR", error, input);
+		onError(args) {
+			console.log("onError callback:", args);
 		},
-		onSettled({ result, input }) {
-			console.log("HELLO FROM ONSETTLED", result, input);
+		onNavigation(args) {
+			console.log("onNavigation callback:", args);
 		},
-		onExecute({ input }) {
-			console.log("HELLO FROM ONEXECUTE", input);
+		onSettled(args) {
+			console.log("onSettled callback:", args);
+		},
+		onExecute(args) {
+			console.log("onExecute callback:", args);
 		},
 	});
 
@@ -41,7 +43,6 @@ export default function Hook() {
 		isIdle,
 		isExecuting,
 		isTransitioning,
-		isPending,
 		hasSucceeded,
 		hasErrored,
 	});
@@ -50,7 +51,7 @@ export default function Hook() {
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>Action using hook</StyledHeading>
 			<form
-				className="flex flex-col mt-8 space-y-4"
+				className="mt-8 flex flex-col space-y-4"
 				onSubmit={async (e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);
@@ -62,13 +63,9 @@ export default function Hook() {
 					// which is synchronous.
 					const r = await executeAsync(input);
 					console.log("r", r);
-				}}>
-				<StyledInput
-					type="text"
-					name="userId"
-					id="userId"
-					placeholder="User ID"
-				/>
+				}}
+			>
+				<StyledInput type="text" name="userId" id="userId" placeholder="User ID" />
 				<StyledButton type="submit">Delete user</StyledButton>
 				<StyledButton type="button" onClick={reset}>
 					Reset

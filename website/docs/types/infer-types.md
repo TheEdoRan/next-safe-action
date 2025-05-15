@@ -69,7 +69,7 @@ const testActionBindArgsSchemas: [email: z.ZodString, age: z.ZodNumber] = [z.str
 
 export const testAction = actionClient
   .use(authMiddleware)
-  .schema(testActionSchema)
+  .inputSchema(testActionSchema)
   .bindArgsSchemas(testActionBindArgsSchemas)
   .action(async () => {
     return {
@@ -194,7 +194,7 @@ Here's a list of utility types exported from `next-safe-action/hooks`:
 
 - `InferUseActionHookReturn`: infers the return type of the `useAction` hook - only works with actions defined using the [`action`](/docs/define-actions/instance-methods#action--stateaction) method
 - `InferUseOptimisticActionHookReturn`: infers the return type of the `useOptimisticAction` hook - only works with stateless actions defined using the [`action`](/docs/define-actions/instance-methods#action--stateaction) method
-- `InferUseStateActionHookReturn`: infers the return type of the `useStateAction` hook - only works with stateful actions defined using the [`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method
+- `InferUseStateActionHookReturn` - DEPRECATED: infers the return type of the `useStateAction` hook - only works with stateful actions defined using the [`stateAction`](/docs/define-actions/instance-methods#action--stateaction) method
 
 ### Example
 

@@ -107,7 +107,7 @@ const editProfile = authActionClient
   // We can pass the action name inside `metadata()`.
   .metadata({ actionName: "editProfile" })
   // Here we pass the input schema.
-  .schema(z.object({ newUsername: z.string() }))
+  .inputSchema(z.object({ newUsername: z.string() }))
   // Here we get `userId` from the middleware defined in `authActionClient`.
   // highlight-next-line
   .action(async ({ parsedInput: { newUsername }, ctx: { userId } }) => {
@@ -211,11 +211,7 @@ export const testAction = actionClient
 
 ## Create standalone middleware
 
-:::info
-Since version 7.7.0, this API is stable, so it was renamed from `experimental_createMiddleware` to `createMiddleware`.
-:::
-
-Starting from version 7.6.0, you can create standalone middleware functions using the built-in `createMiddleware()` function.
+Starting from version 7.6.0, you can create standalone middleware functions using the built in `createMiddleware()` function.
 
 Thanks to this feature, and the previously mentioned [context extension](#extend-context), you can now define standalone middleware functions and even publish them as packages, if you want to.
 

@@ -70,7 +70,7 @@ const schema = z
 
 export const buyProduct = action
 	.metadata({ actionName: "buyProduct" })
-	.schema(schema)
+	.inputSchema(schema)
 	.action(async () => {
 		return {
 			success: true,
