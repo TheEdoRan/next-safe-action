@@ -47,6 +47,7 @@ export const getActionShorthandStatusObject = ({
 	return {
 		isIdle: status === "idle",
 		isExecuting: status === "executing",
+		isPending: status === "executing",
 		isTransitioning,
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",

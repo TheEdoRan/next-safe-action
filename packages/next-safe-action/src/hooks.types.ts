@@ -51,6 +51,10 @@ export type HookShorthandStatus = {
 	isIdle: boolean;
 	isExecuting: boolean;
 	isTransitioning: boolean;
+	/**
+	 * @deprecated Use `isExecuting` instead.
+	 */
+	isPending: boolean;
 	hasSucceeded: boolean;
 	hasErrored: boolean;
 	hasNavigated: boolean;

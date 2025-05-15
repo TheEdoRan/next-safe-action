@@ -77,6 +77,7 @@ As you can see, here we display a greet message after the action is performed, i
 - `isIdle`: true if the action status is `idle`.
 - `isTransitioning`: true if the transition status  from the `useTransition` hook used under the hood is `true`.
 - `isExecuting`: true if the action status is `executing`.
+- `isPending`: same as `isExecuting` (deprecated).
 - `hasSucceeded`: true if the action status is `hasSucceeded`.
 - `hasErrored`: true if the action status is `hasErrored`.
 - `hasNavigated`: true if a `next/navigation` function was called inside the action.

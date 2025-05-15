@@ -39,7 +39,7 @@ const AddTodoForm = ({ todos }: Props) => {
 	return (
 		<>
 			<form
-				className="flex flex-col mt-8 space-y-4"
+				className="mt-8 flex flex-col space-y-4"
 				onSubmit={(e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);
