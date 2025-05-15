@@ -21,19 +21,19 @@ export default function Navigation() {
 		hasErrored,
 	} = useAction(testNavigate, {
 		onSuccess(args) {
-			console.log("HELLO FROM ONSUCCESS", args);
+			console.log("onSuccess callback:", args);
 		},
 		onError(args) {
-			console.log("OH NO FROM ONERROR", args);
+			console.log("onError callback:", args);
 		},
 		onNavigation(args) {
-			console.log("HELLO FROM ONNAVIGATION", args);
+			console.log("onNavigation callback:", args);
 		},
 		onSettled(args) {
-			console.log("HELLO FROM ONSETTLED", args);
+			console.log("onSettled callback:", args);
 		},
 		onExecute(args) {
-			console.log("HELLO FROM ONEXECUTE", args);
+			console.log("onExecute callback:", args);
 		},
 	});
 

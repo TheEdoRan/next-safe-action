@@ -57,7 +57,7 @@ export const authAction = action
 	.use(async ({ next }) => {
 		const userId = crypto.randomUUID();
 
-		console.log("HELLO FROM FIRST AUTH ACTION MIDDLEWARE, USER ID:", userId);
+		console.log("FIRST AUTH ACTION MIDDLEWARE, USER ID:", userId);
 
 		return next({
 			ctx: {
@@ -72,7 +72,7 @@ export const authAction = action
 
 		const sessionId = await getSessionId();
 
-		console.log("HELLO FROM SECOND AUTH ACTION MIDDLEWARE, SESSION ID:", sessionId);
+		console.log("SECOND AUTH ACTION MIDDLEWARE, SESSION ID:", sessionId);
 
 		return next({
 			ctx: {
