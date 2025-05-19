@@ -138,7 +138,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 		result,
 		reset,
 		status,
-		...getActionShorthandStatusObject({ status, isTransitioning }),
+		...getActionShorthandStatusObject(status),
 	};
 };
 
@@ -281,7 +281,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 		optimisticState,
 		reset,
 		status,
-		...getActionShorthandStatusObject({ status, isTransitioning }),
+		...getActionShorthandStatusObject(status),
 	};
 };
 

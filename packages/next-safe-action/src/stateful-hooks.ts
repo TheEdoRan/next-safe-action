@@ -72,6 +72,6 @@ export const useStateAction = <ServerError, S extends StandardSchemaV1 | undefin
 		input: clientInput as InferInputOrDefault<S, undefined>,
 		result,
 		status,
-		...getActionShorthandStatusObject({ status, isTransitioning }),
+		...getActionShorthandStatusObject(status),
 	};
 };

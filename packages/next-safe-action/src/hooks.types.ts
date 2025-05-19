@@ -42,7 +42,7 @@ export type HookSafeStateActionFn<ServerError, S extends StandardSchemaV1 | unde
 /**
  * Type of the action status returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
  */
-export type HookActionStatus = "idle" | "executing" | "hasSucceeded" | "hasErrored" | "hasNavigated";
+export type HookActionStatus = "idle" | "executing" | "transitioning" | "hasSucceeded" | "hasErrored" | "hasNavigated";
 
 /**
  * Type of the shorthand status object returned by `useAction`, `useOptimisticAction` and `useStateAction` hooks.
@@ -51,9 +51,6 @@ export type HookShorthandStatus = {
 	isIdle: boolean;
 	isExecuting: boolean;
 	isTransitioning: boolean;
-	/**
-	 * @deprecated Use `isExecuting` instead.
-	 */
 	isPending: boolean;
 	hasSucceeded: boolean;
 	hasErrored: boolean;
