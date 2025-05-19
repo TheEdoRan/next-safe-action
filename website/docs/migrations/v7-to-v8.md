@@ -92,10 +92,6 @@ const result = await boundAction(input);
 
 The deprecated `executeOnMount` hook functionality has been removed in v8. Server Actions should be used only for mutations, so it doesn't make sense to execute them on mount. Or at least, it shouldn't be a common case and, above all, a library job. If you still need to do it, just use `useEffect()` to trigger the execution, however you want.
 
-### 🔄 Deprecation of `isPending` shorthand status property
-
-The `isPending` shorthand status property is now deprecated, and will be removed in a future version. Having both `isExecuting` and `isPending` properties is a bit confusing, so now both the `isExecuting` property and `"executing"` status value include the transition state of the action execution. `isPending` right now is just an alias for `isExecuting`.
-
 ### ✨ Type-checked metadata
 
 This is a big improvement in type safety over v7. Metadata is now statically type-checked when passed to actions. So, now if you forget to pass the expected metadata shape, as defined by the `defineMetadataSchema` init option, you will get a type error immediately:
@@ -130,6 +126,10 @@ const action = actionClient
   }
 );
 ```
+
+### ✨ Added `transitioning` status
+
+The `transitioning` status has been added to the hook result object. This status is set when the action has finished executing, but the transition is not yet complete. The transition state is handled by the [`useTransition()`](https://react.dev/reference/react/useTransition) React hook used under the hood in next-safe-action hooks.
 
 ### 🔄 Safe action result always defined
 
