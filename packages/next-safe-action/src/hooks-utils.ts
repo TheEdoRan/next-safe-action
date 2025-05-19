@@ -105,7 +105,13 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 					break;
 			}
 
-			if (navigationError) {
+			// Navigation flow.
+			// If the user redirected to a different page, the `hasNavigated` status never gets set.
+			// In all the other cases, the `hasNavigated` status is set.
+			if (!navigationError) return;
+			const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
+
+			if (navigationKind === "redirect" || status === "hasNavigated") {
 				await Promise.all([
 					Promise.resolve(
 						onNavigation?.({
@@ -115,9 +121,9 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 					),
 					Promise.resolve(onSettled?.({ result, input })),
 				]);
-
-				throw navigationError;
 			}
+
+			throw navigationError;
 		};
 
 		executeCallbacks().catch(console.error);
