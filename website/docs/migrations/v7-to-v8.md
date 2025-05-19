@@ -129,7 +129,7 @@ const action = actionClient
 
 ### ✨ Added `transitioning` status
 
-The `transitioning` status has been added to the hook result object. This status is set when the action has finished executing, but the transition is not yet complete. The transition state is handled by the [`useTransition()`](https://react.dev/reference/react/useTransition) React hook used under the hood in next-safe-action hooks.
+The action status, when using hooks, now can be `transitioning` as well. This value is set when the action has finished executing, but the transition is not yet complete. The transition state is managed by the [`useTransition()`](https://react.dev/reference/react/useTransition) React hook used under the hood in next-safe-action hooks.
 
 ### 🔄 Safe action result always defined
 
