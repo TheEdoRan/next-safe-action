@@ -41,10 +41,6 @@ const action = actionClient
       bindArgsClientInputs,
       parsedInput,
       bindArgsParsedInputs,
-      hasRedirected,
-      hasNotFound,
-      hasForbidden,
-      hasUnauthorized
     }) => {},
     onError: async ({
       error,
@@ -54,8 +50,8 @@ const action = actionClient
       bindArgsClientInputs
     }) => {},
     onNavigation: async ({
-      navigationKind,
       ctx,
+      navigationKind,
       metadata,
       clientInput,
       bindArgsClientInputs,
@@ -66,10 +62,7 @@ const action = actionClient
       metadata,
       clientInput,
       bindArgsClientInputs,
-      hasRedirected,
-      hasNotFound,
-      hasForbidden,
-      hasUnauthorized
+      navigationKind,
     }) => {},
   });
 ```
