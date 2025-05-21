@@ -20,7 +20,8 @@ export default function EmptySchema() {
 					e.preventDefault();
 					// Action call.
 					execute();
-				}}>
+				}}
+			>
 				<StyledButton type="submit">Execute action</StyledButton>
 				<StyledButton type="button" onClick={reset}>
 					Reset

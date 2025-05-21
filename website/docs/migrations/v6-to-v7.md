@@ -137,7 +137,7 @@ By default, next-safe-action v7 returns validation errors in an object of the sa
 
 As already said above, by default version 7 now returns validation errors in the same format of the Zod's [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) method.
 
-This is customizable by using the `handleValidationErrorsShape`/`handleBindArgsValidationErrorsShape` optional functions in `schema`/`bindArgsSchemas` methods. Check out [this page](/docs/define-actions/validation-errors#customize-validation-errors-format) for more information. For example, if you need to work with flattened errors for a specific action, next-safe-action conveniently provides two functions to do that: [`flattenValidationErrors` and `flattenBindArgsValidationErrors`](/docs/define-actions/validation-errors#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions).
+This is customizable by using the `handleValidationErrorsShape`/`handleBindArgsValidationErrorsShape` optional functions in `schema`/`bindArgsSchemas` methods. Check out [this page](/docs/define-actions/validation-errors#customize-validation-errors-format) for more information. For example, if you need to work with flattened errors for a specific action, next-safe-action conveniently provides two functions to do that: [`flattenValidationErrors` and `flattenBindArgsValidationErrors`](/docs/define-actions/validation-errors#formatvalidationerrors-utility-function).
 
 ### [Allow calling `action` method without `schema`](https://github.com/TheEdoRan/next-safe-action/issues/107)
 

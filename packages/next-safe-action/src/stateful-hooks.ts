@@ -2,32 +2,25 @@
 
 import * as React from "react";
 import {} from "react/experimental";
-import type {} from "zod";
-import type { InferIn, Schema } from "./adapters/types";
-import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks, useExecuteOnMount } from "./hooks-utils";
-import type { HookBaseUtils, HookCallbacks, HookSafeStateActionFn, UseStateActionHookReturn } from "./hooks.types";
+import { getActionShorthandStatusObject, getActionStatus, useActionCallbacks } from "./hooks-utils";
+import type { HookCallbacks, HookSafeStateActionFn, UseStateActionHookReturn } from "./hooks.types";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
+
 /**
  * Use the stateful action from a Client Component via hook. Used for actions defined with [`stateAction`](https://next-safe-action.dev/docs/define-actions/instance-methods#action--stateaction).
  * @param safeActionFn The action function
- * @param utils Optional `initResult`, `permalink`, base utils and callbacks
+ * @param utils Optional `initResult`, `permalink` and callbacks
+ * @deprecated Directly use `useActionState` hook from `react` instead.
  *
  * {@link https://next-safe-action.dev/docs/execute-actions/hooks/usestateaction See docs for more information}
  */
-export const useStateAction = <
-	ServerError,
-	S extends Schema | undefined,
-	const BAS extends readonly Schema[],
-	CVE,
-	CBAVE,
-	Data,
->(
-	safeActionFn: HookSafeStateActionFn<ServerError, S, BAS, CVE, CBAVE, Data>,
+export const useStateAction = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>(
+	safeActionFn: HookSafeStateActionFn<ServerError, S, CVE, Data>,
 	utils?: {
 		initResult?: Awaited<ReturnType<typeof safeActionFn>>;
 		permalink?: string;
-	} & HookBaseUtils<S> &
-		HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>
-): UseStateActionHookReturn<ServerError, S, BAS, CVE, CBAVE, Data> => {
+	} & HookCallbacks<ServerError, S, CVE, Data>
+): UseStateActionHookReturn<ServerError, S, CVE, Data> => {
 	const [result, dispatcher, isExecuting] = React.useActionState(
 		safeActionFn,
 		utils?.initResult ?? {},
@@ -35,35 +28,34 @@ export const useStateAction = <
 	);
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [isTransitioning, startTransition] = React.useTransition();
-	const [clientInput, setClientInput] = React.useState<S extends Schema ? InferIn<S> : void>();
-	const status = getActionStatus<ServerError, S, BAS, CVE, CBAVE, Data>({
+	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
+	const status = getActionStatus<ServerError, S, CVE, Data>({
 		isExecuting,
+		isTransitioning,
 		result: result ?? {},
 		isIdle,
+		// HACK: This is a workaround to avoid the status being "hasNavigated" when the action is executed.
+		hasNavigated: false,
+		hasThrownError: false,
 	});
 
 	const execute = React.useCallback(
-		(input: S extends Schema ? InferIn<S> : void) => {
+		(input: InferInputOrDefault<S, void>) => {
 			setTimeout(() => {
 				setIsIdle(false);
 				setClientInput(input);
 			}, 0);
 
 			startTransition(() => {
-				dispatcher(input as S extends Schema ? InferIn<S> : undefined);
+				dispatcher(input as InferInputOrDefault<S, undefined>);
 			});
 		},
 		[dispatcher]
 	);
 
-	useExecuteOnMount({
-		executeOnMount: utils?.executeOnMount,
-		executeFn: execute,
-	});
-
 	useActionCallbacks({
 		result: result ?? {},
-		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		input: clientInput as InferInputOrDefault<S, undefined>,
 		status,
 		cb: {
 			onExecute: utils?.onExecute,
@@ -71,13 +63,15 @@ export const useStateAction = <
 			onError: utils?.onError,
 			onSettled: utils?.onSettled,
 		},
+		navigationError: null,
+		thrownError: null,
 	});
 
 	return {
 		execute,
-		input: clientInput as S extends Schema ? InferIn<S> : undefined,
+		input: clientInput as InferInputOrDefault<S, undefined>,
 		result,
 		status,
-		...getActionShorthandStatusObject({ status, isTransitioning }),
+		...getActionShorthandStatusObject(status),
 	};
 };
