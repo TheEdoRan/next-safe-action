@@ -19,6 +19,7 @@ export type HookCallbacks<ServerError, S extends StandardSchemaV1 | undefined, C
 	onSettled?: (args: {
 		result: Prettify<SafeActionResult<ServerError, S, CVE, Data>>;
 		input: InferInputOrDefault<S, undefined>;
+		navigationKind?: NavigationKind;
 	}) => MaybePromise<unknown>;
 };
 
