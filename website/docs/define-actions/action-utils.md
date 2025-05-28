@@ -20,7 +20,7 @@ This property can be set either to a boolean value, or to an object that contain
 - `onSuccess()`: called when action execution succeeds.
 - `onError()`: called when action execution fails (validation errors or server error).
 - `onNavigation()`: called when a `next/navigation` function is called in a middleware function or in the action's server code function.
-- `onSettled()`: called when action execution succeeds or fails.
+- `onSettled()`: called when action execution succeeds, fails or navigates.
 
 With action callbacks you can perform custom logic after the action is executed, on the server side. You can pass them to [`action()`/`stateAction()`](/docs/define-actions/instance-methods#action--stateaction) method as the second argument, after the server code function. Their return value is not used and they **must** be async functions.
 
