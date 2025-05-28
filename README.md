@@ -30,7 +30,7 @@ Check out the [v7 to v8 migration guide](https://next-safe-action.dev/docs/migra
 ## Installation
 
 ```bash
-npm i next-safe-action@beta
+npm i next-safe-action
 ```
 
 ## Playground
