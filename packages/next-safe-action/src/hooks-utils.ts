@@ -1,101 +1,76 @@
 import * as React from "react";
 import {} from "react/experimental";
-import type {} from "zod";
-import type { InferIn, Schema } from "./adapters/types";
-import type { HookActionStatus, HookBaseUtils, HookCallbacks, HookShorthandStatus } from "./hooks.types";
+import type { HookActionStatus, HookCallbacks, HookShorthandStatus } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
+import { FrameworkErrorHandler } from "./next/errors";
+import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 
-export const getActionStatus = <
-	ServerError,
-	S extends Schema | undefined,
-	const BAS extends readonly Schema[],
-	CVE,
-	CBAVE,
-	Data,
->({
+export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
 	isIdle,
 	isExecuting,
+	isTransitioning,
 	result,
+	hasNavigated,
+	hasThrownError,
 }: {
 	isIdle: boolean;
 	isExecuting: boolean;
-	result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
+	isTransitioning: boolean;
+	hasNavigated: boolean;
+	hasThrownError: boolean;
+	result: SafeActionResult<ServerError, S, CVE, Data>;
 }): HookActionStatus => {
 	if (isIdle) {
 		return "idle";
 	} else if (isExecuting) {
 		return "executing";
+	} else if (isTransitioning) {
+		return "transitioning";
 	} else if (
+		hasThrownError ||
 		typeof result.validationErrors !== "undefined" ||
-		typeof result.bindArgsValidationErrors !== "undefined" ||
 		typeof result.serverError !== "undefined"
 	) {
 		return "hasErrored";
+	} else if (hasNavigated) {
+		return "hasNavigated";
 	} else {
 		return "hasSucceeded";
 	}
 };
 
-export const getActionShorthandStatusObject = ({
-	status,
-	isTransitioning,
-}: {
-	status: HookActionStatus;
-	isTransitioning: boolean;
-}): HookShorthandStatus => {
+export const getActionShorthandStatusObject = (status: HookActionStatus): HookShorthandStatus => {
 	return {
 		isIdle: status === "idle",
 		isExecuting: status === "executing",
-		isTransitioning,
-		isPending: status === "executing" || isTransitioning,
+		isTransitioning: status === "transitioning",
+		isPending: status === "executing" || status === "transitioning",
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
+		hasNavigated: status === "hasNavigated",
 	};
 };
 
-export const useExecuteOnMount = <S extends Schema | undefined>(
-	args: HookBaseUtils<S> & {
-		executeFn: (input: S extends Schema ? InferIn<S> : void) => void;
-	}
-) => {
-	const mounted = React.useRef(false);
-
-	React.useEffect(() => {
-		const t = setTimeout(() => {
-			if (args.executeOnMount && !mounted.current) {
-				args.executeFn(args.executeOnMount.input as S extends Schema ? InferIn<S> : void);
-				mounted.current = true;
-			}
-		}, args.executeOnMount?.delayMs ?? 0);
-
-		return () => {
-			clearTimeout(t);
-		};
-	}, [args]);
-};
-
-export const useActionCallbacks = <
-	ServerError,
-	S extends Schema | undefined,
-	const BAS extends readonly Schema[],
-	CVE,
-	CBAVE,
-	Data,
->({
+export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
 	result,
 	input,
 	status,
 	cb,
+	navigationError,
+	thrownError,
 }: {
-	result: SafeActionResult<ServerError, S, BAS, CVE, CBAVE, Data>;
-	input: S extends Schema ? InferIn<S> : undefined;
+	result: SafeActionResult<ServerError, S, CVE, Data>;
+	input: InferInputOrDefault<S, undefined>;
 	status: HookActionStatus;
-	cb?: HookCallbacks<ServerError, S, BAS, CVE, CBAVE, Data>;
+	cb?: HookCallbacks<ServerError, S, CVE, Data>;
+	navigationError: Error | null;
+	thrownError: Error | null;
 }) => {
 	const onExecuteRef = React.useRef(cb?.onExecute);
 	const onSuccessRef = React.useRef(cb?.onSuccess);
 	const onErrorRef = React.useRef(cb?.onError);
 	const onSettledRef = React.useRef(cb?.onSettled);
+	const onNavigationRef = React.useRef(cb?.onNavigation);
 
 	// Execute the callback when the action status changes.
 	React.useEffect(() => {
@@ -103,13 +78,20 @@ export const useActionCallbacks = <
 		const onSuccess = onSuccessRef.current;
 		const onError = onErrorRef.current;
 		const onSettled = onSettledRef.current;
+		const onNavigation = onNavigationRef.current;
 
 		const executeCallbacks = async () => {
 			switch (status) {
 				case "executing":
-					await Promise.resolve(onExecute?.({ input }));
+					await Promise.resolve(onExecute?.({ input })).then(() => {});
+					break;
+				case "transitioning":
 					break;
 				case "hasSucceeded":
+					if (navigationError || thrownError) {
+						break;
+					}
+
 					await Promise.all([
 						Promise.resolve(onSuccess?.({ data: result?.data, input })),
 						Promise.resolve(onSettled?.({ result, input })),
@@ -117,13 +99,34 @@ export const useActionCallbacks = <
 					break;
 				case "hasErrored":
 					await Promise.all([
-						Promise.resolve(onError?.({ error: result, input })),
+						Promise.resolve(onError?.({ error: { ...result, ...(thrownError ? { thrownError } : {}) }, input })),
 						Promise.resolve(onSettled?.({ result, input })),
 					]);
 					break;
 			}
+
+			// Navigation flow.
+			// If the user redirected to a different page, the `hasNavigated` status never gets set.
+			// In all the other cases, the `hasNavigated` status is set.
+			if (!navigationError) return;
+			const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
+
+			if (navigationKind === "redirect" || status === "hasNavigated") {
+				const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
+				await Promise.all([
+					Promise.resolve(
+						onNavigation?.({
+							input,
+							navigationKind,
+						})
+					),
+					Promise.resolve(onSettled?.({ result, input, navigationKind })),
+				]);
+			}
+
+			throw navigationError;
 		};
 
 		executeCallbacks().catch(console.error);
-	}, [status, result, input]);
+	}, [input, status, result, navigationError, thrownError]);
 };

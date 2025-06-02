@@ -4,10 +4,8 @@ import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
 import { DEFAULT_SERVER_ERROR_MESSAGE, createSafeActionClient, returnValidationErrors } from "..";
-import { zodAdapter } from "../adapters/zod";
 
 const ac = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	defineMetadataSchema() {
 		return z.object({
 			actionName: z.string(),
@@ -48,7 +46,7 @@ test("action with input schemas and no errors calls `onSuccess` and `onSettled` 
 	const inputs = [crypto.randomUUID(), 30, { username: "johndoe" }] as const;
 
 	const action = ac
-		.schema(z.object({ username: z.string().min(3) }))
+		.inputSchema(z.object({ username: z.string().min(3) }))
 		.bindArgsSchemas([z.string().uuid(), z.number().positive()])
 		.action(
 			async () => {
@@ -116,7 +114,7 @@ test("action with input schemas and server error calls `onError` and `onSettled`
 	const inputs = [crypto.randomUUID(), 30, { username: "johndoe" }] as const;
 
 	const action = ac
-		.schema(z.object({ username: z.string().min(3) }))
+		.inputSchema(z.object({ username: z.string().min(3) }))
 		.bindArgsSchemas([z.string().uuid(), z.number().positive()])
 		.action(
 			async () => {
@@ -167,10 +165,10 @@ test("action with input schemas and server error calls `onError` and `onSettled`
 
 test("action with validation errors calls `onError` and `onSettled` callbacks with correct arguments", async () => {
 	let executed = 0;
-	const inputs = ["invalid_uuid", -30, { username: "j" }] as const;
+	const inputs = [crypto.randomUUID(), 30, { username: "j" }] as const;
 
 	const action = ac
-		.schema(z.object({ username: z.string().min(3) }))
+		.inputSchema(z.object({ username: z.string().min(3) }))
 		.bindArgsSchemas([z.string().uuid(), z.number().positive()])
 		.action(
 			async () => {
@@ -196,14 +194,6 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 										_errors: ["String must contain at least 3 character(s)"],
 									},
 								},
-								bindArgsValidationErrors: [
-									{
-										_errors: ["Invalid uuid"],
-									},
-									{
-										_errors: ["Number must be greater than 0"],
-									},
-								],
 							},
 							clientInput: inputs[2],
 							bindArgsClientInputs: inputs.slice(0, 2),
@@ -224,14 +214,6 @@ test("action with validation errors calls `onError` and `onSettled` callbacks wi
 										_errors: ["String must contain at least 3 character(s)"],
 									},
 								},
-								bindArgsValidationErrors: [
-									{
-										_errors: ["Invalid uuid"],
-									},
-									{
-										_errors: ["Number must be greater than 0"],
-									},
-								],
 							},
 							clientInput: inputs[2],
 							bindArgsClientInputs: inputs.slice(0, 2),
@@ -251,7 +233,7 @@ test("action with server validation error calls `onError` and `onSettled` callba
 	const schema = z.object({
 		username: z.string(),
 	});
-	const action = ac.schema(z.object({ username: z.string().min(3) })).action(
+	const action = ac.inputSchema(z.object({ username: z.string().min(3) })).action(
 		async () => {
 			returnValidationErrors(schema, {
 				username: {

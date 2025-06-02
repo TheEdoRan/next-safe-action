@@ -10,7 +10,7 @@ import { statelessFormAction } from "./stateless-form-action";
 export default function StatelessFormPage() {
 	const { execute, result, status, input } = useAction(statelessFormAction);
 
-	console.log("INPUT ->", Object.fromEntries(input?.entries() ?? []));
+	console.log("INPUT ->", input);
 	console.log("RESULT ->", result);
 
 	return (

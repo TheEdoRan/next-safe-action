@@ -3,7 +3,6 @@
 import assert from "node:assert";
 import { test } from "node:test";
 import { DEFAULT_SERVER_ERROR_MESSAGE, createSafeActionClient } from "..";
-import { zodAdapter } from "../adapters/zod";
 
 class ActionError extends Error {
 	constructor(message: string) {
@@ -12,7 +11,6 @@ class ActionError extends Error {
 }
 
 const ac1 = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	handleServerError(e) {
 		// disable server error logging for these tests
 		if (e instanceof ActionError) {
@@ -101,12 +99,11 @@ test("error occurred with `throwServerError` set to true at the action level thr
 		{ throwServerError: true }
 	);
 
-	assert.rejects(async () => await action());
+	await assert.rejects(async () => await action());
 });
 
 // Server error is an object with a 'message' property.
 const ac2 = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	handleServerError(e) {
 		// disable server errors logging for these tests
 		return {
@@ -152,7 +149,6 @@ test("error occurred in middleware function has the correct shape defined by `ha
 
 // Rethrow all server errors.
 const ac3 = createSafeActionClient({
-	validationAdapter: zodAdapter(),
 	handleServerError(e) {
 		// disable server error logging for these tests
 		throw e;
@@ -164,7 +160,7 @@ test("action throws if an error occurred in server code function and `handleServ
 		throw new Error("Something bad happened");
 	});
 
-	assert.rejects(() => action());
+	await assert.rejects(() => action());
 });
 
 test("action throws if an error occurred in middleware function and `handleServerError` rethrows it", async () => {
@@ -179,5 +175,5 @@ test("action throws if an error occurred in middleware function and `handleServe
 			};
 		});
 
-	assert.rejects(() => action());
+	await assert.rejects(() => action());
 });

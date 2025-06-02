@@ -23,13 +23,9 @@ export default function WithContextPage() {
 						age: string;
 					};
 					execute(input);
-				}}>
-				<StyledInput
-					type="text"
-					name="fullName"
-					id="fullName"
-					placeholder="Full name"
-				/>
+				}}
+			>
+				<StyledInput type="text" name="fullName" id="fullName" placeholder="Full name" />
 				<StyledInput type="text" name="age" id="age" placeholder="Age" />
 				<StyledButton type="submit">Update profile</StyledButton>
 			</form>

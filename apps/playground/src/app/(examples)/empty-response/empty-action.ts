@@ -9,7 +9,7 @@ const schema = z.object({
 
 export const emptyAction = action
 	.metadata({ actionName: "emptyAction" })
-	.schema(schema)
+	.inputSchema(schema)
 	.action(async () => {
 		await new Promise((res) => setTimeout(res, 500));
 	});

@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+import type { StandardSchemaV1 } from "./standard-schema";
+import type { FlattenedValidationErrors, IssueWithUnionErrors, ValidationErrors } from "./validation-errors.types";
 
-import type { Schema } from "./adapters/types";
-import type {
-	FlattenedBindArgsValidationErrors,
-	FlattenedValidationErrors,
-	IssueWithUnionErrors,
-	ValidationErrors,
-} from "./validation-errors.types";
+const getKey = (segment: PropertyKey | StandardSchemaV1.PathSegment) =>
+	typeof segment === "object" ? segment.key : segment;
 
 const getIssueMessage = (issue: IssueWithUnionErrors) => {
 	if (issue.unionErrors) {
@@ -16,7 +13,9 @@ const getIssueMessage = (issue: IssueWithUnionErrors) => {
 };
 
 // This function is used internally to build the validation errors object from a list of validation issues.
-export const buildValidationErrors = <S extends Schema | undefined>(issues: IssueWithUnionErrors[]) => {
+export const buildValidationErrors = <S extends StandardSchemaV1 | undefined>(
+	issues: readonly IssueWithUnionErrors[]
+) => {
 	const ve: any = {};
 
 	for (const issue of issues) {
@@ -33,7 +32,7 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Issu
 
 		// Set object for the path, if it doesn't exist.
 		for (let i = 0; i < path.length - 1; i++) {
-			const k = path[i]!;
+			const k = getKey(path[i]!);
 
 			if (!ref[k]) {
 				ref[k] = {};
@@ -43,7 +42,7 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Issu
 		}
 
 		// Key is always the last element of the path.
-		const key = path[path.length - 1]!;
+		const key = getKey(path[path.length - 1]!);
 
 		const issueMessage = getIssueMessage(issue);
 
@@ -61,7 +60,7 @@ export const buildValidationErrors = <S extends Schema | undefined>(issues: Issu
 
 // This class is internally used to throw validation errors in action's server code function, using
 // `returnValidationErrors`.
-export class ActionServerValidationError<S extends Schema> extends Error {
+export class ActionServerValidationError<S extends StandardSchemaV1> extends Error {
 	public validationErrors: ValidationErrors<S>;
 	constructor(validationErrors: ValidationErrors<S>) {
 		super("Server Action server validation error(s) occurred");
@@ -73,8 +72,18 @@ export class ActionServerValidationError<S extends Schema> extends Error {
 // `returnValidationErrors`.
 export class ActionValidationError<CVE> extends Error {
 	public validationErrors: CVE;
-	constructor(validationErrors: CVE) {
-		super("Server Action validation error(s) occurred");
+	constructor(validationErrors: CVE, overriddenErrorMessage?: string) {
+		super(overriddenErrorMessage ?? "Server Action validation error(s) occurred");
+		this.validationErrors = validationErrors;
+	}
+}
+
+// This class is internally used to throw validation errors in action's server code function, using
+// `returnValidationErrors`.
+export class ActionBindArgsValidationError extends Error {
+	public validationErrors: unknown[];
+	constructor(validationErrors: unknown[]) {
+		super("Server Action bind args validation error(s) occurred");
 		this.validationErrors = validationErrors;
 	}
 }
@@ -88,8 +97,8 @@ export class ActionValidationError<CVE> extends Error {
  * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#returnvalidationerrors See docs for more information}
  */
 export function returnValidationErrors<
-	S extends Schema | (() => Promise<Schema>),
-	AS extends Schema = S extends () => Promise<Schema> ? Awaited<ReturnType<S>> : S, // actual schema
+	S extends StandardSchemaV1 | (() => Promise<StandardSchemaV1>),
+	AS extends StandardSchemaV1 = S extends () => Promise<StandardSchemaV1> ? Awaited<ReturnType<S>> : S, // actual schema
 >(schema: S, validationErrors: ValidationErrors<AS>): never {
 	throw new ActionServerValidationError<AS>(validationErrors);
 }
@@ -103,23 +112,13 @@ export function formatValidationErrors<VE extends ValidationErrors<any>>(validat
 }
 
 /**
- * Default bind args validation errors format.
- * Emulation of `zod`'s [`format`](https://zod.dev/ERROR_HANDLING?id=formatting-errors) function.
- */
-export function formatBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]>(
-	bindArgsValidationErrors: BAVE
-) {
-	return bindArgsValidationErrors;
-}
-
-/**
  * Transform default formatted validation errors into flattened structure.
  * `formErrors` contains global errors, and `fieldErrors` contains errors for each field,
  * one level deep. It discards errors for nested fields.
  * Emulation of `zod`'s [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) function.
  * @param {ValidationErrors} [validationErrors] Validation errors object
  *
- * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
+ * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#flattenvalidationerrorsutility-function See docs for more information}
  */
 export function flattenValidationErrors<VE extends ValidationErrors<any>>(validationErrors: VE) {
 	const flattened: FlattenedValidationErrors<VE> = {
@@ -141,25 +140,10 @@ export function flattenValidationErrors<VE extends ValidationErrors<any>>(valida
 }
 
 /**
- * Transform default formatted bind arguments validation errors into flattened structure.
- * `formErrors` contains global errors, and `fieldErrors` contains errors for each field,
- * one level deep. It discards errors for nested fields.
- * Emulation of `zod`'s [`flatten`](https://zod.dev/ERROR_HANDLING?id=flattening-errors) function.
- * @param {ValidationErrors[]} [bindArgsValidationErrors] Bind arguments validation errors object
- *
- * {@link https://next-safe-action.dev/docs/define-actions/validation-errors#flattenvalidationerrors-and-flattenbindargsvalidationerrors-utility-functions See docs for more information}
- */
-export function flattenBindArgsValidationErrors<BAVE extends readonly ValidationErrors<any>[]>(
-	bindArgsValidationErrors: BAVE
-) {
-	return bindArgsValidationErrors.map((ve) => flattenValidationErrors(ve)) as FlattenedBindArgsValidationErrors<BAVE>;
-}
-
-/**
  * This error is thrown when an action metadata is invalid, i.e. when there's a mismatch between the
  * type of the metadata schema returned from `defineMetadataSchema` and the actual data passed.
  */
-export class ActionMetadataValidationError<MDS extends Schema | undefined> extends Error {
+export class ActionMetadataValidationError<MDS extends StandardSchemaV1 | undefined> extends Error {
 	public validationErrors: ValidationErrors<MDS>;
 
 	constructor(validationErrors: ValidationErrors<MDS>) {
@@ -173,7 +157,7 @@ export class ActionMetadataValidationError<MDS extends Schema | undefined> exten
  * This error is thrown when an action's data (output) is invalid, i.e. when there's a mismatch between the
  * type of the data schema passed to `dataSchema` method and the actual return of the action.
  */
-export class ActionOutputDataValidationError<DS extends Schema | undefined> extends Error {
+export class ActionOutputDataValidationError<DS extends StandardSchemaV1 | undefined> extends Error {
 	public validationErrors: ValidationErrors<DS>;
 
 	constructor(validationErrors: ValidationErrors<DS>) {

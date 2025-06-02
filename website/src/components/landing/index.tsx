@@ -1,16 +1,18 @@
 import { Features } from "./features";
 import { GettingStarted } from "./getting-started";
 import { Hero } from "./hero";
+import { Playground } from "./playground";
+import { Sponsors } from "./sponsors";
 import { Testimonials } from "./testimonials";
 
 export function Landing() {
 	return (
-		<main>
+		<main className="bg-white dark:bg-zinc-950">
 			<Hero />
-			<Features />
-			<div className="h-px min-h-[1px] min-w-full bg-zinc-200 dark:bg-zinc-700"></div>
 			<Testimonials />
-			<div className="h-px min-h-[1px] min-w-full bg-zinc-200 dark:bg-zinc-700"></div>
+			<Playground />
+			<Features />
+			<Sponsors />
 			<GettingStarted />
 		</main>
 	);

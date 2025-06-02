@@ -6,11 +6,7 @@ export const metadata = {
 	description: "A basic implementation of next-safe-action library",
 };
 
-export default function RootLayout({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">
 			<body className="antialiased bg-slate-50 dark:bg-slate-950 dark:text-slate-50 text-slate-950 flex flex-col min-h-screen items-center pt-24">
@@ -19,7 +15,8 @@ export default function RootLayout({
 					href="https://github.com/TheEdoRan/next-safe-action"
 					target="_blank"
 					rel="noopener noreferrer"
-					className="mb-8">
+					className="mb-8"
+				>
 					<GitHubLogo width={40} height={40} />
 				</a>
 				{children}

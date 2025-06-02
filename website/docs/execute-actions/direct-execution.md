@@ -5,11 +5,11 @@ description: You can execute safe actions by directrly calling them inside Clien
 
 # Direct execution
 
-The first way to execute Server Actions inside Client Components is by importing it and directly calling it in a function. This method is the simplest one, but in some cases it could be all you need, for example if you just need the action result inside an `onClick` or `onSubmit` handlers, without overcomplicating things.
+The first way to execute Server Actions inside Client Components is by importing it and directly calling it in a function. This method is the simplest one, but in some cases it could be all you need, for example if you just need the action result inside an `onClick()` or `onSubmit()` handlers, without overcomplicating things.
 
 ### Example
 
-1. Define a new action called `loginUser`, that takes a username and a password as input:
+1. Define a new action called `loginUser()`, that takes a username and a password as input:
 
 ```typescript title=src/app/login-action.ts
 "use server";
@@ -18,13 +18,13 @@ import { actionClient } from "@/lib/safe-action";
 import { returnValidationErrors } from "next-safe-action";
 import { z } from "zod";
 
-const schema = z.object({
+const inputSchema = z.object({
   username: z.string().min(3).max(10),
   password: z.string().min(8).max(100),
 });
 
 export const loginUser = actionClient
-  .schema(schema)
+  .inputSchema(inputSchema)
   .action(async ({ parsedInput: { username, password } }) => {
     // logic here...
   });
