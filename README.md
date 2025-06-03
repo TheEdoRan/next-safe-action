@@ -42,9 +42,7 @@ You can find a basic working implementation of the library [here](https://github
 A big shout-out to all our [sponsors](https://github.com/sponsors/TheEdoRan)! You’re the driving force behind this library's growth, and we're truly grateful for your support. ❤️
 
 <p align="center">
-<a href="https://cdn.jsdelivr.net/gh/theedoran/sponsors-img/sponsorkit/sponsors.svg" target="_blank">
-<img src="https://cdn.jsdelivr.net/gh/theedoran/sponsors-img/sponsorkit/sponsors.svg" />
-</a>
+<img src="https://raw.githubusercontent.com/TheEdoRan/sponsors-img/refs/heads/main/sponsorkit/sponsors.svg" alt="Sponsors" />
 </p>
 
 ## Contributing
