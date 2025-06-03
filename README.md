@@ -66,9 +66,9 @@ A big shout-out to all our [sponsors](https://github.com/sponsors/TheEdoRan)! Yo
    <td align="center"><a href="https://liam.so"><img src="https://avatars.githubusercontent.com/u/38444224?v=4&size=50" width="50" alt="Liam Murray"/><br />Liam Murray</a></td>
    <td align="center"><a href="https://chalifoux.dev"><img src="https://avatars.githubusercontent.com/u/3289533?v=4&size=50" width="50" alt="David Chalifoux"/><br />David Chalifoux</a></td>
    <td align="center"><a href="https://www.undheim.io"><img src="https://avatars.githubusercontent.com/u/46612252?v=4&size=50" width="50" alt="Rein Undheim"/><br />Rein Undheim</a></td>
-   <td align="center"><a href="https://github.com/merthanmerter"><img src="https://avatars.githubusercontent.com/u/7555905?v=4&size=50" width="50" alt="Merthan Merter"/><br />Merthan Merter</a></td>
   </tr>
   <tr>
+   <td align="center"><a href="https://github.com/merthanmerter"><img src="https://avatars.githubusercontent.com/u/7555905?v=4&size=50" width="50" alt="Merthan Merter"/><br />Merthan Merter</a></td>
    <td align="center"><a href="https://github.com/marcotommoro"><img src="https://avatars.githubusercontent.com/u/65455109?v=4&size=50" width="50" alt="Marco Moroni"/><br />Marco Moroni</a></td>
    <td align="center"><a href="https://github.com/gvffelisberto"><img src="https://avatars.githubusercontent.com/u/17497942?v=4&size=50" width="50" alt="Gustavo Felisberto"/><br />Gustavo Felisberto</a></td>
   </tr>
