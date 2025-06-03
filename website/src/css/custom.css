@@ -45,6 +45,24 @@ div[role="banner"] > button > svg {
 	color: #ffffff;
 }
 
+#sponsors-container,
+#sponsors-container > table,
+#sponsors-container > table > tr,
+#sponsors-container > table > tr > td {
+	border: none !important;
+}
+
+#sponsors-container > table > tr {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 1rem;
+}
+
+#sponsors-container img {
+	border-radius: 0.5rem;
+}
+
 :root {
 	--ifm-font-family-base: "Inter";
 	--ifm-heading-font-family: "Inter";
