@@ -283,8 +283,8 @@ export type InferSafeActionFnInput<T extends Function> = T extends
  * Infer the result type of a safe action.
  */
 export type InferSafeActionFnResult<T extends Function> = T extends
-	| SafeActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any[], infer CVE, infer Data>
-	| SafeStateActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any[], infer CVE, infer Data>
+	| SafeActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any, infer CVE, infer Data>
+	| SafeStateActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any, infer CVE, infer Data>
 	? SafeActionResult<ServerError, S, CVE, Data>
 	: never;
 
