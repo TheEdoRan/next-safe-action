@@ -7,6 +7,7 @@ import { flattenValidationErrors, formatValidationErrors } from "./validation-er
 export { createMiddleware } from "./middleware";
 export { DEFAULT_SERVER_ERROR_MESSAGE } from "./utils";
 export {
+	ActionBindArgsValidationError,
 	ActionMetadataValidationError,
 	ActionOutputDataValidationError,
 	ActionValidationError,
