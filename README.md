@@ -17,7 +17,7 @@
 
 ## Documentation
 
-**Explore the documentation for the current stable version of the library on the [next-safe-action v7 website](https://next-safe-action.dev).** ✨
+**Explore the documentation for the current stable version of the library on the [next-safe-action v8 website](https://next-safe-action.dev).** ✨
 
 ### Looking for v7 docs?
 
