@@ -7,7 +7,7 @@ import type { MaybePromise, Prettify } from "./utils.types";
  */
 export type HookCallbacks<ServerError, S extends StandardSchemaV1 | undefined, CVE, Data> = {
 	onExecute?: (args: { input: InferInputOrDefault<S, undefined> }) => MaybePromise<unknown>;
-	onSuccess?: (args: { data?: Data; input: InferInputOrDefault<S, undefined> }) => MaybePromise<unknown>;
+	onSuccess?: (args: { data: Data; input: InferInputOrDefault<S, undefined> }) => MaybePromise<unknown>;
 	onError?: (args: {
 		error: Prettify<Omit<SafeActionResult<ServerError, S, CVE, Data>, "data">> & { thrownError?: Error };
 		input: InferInputOrDefault<S, undefined>;

@@ -93,7 +93,7 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 					}
 
 					await Promise.all([
-						Promise.resolve(onSuccess?.({ data: result?.data, input })),
+						Promise.resolve(onSuccess?.({ data: result.data!, input })),
 						Promise.resolve(onSettled?.({ result, input })),
 					]);
 					break;
