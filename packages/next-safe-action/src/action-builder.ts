@@ -73,6 +73,9 @@ export function actionBuilder<
 					const parsedInputDatas: any[] = [];
 					const frameworkErrorHandler = new FrameworkErrorHandler();
 
+					// Track if server error has been handled.
+					let serverErrorHandled = false;
+
 					if (withState) {
 						// Previous state is placed between bind args and main arg inputs, so it's always at the index of
 						// the bind args schemas + 1. Get it and remove it from the client inputs array.
@@ -242,6 +245,11 @@ export function actionBuilder<
 								middlewareResult.bindArgsParsedInputs = parsedInputDatas.slice(0, -1);
 							}
 						} catch (e: unknown) {
+							// Only handle server errors once. If already handled, rethrow to bubble up.
+							if (serverErrorHandled) {
+								throw e;
+							}
+
 							// If error is `ActionServerValidationError`, return `validationErrors` as if schema validation would fail.
 							if (e instanceof ActionServerValidationError) {
 								const ve = e.validationErrors as ValidationErrors<IS>;
@@ -256,6 +264,9 @@ export function actionBuilder<
 									})
 								);
 							} else {
+								// Mark that we're handling the server error to prevent multiple calls.
+								serverErrorHandled = true;
+
 								// If error is not an instance of Error, wrap it in an Error object with
 								// the default message.
 								const error = isError(e) ? e : new Error(DEFAULT_SERVER_ERROR_MESSAGE);
