@@ -97,7 +97,7 @@ export type UseStateActionHookReturn<ServerError, S extends StandardSchemaV1 | u
  * Type of the return object of the `useAction` hook.
  */
 export type InferUseActionHookReturn<T extends Function> =
-	T extends SafeActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any[], infer CVE, infer Data>
+	T extends SafeActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any, infer CVE, infer Data>
 		? UseActionHookReturn<ServerError, S, CVE, Data>
 		: never;
 
@@ -105,7 +105,7 @@ export type InferUseActionHookReturn<T extends Function> =
  * Type of the return object of the `useOptimisticAction` hook.
  */
 export type InferUseOptimisticActionHookReturn<T extends Function, State = any> =
-	T extends SafeActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any[], infer CVE, infer Data>
+	T extends SafeActionFn<infer ServerError, infer S extends StandardSchemaV1 | undefined, any, infer CVE, infer Data>
 		? UseOptimisticActionHookReturn<ServerError, S, CVE, Data, State>
 		: never;
 
@@ -117,7 +117,7 @@ export type InferUseStateActionHookReturn<T extends Function> =
 	T extends SafeStateActionFn<
 		infer ServerError,
 		infer S extends StandardSchemaV1 | undefined,
-		any[],
+		any,
 		infer CVE,
 		infer Data
 	>
