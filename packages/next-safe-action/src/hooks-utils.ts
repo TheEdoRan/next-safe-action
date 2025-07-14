@@ -6,139 +6,138 @@ import { FrameworkErrorHandler } from "./next/errors";
 import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 
 export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
-    isIdle,
-    isExecuting,
-    isTransitioning,
-    result,
-    hasNavigated,
-    hasThrownError,
+	isIdle,
+	isExecuting,
+	isTransitioning,
+	result,
+	hasNavigated,
+	hasThrownError,
 }: {
-    isIdle: boolean;
-    isExecuting: boolean;
-    isTransitioning: boolean;
-    hasNavigated: boolean;
-    hasThrownError: boolean;
-    result: SafeActionResult<ServerError, S, CVE, Data>;
+	isIdle: boolean;
+	isExecuting: boolean;
+	isTransitioning: boolean;
+	hasNavigated: boolean;
+	hasThrownError: boolean;
+	result: SafeActionResult<ServerError, S, CVE, Data>;
 }): HookActionStatus => {
-    if (isIdle) {
-        return "idle";
-    } else if (isExecuting) {
-        return "executing";
-    } else if (isTransitioning) {
-        return "transitioning";
-    } else if (
-        hasThrownError ||
-        typeof result.validationErrors !== "undefined" ||
-        typeof result.serverError !== "undefined"
-    ) {
-        return "hasErrored";
-    } else if (hasNavigated) {
-        return "hasNavigated";
-    } else {
-        return "hasSucceeded";
-    }
+	if (isIdle) {
+		return "idle";
+	} else if (isExecuting) {
+		return "executing";
+	} else if (isTransitioning) {
+		return "transitioning";
+	} else if (
+		hasThrownError ||
+		typeof result.validationErrors !== "undefined" ||
+		typeof result.serverError !== "undefined"
+	) {
+		return "hasErrored";
+	} else if (hasNavigated) {
+		return "hasNavigated";
+	} else {
+		return "hasSucceeded";
+	}
 };
 
 export const getActionShorthandStatusObject = (status: HookActionStatus): HookShorthandStatus => {
-    return {
-        isIdle: status === "idle",
-        isExecuting: status === "executing",
-        isTransitioning: status === "transitioning",
-        isPending: status === "executing" || status === "transitioning",
-        hasSucceeded: status === "hasSucceeded",
-        hasErrored: status === "hasErrored",
-        hasNavigated: status === "hasNavigated",
-    };
+	return {
+		isIdle: status === "idle",
+		isExecuting: status === "executing",
+		isTransitioning: status === "transitioning",
+		isPending: status === "executing" || status === "transitioning",
+		hasSucceeded: status === "hasSucceeded",
+		hasErrored: status === "hasErrored",
+		hasNavigated: status === "hasNavigated",
+	};
 };
 
 /**
  * Converts a callback to a ref to avoid triggering re-renders when passed as a
  * prop or avoid re-executing effects when passed as a dependency
  */
-function useCallbackRef<T extends (args: any) => any>(callback: T | undefined): T {
-    const callbackRef = React.useRef(callback);
-    React.useEffect(() => {
-        callbackRef.current = callback;
-    });
-    // https://github.com/facebook/react/issues/19240
-    return React.useMemo(() => ((args) => callbackRef.current?.(args)) as T, []);
+function useCallbackRef<T extends (arg: any) => any>(callback: T | undefined): T {
+	const callbackRef = React.useRef(callback);
+	React.useEffect(() => {
+		callbackRef.current = callback;
+	});
+	return React.useMemo(() => ((arg) => callbackRef.current?.(arg) as T) as T, []);
 }
 
 export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
-    result,
-    input,
-    status,
-    cb,
-    navigationError,
-    thrownError,
+	result,
+	input,
+	status,
+	cb,
+	navigationError,
+	thrownError,
 }: {
-    result: SafeActionResult<ServerError, S, CVE, Data>;
-    input: InferInputOrDefault<S, undefined>;
-    status: HookActionStatus;
-    cb?: HookCallbacks<ServerError, S, CVE, Data>;
-    navigationError: Error | null;
-    thrownError: Error | null;
+	result: SafeActionResult<ServerError, S, CVE, Data>;
+	input: InferInputOrDefault<S, undefined>;
+	status: HookActionStatus;
+	cb?: HookCallbacks<ServerError, S, CVE, Data>;
+	navigationError: Error | null;
+	thrownError: Error | null;
 }) => {
-    const onExecute = useCallbackRef(cb?.onExecute);
-    const onSuccess = useCallbackRef(cb?.onSuccess);
-    const onError = useCallbackRef(cb?.onError);
-    const onSettled = useCallbackRef(cb?.onSettled);
-    const onNavigation = useCallbackRef(cb?.onNavigation);
+	const onExecute = useCallbackRef(cb?.onExecute);
+	const onSuccess = useCallbackRef(cb?.onSuccess);
+	const onError = useCallbackRef(cb?.onError);
+	const onSettled = useCallbackRef(cb?.onSettled);
+	const onNavigation = useCallbackRef(cb?.onNavigation);
 
-    // Execute the callback when the action status changes.
-    React.useLayoutEffect(() => {
-        const executeCallbacks = async () => {
-            switch (status) {
-                case "executing":
-                    await Promise.resolve(onExecute?.({ input })).then(() => {});
-                    break;
-                case "transitioning":
-                    break;
-                case "hasSucceeded":
-                    if (navigationError || thrownError) {
-                        break;
-                    }
+	// Execute the callback when the action status changes.
+	React.useLayoutEffect(() => {
+		const executeCallbacks = async () => {
+			switch (status) {
+				case "executing":
+					await Promise.resolve(onExecute?.({ input })).then(() => {});
+					break;
+				case "transitioning":
+					break;
+				case "hasSucceeded":
+					if (navigationError || thrownError) {
+						break;
+					}
 
-                    await Promise.all([
-                        Promise.resolve(onSuccess?.({ data: result.data!, input })),
-                        Promise.resolve(onSettled?.({ result, input })),
-                    ]);
-                    break;
-                case "hasErrored":
-                    await Promise.all([
-                        Promise.resolve(
-                            onError?.({
-                                error: { ...result, ...(thrownError ? { thrownError } : {}) },
-                                input,
-                            })
-                        ),
-                        Promise.resolve(onSettled?.({ result, input })),
-                    ]);
-                    break;
-            }
+					await Promise.all([
+						Promise.resolve(onSuccess?.({ data: result.data!, input })),
+						Promise.resolve(onSettled?.({ result, input })),
+					]);
+					break;
+				case "hasErrored":
+					await Promise.all([
+						Promise.resolve(
+							onError?.({
+								error: { ...result, ...(thrownError ? { thrownError } : {}) },
+								input,
+							})
+						),
+						Promise.resolve(onSettled?.({ result, input })),
+					]);
+					break;
+			}
 
-            // Navigation flow.
-            // If the user redirected to a different page, the `hasNavigated` status never gets set.
-            // In all the other cases, the `hasNavigated` status is set.
-            if (!navigationError) return;
-            const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
+			// Navigation flow.
+			// If the user redirected to a different page, the `hasNavigated` status never gets set.
+			// In all the other cases, the `hasNavigated` status is set.
+			if (!navigationError) return;
+			const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
 
-            if (navigationKind === "redirect" || status === "hasNavigated") {
-                const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
-                await Promise.all([
-                    Promise.resolve(
-                        onNavigation?.({
-                            input,
-                            navigationKind,
-                        })
-                    ),
-                    Promise.resolve(onSettled?.({ result, input, navigationKind })),
-                ]);
-            }
+			if (navigationKind === "redirect" || status === "hasNavigated") {
+				const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
+				await Promise.all([
+					Promise.resolve(
+						onNavigation?.({
+							input,
+							navigationKind,
+						})
+					),
+					Promise.resolve(onSettled?.({ result, input, navigationKind })),
+				]);
+			}
 
-            throw navigationError;
-        };
+			throw navigationError;
+		};
 
-        executeCallbacks().catch(console.error);
-    }, [input, status, result, navigationError, thrownError]);
+		executeCallbacks().catch(console.error);
+	}, [input, status, result, navigationError, thrownError, onExecute, onSuccess, onSettled, onError, onNavigation]);
 };
