@@ -51,6 +51,18 @@ export const getActionShorthandStatusObject = (status: HookActionStatus): HookSh
 	};
 };
 
+/**
+ * Converts a callback to a ref to avoid triggering re-renders when passed as a
+ * prop or avoid re-executing effects when passed as a dependency
+ */
+function useCallbackRef<T extends (arg: any) => any>(callback: T | undefined): T {
+	const callbackRef = React.useRef(callback);
+	React.useEffect(() => {
+		callbackRef.current = callback;
+	});
+	return React.useMemo(() => ((arg) => callbackRef.current?.(arg) as T) as T, []);
+}
+
 export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
 	result,
 	input,
@@ -66,20 +78,14 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 	navigationError: Error | null;
 	thrownError: Error | null;
 }) => {
-	const onExecuteRef = React.useRef(cb?.onExecute);
-	const onSuccessRef = React.useRef(cb?.onSuccess);
-	const onErrorRef = React.useRef(cb?.onError);
-	const onSettledRef = React.useRef(cb?.onSettled);
-	const onNavigationRef = React.useRef(cb?.onNavigation);
+	const onExecute = useCallbackRef(cb?.onExecute);
+	const onSuccess = useCallbackRef(cb?.onSuccess);
+	const onError = useCallbackRef(cb?.onError);
+	const onSettled = useCallbackRef(cb?.onSettled);
+	const onNavigation = useCallbackRef(cb?.onNavigation);
 
 	// Execute the callback when the action status changes.
-	React.useEffect(() => {
-		const onExecute = onExecuteRef.current;
-		const onSuccess = onSuccessRef.current;
-		const onError = onErrorRef.current;
-		const onSettled = onSettledRef.current;
-		const onNavigation = onNavigationRef.current;
-
+	React.useLayoutEffect(() => {
 		const executeCallbacks = async () => {
 			switch (status) {
 				case "executing":
@@ -99,7 +105,12 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 					break;
 				case "hasErrored":
 					await Promise.all([
-						Promise.resolve(onError?.({ error: { ...result, ...(thrownError ? { thrownError } : {}) }, input })),
+						Promise.resolve(
+							onError?.({
+								error: { ...result, ...(thrownError ? { thrownError } : {}) },
+								input,
+							})
+						),
 						Promise.resolve(onSettled?.({ result, input })),
 					]);
 					break;
@@ -128,5 +139,5 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 		};
 
 		executeCallbacks().catch(console.error);
-	}, [input, status, result, navigationError, thrownError]);
+	}, [input, status, result, navigationError, thrownError, onExecute, onSuccess, onSettled, onError, onNavigation]);
 };
