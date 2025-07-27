@@ -22,7 +22,7 @@ const schema = z.object({
 });
 
 export const onboardUser = actionClient
-  .schema(schema)
+  .inputSchema(schema)
   // We can pass a named tuple type here, to get named parameters in the final function.
   // highlight-start
   .bindArgsSchemas<[userId: z.ZodString, age: z.ZodNumber]>([
