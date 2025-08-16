@@ -1,5 +1,4 @@
 import * as React from "react";
-import {} from "react/experimental";
 import type { HookActionStatus, HookCallbacks, HookShorthandStatus } from "./hooks.types";
 import type { SafeActionResult } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
