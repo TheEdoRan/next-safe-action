@@ -1,96 +1,96 @@
 {
-	"name": "next-safe-action",
-	"version": "0.0.0-development",
-	"private": false,
-	"description": "Type safe and validated Server Actions in your Next.js project.",
-	"main": "./dist/index.mjs",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.mts",
-	"files": [
-		"dist"
-	],
-	"exports": {
-		".": "./dist/index.mjs",
-		"./hooks": "./dist/hooks.mjs",
-		"./stateful-hooks": "./dist/stateful-hooks.mjs"
-	},
-	"typesVersions": {
-		"*": {
-			".": [
-				"./dist/index.d.mts"
-			],
-			"hooks": [
-				"./dist/hooks.d.mts"
-			],
-			"stateful-hooks": [
-				"./dist/stateful-hooks.d.mts"
-			]
-		}
-	},
-	"funding": [
-		{
-			"type": "github",
-			"url": "https://github.com/sponsors/TheEdoRan"
-		},
-		{
-			"type": "paypal",
-			"url": "https://www.paypal.com/donate/?hosted_button_id=ES9JRPSC66XKW"
-		}
-	],
-	"scripts": {
-		"lint": "tsc && prettier --write . && eslint .",
-		"test": "node --import tsx --test ./src/__tests__/*.test.ts",
-		"build": "tsup",
-		"deploy": "semantic-release"
-	},
-	"keywords": [
-		"next",
-		"nextjs",
-		"react",
-		"rsc",
-		"react server components",
-		"mutation",
-		"action",
-		"actions",
-		"react actions",
-		"next actions",
-		"server actions"
-	],
-	"author": "Edoardo Ranghieri",
-	"license": "MIT",
-	"engines": {
-		"node": ">=18.17"
-	},
-	"devDependencies": {
-		"@eslint/js": "^9.19.0",
-		"@types/node": "^22",
-		"@types/react": "^19",
-		"@types/react-dom": "^19",
-		"@typescript-eslint/eslint-plugin": "^8.26.1",
-		"@typescript-eslint/parser": "^8.26.1",
-		"deepmerge-ts": "^7.1.4",
-		"eslint": "catalog:",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-define-config": "^2.1.0",
-		"eslint-plugin-react-hooks": "^5.1.0",
-		"next": "catalog:",
-		"react": "catalog:",
-		"react-dom": "catalog:",
-		"semantic-release": "^23",
-		"tsup": "^8.3.6",
-		"tsx": "^4.19.2",
-		"typescript": "catalog:",
-		"typescript-eslint": "^8.22.0",
-		"yup": "^1.6.1",
-		"zod": "^3.24.1"
-	},
-	"peerDependencies": {
-		"next": ">= 14.0.0",
-		"react": ">= 18.2.0",
-		"react-dom": ">= 18.2.0"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/TheEdoRan/next-safe-action.git"
-	}
+  "name": "next-safe-action",
+  "version": "0.0.0-development",
+  "private": false,
+  "description": "Type safe and validated Server Actions in your Next.js project.",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./hooks": "./dist/hooks.mjs",
+    "./stateful-hooks": "./dist/stateful-hooks.mjs"
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.mts"
+      ],
+      "hooks": [
+        "./dist/hooks.d.mts"
+      ],
+      "stateful-hooks": [
+        "./dist/stateful-hooks.d.mts"
+      ]
+    }
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/TheEdoRan"
+    },
+    {
+      "type": "paypal",
+      "url": "https://www.paypal.com/donate/?hosted_button_id=ES9JRPSC66XKW"
+    }
+  ],
+  "scripts": {
+    "lint": "tsc && prettier --write . && eslint .",
+    "test": "node --import tsx --test ./src/__tests__/*.test.ts",
+    "build": "tsdown",
+    "deploy": "semantic-release"
+  },
+  "keywords": [
+    "next",
+    "nextjs",
+    "react",
+    "rsc",
+    "react server components",
+    "mutation",
+    "action",
+    "actions",
+    "react actions",
+    "next actions",
+    "server actions"
+  ],
+  "author": "Edoardo Ranghieri",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.17"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
+    "deepmerge-ts": "^7.1.4",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-define-config": "^2.1.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "semantic-release": "^23",
+    "tsdown": "^0.14.1",
+    "tsx": "^4.19.2",
+    "typescript": "catalog:",
+    "typescript-eslint": "^8.22.0",
+    "yup": "^1.6.1",
+    "zod": "^3.24.1"
+  },
+  "peerDependencies": {
+    "next": ">= 14.0.0",
+    "react": ">= 18.2.0",
+    "react-dom": ">= 18.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheEdoRan/next-safe-action.git"
+  }
 }
