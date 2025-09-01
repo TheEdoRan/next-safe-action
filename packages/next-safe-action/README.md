@@ -54,7 +54,6 @@ A big shout-out to all our [sponsors](https://github.com/sponsors/TheEdoRan)! Yo
 <table>
   <tr>
    <td align="center"><a href="https://github.com/pontusab"><img src="https://avatars.githubusercontent.com/u/655158?s=80&v=4" width="80" alt="Pontus Abrahamsson"/><br />Pontus Abrahamsson</a></td>
-   <td align="center"><a href="https://www.robinwieruch.de"><img src="https://avatars.githubusercontent.com/u/2479967?s=80&v=4" width="80" alt="Robin Wieruch"/><br />Robin Wieruch</a></td>
   </tr>
 </table>
 
@@ -69,6 +68,7 @@ A big shout-out to all our [sponsors](https://github.com/sponsors/TheEdoRan)! Yo
    <td align="center"><a href="https://github.com/merthanmerter"><img src="https://avatars.githubusercontent.com/u/7555905?v=4&size=50" width="50" alt="Merthan Merter"/><br />Merthan Merter</a></td>
    <td align="center"><a href="https://github.com/marcotommoro"><img src="https://avatars.githubusercontent.com/u/65455109?v=4&size=50" width="50" alt="Marco Moroni"/><br />Marco Moroni</a></td>
    <td align="center"><a href="https://github.com/gvffelisberto"><img src="https://avatars.githubusercontent.com/u/17497942?v=4&size=50" width="50" alt="Gustavo Felisberto"/><br />Gustavo Felisberto</a></td>
+   <td align="center"><a href="https://www.robinwieruch.de"><img src="https://avatars.githubusercontent.com/u/2479967?v=4&size=50" width="50" alt="Robin Wieruch"/><br />Robin Wieruch</a></td>
   </tr>
 </table>
 
