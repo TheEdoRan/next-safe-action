@@ -40,17 +40,6 @@ export function Sponsors() {
 										Pontus Abrahamsson
 									</a>
 								</td>
-								<td align="center">
-									<a href="https://www.robinwieruch.de" target="_blank">
-										<img
-											src="https://avatars.githubusercontent.com/u/2479967?s=80&v=4"
-											width="80"
-											alt="Robin Wieruch"
-										/>
-										<br />
-										Robin Wieruch
-									</a>
-								</td>
 							</tr>
 						</table>
 
@@ -129,6 +118,17 @@ export function Sponsors() {
 										/>
 										<br />
 										Gustavo Felisberto
+									</a>
+								</td>
+								<td align="center">
+									<a href="https://www.robinwieruch.de" target="_blank">
+										<img
+											src="https://avatars.githubusercontent.com/u/2479967?v=4&size=50"
+											width="50"
+											alt="Robin Wieruch"
+										/>
+										<br />
+										Robin Wieruch
 									</a>
 								</td>
 							</tr>
