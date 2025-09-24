@@ -21,7 +21,7 @@ export class SafeActionClient<
 	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
 	MDProvided extends boolean = MetadataSchema extends undefined ? true : false,
 	Ctx extends object = {},
-	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
+	ISF extends ((clientInput?: unknown) => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
 	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	const BAS extends readonly StandardSchemaV1[] = [],
@@ -71,28 +71,41 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#inputschema See docs for more information}
 	 */
 	inputSchema<
-		OIS extends StandardSchemaV1 | ((prevSchema: IS) => Promise<StandardSchemaV1>), // override input schema
-		AIS extends StandardSchemaV1 = OIS extends (prevSchema: IS) => Promise<StandardSchemaV1> // actual input schema
-			? Awaited<ReturnType<OIS>>
-			: OIS,
+		OIS extends StandardSchemaV1 | ((clientInput?: unknown) => Promise<StandardSchemaV1>) | ((prevSchema: IS, clientInput?: unknown) => Promise<StandardSchemaV1>) | ((prevSchema: IS) => Promise<StandardSchemaV1>), // override input schema
+		AIS extends StandardSchemaV1 = OIS extends (...args: any[]) => any // actual input schema
+		? Awaited<ReturnType<OIS>>
+		: OIS,
 		// override custom validation errors shape
 		OCVE = ODVES extends "flattened" ? FlattenedValidationErrors<ValidationErrors<AIS>> : ValidationErrors<AIS>,
 	>(
 		inputSchema: OIS,
 		utils?: {
 			handleValidationErrorsShape?: HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>;
-		}
+		},
 	) {
 		return new SafeActionClient({
 			...this.#args,
-			// @ts-expect-error
-			inputSchemaFn: (inputSchema[Symbol.toStringTag] === "AsyncFunction"
-				? async () => {
-						const prevSchema = await this.#args.inputSchemaFn?.();
+			inputSchemaFn: (typeof inputSchema === 'function'
+				? async (clientInput?: unknown) => {
+					const prevSchema = await this.#args.inputSchemaFn?.(clientInput);
+					const paramCount = inputSchema.length;
+
+					if (paramCount === 2) {
 						// @ts-expect-error
-						return inputSchema(prevSchema as IS) as AIS;
+						return inputSchema(prevSchema, clientInput) as AIS;
+					} else if (paramCount === 1) {
+
+						return prevSchema
+							// @ts-expect-error
+							? inputSchema(prevSchema) as AIS
+							// @ts-expect-error
+							: inputSchema(clientInput) as AIS;
+					} else {
+						// @ts-expect-error
+						return inputSchema(clientInput) as AIS;
 					}
-				: async () => inputSchema) as ISF,
+				}
+				: async () => inputSchema) as unknown as ISF,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#args.handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
 		});

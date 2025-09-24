@@ -40,7 +40,7 @@ export type SafeActionClientArgs<
 	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
 	MDProvided extends boolean = MetadataSchema extends undefined ? true : false,
 	Ctx extends object = {},
-	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
+	ISF extends ((clientInput?: unknown) => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
 	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	BAS extends readonly StandardSchemaV1[] = [], // bind args schemas
