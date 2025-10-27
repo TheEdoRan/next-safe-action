@@ -60,7 +60,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 
 						if (FrameworkErrorHandler.isNavigationError(e)) {
 							setNavigationError(e);
-							return;
+							throw e;
 						}
 
 						setThrownError(e as Error);
@@ -96,7 +96,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 
 							if (FrameworkErrorHandler.isNavigationError(e)) {
 								setNavigationError(e);
-								return;
+								throw e;
 							}
 
 							setThrownError(e as Error);
@@ -195,7 +195,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 
 						if (FrameworkErrorHandler.isNavigationError(e)) {
 							setNavigationError(e);
-							return;
+							throw e;
 						}
 
 						setThrownError(e as Error);
@@ -232,7 +232,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 
 							if (FrameworkErrorHandler.isNavigationError(e)) {
 								setNavigationError(e);
-								return;
+								throw e;
 							}
 
 							setThrownError(e as Error);

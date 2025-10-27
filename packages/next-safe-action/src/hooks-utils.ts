@@ -133,8 +133,6 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 					Promise.resolve(onSettled?.({ result, input, navigationKind })),
 				]);
 			}
-
-			throw navigationError;
 		};
 
 		executeCallbacks().catch(console.error);
