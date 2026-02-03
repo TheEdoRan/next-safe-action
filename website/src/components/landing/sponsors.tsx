@@ -11,20 +11,6 @@ export function Sponsors() {
 					</div>
 
 					<div id="sponsors-container" className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
-						<h3 className="text-xl font-bold md:text-2xl">🥉 Enthusiasts (Bronze)</h3>
-
-						<table>
-							<tr>
-								<td align="center">
-									<a href="https://launch.arcjet.com/Wk7JBrE" target="_blank">
-										<img src="https://avatars.githubusercontent.com/u/24397786?s=120&v=4" width="120" alt="ArcJet" />
-										<br />
-										ArcJet
-									</a>
-								</td>
-							</tr>
-						</table>
-
 						<h3 className="mb-4 text-xl font-bold md:text-2xl">☕ Supporters</h3>
 
 						<table>
@@ -52,6 +38,13 @@ export function Sponsors() {
 										<img src="https://avatars.githubusercontent.com/u/14985020?s=50&v=4" width="50" alt="Vercel" />
 										<br />
 										Vercel
+									</a>
+								</td>
+								<td align="center">
+									<a href="https://launch.arcjet.com/Wk7JBrE" target="_blank">
+										<img src="https://avatars.githubusercontent.com/u/24397786?s=50&v=4" width="50" alt="ArcJet" />
+										<br />
+										ArcJet
 									</a>
 								</td>
 								<td align="center">

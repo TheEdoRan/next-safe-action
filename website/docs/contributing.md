@@ -16,11 +16,3 @@ If you find this project useful, please consider making a [donation](https://git
 ## Sponsors
 
 A big shout-out to all our [sponsors](https://github.com/sponsors/TheEdoRan)! You’re the driving force behind this library's growth, and we're truly grateful for your support. ❤️
-
-<a href="https://arcjet.com/?ref=next-safe-action" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcSet="https://arcjet.com/logo/arcjet-dark-lockup-voyage-horizontal.svg" />
-    <img src="https://arcjet.com/logo/arcjet-light-lockup-voyage-horizontal.svg" alt="Arcjet Logo" height="128" width="auto" />
-  </picture>
-  <br />Arcjet
-</a>
