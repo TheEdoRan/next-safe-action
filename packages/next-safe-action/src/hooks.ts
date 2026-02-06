@@ -35,7 +35,6 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 
 	const status = getActionStatus<ServerError, S, CVE, Data>({
 		isExecuting,
-		isTransitioning,
 		result,
 		isIdle,
 		hasNavigated: navigationError !== null,
@@ -137,7 +136,7 @@ export const useAction = <ServerError, S extends StandardSchemaV1 | undefined, C
 		result,
 		reset,
 		status,
-		...getActionShorthandStatusObject(status),
+		...getActionShorthandStatusObject(status, isTransitioning),
 	};
 };
 
@@ -169,7 +168,6 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 
 	const status = getActionStatus<ServerError, S, CVE, Data>({
 		isExecuting,
-		isTransitioning,
 		result,
 		isIdle,
 		hasNavigated: navigationError !== null,
@@ -280,7 +278,7 @@ export const useOptimisticAction = <ServerError, S extends StandardSchemaV1 | un
 		optimisticState,
 		reset,
 		status,
-		...getActionShorthandStatusObject(status),
+		...getActionShorthandStatusObject(status, isTransitioning),
 	};
 };
 
