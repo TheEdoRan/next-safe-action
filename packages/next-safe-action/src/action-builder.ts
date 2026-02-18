@@ -82,12 +82,20 @@ export function actionBuilder<
 						prevResult = clientInputs.splice(bindArgsSchemas.length, 1)[0] as PrevResult;
 					}
 
-					// If the number of bind args schemas + 1 (which is the optional main arg schema) is greater
-					// than the number of provided client inputs, it means that the main argument is missing.
+					// The expected number of client inputs is bind args schemas + 1 (the optional main arg).
+					const expectedLength = bindArgsSchemas.length + 1;
+
+					// If there are fewer client inputs than expected, it means the main argument is missing.
 					// This happens when the main schema is missing (since it's optional), or if a void main schema
 					// is provided along with bind args schemas.
-					if (bindArgsSchemas.length + 1 > clientInputs.length) {
+					if (clientInputs.length < expectedLength) {
 						clientInputs.push(undefined);
+					}
+					// If there are more client inputs than expected, trim the excess. This can happen when the
+					// action is called by external libraries (e.g. React Query's `useMutation`) that pass
+					// additional arguments to the action function.
+					else if (clientInputs.length > expectedLength) {
+						clientInputs.length = expectedLength;
 					}
 
 					// Execute the middleware stack.
