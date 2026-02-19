@@ -81,10 +81,10 @@ export function actionBuilder<
 						prevResult = clientInputs.splice(bindArgsSchemas.length, 1)[0] as PrevResult;
 					}
 
-					// Extract structured inputs based on schema definitions. This approach is resilient to
-					// extra arguments passed by external callers (e.g. React Query's `useMutation` always
-					// passes `(variables, mutationFnContext)`) because we only read positions that correspond
-					// to defined schemas, and naturally ignore any excess arguments.
+					// Extract structured inputs based on schema definitions rather than iterating over
+					// clientInputs, so that excess arguments from external callers are silently ignored
+					// — just like a plain function would. This keeps the wrapper transparent to its
+					// intended signature.
 					const mainClientInput = clientInputs[bindArgsSchemas.length] as InferInputOrDefault<IS, undefined>;
 					const bindArgsClientInputs = clientInputs.slice(0, bindArgsSchemas.length) as InferInputArray<BAS>;
 
