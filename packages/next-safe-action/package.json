@@ -76,7 +76,7 @@
     "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "semantic-release": "^23",
+    "semantic-release": "^25.0.3",
     "tsdown": "^0.14.1",
     "tsx": "^4.19.2",
     "typescript": "catalog:",

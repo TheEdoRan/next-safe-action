@@ -10,7 +10,7 @@
 		"lint": {},
 		"deploy": {
 			"dependsOn": ["build", "lint"],
-			"env": ["NPM_TOKEN", "GITHUB_TOKEN"]
+			"env": ["GITHUB_TOKEN"]
 		},
 		"dev": {
 			"cache": false,
