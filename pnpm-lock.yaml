@@ -122,6 +122,10 @@ importers:
         version: 5.8.2
 
   packages/next-safe-action:
+    dependencies:
+      deepmerge-ts:
+        specifier: ^7.1.5
+        version: 7.1.5
     devDependencies:
       '@eslint/js':
         specifier: ^9.19.0
@@ -141,9 +145,6 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.26.1
         version: 8.27.0(eslint@8.57.1)(typescript@5.8.2)
-      deepmerge-ts:
-        specifier: ^7.1.4
-        version: 7.1.5
       eslint:
         specifier: 'catalog:'
         version: 8.57.1

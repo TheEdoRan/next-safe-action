@@ -61,6 +61,9 @@
 	"engines": {
 		"node": ">=18.17"
 	},
+	"dependencies": {
+		"deepmerge-ts": "^7.1.5"
+	},
 	"devDependencies": {
 		"@eslint/js": "^9.19.0",
 		"@types/node": "^22",
@@ -68,7 +71,6 @@
 		"@types/react-dom": "^19",
 		"@typescript-eslint/eslint-plugin": "^8.26.1",
 		"@typescript-eslint/parser": "^8.26.1",
-		"deepmerge-ts": "^7.1.4",
 		"eslint": "catalog:",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-define-config": "^2.1.0",
