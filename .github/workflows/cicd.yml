@@ -57,7 +57,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Audit signatures
-        run: pnpm audit signatures
+        run: npm audit signatures
       - name: Build library
         run: pnpm run build:lib
       - name: Release lib to NPM
