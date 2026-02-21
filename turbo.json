@@ -1,5 +1,5 @@
 {
-	"$schema": "https://v2-8-10.turborepo.dev/schema.json",
+	"$schema": "https://turborepo.dev/schema.json",
 	"ui": "stream",
 	"tasks": {
 		"build": {
@@ -9,8 +9,9 @@
 		"test": {},
 		"lint": {},
 		"deploy": {
+			"cache": false,
 			"dependsOn": ["build", "lint"],
-			"env": ["GITHUB_TOKEN"]
+			"passThroughEnv": ["GITHUB_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_TOKEN"]
 		},
 		"dev": {
 			"cache": false,
