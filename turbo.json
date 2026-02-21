@@ -1,5 +1,5 @@
 {
-	"$schema": "https://turbo.build/schema.json",
+	"$schema": "https://v2-8-10.turborepo.dev/schema.json",
 	"ui": "stream",
 	"tasks": {
 		"build": {
@@ -10,7 +10,7 @@
 		"lint": {},
 		"deploy": {
 			"dependsOn": ["build", "lint"],
-			"env": ["NPM_TOKEN", "GITHUB_TOKEN"]
+			"env": ["GITHUB_TOKEN"]
 		},
 		"dev": {
 			"cache": false,
