@@ -4,8 +4,11 @@ on:
   push:
     paths:
       - "packages/**"
+      - "scripts/semantic-release/**"
       - "turbo.json"
       - "package.json"
+      - "pnpm-lock.yaml"
+      - "release.config.cjs"
       - ".github/workflows/cicd.yml"
     branches:
       - main
@@ -17,6 +20,12 @@ on:
   pull_request:
     paths:
       - "packages/**"
+      - "scripts/semantic-release/**"
+      - "turbo.json"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "release.config.cjs"
+      - ".github/workflows/cicd.yml"
 
 permissions:
   contents: write
@@ -37,6 +46,7 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint:lib
       - run: pnpm run test:lib
@@ -55,13 +65,14 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Audit signatures
         run: npm audit signatures
-      - name: Build library
-        run: pnpm run build:lib
-      - name: Release lib to NPM
+      - name: Build packages
+        run: pnpm run build:packages
+      - name: Release packages to npm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm run deploy:lib
+        run: pnpm run release:packages

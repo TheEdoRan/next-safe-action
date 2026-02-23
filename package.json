@@ -8,10 +8,12 @@
 		"pg": "turbo run dev --filter=@apps/playground",
 		"lint": "turbo run lint",
 		"build": "turbo run build",
+		"build:packages": "pnpm -r --filter './packages/*' run build",
 		"test:lib": "turbo run test --filter=next-safe-action",
 		"lint:lib": "turbo run lint --filter=next-safe-action",
 		"build:lib": "turbo run build --filter=next-safe-action --force",
 		"deploy:lib": "turbo run deploy --filter=next-safe-action",
+		"release:packages": "semantic-release",
 		"build:pg": "turbo run build --filter=@apps/playground --force"
 	},
 	"author": "Edoardo Ranghieri",
@@ -38,6 +40,7 @@
 		"is-ci": "^4.1.0",
 		"prettier": "^3.4.2",
 		"prettier-plugin-tailwindcss": "^0.6.11",
+		"semantic-release": "^25.0.3",
 		"turbo": "^2.8.10",
 		"typescript": "catalog:"
 	},
