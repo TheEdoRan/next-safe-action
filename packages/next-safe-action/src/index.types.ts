@@ -16,6 +16,21 @@ import type { HandleValidationErrorsShapeFn, ValidationErrors } from "./validati
 export type DVES = "formatted" | "flattened";
 
 /**
+ * Type of the options passed to the input schema factory function.
+ */
+export type InputSchemaClientOpts = {
+	clientInput: unknown;
+};
+
+/**
+ * Type of the input schema factory function.
+ */
+export type InputSchemaFactoryFn<
+	PrevSchema extends StandardSchemaV1 | undefined,
+	NextSchema extends StandardSchemaV1 = StandardSchemaV1,
+> = (prevSchema: PrevSchema, opts: InputSchemaClientOpts) => Promise<NextSchema>;
+
+/**
  * Type of the util properties passed to server error handler functions.
  */
 export type ServerErrorFunctionUtils<MetadataSchema extends StandardSchemaV1 | undefined> = {

@@ -11,7 +11,7 @@ test("inputSchema with clientInput parameter receives actual input data", async 
 	let receivedClientInput: unknown;
 
 	const action = ac
-		.inputSchema(async (clientInput: any) => {
+		.inputSchema(async (_, { clientInput }) => {
 			receivedClientInput = clientInput;
 			return z.object({ message: z.string() });
 		})
@@ -31,10 +31,11 @@ test("inputSchema chaining with prevSchema and clientInput works correctly", asy
 	let receivedClientInput: unknown;
 
 	const action = ac
-		.inputSchema(async (clientInput: any) => {
-			return z.object({ name: z.string() });
+		.inputSchema(z.object({ test: z.boolean() }))
+		.inputSchema(async (prevSchema) => {
+			return prevSchema.extend({ name: z.string() });
 		})
-		.inputSchema(async (prevSchema, clientInput) => {
+		.inputSchema(async (prevSchema, { clientInput }) => {
 			receivedPrevSchema = prevSchema;
 			receivedClientInput = clientInput;
 			return prevSchema.extend({ age: z.number() });
@@ -43,7 +44,7 @@ test("inputSchema chaining with prevSchema and clientInput works correctly", asy
 			return { success: true, data: parsedInput };
 		});
 
-	const testData = { name: "John", age: 25 };
+	const testData = { test: true, name: "John", age: 25 };
 	const result = await action(testData);
 
 	assert.ok(receivedPrevSchema); // Should be a Zod schema object
@@ -54,7 +55,7 @@ test("inputSchema chaining with prevSchema and clientInput works correctly", asy
 test("inputSchema chaining validates against extended schema without function", async () => {
 	const action = ac
 		.inputSchema(z.object({ name: z.string() }))
-		.inputSchema(async (prevSchema, clientInput) => {
+		.inputSchema(async (prevSchema) => {
 			return prevSchema.extend({ age: z.number() });
 		})
 		.action(async ({ parsedInput }) => {
@@ -77,7 +78,7 @@ test("inputSchema chaining validates against extended schema with function", asy
 		.inputSchema(async () => {
 			return z.object({ name: z.string() });
 		})
-		.inputSchema(async (prevSchema, clientInput) => {
+		.inputSchema(async (prevSchema) => {
 			return prevSchema.extend({ age: z.number() });
 		})
 		.action(async ({ parsedInput }) => {
@@ -97,7 +98,7 @@ test("inputSchema chaining validates against extended schema with function", asy
 
 test("inputSchema with clientInput can build dynamic Zod schema", async () => {
 	const action = ac
-		.inputSchema(async (clientInput: any) => {
+		.inputSchema(async (_, { clientInput }) => {
 			if ((clientInput as { type: string })?.type === "user") {
 				return z.object({
 					type: z.literal("user"),
@@ -128,9 +129,9 @@ test("inputSchema with clientInput can build dynamic Zod schema", async () => {
 
 test("inputSchema function throws error when clientInput is invalid", async () => {
 	const action = ac
-		.inputSchema(async (clientInput: any) => {
+		.inputSchema(async (_, { clientInput }) => {
 			// Throw error if clientInput is missing required field
-			if (!clientInput?.type) {
+			if (!(clientInput as { type?: unknown })?.type) {
 				throw new Error("Missing required field: type");
 			}
 

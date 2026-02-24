@@ -1,6 +1,7 @@
 import { actionBuilder } from "./action-builder";
 import type {
 	DVES,
+	InputSchemaFactoryFn,
 	MiddlewareFn,
 	SafeActionClientArgs,
 	SafeActionUtils,
@@ -71,40 +72,28 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#inputschema See docs for more information}
 	 */
 	inputSchema<
-		OIS extends StandardSchemaV1 | ((clientInput?: unknown) => Promise<StandardSchemaV1>) | ((prevSchema: IS, clientInput?: unknown) => Promise<StandardSchemaV1>) | ((prevSchema: IS) => Promise<StandardSchemaV1>), // override input schema
+		OIS extends StandardSchemaV1 | InputSchemaFactoryFn<IS>, // override input schema
 		AIS extends StandardSchemaV1 = OIS extends (...args: any[]) => any // actual input schema
-		? Awaited<ReturnType<OIS>>
-		: OIS,
+			? Awaited<ReturnType<OIS>>
+			: OIS,
 		// override custom validation errors shape
 		OCVE = ODVES extends "flattened" ? FlattenedValidationErrors<ValidationErrors<AIS>> : ValidationErrors<AIS>,
 	>(
 		inputSchema: OIS,
 		utils?: {
 			handleValidationErrorsShape?: HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>;
-		},
+		}
 	) {
 		return new SafeActionClient({
 			...this.#args,
-			inputSchemaFn: (typeof inputSchema === 'function'
+			inputSchemaFn: (typeof inputSchema === "function"
 				? async (clientInput?: unknown) => {
-					const prevSchema = await this.#args.inputSchemaFn?.(clientInput);
-					const paramCount = inputSchema.length;
+						const prevSchema = await this.#args.inputSchemaFn?.(clientInput);
 
-					if (paramCount === 2) {
-						// @ts-expect-error
-						return inputSchema(prevSchema, clientInput) as AIS;
-					} else if (paramCount === 1) {
-
-						return prevSchema
-							// @ts-expect-error
-							? inputSchema(prevSchema) as AIS
-							// @ts-expect-error
-							: inputSchema(clientInput) as AIS;
-					} else {
-						// @ts-expect-error
-						return inputSchema(clientInput) as AIS;
+						return (inputSchema as unknown as InputSchemaFactoryFn<IS, AIS>)(prevSchema as IS, {
+							clientInput,
+						});
 					}
-				}
 				: async () => inputSchema) as unknown as ISF,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#args.handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
