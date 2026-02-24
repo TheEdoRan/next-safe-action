@@ -8,6 +8,7 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
+import { isStandardSchema } from "./standard-schema";
 import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard-schema";
 import type {
 	FlattenedValidationErrors,
@@ -73,8 +74,8 @@ export class SafeActionClient<
 	 */
 	inputSchema<
 		OIS extends StandardSchemaV1 | InputSchemaFactoryFn<IS>, // override input schema
-		AIS extends StandardSchemaV1 = OIS extends (...args: any[]) => any // actual input schema
-			? Awaited<ReturnType<OIS>>
+		AIS extends StandardSchemaV1 = OIS extends InputSchemaFactoryFn<IS, infer NextSchema> // actual input schema
+			? NextSchema
 			: OIS,
 		// override custom validation errors shape
 		OCVE = ODVES extends "flattened" ? FlattenedValidationErrors<ValidationErrors<AIS>> : ValidationErrors<AIS>,
@@ -84,9 +85,21 @@ export class SafeActionClient<
 			handleValidationErrorsShape?: HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>;
 		}
 	) {
+		const isDirectStandardSchema = isStandardSchema(inputSchema);
+		const isInputSchemaFactoryFn =
+			!isDirectStandardSchema &&
+			typeof inputSchema === "function" &&
+			Object.prototype.toString.call(inputSchema) === "[object AsyncFunction]";
+
+		if (!isDirectStandardSchema && typeof inputSchema === "function" && !isInputSchemaFactoryFn) {
+			throw new TypeError(
+				"`inputSchema()` received a function that is not a Standard Schema validator. Pass a Standard Schema validator (`~standard.validate`) directly, or use an async function to build/extend the schema."
+			);
+		}
+
 		return new SafeActionClient({
 			...this.#args,
-			inputSchemaFn: (typeof inputSchema === "function"
+			inputSchemaFn: (isInputSchemaFactoryFn
 				? async (clientInput?: unknown) => {
 						const prevSchema = await this.#args.inputSchemaFn?.(clientInput);
 
