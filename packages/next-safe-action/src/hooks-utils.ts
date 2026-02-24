@@ -83,8 +83,8 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 	const onSettled = useCallbackRef(cb?.onSettled);
 	const onNavigation = useCallbackRef(cb?.onNavigation);
 
-	// Execute the callback when the action status changes.
-	React.useLayoutEffect(() => {
+	// Execute hook callbacks as non-visual side effects.
+	React.useEffect(() => {
 		const executeCallbacks = async () => {
 			switch (status) {
 				case "executing":
