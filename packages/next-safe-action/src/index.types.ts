@@ -16,6 +16,21 @@ import type { HandleValidationErrorsShapeFn, ValidationErrors } from "./validati
 export type DVES = "formatted" | "flattened";
 
 /**
+ * Type of the options passed to the input schema factory function.
+ */
+export type InputSchemaClientOpts = {
+	clientInput: unknown;
+};
+
+/**
+ * Type of the input schema factory function.
+ */
+export type InputSchemaFactoryFn<
+	PrevSchema extends StandardSchemaV1 | undefined,
+	NextSchema extends StandardSchemaV1 = StandardSchemaV1,
+> = (prevSchema: PrevSchema, opts: InputSchemaClientOpts) => Promise<NextSchema>;
+
+/**
  * Type of the util properties passed to server error handler functions.
  */
 export type ServerErrorFunctionUtils<MetadataSchema extends StandardSchemaV1 | undefined> = {
@@ -40,7 +55,7 @@ export type SafeActionClientArgs<
 	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
 	MDProvided extends boolean = MetadataSchema extends undefined ? true : false,
 	Ctx extends object = {},
-	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
+	ISF extends ((clientInput?: unknown) => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
 	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	BAS extends readonly StandardSchemaV1[] = [], // bind args schemas

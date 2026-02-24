@@ -86,6 +86,23 @@ export type InferOutputOrDefault<MaybeSchema, Default> = MaybeSchema extends Sta
 	? StandardSchemaV1.InferOutput<MaybeSchema>
 	: Default;
 
+export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
+	if (value === null || (typeof value !== "object" && typeof value !== "function")) {
+		return false;
+	}
+
+	const standardProps = (value as { ["~standard"]?: unknown })["~standard"];
+
+	if (standardProps === null || typeof standardProps !== "object") {
+		return false;
+	}
+
+	return (
+		(standardProps as { version?: unknown }).version === 1 &&
+		typeof (standardProps as { validate?: unknown }).validate === "function"
+	);
+}
+
 export async function standardParse<Output>(schema: StandardSchemaV1<unknown, Output>, value: unknown) {
 	return schema["~standard"].validate(value);
 }

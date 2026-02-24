@@ -1,12 +1,14 @@
 import { actionBuilder } from "./action-builder";
 import type {
 	DVES,
+	InputSchemaFactoryFn,
 	MiddlewareFn,
 	SafeActionClientArgs,
 	SafeActionUtils,
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
+import { isStandardSchema } from "./standard-schema";
 import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard-schema";
 import type {
 	FlattenedValidationErrors,
@@ -21,7 +23,7 @@ export class SafeActionClient<
 	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
 	MDProvided extends boolean = MetadataSchema extends undefined ? true : false,
 	Ctx extends object = {},
-	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
+	ISF extends ((clientInput?: unknown) => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
 	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	const BAS extends readonly StandardSchemaV1[] = [],
@@ -71,9 +73,9 @@ export class SafeActionClient<
 	 * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#inputschema See docs for more information}
 	 */
 	inputSchema<
-		OIS extends StandardSchemaV1 | ((prevSchema: IS) => Promise<StandardSchemaV1>), // override input schema
-		AIS extends StandardSchemaV1 = OIS extends (prevSchema: IS) => Promise<StandardSchemaV1> // actual input schema
-			? Awaited<ReturnType<OIS>>
+		OIS extends StandardSchemaV1 | InputSchemaFactoryFn<IS>, // override input schema
+		AIS extends StandardSchemaV1 = OIS extends InputSchemaFactoryFn<IS, infer NextSchema> // actual input schema
+			? NextSchema
 			: OIS,
 		// override custom validation errors shape
 		OCVE = ODVES extends "flattened" ? FlattenedValidationErrors<ValidationErrors<AIS>> : ValidationErrors<AIS>,
@@ -83,16 +85,29 @@ export class SafeActionClient<
 			handleValidationErrorsShape?: HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>;
 		}
 	) {
+		const isDirectStandardSchema = isStandardSchema(inputSchema);
+		const isInputSchemaFactoryFn =
+			!isDirectStandardSchema &&
+			typeof inputSchema === "function" &&
+			Object.prototype.toString.call(inputSchema) === "[object AsyncFunction]";
+
+		if (!isDirectStandardSchema && typeof inputSchema === "function" && !isInputSchemaFactoryFn) {
+			throw new TypeError(
+				"`inputSchema()` received a function that is not a Standard Schema validator. Pass a Standard Schema validator (`~standard.validate`) directly, or use an async function to build/extend the schema."
+			);
+		}
+
 		return new SafeActionClient({
 			...this.#args,
-			// @ts-expect-error
-			inputSchemaFn: (inputSchema[Symbol.toStringTag] === "AsyncFunction"
-				? async () => {
-						const prevSchema = await this.#args.inputSchemaFn?.();
-						// @ts-expect-error
-						return inputSchema(prevSchema as IS) as AIS;
+			inputSchemaFn: (isInputSchemaFactoryFn
+				? async (clientInput?: unknown) => {
+						const prevSchema = await this.#args.inputSchemaFn?.(clientInput);
+
+						return (inputSchema as unknown as InputSchemaFactoryFn<IS, AIS>)(prevSchema as IS, {
+							clientInput,
+						});
 					}
-				: async () => inputSchema) as ISF,
+				: async () => inputSchema) as unknown as ISF,
 			handleValidationErrorsShape: (utils?.handleValidationErrorsShape ??
 				this.#args.handleValidationErrorsShape) as HandleValidationErrorsShapeFn<AIS, BAS, MD, Ctx, OCVE>,
 		});

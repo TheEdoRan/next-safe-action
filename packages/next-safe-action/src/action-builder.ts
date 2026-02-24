@@ -37,7 +37,7 @@ export function actionBuilder<
 	MetadataSchema extends StandardSchemaV1 | undefined = undefined,
 	MD = InferOutputOrDefault<MetadataSchema, undefined>, // metadata type (inferred from metadata schema)
 	Ctx extends object = {},
-	ISF extends (() => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
+	ISF extends ((clientInput?: unknown) => Promise<StandardSchemaV1>) | undefined = undefined, // input schema function
 	IS extends StandardSchemaV1 | undefined = ISF extends Function ? Awaited<ReturnType<ISF>> : undefined, // input schema
 	OS extends StandardSchemaV1 | undefined = undefined, // output schema
 	const BAS extends readonly StandardSchemaV1[] = [],
@@ -147,7 +147,7 @@ export function actionBuilder<
 											}
 
 											// Otherwise, parse input with the schema.
-											return standardParse(await args.inputSchemaFn(), input);
+											return standardParse(await args.inputSchemaFn(input), input);
 										}
 
 										// Otherwise, we're processing bind args client inputs.
