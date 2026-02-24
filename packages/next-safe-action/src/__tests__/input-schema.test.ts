@@ -4,6 +4,7 @@ import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
 import { createSafeActionClient, DEFAULT_SERVER_ERROR_MESSAGE } from "..";
+import type { StandardSchemaV1 } from "../standard-schema";
 
 const ac = createSafeActionClient();
 
@@ -152,4 +153,58 @@ test("inputSchema function throws error when clientInput is invalid", async () =
 	assert.deepStrictEqual(result, {
 		serverError: DEFAULT_SERVER_ERROR_MESSAGE,
 	});
+});
+
+test("inputSchema treats callable Standard Schema validators as direct validators", async () => {
+	let factoryInvocationCount = 0;
+
+	const callableSchema = Object.assign(
+		() => {
+			factoryInvocationCount += 1;
+			throw new Error("callable schema should not be invoked as a schema factory");
+		},
+		{
+			"~standard": {
+				version: 1 as const,
+				vendor: "test",
+				validate(value: unknown) {
+					if (typeof value === "object" && value !== null && typeof (value as { name?: unknown }).name === "string") {
+						return {
+							value: {
+								name: (value as { name: string }).name,
+							},
+						} as const;
+					}
+
+					return {
+						issues: [{ message: "Invalid name", path: ["name"] }],
+					} as const;
+				},
+			},
+		}
+	) as unknown as StandardSchemaV1<{ name: string }>;
+
+	const action = ac.inputSchema(callableSchema).action(async ({ parsedInput }) => {
+		return parsedInput;
+	});
+
+	const validResult = await action({ name: "John" });
+	assert.deepStrictEqual(validResult, { data: { name: "John" } });
+	assert.equal(factoryInvocationCount, 0);
+
+	// @ts-expect-error
+	const invalidResult = await action({});
+	assert.ok(invalidResult.validationErrors);
+	assert.ok(invalidResult.validationErrors.name);
+	assert.equal(factoryInvocationCount, 0);
+});
+
+test("inputSchema throws for sync non-schema functions", () => {
+	assert.throws(
+		() => ac.inputSchema((() => z.object({ name: z.string() })) as any),
+		(error: unknown) =>
+			error instanceof TypeError &&
+			error.message.includes("Standard Schema validator") &&
+			error.message.includes("async function")
+	);
 });
