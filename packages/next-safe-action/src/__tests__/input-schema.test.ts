@@ -9,7 +9,7 @@ const ac = createSafeActionClient();
 
 test("inputSchema with clientInput parameter receives actual input data", async () => {
 	let receivedClientInput: unknown;
-	
+
 	const action = ac
 		.inputSchema(async (clientInput: any) => {
 			receivedClientInput = clientInput;
@@ -51,7 +51,28 @@ test("inputSchema chaining with prevSchema and clientInput works correctly", asy
 	assert.deepStrictEqual(result, { data: { success: true, data: testData } });
 });
 
-test("inputSchema chaining validates against extended schema", async () => {
+test("inputSchema chaining validates against extended schema without function", async () => {
+	const action = ac
+		.inputSchema(z.object({ name: z.string() }))
+		.inputSchema(async (prevSchema, clientInput) => {
+			return prevSchema.extend({ age: z.number() });
+		})
+		.action(async ({ parsedInput }) => {
+			return { success: true, data: parsedInput };
+		});
+
+	// Valid data should work
+	const validResult = await action({ name: "John", age: 25 });
+	assert.deepStrictEqual(validResult, { data: { success: true, data: { name: "John", age: 25 } } });
+
+	// Invalid data should return validation errors
+	// @ts-expect-error
+	const invalidResult = await action({ name: "Jane" }); // Missing age
+	assert.ok(invalidResult.validationErrors);
+	assert.ok(invalidResult.validationErrors.age);
+});
+
+test("inputSchema chaining validates against extended schema with function", async () => {
 	const action = ac
 		.inputSchema(async () => {
 			return z.object({ name: z.string() });
@@ -84,7 +105,7 @@ test("inputSchema with clientInput can build dynamic Zod schema", async () => {
 					email: z.string().email(),
 				});
 			}
-			
+
 			return z.object({
 				type: z.string(),
 				data: z.any(),
@@ -96,13 +117,12 @@ test("inputSchema with clientInput can build dynamic Zod schema", async () => {
 
 	const userResult = await action({ type: "user", name: "John", email: "john@example.com" });
 	assert.deepStrictEqual(userResult, {
-		data: { success: true, data: { type: "user", name: "John", email: "john@example.com" } }
+		data: { success: true, data: { type: "user", name: "John", email: "john@example.com" } },
 	});
 
-	
 	const defaultResult = await action({ type: "other", data: "anything" });
 	assert.deepStrictEqual(defaultResult, {
-		data: { success: true, data: { type: "other", data: "anything" } }
+		data: { success: true, data: { type: "other", data: "anything" } },
 	});
 });
 
@@ -113,7 +133,7 @@ test("inputSchema function throws error when clientInput is invalid", async () =
 			if (!clientInput?.type) {
 				throw new Error("Missing required field: type");
 			}
-			
+
 			return z.object({
 				type: z.string(),
 				data: z.any(),
@@ -124,11 +144,11 @@ test("inputSchema function throws error when clientInput is invalid", async () =
 		});
 
 	// Test with missing type field - should throw
-    // @ts-expect-error
+	// @ts-expect-error
 	const result = await action({ data: "some data" });
-	
+
 	// Should return server error when inputSchema function throws
 	assert.deepStrictEqual(result, {
-		serverError: DEFAULT_SERVER_ERROR_MESSAGE
+		serverError: DEFAULT_SERVER_ERROR_MESSAGE,
 	});
 });
