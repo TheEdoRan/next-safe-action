@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
-import { createSafeActionClient } from "..";
+import { createSafeActionClient, type MiddlewareResult } from "..";
 import { FrameworkErrorHandler } from "../next/errors";
 
 const ac = createSafeActionClient();
@@ -86,22 +86,20 @@ test("action with input schema and redirect calls onNavigation callback with cor
 	let capturedNavigationKind: any;
 	const testInput = { userId: "test-123", action: "redirect" };
 
-	const action = ac
-		.inputSchema(z.object({ userId: z.string(), action: z.string() }))
-		.action(
-			async ({ parsedInput }) => {
-				if (parsedInput.action === "redirect") {
-					redirect("/dashboard");
-				}
-				return { success: true };
-			},
-			{
-				onNavigation: async ({ navigationKind }) => {
-					onNavigationCalled = true;
-					capturedNavigationKind = navigationKind;
-				},
+	const action = ac.inputSchema(z.object({ userId: z.string(), action: z.string() })).action(
+		async ({ parsedInput }) => {
+			if (parsedInput.action === "redirect") {
+				redirect("/dashboard");
 			}
-		);
+			return { success: true };
+		},
+		{
+			onNavigation: async ({ navigationKind }) => {
+				onNavigationCalled = true;
+				capturedNavigationKind = navigationKind;
+			},
+		}
+	);
 
 	await action(testInput).catch((e) => {
 		if (!FrameworkErrorHandler.isNavigationError(e)) {
@@ -129,7 +127,7 @@ test("action correctly identifies different navigation types", async () => {
 
 test("navigation error is thrown after middleware execution", async () => {
 	let middlewareExecuted = false;
-	let middlewareResult: any;
+	let middlewareResult = {} as MiddlewareResult<any, any>;
 
 	const action = ac
 		.use(async ({ next }) => {

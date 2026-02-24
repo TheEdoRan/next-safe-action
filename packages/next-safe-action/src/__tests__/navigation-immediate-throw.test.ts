@@ -17,7 +17,7 @@
  * - Callbacks still execute properly via useLayoutEffect
  */
 
-import { redirect, notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
@@ -85,7 +85,7 @@ test("navigation error is propagated synchronously through promise chain", async
 	});
 
 	// Wait for microtasks to complete
-	await new Promise(resolve => setImmediate(resolve));
+	await new Promise((resolve) => setImmediate(resolve));
 
 	assert.strictEqual(caughtSynchronously, true, "Error should be catchable in next microtask");
 });
@@ -140,16 +140,14 @@ test("callbacks execute before error is re-thrown on server", async () => {
 test("redirect with validation - error thrown after validation passes", async () => {
 	const executionOrder: string[] = [];
 
-	const action = ac
-		.inputSchema(z.object({ shouldRedirect: z.boolean() }))
-		.action(async ({ parsedInput }) => {
-			executionOrder.push("validation-passed");
-			if (parsedInput.shouldRedirect) {
-				executionOrder.push("before-redirect");
-				redirect("/test");
-			}
-			return { success: true };
-		});
+	const action = ac.inputSchema(z.object({ shouldRedirect: z.boolean() })).action(async ({ parsedInput }) => {
+		executionOrder.push("validation-passed");
+		if (parsedInput.shouldRedirect) {
+			executionOrder.push("before-redirect");
+			redirect("/test");
+		}
+		return { success: true };
+	});
 
 	await action({ shouldRedirect: true }).catch((e) => {
 		executionOrder.push("error-caught");
@@ -206,7 +204,7 @@ test("no double-throwing of navigation errors", async () => {
 	});
 
 	// Wait a bit to ensure no delayed/deferred throws
-	await new Promise(resolve => setTimeout(resolve, 100));
+	await new Promise((resolve) => setTimeout(resolve, 100));
 
 	assert.strictEqual(catchCount, 1, "Error should only be thrown once, not deferred and re-thrown");
 });
@@ -221,7 +219,7 @@ test("redirect preserves error digest format", async () => {
 			// Verify the error has the expected Next.js redirect format
 			assert.ok("digest" in e, "Error should have digest property");
 			assert.strictEqual(typeof e.digest, "string", "Digest should be a string");
-			assert.ok(e.digest.includes("NEXT_REDIRECT"), "Digest should contain NEXT_REDIRECT");
+			assert.ok((e.digest as string).includes("NEXT_REDIRECT"), "Digest should contain NEXT_REDIRECT");
 		}
 	});
 });
