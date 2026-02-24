@@ -5,7 +5,7 @@ description: Learn how to extend previous schema(s)
 
 # Extend previous schema(s)
 
-Sometimes it's useful to define an action "template" with a base input schema and then extend it with additional properties. This can be done inside the [`inputSchema()`](/docs/define-actions/instance-methods#inputschema) method by passing an async function that receives the previous schema as the first argument and an `opts` object (with `clientInput`) as the second argument. See the example below:
+Sometimes it's useful to define an action "template" with a base input schema and then extend it with additional properties. This can be done inside the [`inputSchema()`](/docs/define-actions/instance-methods#inputschema) method by passing an `async` function that receives the previous schema as the first argument and an `opts` object (with `clientInput`) as the second argument. See the example below:
 
 ```typescript
 "use server";
@@ -62,3 +62,5 @@ const myAction = actionClient
 ```
 
 Note that if you don't use `prevSchema` inside the `inputSchema()` callback, the previous schema(s) will be overwritten.
+
+Only `async` callbacks are treated as schema extension/replacement callbacks at runtime. If you pass a validator directly (including a callable Standard Schema validator), it is treated as the input validator itself.
