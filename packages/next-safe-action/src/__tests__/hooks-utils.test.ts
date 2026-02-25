@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+
 import assert from "node:assert";
 import { test } from "node:test";
 import { getActionShorthandStatusObject, getActionStatus } from "../hooks-utils";
@@ -57,4 +59,3 @@ test("executing status remains executing", () => {
 
 	assert.strictEqual(status, "executing");
 });
-
