@@ -30,7 +30,6 @@ export const useStateAction = <ServerError, S extends StandardSchemaV1 | undefin
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<S, void>>();
 	const status = getActionStatus<ServerError, S, CVE, Data>({
 		isExecuting,
-		isTransitioning,
 		result: result ?? {},
 		isIdle,
 		// HACK: This is a workaround to avoid the status being "hasNavigated" when the action is executed.
@@ -71,6 +70,6 @@ export const useStateAction = <ServerError, S extends StandardSchemaV1 | undefin
 		input: clientInput as InferInputOrDefault<S, undefined>,
 		result,
 		status,
-		...getActionShorthandStatusObject(status),
+		...getActionShorthandStatusObject({ status, isTransitioning }),
 	};
 };

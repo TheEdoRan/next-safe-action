@@ -7,14 +7,12 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefined, CVE, Data>({
 	isIdle,
 	isExecuting,
-	isTransitioning,
 	result,
 	hasNavigated,
 	hasThrownError,
 }: {
 	isIdle: boolean;
 	isExecuting: boolean;
-	isTransitioning: boolean;
 	hasNavigated: boolean;
 	hasThrownError: boolean;
 	result: SafeActionResult<ServerError, S, CVE, Data>;
@@ -23,8 +21,6 @@ export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefi
 		return "idle";
 	} else if (isExecuting) {
 		return "executing";
-	} else if (isTransitioning) {
-		return "transitioning";
 	} else if (
 		hasThrownError ||
 		typeof result.validationErrors !== "undefined" ||
@@ -38,12 +34,18 @@ export const getActionStatus = <ServerError, S extends StandardSchemaV1 | undefi
 	}
 };
 
-export const getActionShorthandStatusObject = (status: HookActionStatus): HookShorthandStatus => {
+export const getActionShorthandStatusObject = ({
+	status,
+	isTransitioning,
+}: {
+	status: HookActionStatus;
+	isTransitioning: boolean;
+}): HookShorthandStatus => {
 	return {
 		isIdle: status === "idle",
 		isExecuting: status === "executing",
-		isTransitioning: status === "transitioning",
-		isPending: status === "executing" || status === "transitioning",
+		isTransitioning,
+		isPending: status === "executing" || isTransitioning,
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
 		hasNavigated: status === "hasNavigated",
@@ -89,8 +91,6 @@ export const useActionCallbacks = <ServerError, S extends StandardSchemaV1 | und
 			switch (status) {
 				case "executing":
 					await Promise.resolve(onExecute?.({ input })).then(() => {});
-					break;
-				case "transitioning":
 					break;
 				case "hasSucceeded":
 					if (navigationError || thrownError) {
