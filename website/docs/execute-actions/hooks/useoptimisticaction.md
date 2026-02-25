@@ -127,15 +127,16 @@ export default function TodosBox({ todos }: Props) {
 - `result`: result of the action after its execution.
 - `optimisticState`: the optimistic state updated right after `execute()` call (on the next render), with the behavior defined in `updateFn`.
 - `reset()`: programmatically reset execution state (`input`, `status` and `result`).
-- `status`: string that represents the current action status.
+- `status`: string that represents the current action status (`idle`, `executing`, `hasSucceeded`, `hasErrored`, `hasNavigated`).
 - `isIdle`: true if the action status is `idle`.
-- `isTransitioning`: true if the transition status  from the `useTransition` hook used under the hood is `true`.
+- `isTransitioning`: true if the transition status from the `useTransition` hook used under the hood is `true`.
 - `isExecuting`: true if the action status is `executing`.
-- `isPending`: true if the action status is `executing` or `transitioning`.
+- `isPending`: true if the action is executing or the underlying React transition is still pending.
 - `hasSucceeded`: true if the action status is `hasSucceeded`.
 - `hasErrored`: true if the action status is `hasErrored`.
 - `hasNavigated`: true if a `next/navigation` function was called inside the action.
 
-The `executing` status and `isExecuting` shorthand property include the transition state.
+If you want to check the transition state, use `isTransitioning` (or `isPending`) instead of `status`. The `status` property does not emit a `transitioning` value.
+`isTransitioning` reflects the raw React transition state, while `isPending` is the combined shorthand (`isExecuting || isTransitioning`).
 
 Explore a working example [here](<https://github.com/TheEdoRan/next-safe-action/tree/main/apps/playground/src/app/(examples)/optimistic-hook>).

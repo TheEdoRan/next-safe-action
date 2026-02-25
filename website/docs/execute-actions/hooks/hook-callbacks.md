@@ -13,6 +13,8 @@ description: Hook callbacks are a way to perform custom logic based on the curre
 
 Hook callbacks are a way to perform custom logic based on the current action execution status. You can pass them to the three hooks in the `utils` object, which is the second argument. All of them are optional and don't return anything, they can also be async or not:
 
+If you need to check whether the underlying React transition is still pending, use the hook shorthand statuses (`isTransitioning` / `isPending`) in your component logic. The hook `status` value does not emit a `transitioning` state.
+
 ```tsx
 const action = useAction(testAction, {
   onExecute: ({ input }) => {},

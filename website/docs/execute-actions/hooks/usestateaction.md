@@ -19,6 +19,7 @@ You can access the documentation for the deprecated `useStateAction()` hook in t
 The `useStateAction()` hook has been deprecated in favor of the [`useActionState()`](https://react.dev/reference/react/useActionState) hook from React, which was used anyway under the hood. This is because the `useStateAction()` hook, while adding useful features, prevented progressive enhancement from working, since it wrapped the `useActionState()` hook with additional functionality that only worked with JavaScript enabled.
 
 Note that you can also use "stateless" actions with forms, as described in [this section](/docs/recipes/form-actions#stateless-form-actions).
+When using hook-based execution (`useAction()` / `useOptimisticAction()`), check transition state with the shorthand flags (`isTransitioning` / `isPending`) instead of expecting a `transitioning` value in `status`.
 
 ### Example
 
