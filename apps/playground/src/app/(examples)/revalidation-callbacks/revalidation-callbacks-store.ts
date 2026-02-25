@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { connection } from "next/server";
 
 export const REVALIDATION_CALLBACKS_TAG = "playground-revalidation-callbacks";
 
@@ -47,6 +48,8 @@ export function mutateRevalidationCallbacksState(kind: RevalidationKind) {
 }
 
 export async function getRevalidationCallbacksLiveSnapshot() {
+	await connection();
+
 	return {
 		...state,
 		readAt: new Date().toISOString(),
@@ -56,4 +59,3 @@ export async function getRevalidationCallbacksLiveSnapshot() {
 export async function getRevalidationCallbacksTaggedSnapshot() {
 	return getTaggedSnapshotCached();
 }
-
