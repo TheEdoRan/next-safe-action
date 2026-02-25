@@ -8,6 +8,7 @@ import { ResultBox } from "../../_components/result-box";
 import { onboardUser } from "./onboard-action";
 
 export default function BindArguments() {
+	// eslint-disable-next-line react-hooks/purity
 	const boundOnboardUser = onboardUser.bind(null, crypto.randomUUID(), Math.floor(Math.random() * 200));
 
 	const { execute, result, status, reset } = useAction(boundOnboardUser);
@@ -18,7 +19,7 @@ export default function BindArguments() {
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>Action binding arguments</StyledHeading>
 			<form
-				className="flex flex-col mt-8 space-y-4"
+				className="mt-8 flex flex-col space-y-4"
 				onSubmit={(e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);

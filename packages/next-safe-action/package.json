@@ -38,7 +38,7 @@
 		}
 	],
 	"scripts": {
-		"lint": "tsc && prettier --write . && eslint .",
+		"lint": "tsc --noEmit && eslint .",
 		"test": "node --import tsx --test ./src/__tests__/*.test.ts",
 		"build": "tsdown",
 		"deploy": "semantic-release"
@@ -72,8 +72,6 @@
 		"@typescript-eslint/eslint-plugin": "^8.26.1",
 		"@typescript-eslint/parser": "^8.26.1",
 		"eslint": "catalog:",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-define-config": "^2.1.0",
 		"eslint-plugin-react-hooks": "^5.1.0",
 		"next": "catalog:",
 		"react": "catalog:",

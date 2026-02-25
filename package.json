@@ -10,6 +10,7 @@
 		"build": "turbo run build",
 		"test:lib": "turbo run test --filter=next-safe-action",
 		"lint:lib": "turbo run lint --filter=next-safe-action",
+		"lint:pg": "turbo run lint --filter=@apps/playground",
 		"build:lib": "turbo run build --filter=next-safe-action --force",
 		"deploy:lib": "turbo run deploy --filter=next-safe-action",
 		"build:pg": "turbo run build --filter=@apps/playground --force"

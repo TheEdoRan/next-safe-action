@@ -8,8 +8,8 @@ import type {
 	ServerCodeFn,
 	StateServerCodeFn,
 } from "./index.types";
-import { isStandardSchema } from "./standard-schema";
 import type { InferOutputOrDefault, StandardSchemaV1 } from "./standard-schema";
+import { isStandardSchema } from "./standard-schema";
 import type {
 	FlattenedValidationErrors,
 	HandleValidationErrorsShapeFn,

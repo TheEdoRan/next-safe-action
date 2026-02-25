@@ -65,6 +65,7 @@ export default function RevalidationCallbacksClient() {
 			},
 		});
 
+	// eslint-disable-next-line react-hooks/refs
 	latestFlagsRef.current = {
 		status,
 		isTransitioning,
