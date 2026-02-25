@@ -3,10 +3,7 @@
 import { action } from "@/lib/safe-action";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
-import {
-	REVALIDATION_CALLBACKS_TAG,
-	mutateRevalidationCallbacksState,
-} from "./revalidation-callbacks-store";
+import { REVALIDATION_CALLBACKS_TAG, mutateRevalidationCallbacksState } from "./revalidation-callbacks-store";
 
 const schema = z.object({
 	kind: z.enum(["revalidatePath", "revalidateTag"]),
@@ -23,7 +20,7 @@ export const testRevalidationCallbacks = action
 		if (kind === "revalidatePath") {
 			revalidatePath("/revalidation-callbacks");
 		} else {
-			revalidateTag(REVALIDATION_CALLBACKS_TAG);
+			revalidateTag(REVALIDATION_CALLBACKS_TAG, "max");
 		}
 
 		return {
