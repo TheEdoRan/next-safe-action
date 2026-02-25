@@ -23,6 +23,7 @@ export default function Home() {
 				</ExampleLink>
 				<ExampleLink href="/state-update">State update</ExampleLink>
 				<ExampleLink href="/navigation">Navigation</ExampleLink>
+				<ExampleLink href="/revalidation-callbacks">Revalidation callbacks</ExampleLink>
 				<ExampleLink href="/file-upload">File upload</ExampleLink>
 				<ExampleLink href="/bind-arguments">Bind arguments</ExampleLink>
 				<ExampleLink href="/no-arguments">No arguments</ExampleLink>
