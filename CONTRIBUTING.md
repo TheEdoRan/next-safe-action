@@ -11,10 +11,7 @@ This is a monorepo, that uses:
 - [TypeScript](https://www.typescriptlang.org/) as primary language;
 - [ESLint](https://eslint.org/) as linter;
 - [Prettier](https://prettier.io/) as formatter;
-- [Husky](https://github.com/typicode/husky) as Git hooks manager;
-- [Commitizen](https://github.com/commitizen/cz-cli) as commit message manager;
-- [Commitlint](https://commitlint.js.org/) as commit message linter;
-- [semantic-release](https://github.com/semantic-release/semantic-release) as release manager.
+- [Changesets](https://github.com/changesets/changesets) for versioning and release PR management.
 - [Docusaurus](https://docusaurus.io/) for the documentation website.
 
 ### What you need to install
@@ -59,6 +56,7 @@ pnpm run build:lib && pnpm run pg
 If you updated user facing APIs of the library, you're **not required**, but **highly incouraged** to:
 - update [the documentation](./website/docs) of the library to reflect the changes you've made.
 - write tests for the changes you've made. They should be placed in the appropriate file inside [`__tests__`](./packages/next-safe-action/src/__tests__) directory (`next-safe-action` package).
+- add a Changeset file (for releasable library changes) using `pnpm run changeset`.
 
 These steps can be done in later stages of the PR too, for instance when a maintainer already approved your code updates.
 
@@ -78,12 +76,12 @@ pnpm run start
 
 Once you're done with your code changes, you can finally commit and push them to the remote repository.
 
-Committing is very easy, thanks to both `commitizen` and `commitlint` utilities. Each commit message **must** follow the [Conventional Commits](https://www.conventionalcommits.org/) format, to allow for automated release management via `semantic-release`. You can commit your code using:
+There is no enforced commit message format in the repository. Use clear commit messages that describe the change.
+
+For releasable library changes, include a Changeset file in your PR:
 
 ```sh
-git commit --no-edit
+pnpm run changeset
 ```
 
-This command will bring up the `commitizen` interface to help you write a proper commit message, without also bringing up the default editor. If you want to, you can set up an alias for it, to make it easier to type and remember. The commit message is then run through `commitlint` to validate it.
-
-Changes made in `website` or `playground` scopes **must** be typed `chore(<scope>)`, since they are not part of the library code.
+PR CI runs linting and tests before merge, and the release workflow uses Changesets to create version PRs and publish from `main`.

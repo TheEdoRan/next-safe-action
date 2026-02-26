@@ -8,11 +8,6 @@
 		},
 		"test": {},
 		"lint": {},
-		"deploy": {
-			"cache": false,
-			"dependsOn": ["build", "lint"],
-			"passThroughEnv": ["GITHUB_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_URL", "ACTIONS_ID_TOKEN_REQUEST_TOKEN"]
-		},
 		"dev": {
 			"cache": false,
 			"persistent": true

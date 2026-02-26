@@ -39,8 +39,7 @@ TypeScript is the primary language. Formatting/linting is required.
 No explicit coverage threshold is configured; add regression tests for behavioral or API changes.
 
 ## Commit & Pull Request Guidelines
-- Conventional Commits are required (enforced by commitlint).
 - Common patterns in history: `fix: ...`, `chore: ...`, `build: ...`, `docs(readme): ...`.
-- For `website` or `playground` changes, use `chore(<scope>): ...` per project contributing rules.
+- For releasable library changes, include a Changeset file in `.changeset/`.
 - Before significant work, open or link an issue/discussion.
 - PRs should include: clear summary, linked issue (if applicable), test updates, and docs updates for user-facing API changes.
