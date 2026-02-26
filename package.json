@@ -39,8 +39,8 @@
 		"is-ci": "^4.1.0",
 		"prettier": "^3.4.2",
 		"prettier-plugin-tailwindcss": "^0.6.11",
-		"turbo": "^2.8.10",
+		"turbo": "^2.8.11",
 		"typescript": "catalog:"
 	},
-	"packageManager": "pnpm@10.30.2"
+	"packageManager": "pnpm@10.30.3"
 }
