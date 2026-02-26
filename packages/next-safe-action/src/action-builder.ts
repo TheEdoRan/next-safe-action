@@ -143,7 +143,7 @@ export function actionBuilder<
 										? ({
 												value: undefined,
 											} as const satisfies StandardSchemaV1.Result<undefined>)
-										: await standardParse(await args.inputSchemaFn(), mainClientInput);
+										: await standardParse(await args.inputSchemaFn(mainClientInput), mainClientInput);
 
 								let hasBindValidationErrors = false;
 
