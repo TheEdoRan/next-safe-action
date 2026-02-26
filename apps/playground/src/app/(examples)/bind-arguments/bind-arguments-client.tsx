@@ -13,7 +13,6 @@ type BindArgumentsClientPageProps = {
 };
 
 export function BindArgumentsClientPage({ age, userId }: BindArgumentsClientPageProps) {
-	// eslint-disable-next-line react-hooks/purity
 	const boundOnboardUser = onboardUser.bind(null, userId, age);
 
 	const { execute, result, status, reset } = useAction(boundOnboardUser);
