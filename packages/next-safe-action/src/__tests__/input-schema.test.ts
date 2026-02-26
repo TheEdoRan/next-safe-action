@@ -128,6 +128,40 @@ test("inputSchema with clientInput can build dynamic Zod schema", async () => {
 	});
 });
 
+test("inputSchema with clientInput still receives main input when excess arguments are passed", async () => {
+	let receivedClientInput: unknown;
+
+	const action = ac
+		.inputSchema(async (_, { clientInput }) => {
+			receivedClientInput = clientInput;
+
+			if ((clientInput as { type?: string })?.type === "user") {
+				return z.object({
+					type: z.literal("user"),
+					name: z.string(),
+					email: z.string().email(),
+				});
+			}
+
+			return z.object({
+				type: z.string(),
+				data: z.any(),
+			});
+		})
+		.action(async ({ parsedInput }) => {
+			return { success: true, data: parsedInput };
+		});
+
+	const input = { type: "user", name: "John", email: "john@example.com" };
+	const actionWithExcessArgs = action as (...args: unknown[]) => Promise<unknown>;
+	const result = await actionWithExcessArgs(input, { client: "rq" }, "extra");
+
+	assert.deepStrictEqual(receivedClientInput, input);
+	assert.deepStrictEqual(result, {
+		data: { success: true, data: input },
+	});
+});
+
 test("inputSchema function throws error when clientInput is invalid", async () => {
 	const action = ac
 		.inputSchema(async (_, { clientInput }) => {

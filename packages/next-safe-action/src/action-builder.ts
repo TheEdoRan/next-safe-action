@@ -70,7 +70,6 @@ export function actionBuilder<
 					const middlewareResult: MiddlewareResult<ServerError, object> = { success: false };
 					type PrevResult = SafeActionResult<ServerError, IS, CVE, Data>;
 					let prevResult: PrevResult = {};
-					const parsedInputDatas: any[] = [];
 					const frameworkErrorHandler = new FrameworkErrorHandler();
 
 					// Track if server error has been handled.
@@ -82,13 +81,12 @@ export function actionBuilder<
 						prevResult = clientInputs.splice(bindArgsSchemas.length, 1)[0] as PrevResult;
 					}
 
-					// If the number of bind args schemas + 1 (which is the optional main arg schema) is greater
-					// than the number of provided client inputs, it means that the main argument is missing.
-					// This happens when the main schema is missing (since it's optional), or if a void main schema
-					// is provided along with bind args schemas.
-					if (bindArgsSchemas.length + 1 > clientInputs.length) {
-						clientInputs.push(undefined);
-					}
+					// Extract structured inputs based on schema definitions rather than iterating over
+					// clientInputs, so that excess arguments from external callers are silently ignored
+					// — just like a plain function would. This keeps the wrapper transparent to its
+					// intended signature.
+					const mainClientInput = clientInputs[bindArgsSchemas.length] as InferInputOrDefault<IS, undefined>;
+					const bindArgsClientInputs = clientInputs.slice(0, bindArgsSchemas.length) as InferInputArray<BAS>;
 
 					// Execute the middleware stack.
 					const executeMiddlewareStack = async (idx = 0) => {
@@ -114,8 +112,8 @@ export function actionBuilder<
 							// Middleware function.
 							if (middlewareFn) {
 								await middlewareFn({
-									clientInput: clientInputs.at(-1), // pass raw client input
-									bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
+									clientInput: mainClientInput as unknown, // pass raw client input
+									bindArgsClientInputs: bindArgsClientInputs as unknown[],
 									ctx: currentCtx,
 									metadata: args.metadata,
 									next: async (nextOpts) => {
@@ -134,60 +132,54 @@ export function actionBuilder<
 								});
 								// Action function.
 							} else {
-								// Validate the client inputs in parallel.
-								const parsedInputs = await Promise.all(
-									clientInputs.map(async (input, i) => {
-										// Last client input in the array, main argument (no bind arg).
-										if (i === clientInputs.length - 1) {
-											// If schema is undefined, set parsed data to undefined.
-											if (typeof args.inputSchemaFn === "undefined") {
-												return {
-													value: undefined,
-												} as const satisfies StandardSchemaV1.Result<undefined>;
-											}
-
-											// Otherwise, parse input with the schema.
-											return standardParse(await args.inputSchemaFn(input), input);
-										}
-
-										// Otherwise, we're processing bind args client inputs.
-										return standardParse(bindArgsSchemas[i]!, input);
-									})
+								// Validate bind args inputs by iterating over schemas.
+								const parsedBindArgsResults = await Promise.all(
+									bindArgsSchemas.map((schema, i) => standardParse(schema, bindArgsClientInputs[i]))
 								);
+
+								// Validate main input.
+								const parsedMainInputResult =
+									typeof args.inputSchemaFn === "undefined"
+										? ({
+												value: undefined,
+											} as const satisfies StandardSchemaV1.Result<undefined>)
+										: await standardParse(await args.inputSchemaFn(mainClientInput), mainClientInput);
 
 								let hasBindValidationErrors = false;
 
-								// Initialize the bind args validation errors array with null values.
-								// It has the same length as the number of bind arguments (parsedInputs - 1).
-								const bindArgsValidationErrors = Array(parsedInputs.length - 1).fill({});
+								// Initialize the bind args validation errors array.
+								const bindArgsValidationErrors = Array(bindArgsSchemas.length).fill({});
 
-								for (let i = 0; i < parsedInputs.length; i++) {
-									const parsedInput = parsedInputs[i]!;
+								// Process bind args validation results.
+								const parsedBindArgsInputs: any[] = [];
+
+								for (let i = 0; i < parsedBindArgsResults.length; i++) {
+									const parsedInput = parsedBindArgsResults[i]!;
 
 									if (!parsedInput.issues) {
-										parsedInputDatas.push(parsedInput.value);
+										parsedBindArgsInputs.push(parsedInput.value);
 									} else {
-										// If we're processing a bind argument and there are validation errors for this one,
-										// we need to store them in the bind args validation errors array at this index.
-										if (i < parsedInputs.length - 1) {
-											bindArgsValidationErrors[i] = buildValidationErrors<BAS[number]>(parsedInput.issues);
-											hasBindValidationErrors = true;
-										} else {
-											// Otherwise, we're processing the non-bind argument (the last one) in the array.
-											const validationErrors = buildValidationErrors<IS>(parsedInput.issues);
-
-											middlewareResult.validationErrors = await Promise.resolve(
-												args.handleValidationErrorsShape(validationErrors, {
-													clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-													bindArgsClientInputs: (bindArgsSchemas.length
-														? clientInputs.slice(0, -1)
-														: []) as InferInputArray<BAS>,
-													ctx: currentCtx as Ctx,
-													metadata: args.metadata,
-												})
-											);
-										}
+										bindArgsValidationErrors[i] = buildValidationErrors<BAS[number]>(parsedInput.issues);
+										hasBindValidationErrors = true;
 									}
+								}
+
+								// Process main input validation result.
+								let parsedMainInput: any = undefined;
+
+								if (!parsedMainInputResult.issues) {
+									parsedMainInput = parsedMainInputResult.value;
+								} else {
+									const validationErrors = buildValidationErrors<IS>(parsedMainInputResult.issues);
+
+									middlewareResult.validationErrors = await Promise.resolve(
+										args.handleValidationErrorsShape(validationErrors, {
+											clientInput: mainClientInput,
+											bindArgsClientInputs,
+											ctx: currentCtx as Ctx,
+											metadata: args.metadata,
+										})
+									);
 								}
 
 								// If there are bind args validation errors, throw an error.
@@ -204,12 +196,10 @@ export function actionBuilder<
 
 								// Server code function always has this object as the first argument.
 								scfArgs[0] = {
-									parsedInput: parsedInputDatas.at(-1) as InferOutputOrDefault<IS, undefined>,
-									bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferOutputArray<BAS>,
-									clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-									bindArgsClientInputs: (bindArgsSchemas.length
-										? clientInputs.slice(0, -1)
-										: []) as InferInputArray<BAS>,
+									parsedInput: parsedMainInput as InferOutputOrDefault<IS, undefined>,
+									bindArgsParsedInputs: parsedBindArgsInputs as InferOutputArray<BAS>,
+									clientInput: mainClientInput,
+									bindArgsClientInputs,
 									ctx: currentCtx as Ctx,
 									metadata: args.metadata,
 								};
@@ -241,8 +231,8 @@ export function actionBuilder<
 									middlewareResult.data = data;
 								}
 
-								middlewareResult.parsedInput = parsedInputDatas.at(-1);
-								middlewareResult.bindArgsParsedInputs = parsedInputDatas.slice(0, -1);
+								middlewareResult.parsedInput = parsedMainInput;
+								middlewareResult.bindArgsParsedInputs = parsedBindArgsInputs;
 							}
 						} catch (e: unknown) {
 							// Only handle server errors once. If already handled, rethrow to bubble up.
@@ -255,10 +245,8 @@ export function actionBuilder<
 								const ve = e.validationErrors as ValidationErrors<IS>;
 								middlewareResult.validationErrors = await Promise.resolve(
 									args.handleValidationErrorsShape(ve, {
-										clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-										bindArgsClientInputs: (bindArgsSchemas.length
-											? clientInputs.slice(0, -1)
-											: []) as InferInputArray<BAS>,
+										clientInput: mainClientInput,
+										bindArgsClientInputs,
 										ctx: currentCtx as Ctx,
 										metadata: args.metadata,
 									})
@@ -272,8 +260,8 @@ export function actionBuilder<
 								const error = isError(e) ? e : new Error(DEFAULT_SERVER_ERROR_MESSAGE);
 								const returnedError = await Promise.resolve(
 									args.handleServerError(error, {
-										clientInput: clientInputs.at(-1), // pass raw client input
-										bindArgsClientInputs: bindArgsSchemas.length ? clientInputs.slice(0, -1) : [],
+										clientInput: mainClientInput as unknown, // pass raw client input
+										bindArgsClientInputs: bindArgsClientInputs as unknown[],
 										ctx: currentCtx,
 										metadata: args.metadata as InferOutputOrDefault<MetadataSchema, undefined>,
 									})
@@ -295,8 +283,8 @@ export function actionBuilder<
 							utils?.onNavigation?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
+								clientInput: mainClientInput,
+								bindArgsClientInputs,
 								navigationKind: FrameworkErrorHandler.getNavigationKind(frameworkErrorHandler.error),
 							})
 						);
@@ -305,8 +293,8 @@ export function actionBuilder<
 							utils?.onSettled?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
+								clientInput: mainClientInput,
+								bindArgsClientInputs,
 								result: {},
 								navigationKind: FrameworkErrorHandler.getNavigationKind(frameworkErrorHandler.error),
 							})
@@ -360,10 +348,10 @@ export function actionBuilder<
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
 								data: actionResult.data as Data,
-								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
-								parsedInput: parsedInputDatas.at(-1) as InferOutputOrDefault<IS, undefined>,
-								bindArgsParsedInputs: parsedInputDatas.slice(0, -1) as InferOutputArray<BAS>,
+								clientInput: mainClientInput,
+								bindArgsClientInputs,
+								parsedInput: middlewareResult.parsedInput as InferOutputOrDefault<IS, undefined>,
+								bindArgsParsedInputs: middlewareResult.bindArgsParsedInputs as InferOutputArray<BAS>,
 							})
 						);
 					} else {
@@ -371,8 +359,8 @@ export function actionBuilder<
 							utils?.onError?.({
 								metadata: args.metadata,
 								ctx: currentCtx as Ctx,
-								clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-								bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
+								clientInput: mainClientInput,
+								bindArgsClientInputs,
 								error: actionResult,
 							})
 						);
@@ -383,8 +371,8 @@ export function actionBuilder<
 						utils?.onSettled?.({
 							metadata: args.metadata,
 							ctx: currentCtx as Ctx,
-							clientInput: clientInputs.at(-1) as InferInputOrDefault<IS, undefined>,
-							bindArgsClientInputs: (bindArgsSchemas.length ? clientInputs.slice(0, -1) : []) as InferInputArray<BAS>,
+							clientInput: mainClientInput,
+							bindArgsClientInputs,
 							result: actionResult,
 						})
 					);
