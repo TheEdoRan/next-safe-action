@@ -1,32 +1,24 @@
 name: CI
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-      - beta
-      - next
-      - experimental
-      - 4.x
-      - 7.x
     paths:
       - "packages/**"
       - "turbo.json"
       - "package.json"
       - "pnpm-lock.yaml"
-      - ".changeset/**"
-      - ".github/workflows/**"
-  pull_request:
-    paths:
-      - "packages/**"
-      - "turbo.json"
-      - "package.json"
-      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
       - ".changeset/**"
       - ".github/workflows/**"
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   ci:
@@ -46,7 +38,6 @@ jobs:
       - run: pnpm run test:lib
 
   check-changesets:
-    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
