@@ -40,6 +40,7 @@ No explicit coverage threshold is configured; add regression tests for behaviora
 
 ## Commit & Pull Request Guidelines
 - Common patterns in history: `fix: ...`, `chore: ...`, `build: ...`, `docs(readme): ...`.
-- For releasable library changes, include a Changeset file in `.changeset/`.
+- For PRs targeting `main` that touch package or release-related files, include a Changeset file in `.changeset/`.
+- If no version bump should be produced, add an empty Changeset (`pnpm run changeset -- --empty`).
 - Before significant work, open or link an issue/discussion.
 - PRs should include: clear summary, linked issue (if applicable), test updates, and docs updates for user-facing API changes.

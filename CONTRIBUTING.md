@@ -53,10 +53,10 @@ pnpm run build:lib && pnpm run pg
 > [!TIP]
 > If you see many type errors in the playground app after running the `build:lib` command, try to restart the TS Server of VS Code. This should fix the errors.
 
-If you updated user facing APIs of the library, you're **not required**, but **highly incouraged** to:
+If you updated user facing APIs of the library, you're **not required**, but **highly encouraged** to:
 - update [the documentation](./website/docs) of the library to reflect the changes you've made.
 - write tests for the changes you've made. They should be placed in the appropriate file inside [`__tests__`](./packages/next-safe-action/src/__tests__) directory (`next-safe-action` package).
-- add a Changeset file (for releasable library changes) using `pnpm run changeset`.
+- add a Changeset file using `pnpm run changeset`.
 
 These steps can be done in later stages of the PR too, for instance when a maintainer already approved your code updates.
 
@@ -78,10 +78,16 @@ Once you're done with your code changes, you can finally commit and push them to
 
 There is no enforced commit message format in the repository. Use clear commit messages that describe the change.
 
-For releasable library changes, include a Changeset file in your PR:
+For PRs targeting `main` that touch package or release-related files, include a Changeset file in your PR:
 
 ```sh
 pnpm run changeset
 ```
 
-PR CI runs linting and tests before merge, and the release workflow uses Changesets to create version PRs and publish from `main`.
+If you need to keep the PR in the Changesets flow without producing a version bump, create an empty Changeset:
+
+```sh
+pnpm run changeset -- --empty
+```
+
+PR CI runs linting/tests and checks for changesets before merge. The release workflow uses Changesets to create version PRs and publish from `main`.
