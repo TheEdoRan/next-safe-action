@@ -1,7 +1,7 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
 import { z } from "zod";
+import { action } from "@/lib/safe-action";
 
 const schema = z.object({
 	userId: z.string().uuid(),

@@ -1,9 +1,11 @@
 {
-	"eslint.validate": ["typescript", "typescriptreact"],
 	"editor.codeActionsOnSave": {
-		"source.organizeImports": "explicit",
-		"source.fixAll.eslint": "explicit"
+		"source.fixAll.oxc": "always"
 	},
+	"editor.defaultFormatter": "oxc.oxc-vscode",
+	"editor.formatOnSave": true,
+	"oxc.fmt.configPath": ".oxfmtrc.json",
+	"oxc.typeAware": true,
 	"editor.rulers": [120],
 	"[markdown]": {
 		"editor.formatOnSave": false

@@ -1,8 +1,8 @@
 "use client";
 
-import { StyledButton } from "@/app/_components/styled-button";
 import { useAction } from "next-safe-action/hooks";
 import { useRef, useState } from "react";
+import { StyledButton } from "@/app/_components/styled-button";
 import { ResultBox } from "../../_components/result-box";
 import { testRevalidationCallbacks } from "./revalidation-callbacks-action";
 
@@ -65,7 +65,6 @@ export default function RevalidationCallbacksClient() {
 			},
 		});
 
-	// eslint-disable-next-line react-hooks/refs
 	latestFlagsRef.current = {
 		status,
 		isTransitioning,

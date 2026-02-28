@@ -1,8 +1,8 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
 import { forbidden, notFound, redirect, unauthorized } from "next/navigation";
 import { z } from "zod";
+import { action } from "@/lib/safe-action";
 
 const schema = z.object({
 	kind: z.enum(["redirect", "notFound", "forbidden", "unauthorized", "happy-path"]),

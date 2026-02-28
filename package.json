@@ -6,6 +6,8 @@
 	"scripts": {
 		"pg": "turbo run dev --filter=@apps/playground",
 		"lint": "turbo run lint",
+		"fmt": "oxfmt",
+		"fmt:check": "oxfmt --check",
 		"build": "turbo run build",
 		"test:lib": "turbo run test --filter=next-safe-action",
 		"lint:lib": "turbo run lint --filter=next-safe-action",
@@ -27,9 +29,9 @@
 	},
 	"dependencies": {
 		"@manypkg/cli": "^0.23.0",
-		"prettier": "^3.4.2",
-		"prettier-plugin-tailwindcss": "^0.6.11",
-		"turbo": "^2.8.11",
+		"oxlint": "catalog:",
+		"oxfmt": "catalog:",
+		"turbo": "^2.8.12",
 		"typescript": "catalog:"
 	},
 	"devDependencies": {

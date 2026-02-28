@@ -9,7 +9,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">
-			<body className="antialiased bg-slate-50 dark:bg-slate-950 dark:text-slate-50 text-slate-950 flex flex-col min-h-screen items-center pt-24">
+			<body className="flex min-h-screen flex-col items-center bg-slate-50 pt-24 text-slate-950 antialiased dark:bg-slate-950 dark:text-slate-50">
 				<a
 					id="github-link"
 					href="https://github.com/TheEdoRan/next-safe-action"

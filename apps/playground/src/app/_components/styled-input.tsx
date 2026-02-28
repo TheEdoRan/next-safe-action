@@ -8,7 +8,7 @@ export const StyledInput = forwardRef<HTMLInputElement, Props>(function StyledIn
 			<input
 				{...props}
 				ref={ref}
-				className={`${props.className ?? ""} py-1 px-2 border rounded-md dark:bg-slate-800 dark:border-slate-700`}
+				className={`${props.className ?? ""} rounded-md border px-2 py-1 dark:border-slate-700 dark:bg-slate-800`}
 			/>
 		</>
 	);

@@ -1,5 +1,5 @@
-import { StyledHeading } from "@/app/_components/styled-heading";
 import { Suspense } from "react";
+import { StyledHeading } from "@/app/_components/styled-heading";
 import RevalidationCallbacksClient from "./revalidation-callbacks-client";
 import {
 	REVALIDATION_CALLBACKS_TAG,
@@ -33,12 +33,12 @@ export default function RevalidationCallbacksPage() {
 	return (
 		<main className="w-[32rem] max-w-full px-4">
 			<StyledHeading>Revalidation callbacks</StyledHeading>
-			<p className="mt-4 text-sm text-center">
-				This example helps validate that <code>onSuccess</code> / <code>onSettled</code> still run when a server
-				action calls Next cache revalidation APIs.
+			<p className="mt-4 text-center text-sm">
+				This example helps validate that <code>onSuccess</code> / <code>onSettled</code> still run when a server action
+				calls Next cache revalidation APIs.
 			</p>
 
-			<Suspense fallback={<p className="mt-6 text-sm text-center">Loading snapshots...</p>}>
+			<Suspense fallback={<p className="mt-6 text-center text-sm">Loading snapshots...</p>}>
 				<RevalidationSnapshots />
 			</Suspense>
 

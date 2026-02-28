@@ -16,6 +16,8 @@ Run from repository root unless noted.
 - `pnpm install`: install root workspace dependencies.
 - `pnpm run build`: run turbo builds across workspace packages.
 - `pnpm run lint`: run lint tasks across workspace packages.
+- `pnpm run format`: format workspace files with Oxfmt.
+- `pnpm run format:check`: check formatting with Oxfmt.
 - `pnpm run test:lib`: run library tests only.
 - `pnpm run build:lib && pnpm run pg`: rebuild library and start playground dev server.
 - `pnpm run build:pg`: build playground only.
@@ -24,10 +26,11 @@ Run from repository root unless noted.
 ## Coding Style & Naming Conventions
 TypeScript is the primary language. Formatting/linting is required.
 
-- Prettier rules: tabs (`tabWidth: 2`), `printWidth: 120`, semicolons, double quotes, trailing commas (`es5`).
-- Library lint command: `pnpm --filter next-safe-action run lint` (includes `tsc`, Prettier, ESLint).
+- Oxfmt rules: tabs (`tabWidth: 2`), `printWidth: 120`, semicolons, double quotes, trailing commas (`es5`) in `.oxfmtrc.json`.
+- Oxlint config layout: shared base in `.oxlintrc.base.json`, package overrides in package-local `.oxlintrc.json`.
+- Library lint command: `pnpm --filter next-safe-action run lint` (includes `tsc`, Oxlint).
 - Follow existing naming patterns such as action files like `*-action.ts` and tests like `*.test.ts`.
-- Prefer explicit type imports/exports (enforced by ESLint).
+- Prefer explicit type imports/exports (enforced by Oxlint config).
 
 ## Testing Guidelines
 - Framework: Node test runner with `tsx` (`node --import tsx --test`).

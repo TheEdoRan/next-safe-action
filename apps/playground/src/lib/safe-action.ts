@@ -23,7 +23,7 @@ export const action = createSafeActionClient({
 			actionName: z.string(),
 		});
 	},
-}).use(async ({ next, metadata, clientInput, bindArgsClientInputs, ctx }) => {
+}).use(async ({ next, metadata, clientInput, bindArgsClientInputs }) => {
 	// Here we use a logging middleware.
 	const start = Date.now();
 

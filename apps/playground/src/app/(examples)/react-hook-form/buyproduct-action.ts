@@ -1,7 +1,7 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
 import { randomUUID } from "crypto";
+import { action } from "@/lib/safe-action";
 import { schema } from "./validation";
 
 export const buyProduct = action

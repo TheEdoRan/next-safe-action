@@ -1,9 +1,9 @@
 "use client";
 
+import { useAction } from "next-safe-action/hooks";
 import { StyledButton } from "@/app/_components/styled-button";
 import { StyledHeading } from "@/app/_components/styled-heading";
 import { StyledInput } from "@/app/_components/styled-input";
-import { useAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
 import { onboardUser } from "./onboard-action";
 

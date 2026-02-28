@@ -9,10 +9,15 @@ This is a monorepo, that uses:
 - [pnpm](https://pnpm.io/) as package manager;
 - [Turborepo](https://turbo.build/repo) as build system;
 - [TypeScript](https://www.typescriptlang.org/) as primary language;
-- [ESLint](https://eslint.org/) as linter;
-- [Prettier](https://prettier.io/) as formatter;
+- [Oxlint](https://oxc.rs/docs/guide/usage/linter) as linter;
+- [Oxfmt](https://oxc.rs/docs/guide/usage/formatter) as formatter;
 - [Changesets](https://github.com/changesets/changesets) for versioning and release PR management.
 - [Docusaurus](https://docusaurus.io/) for the documentation website.
+
+Lint and format configuration files are organized as:
+- root `.oxlintrc.base.json` as shared Oxlint base config;
+- package-level `.oxlintrc.json` files for package-specific Oxlint rules;
+- root `.oxfmtrc.json` for shared formatting rules across workspace packages.
 
 ### What you need to install
 

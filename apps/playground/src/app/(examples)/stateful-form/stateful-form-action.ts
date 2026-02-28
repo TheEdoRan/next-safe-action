@@ -1,8 +1,8 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+import { action } from "@/lib/safe-action";
 
 const schema = zfd.formData({
 	name: zfd.text(z.string().min(1).max(20)),
@@ -18,7 +18,7 @@ export const statefulFormAction = action
 	.stateAction<{
 		prevName?: string;
 		newName: string;
-	}>(async ({ parsedInput, metadata }, { prevResult }) => {
+	}>(async ({ parsedInput }, { prevResult }) => {
 		await new Promise((res) => setTimeout(res, 1000));
 
 		return {
