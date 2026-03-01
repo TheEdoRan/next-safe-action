@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 /**
  * Tests for the fix: Navigation errors should be thrown immediately (synchronously)
  * instead of being deferred to useLayoutEffect.
@@ -17,9 +15,9 @@
  * - Callbacks still execute properly via useLayoutEffect
  */
 
-import { notFound, redirect } from "next/navigation";
 import assert from "node:assert";
 import { test } from "node:test";
+import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 import { createSafeActionClient } from "..";
 import { FrameworkErrorHandler } from "../next/errors";

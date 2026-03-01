@@ -5,5 +5,5 @@ type Props = {
 };
 
 export function StyledHeading({ children }: Props) {
-	return <h1 className="text-2xl font-semibold text-center">{children}</h1>;
+	return <h1 className="text-center text-2xl font-semibold">{children}</h1>;
 }

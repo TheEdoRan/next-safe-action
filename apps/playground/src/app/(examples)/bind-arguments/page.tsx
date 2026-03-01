@@ -1,11 +1,10 @@
-import { StyledHeading } from "@/app/_components/styled-heading";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { StyledHeading } from "@/app/_components/styled-heading";
 import { BindArgumentsClientPage } from "./bind-arguments-client";
 
 async function BindArgumentsRuntimeContent() {
 	await connection();
-	// eslint-disable-next-line react-hooks/purity
 	const randomAge = Math.floor(Math.random() * 200);
 	const randomUserId = crypto.randomUUID();
 

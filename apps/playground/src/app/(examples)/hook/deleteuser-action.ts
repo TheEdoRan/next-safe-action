@@ -1,7 +1,7 @@
 "use server";
 
-import { ActionError, action } from "@/lib/safe-action";
 import { z } from "zod";
+import { ActionError, action } from "@/lib/safe-action";
 
 const schema = z.object({
 	userId: z.string().min(1).max(10),

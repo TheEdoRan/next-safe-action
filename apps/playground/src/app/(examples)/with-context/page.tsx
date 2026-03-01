@@ -1,9 +1,9 @@
 "use client";
 
+import { useAction } from "next-safe-action/hooks";
 import { StyledButton } from "@/app/_components/styled-button";
 import { StyledHeading } from "@/app/_components/styled-heading";
 import { StyledInput } from "@/app/_components/styled-input";
-import { useAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
 import { editUser } from "./edituser-action";
 
@@ -14,7 +14,7 @@ export default function WithContextPage() {
 		<main className="w-96 max-w-full px-4">
 			<StyledHeading>Action with auth</StyledHeading>
 			<form
-				className="flex flex-col mt-8 space-y-4"
+				className="mt-8 flex flex-col space-y-4"
 				onSubmit={async (e) => {
 					e.preventDefault();
 					const formData = new FormData(e.currentTarget);

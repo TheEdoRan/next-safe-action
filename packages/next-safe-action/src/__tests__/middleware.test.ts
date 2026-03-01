@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
-import { redirect } from "next/navigation";
 import assert from "node:assert";
 import { test } from "node:test";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
 	createMiddleware,

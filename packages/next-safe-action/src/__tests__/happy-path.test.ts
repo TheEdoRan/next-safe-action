@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import assert from "node:assert";
 import { test } from "node:test";
 import { z } from "zod";
@@ -187,13 +185,11 @@ test("action with no input schema silently ignores excess arguments", async () =
 test("action with input schema silently ignores excess arguments", async () => {
 	const userId = "ed6f5b84-6bca-4d01-9a51-c3d0c49a7996";
 
-	const action = ac
-		.inputSchema(z.object({ userId: z.string().uuid() }))
-		.action(async ({ parsedInput }) => {
-			return {
-				userId: parsedInput.userId,
-			};
-		});
+	const action = ac.inputSchema(z.object({ userId: z.string().uuid() })).action(async ({ parsedInput }) => {
+		return {
+			userId: parsedInput.userId,
+		};
+	});
 
 	const actionWithExcessArgs = action as (...args: unknown[]) => Promise<unknown>;
 	const actualResult = await actionWithExcessArgs({ userId }, "extraneous", "malicious");
@@ -235,13 +231,11 @@ test("action with bind args input schemas silently ignores excess arguments", as
 // Fewer arguments tests — missing arguments should result in validation errors, not crashes.
 
 test("action with input schema called with no arguments returns validation errors", async () => {
-	const action = ac
-		.inputSchema(z.object({ userId: z.string().uuid() }))
-		.action(async ({ parsedInput }) => {
-			return {
-				userId: parsedInput.userId,
-			};
-		});
+	const action = ac.inputSchema(z.object({ userId: z.string().uuid() })).action(async ({ parsedInput }) => {
+		return {
+			userId: parsedInput.userId,
+		};
+	});
 
 	const actionWithNoArgs = action as (...args: unknown[]) => Promise<unknown>;
 	const actualResult = await actionWithNoArgs();

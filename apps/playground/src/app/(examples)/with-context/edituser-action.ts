@@ -1,7 +1,7 @@
 "use server";
 
-import { authAction } from "@/lib/safe-action";
 import { z } from "zod";
+import { authAction } from "@/lib/safe-action";
 
 const schema = z.object({
 	fullName: z.string().min(3).max(20),

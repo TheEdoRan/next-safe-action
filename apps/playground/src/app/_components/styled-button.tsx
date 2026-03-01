@@ -7,7 +7,7 @@ export const StyledButton = forwardRef<HTMLButtonElement, Props>(function Styled
 		<button
 			{...props}
 			ref={ref}
-			className={`${props.className ?? ""} bg-slate-950 text-slate-50 px-3 py-2 rounded-md w-full font-medium dark:bg-slate-50 dark:text-slate-950`}
+			className={`${props.className ?? ""} w-full rounded-md bg-slate-950 px-3 py-2 font-medium text-slate-50 dark:bg-slate-50 dark:text-slate-950`}
 		/>
 	);
 });

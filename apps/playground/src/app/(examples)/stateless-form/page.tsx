@@ -1,10 +1,10 @@
 "use client";
 
+import { useAction } from "next-safe-action/hooks";
 import { ResultBox } from "@/app/_components/result-box";
 import { StyledButton } from "@/app/_components/styled-button";
 import { StyledHeading } from "@/app/_components/styled-heading";
 import { StyledInput } from "@/app/_components/styled-input";
-import { useAction } from "next-safe-action/hooks";
 import { statelessFormAction } from "./stateless-form-action";
 
 export default function StatelessFormPage() {
@@ -18,7 +18,7 @@ export default function StatelessFormPage() {
 			<StyledHeading>
 				Stateless form action using <pre>useAction()</pre>
 			</StyledHeading>
-			<form action={execute} className="flex flex-col mt-8 space-y-4">
+			<form action={execute} className="mt-8 flex flex-col space-y-4">
 				<StyledInput type="text" name="name" placeholder="Name" />
 				<StyledButton type="submit">Submit</StyledButton>
 			</form>

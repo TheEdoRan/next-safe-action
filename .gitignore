@@ -17,9 +17,6 @@ yarn-error.log*
 # Exclude .example files
 !*.example
 
-# ESLint
-.eslintcache
-
 # TypeScript stuff
 *.tsbuildinfo
 

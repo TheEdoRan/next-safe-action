@@ -1,10 +1,11 @@
 "use client";
 
+import { useOptimisticAction } from "next-safe-action/hooks";
 import { StyledButton } from "@/app/_components/styled-button";
 import { StyledInput } from "@/app/_components/styled-input";
-import { useOptimisticAction } from "next-safe-action/hooks";
 import { ResultBox } from "../../_components/result-box";
-import { Todo, addTodo } from "./addtodo-action";
+import type { Todo } from "./addtodo-action";
+import { addTodo } from "./addtodo-action";
 
 type Props = {
 	todos: Todo[];
@@ -12,7 +13,7 @@ type Props = {
 
 const AddTodoForm = ({ todos }: Props) => {
 	// Here we pass safe action (`addTodo`) and current server data to `useOptimisticAction` hook.
-	const { execute, result, status, reset, optimisticState } = useOptimisticAction(addTodo, {
+	const { execute, status, reset, optimisticState } = useOptimisticAction(addTodo, {
 		currentState: { todos },
 		updateFn: (state, newTodo) => ({
 			todos: [...state.todos, newTodo],

@@ -1,14 +1,8 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import assert from "node:assert";
 import { test } from "node:test";
 import { DEFAULT_SERVER_ERROR_MESSAGE, createSafeActionClient } from "..";
 
-class ActionError extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-}
+class ActionError extends Error {}
 
 const ac1 = createSafeActionClient({
 	handleServerError(e) {

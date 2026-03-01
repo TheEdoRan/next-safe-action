@@ -1,8 +1,8 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
 import { flattenValidationErrors, returnValidationErrors } from "next-safe-action";
 import { z } from "zod";
+import { action } from "@/lib/safe-action";
 
 async function getSchema() {
 	return z.object({

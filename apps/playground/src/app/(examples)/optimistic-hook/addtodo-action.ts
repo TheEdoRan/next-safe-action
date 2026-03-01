@@ -1,8 +1,8 @@
 "use server";
 
-import { ActionError, action } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { ActionError, action } from "@/lib/safe-action";
 
 const schema = z.object({
 	id: z.string().uuid(),

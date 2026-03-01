@@ -18,7 +18,7 @@ export function ExampleGithubLink({ className }: Props) {
 			aria-label="Example link to GitHub"
 			className={className}
 		>
-			<Link className="w-4 h-4" />
+			<Link className="h-4 w-4" />
 			<span>View on GitHub</span>
 		</a>
 	);
