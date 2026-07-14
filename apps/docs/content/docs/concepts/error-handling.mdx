@@ -96,8 +96,47 @@ export const buyProduct = actionClient
 A few things to keep in mind:
 
 - Like `returnValidationErrors`, it **throws** internally (it never returns), so the remaining server code doesn't execute. It also works from middleware.
-- The value should conform to the client's `ServerError` type, which is inferred from `handleServerError`'s return type. Declare a union there (e.g. `{ code: "INTERNAL" | "OUT_OF_STOCK"; message: string }`) to get a fully typed `result.serverError` on the client.
+- The value should conform to the client's `ServerError` type, which is inferred from `handleServerError`'s return type. See [Typing the error payload](#typing-the-error-payload) below.
 - The value must be **JSON-serializable** (no circular references, BigInts, functions, etc.), since it crosses the server/client boundary. This also makes it work inside `"use cache"` scopes when `cacheComponents` is enabled.
+
+#### Typing the error payload
+
+`returnServerError` is generic (`returnServerError<SE>(serverError: SE): never`) and `SE` is inferred from the argument, so there's no automatic type-level link between the payload you pass and the client's `ServerError` type. Strictness is opt-in, via three complementary techniques.
+
+**1. Declare the error union on `handleServerError`.** The client's `ServerError` type is inferred from `handleServerError`'s return type, so this is what types `result.serverError` on the client:
+
+```ts
+type AppServerError =
+	| { code: "INTERNAL"; message: string }
+	| { code: "OUT_OF_STOCK"; message: string }
+	| { code: "NOT_FOUND"; message: string };
+
+const actionClient = createSafeActionClient({
+	handleServerError: (e): AppServerError => ({ code: "INTERNAL", message: e.message }),
+});
+```
+
+On the client, `result.serverError` is now `AppServerError | undefined`, and `if (serverError?.code === "OUT_OF_STOCK")` narrows as a normal discriminated union.
+
+**2. Enforce the payload at the call site.** Either pass the generic explicitly, or use `satisfies`:
+
+```ts
+returnServerError<AppServerError>({ code: "OUT_OF_STOCK", message: "This product is sold out" });
+// or
+returnServerError({ code: "OUT_OF_STOCK", message: "This product is sold out" } satisfies AppServerError);
+```
+
+Both make typos in `code` or missing fields a compile error.
+
+**3. Recommended: export a typed alias next to your action client.** One line gives every call site full checking with zero annotation noise:
+
+```ts title="lib/safe-action.ts"
+export const returnAppError: (e: AppServerError) => never = returnServerError;
+```
+
+<Callout type="warn">
+Without one of these techniques, `returnServerError({ anything: true })` compiles even though `result.serverError` claims to be the client's `ServerError` type. This is an inherent limit of a standalone helper: prefer the typed alias (technique 3) as your app's default pattern.
+</Callout>
 
 ### Throwing errors instead of returning them
 

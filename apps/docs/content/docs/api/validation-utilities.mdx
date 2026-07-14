@@ -110,6 +110,18 @@ export const buyProduct = actionClient
 	});
 ```
 
+Since `SE` is inferred from the argument, the payload isn't checked against the client's `ServerError` type by default. Enforce it at the call site with an explicit generic or `satisfies`, or export a typed alias next to your action client:
+
+```ts
+returnServerError<AppServerError>({ code: "OUT_OF_STOCK", message: "This product is sold out" });
+// or
+returnServerError({ code: "OUT_OF_STOCK", message: "This product is sold out" } satisfies AppServerError);
+// or, recommended: a typed alias in lib/safe-action.ts
+export const returnAppError: (e: AppServerError) => never = returnServerError;
+```
+
+See [Typing the error payload](/docs/concepts/error-handling#typing-the-error-payload) for the full explanation.
+
 <Callout>
 The payload is JSON-encoded onto the error `digest`, so it also works when thrown inside a Next.js `"use cache"` scope with `cacheComponents` enabled. See [Error handling](/docs/concepts/error-handling#expected-server-errors-with-returnservererror) for more details.
 </Callout>
