@@ -467,6 +467,36 @@ test("UseStateActionHookReturn idle branch defaults to HookIdleResult when InitR
 	}
 });
 
+test("UseActionHookReturn idle branch is narrowed by InitR generic", () => {
+	type SeededInit = { data: { id: number } };
+	type Return = UseActionHookReturn<string, typeof schema, ValidationErrors<typeof schema>, { id: number }, SeededInit>;
+	const ret = {} as Return;
+
+	if (ret.status === "idle") {
+		expectTypeOf(ret.result.data).toEqualTypeOf<{ id: number }>();
+		expectTypeOf(ret.result.serverError).toEqualTypeOf<undefined>();
+		expectTypeOf(ret.result.validationErrors).toEqualTypeOf<undefined>();
+	}
+});
+
+test("UseOptimisticActionHookReturn idle branch is narrowed by InitR generic", () => {
+	type SeededInit = { data: { id: number } };
+	type Return = UseOptimisticActionHookReturn<
+		string,
+		typeof schema,
+		ValidationErrors<typeof schema>,
+		{ id: number },
+		string[],
+		SeededInit
+	>;
+	const ret = {} as Return;
+
+	if (ret.status === "idle") {
+		expectTypeOf(ret.result.data).toEqualTypeOf<{ id: number }>();
+		expectTypeOf(ret.optimisticState).toEqualTypeOf<string[]>();
+	}
+});
+
 test("UseStateActionHookReturn idle branch narrowed by serverError-only InitR", () => {
 	// Users sometimes seed `initResult` with a fresh-state server error (e.g. from
 	// a server component that already failed) and rely on the idle result exposing

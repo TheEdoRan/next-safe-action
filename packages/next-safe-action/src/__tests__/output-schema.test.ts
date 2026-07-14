@@ -108,6 +108,59 @@ test("action with valid output and inputSchema works", async () => {
 	expect(actualResult).toStrictEqual(expectedResult);
 });
 
+test("action with outputSchema transform returns the transformed data", async () => {
+	const ac = createSafeActionClient();
+
+	const action = ac
+		.outputSchema(z.object({ name: z.string() }).transform((o) => ({ name: o.name.toUpperCase() })))
+		.action(async () => {
+			return {
+				name: "john",
+			};
+		});
+
+	const actualResult = await action();
+
+	const expectedResult = {
+		data: {
+			name: "JOHN",
+		},
+	};
+
+	expect(actualResult).toStrictEqual(expectedResult);
+});
+
+test("action with outputSchema default applies it to returned data and onSuccess callback", async () => {
+	const ac = createSafeActionClient();
+
+	const outputSchema = z.object({ id: z.string(), role: z.string().default("user") });
+
+	let onSuccessData: z.infer<typeof outputSchema> | undefined;
+
+	const action = ac.outputSchema(outputSchema).action(
+		async () => {
+			return { id: "123" } as unknown as z.infer<typeof outputSchema>;
+		},
+		{
+			onSuccess: async ({ data }) => {
+				onSuccessData = data;
+			},
+		}
+	);
+
+	const actualResult = await action();
+
+	const expectedResult = {
+		data: {
+			id: "123",
+			role: "user",
+		},
+	};
+
+	expect(actualResult).toStrictEqual(expectedResult);
+	expect(onSuccessData).toStrictEqual(expectedResult.data);
+});
+
 test("action with no return value and outputSchema returns serverError", async () => {
 	const ac = createSafeActionClient({
 		handleServerError: () => DEFAULT_SERVER_ERROR_MESSAGE,

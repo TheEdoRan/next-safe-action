@@ -142,12 +142,20 @@ type HookResultCommon<ServerError, Schema extends StandardSchemaV1 | undefined, 
  *
  * `result` and `executeAsync` are run through `NormalizeActionResult` so that
  * void-returning actions expose `result.data: undefined` rather than `void | undefined`.
+ *
+ * The optional `InitR` generic represents the shape of the `initResult` option. When provided,
+ * it narrows the idle branch's `result` to exactly that shape, so seeded fields are typed as
+ * required rather than `Data | undefined`. For example, `initResult: { data: { id: 1 } }` gives
+ * `result.data` the type `{ id: number }` on the idle branch — matching the runtime value that
+ * is seeded at mount and restored after `reset()`. Defaults to `HookIdleResult` (empty result)
+ * when `initResult` is not provided.
  */
 export type UseActionHookReturn<
 	ServerError,
 	Schema extends StandardSchemaV1 | undefined,
 	ShapedErrors,
 	Data,
+	InitR extends SafeActionResult<ServerError, Schema, ShapedErrors, Data> = HookIdleResult,
 > = HookResultCommon<ServerError, Schema, ShapedErrors, Data> &
 	(
 		| {
@@ -158,7 +166,11 @@ export type UseActionHookReturn<
 				hasSucceeded: false;
 				hasErrored: false;
 				hasNavigated: false;
-				result: Prettify<HookIdleResult>;
+				result: Prettify<{
+					data: "data" extends keyof InitR ? InitR["data"] : undefined;
+					serverError: "serverError" extends keyof InitR ? InitR["serverError"] : undefined;
+					validationErrors: "validationErrors" extends keyof InitR ? InitR["validationErrors"] : undefined;
+				}>;
 		  }
 		| {
 				status: "executing";
@@ -213,7 +225,8 @@ export type UseOptimisticActionHookReturn<
 	ShapedErrors,
 	Data,
 	State,
-> = UseActionHookReturn<ServerError, Schema, ShapedErrors, Data> & {
+	InitR extends SafeActionResult<ServerError, Schema, ShapedErrors, Data> = HookIdleResult,
+> = UseActionHookReturn<ServerError, Schema, ShapedErrors, Data, InitR> & {
 	optimisticState: State;
 };
 
@@ -222,13 +235,7 @@ export type UseOptimisticActionHookReturn<
  *
  * Extends `UseActionHookReturn` with `formAction` for `<form action={formAction}>` integration.
  * TypeScript distributes the intersection over the union, preserving the discriminated union narrowing.
- *
- * The optional `InitR` generic represents the shape of the `initResult` option. When provided,
- * it narrows the idle branch's `result` to exactly that shape, so seeded fields are typed as
- * required rather than `Data | undefined`. For example, `initResult: { data: { id: 1 } }` gives
- * `result.data` the type `{ id: number }` on the idle branch — matching the runtime value that
- * is seeded at mount and restored after `reset()`. Defaults to `HookIdleResult` (empty result)
- * when `initResult` is not provided.
+ * See `UseActionHookReturn` for how the `InitR` generic narrows the idle branch's `result`.
  */
 export type UseStateActionHookReturn<
 	ServerError,
@@ -236,17 +243,7 @@ export type UseStateActionHookReturn<
 	ShapedErrors,
 	Data,
 	InitR extends SafeActionResult<ServerError, Schema, ShapedErrors, Data> = HookIdleResult,
-> = (UseActionHookReturn<ServerError, Schema, ShapedErrors, Data> extends infer R
-	? R extends { status: "idle" }
-		? Omit<R, "result"> & {
-				result: Prettify<{
-					data: "data" extends keyof InitR ? InitR["data"] : undefined;
-					serverError: "serverError" extends keyof InitR ? InitR["serverError"] : undefined;
-					validationErrors: "validationErrors" extends keyof InitR ? InitR["validationErrors"] : undefined;
-				}>;
-			}
-		: R
-	: never) & {
+> = UseActionHookReturn<ServerError, Schema, ShapedErrors, Data, InitR> & {
 	formAction: (input: InferInputOrDefault<Schema, void>) => void;
 };
 

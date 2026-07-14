@@ -24,12 +24,14 @@ const { execute, result, status, ... } = useAction(safeActionFn, callbacks?);
 			type: "SingleInputActionFn<ServerError, Schema, ShapedErrors, Data>",
 		},
 		opts: {
-			description: "Optional object with configuration options and lifecycle callbacks.",
-			type: "HookBaseOptions & HookCallbacks<ServerError, Schema, ShapedErrors, Data>",
+			description: "Optional object with initResult, configuration options, and lifecycle callbacks.",
+			type: "{ initResult?: SafeActionResult } & HookBaseOptions & HookCallbacks",
 			default: "undefined",
 		},
 	}}
 />
+
+`opts.initResult` sets the initial result before the first execution (defaults to `{}`), useful for preloading the hook with data fetched on the server. `reset()` restores it.
 
 ### Return object
 
@@ -52,7 +54,7 @@ const { execute, result, status, ... } = useAction(safeActionFn, callbacks?);
 			type: "SafeActionResult<ServerError, Schema, ShapedErrors, Data>",
 		},
 		reset: {
-			description: "Reset the hook state back to idle. Clears result, input, and status.",
+			description: "Reset the hook state back to idle. Restores result to initResult (or empty) and clears input and status.",
 			type: "() => void",
 		},
 		status: {
@@ -158,6 +160,10 @@ const { execute, optimisticState, ... } = useOptimisticAction(safeActionFn, util
 		"utils.updateFn": {
 			description: "Pure function that computes the optimistic state from the current state and the input being sent.",
 			type: "(state: State, input: InferInput<Schema>) => State",
+		},
+		"utils.initResult": {
+			description: "Optional initial result before the first execution (defaults to {}). reset() restores it.",
+			type: "SafeActionResult",
 		},
 	}}
 />

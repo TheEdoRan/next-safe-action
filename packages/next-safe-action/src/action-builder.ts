@@ -12,6 +12,7 @@ import type {
 	StatefulServerCodeFn,
 } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
+import { extractServerError } from "./server-error";
 import type {
 	InferInputArray,
 	InferInputOrDefault,
@@ -176,17 +177,20 @@ export function actionBuilder<
 			serverCodeArgs.push({ prevResult: structuredClone(prevResult) });
 		}
 
-		const data = await (serverCodeFn as (...a: unknown[]) => Promise<unknown>)(...serverCodeArgs).catch((e) =>
+		let data = await (serverCodeFn as (...a: unknown[]) => Promise<unknown>)(...serverCodeArgs).catch((e) =>
 			frameworkErrorHandler.handleError(e)
 		);
 
-		// Validate output schema if provided.
+		// Validate output schema if provided. The parsed value replaces the raw return so schema
+		// transforms/defaults apply to the returned data, mirroring input validation semantics.
 		if (typeof args.outputSchema !== "undefined" && !frameworkErrorHandler.error) {
 			const parsedData = await standardParse(args.outputSchema, data);
 
 			if (parsedData.issues) {
 				throw new ActionOutputDataValidationError<OutputSchema>(buildValidationErrors(parsedData.issues));
 			}
+
+			data = parsedData.value;
 		}
 
 		// Update middleware result based on execution outcome.
@@ -228,6 +232,15 @@ export function actionBuilder<
 					metadata: args.metadata,
 				})
 			);
+			return;
+		}
+
+		// `returnServerError`: an expected, typed server error. It bypasses `handleServerError` and
+		// is returned to the client as-is. Like the check above, this must come before the
+		// serverErrorHandled guard so it works from middleware catch blocks too.
+		const expectedServerError = extractServerError(e);
+		if (typeof expectedServerError !== "undefined") {
+			middlewareResult.serverError = expectedServerError.value as ServerError;
 			return;
 		}
 

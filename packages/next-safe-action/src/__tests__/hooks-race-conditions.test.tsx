@@ -179,6 +179,42 @@ describe("useAction race condition protections", () => {
 		expect(result.current.status).toBe("hasSucceeded");
 	});
 
+	test("reset alone invalidates in-flight execution", async () => {
+		const resolvers: Array<(value: any) => void> = [];
+		const action = vi.fn<TestActionFn>().mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					resolvers.push(resolve);
+				})
+		);
+
+		const { result } = renderHook(() => useAction(action));
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		expect(result.current.status).toBe("executing");
+
+		// Reset mid-flight, without starting a new execution.
+		act(() => {
+			result.current.reset();
+		});
+
+		expect(result.current.status).toBe("idle");
+
+		// Resolve the pre-reset call: it must not repopulate state.
+		await act(async () => {
+			resolvers[0]({ data: { message: "stale" } });
+		});
+		await flushHookTimers();
+
+		expect(result.current.result).toEqual({});
+		expect(result.current.status).toBe("idle");
+		expect(result.current.isExecuting).toBe(false);
+	});
+
 	test("executeAsync settles even on navigation errors", async () => {
 		const redirectError = createRedirectError("/dashboard");
 		const action = vi.fn<TestActionFn>().mockRejectedValue(redirectError);

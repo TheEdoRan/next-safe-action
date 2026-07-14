@@ -349,6 +349,67 @@ describe("useStateAction executeAsync", () => {
 
 		expect(rejectedError).toBe(redirectError);
 	});
+
+	test("overlapping executeAsync calls each settle with their own result", async () => {
+		const resolvers: Array<(value: TestResult) => void> = [];
+		const action = createMockStateAction(
+			() =>
+				new Promise<TestResult>((resolve) => {
+					resolvers.push(resolve);
+				})
+		);
+
+		const { result } = renderHook(() => useStateAction(action));
+
+		let firstResult: TestResult | undefined;
+		let secondResult: TestResult | undefined;
+
+		act(() => {
+			void result.current.executeAsync(undefined).then((r) => {
+				firstResult = r;
+			});
+			void result.current.executeAsync(undefined).then((r) => {
+				secondResult = r;
+			});
+		});
+		await flushHookTimers();
+
+		// Dispatches run sequentially: only the first action has started.
+		expect(resolvers).toHaveLength(1);
+
+		await act(async () => {
+			resolvers[0]({ data: { message: "first" } });
+		});
+		await flushHookTimers();
+
+		expect(firstResult).toEqual({ data: { message: "first" } });
+		expect(secondResult).toBeUndefined();
+
+		await act(async () => {
+			resolvers[1]({ data: { message: "second" } });
+		});
+		await flushHookTimers();
+
+		expect(secondResult).toEqual({ data: { message: "second" } });
+	});
+
+	test("execute interleaved with executeAsync keeps resolver alignment", async () => {
+		let calls = 0;
+		const action = createMockStateAction(async () => ({ data: { message: `call-${++calls}` } }));
+
+		const { result } = renderHook(() => useStateAction(action));
+
+		let asyncResult: TestResult | undefined;
+		act(() => {
+			result.current.execute(undefined);
+			void result.current.executeAsync(undefined).then((r) => {
+				asyncResult = r;
+			});
+		});
+		await flushHookTimers();
+
+		expect(asyncResult).toEqual({ data: { message: "call-2" } });
+	});
 });
 
 // ─── reset ──────────────────────────────────────────────────────────────────

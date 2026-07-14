@@ -22,14 +22,22 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 /**
  * Use the action from a Client Component via hook.
  * @param safeActionFn The action function
- * @param opts Optional configuration and callbacks
+ * @param opts Optional configuration: `initResult` for initial state, plus callbacks
  *
  * {@link https://next-safe-action.dev/docs/execute-actions/hooks/useaction See docs for more information}
  */
-export const useAction = <ServerError, Schema extends StandardSchemaV1 | undefined, ShapedErrors, Data>(
+export const useAction = <
+	ServerError,
+	Schema extends StandardSchemaV1 | undefined,
+	ShapedErrors,
+	Data,
+	InitR extends SafeActionResult<ServerError, Schema, ShapedErrors, Data> = HookIdleResult,
+>(
 	safeActionFn: SingleInputActionFn<ServerError, Schema, ShapedErrors, Data>,
-	opts?: HookBaseOptions<ServerError, Schema, ShapedErrors, Data>
-): UseActionHookReturn<ServerError, Schema, ShapedErrors, Data> => {
+	opts?: {
+		initResult?: InitR;
+	} & HookBaseOptions<ServerError, Schema, ShapedErrors, Data>
+): UseActionHookReturn<ServerError, Schema, ShapedErrors, Data, InitR> => {
 	const { result, clientInput, status, execute, executeAsync, reset, shorthandStatus } = useActionBase(
 		safeActionFn,
 		opts
@@ -47,13 +55,13 @@ export const useAction = <ServerError, Schema extends StandardSchemaV1 | undefin
 		reset,
 		status,
 		...shorthandStatus,
-	} as UseActionHookReturn<ServerError, Schema, ShapedErrors, Data>;
+	} as UseActionHookReturn<ServerError, Schema, ShapedErrors, Data, InitR>;
 };
 
 /**
  * Use the action from a Client Component via hook, with optimistic data update.
  * @param safeActionFn The action function
- * @param utils Required `currentData` and `updateFn` and optional callbacks
+ * @param utils Required `currentData` and `updateFn`, optional `initResult` for initial state, and optional callbacks
  *
  * {@link https://next-safe-action.dev/docs/execute-actions/hooks/useoptimisticaction See docs for more information}
  */
@@ -63,13 +71,15 @@ export const useOptimisticAction = <
 	ShapedErrors,
 	Data,
 	State,
+	InitR extends SafeActionResult<ServerError, Schema, ShapedErrors, Data> = HookIdleResult,
 >(
 	safeActionFn: SingleInputActionFn<ServerError, Schema, ShapedErrors, Data>,
 	utils: {
 		currentState: State;
 		updateFn: (state: State, input: InferInputOrDefault<Schema, void>) => State;
+		initResult?: InitR;
 	} & HookBaseOptions<ServerError, Schema, ShapedErrors, Data>
-): UseOptimisticActionHookReturn<ServerError, Schema, ShapedErrors, Data, State> => {
+): UseOptimisticActionHookReturn<ServerError, Schema, ShapedErrors, Data, State, InitR> => {
 	const [optimisticState, setOptimisticValue] = React.useOptimistic<State, InferInputOrDefault<Schema, undefined>>(
 		utils.currentState,
 		utils.updateFn
@@ -97,7 +107,7 @@ export const useOptimisticAction = <
 		reset,
 		status,
 		...shorthandStatus,
-	} as unknown as UseOptimisticActionHookReturn<ServerError, Schema, ShapedErrors, Data, State>;
+	} as unknown as UseOptimisticActionHookReturn<ServerError, Schema, ShapedErrors, Data, State, InitR>;
 };
 
 /**
@@ -137,10 +147,17 @@ export const useStateAction = <
 
 	// ─── Refs ────────────────────────────────────────────────────────────
 
-	const asyncResolverRef = React.useRef<{
-		resolve: (value: unknown) => void;
-		reject: (reason: unknown) => void;
-	} | null>(null);
+	// FIFO queue of `executeAsync` resolvers, aligned with dispatch order: `useActionState` runs
+	// queued actions sequentially, and every dispatch path enqueues exactly one entry (a resolver
+	// for `executeAsync`, `null` for `execute`/`formAction`), so `wrappedAction` settles the right
+	// promise by shifting one entry per invocation. A single slot would be overwritten by
+	// overlapping `executeAsync` calls, leaving the first promise unsettled.
+	const asyncResolversRef = React.useRef<
+		Array<{
+			resolve: (value: unknown) => void;
+			reject: (reason: unknown) => void;
+		} | null>
+	>([]);
 	const prevResultOverrideRef = React.useRef<SafeActionResult<ServerError, Schema, ShapedErrors, Data> | null>(null);
 
 	// ─── State ────────────────────────────────────────────────────────────
@@ -171,22 +188,23 @@ export const useStateAction = <
 			const effectivePrevResult = prevResultOverrideRef.current ?? prevResult;
 			prevResultOverrideRef.current = null;
 
+			// One dispatch = one queue entry, consumed here in dispatch order.
+			const asyncResolver = asyncResolversRef.current.shift() ?? null;
+
 			try {
 				const result = await safeActionFn(effectivePrevResult, input);
-				asyncResolverRef.current?.resolve(result);
+				asyncResolver?.resolve(result);
 				return result;
 			} catch (e) {
 				if (FrameworkErrorHandler.isNavigationError(e)) {
 					setNavigationError(e);
-					asyncResolverRef.current?.reject(e);
+					asyncResolver?.reject(e);
 					return {};
 				}
 
 				setThrownError(e as Error);
-				asyncResolverRef.current?.reject(e);
+				asyncResolver?.reject(e);
 				throw e;
-			} finally {
-				asyncResolverRef.current = null;
 			}
 		},
 		[safeActionFn]
@@ -198,8 +216,11 @@ export const useStateAction = <
 
 	// ─── execute ──────────────────────────────────────────────────────────
 
-	const execute = React.useCallback(
-		(input: InferInputOrDefault<Schema, void>) => {
+	const dispatchWithResolver = React.useCallback(
+		(
+			input: InferInputOrDefault<Schema, void>,
+			asyncResolver: { resolve: (value: unknown) => void; reject: (reason: unknown) => void } | null
+		) => {
 			setIsIdle(false);
 			setIsReset(false);
 			setNavigationError(null);
@@ -207,10 +228,18 @@ export const useStateAction = <
 			setClientInput(input);
 
 			startTransition(() => {
+				asyncResolversRef.current.push(asyncResolver);
 				dispatcher(input as InferInputOrDefault<Schema, undefined>);
 			});
 		},
 		[dispatcher]
+	);
+
+	const execute = React.useCallback(
+		(input: InferInputOrDefault<Schema, void>) => {
+			dispatchWithResolver(input, null);
+		},
+		[dispatchWithResolver]
 	);
 
 	// ─── executeAsync ─────────────────────────────────────────────────────
@@ -218,14 +247,25 @@ export const useStateAction = <
 	const executeAsync = React.useCallback(
 		(input: InferInputOrDefault<Schema, void>) => {
 			return new Promise<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>((resolve, reject) => {
-				asyncResolverRef.current = {
+				dispatchWithResolver(input, {
 					resolve: resolve as (value: unknown) => void,
 					reject,
-				};
-				execute(input);
+				});
 			});
 		},
-		[execute]
+		[dispatchWithResolver]
+	);
+
+	// ─── formAction ───────────────────────────────────────────────────────
+
+	// Wraps the dispatcher so form dispatches also enqueue their (null) entry, keeping the
+	// resolver queue aligned with dispatch order when `formAction` and `executeAsync` interleave.
+	const formAction = React.useCallback(
+		(input: InferInputOrDefault<Schema, undefined>) => {
+			asyncResolversRef.current.push(null);
+			dispatcher(input);
+		},
+		[dispatcher]
 	);
 
 	// ─── reset ────────────────────────────────────────────────────────────
@@ -283,7 +323,7 @@ export const useStateAction = <
 		executeAsync: executeAsync as unknown as (
 			input: InferInputOrDefault<Schema, void>
 		) => Promise<NormalizeActionResult<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>>,
-		formAction: dispatcher as (input: InferInputOrDefault<Schema, void>) => void,
+		formAction: formAction as (input: InferInputOrDefault<Schema, void>) => void,
 		input: clientInput as InferInputOrDefault<Schema, undefined>,
 		result: result as unknown as NormalizeActionResult<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>,
 		reset,

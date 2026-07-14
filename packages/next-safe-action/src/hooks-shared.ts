@@ -22,7 +22,11 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
  */
 export function useActionBase<ServerError, Schema extends StandardSchemaV1 | undefined, ShapedErrors, Data>(
 	safeActionFn: SingleInputActionFn<ServerError, Schema, ShapedErrors, Data>,
-	opts: HookBaseOptions<ServerError, Schema, ShapedErrors, Data> | undefined,
+	opts:
+		| ({
+				initResult?: SafeActionResult<ServerError, Schema, ShapedErrors, Data>;
+		  } & HookBaseOptions<ServerError, Schema, ShapedErrors, Data>)
+		| undefined,
 	onTransitionStart?: (input: InferInputOrDefault<Schema, undefined>) => void
 ): {
 	isTransitioning: boolean;
@@ -40,8 +44,12 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 	reset: () => void;
 	shorthandStatus: HookShorthandStatus;
 } {
+	const initResult = opts?.initResult;
+
 	const [isTransitioning, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>({});
+	const [result, setResult] = React.useState<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>(
+		initResult ?? {}
+	);
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<Schema, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [navigationError, setNavigationError] = React.useState<Error | null>(null);
@@ -162,12 +170,18 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 	);
 
 	const reset = React.useCallback(() => {
+		// Invalidate in-flight requests: their responses must not repopulate state after a reset.
+		// Since stale requests skip their own `setIsExecuting(false)` in `finally`, clear it here.
+		requestIdRef.current++;
 		setIsIdle(true);
 		setNavigationError(null);
 		setThrownError(null);
 		setClientInput(undefined);
-		setResult({});
-	}, []);
+		// Restore the initial result (or empty when not provided), matching `useStateAction`'s
+		// contract: `reset` returns to the initial state.
+		setResult(initResult ?? {});
+		setIsExecuting(false);
+	}, [initResult]);
 
 	useActionCallbacks({
 		result: result ?? {},

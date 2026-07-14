@@ -73,6 +73,32 @@ const actionClient = createSafeActionClient({
 **Security**: The default `handleServerError` returns a generic `"Something went wrong"` message. If you return `e.message`, make sure your errors don't contain sensitive information (stack traces, database queries, etc.).
 </Callout>
 
+### Expected server errors with `returnServerError`
+
+Not every server error is unexpected. For known business failures ("out of stock", "not found", "quota exceeded"), you can return a typed server error to the client with `returnServerError()`. The value is set as `result.serverError` as-is, **bypassing `handleServerError`**:
+
+```ts
+import { returnServerError } from "next-safe-action";
+
+export const buyProduct = actionClient
+	.inputSchema(schema)
+	.action(async ({ parsedInput }) => {
+		const product = await db.product.find(parsedInput.id);
+
+		if (!product.inStock) {
+			returnServerError({ code: "OUT_OF_STOCK", message: "This product is sold out" });
+		}
+
+		// ...
+	});
+```
+
+A few things to keep in mind:
+
+- Like `returnValidationErrors`, it **throws** internally (it never returns), so the remaining server code doesn't execute. It also works from middleware.
+- The value should conform to the client's `ServerError` type, which is inferred from `handleServerError`'s return type. Declare a union there (e.g. `{ code: "INTERNAL" | "OUT_OF_STOCK"; message: string }`) to get a fully typed `result.serverError` on the client.
+- The value must be **JSON-serializable** (no circular references, BigInts, functions, etc.), since it crosses the server/client boundary. This also makes it work inside `"use cache"` scopes when `cacheComponents` is enabled.
+
 ### Throwing errors instead of returning them
 
 By default, validation and server errors are **returned** in the result object. You can opt into **throwing** them instead using boolean flags, which is useful when you want errors to propagate to an error boundary or a try/catch block.
@@ -220,7 +246,8 @@ If you need to guarantee that an operational failure propagates even in compound
 | Error type | How it's produced | Where it appears | Safe for users? |
 |---|---|---|---|
 | Validation | Schema parse failure or `returnValidationErrors()` | `result.validationErrors` | Yes |
-| Server | Thrown error in server code/middleware | `result.serverError` | Depends on `handleServerError` |
+| Server (unexpected) | Thrown error in server code/middleware | `result.serverError` | Depends on `handleServerError` |
+| Server (expected) | `returnServerError()` | `result.serverError` | Yes (you control the value) |
 | Framework | `redirect()`, `notFound()`, etc. | Navigation occurs | N/A (handled by Next.js) |
 
 ## What's next?
