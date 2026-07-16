@@ -83,6 +83,41 @@ describe("useAction", () => {
 		expect(result.current.result).toEqual({ data: { message: "preloaded" } });
 	});
 
+	test("reset restores the initResult captured at mount even if the option changes across renders", async () => {
+		const action = vi.fn<TestActionFn>().mockResolvedValue({
+			data: { message: "fresh" },
+		});
+
+		const { result, rerender } = renderHook(({ initResult }) => useAction(action, { initResult }), {
+			initialProps: { initResult: { data: { message: "mounted" } } },
+		});
+
+		rerender({ initResult: { data: { message: "changed" } } });
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		expect(result.current.result).toEqual({ data: { message: "fresh" } });
+
+		act(() => {
+			result.current.reset();
+		});
+
+		expect(result.current.result).toEqual({ data: { message: "mounted" } });
+	});
+
+	test("reset identity is stable across renders with an inline initResult object", () => {
+		const action = vi.fn<TestActionFn>();
+		const { result, rerender } = renderHook(() => useAction(action, { initResult: { data: { message: "seed" } } }));
+
+		const firstReset = result.current.reset;
+		rerender();
+
+		expect(result.current.reset).toBe(firstReset);
+	});
+
 	test("transitions to hasSucceeded on successful action", async () => {
 		const action = vi.fn<TestActionFn>().mockResolvedValue({
 			data: { message: "ok" },

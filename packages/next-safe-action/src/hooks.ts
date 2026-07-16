@@ -143,22 +143,31 @@ export const useStateAction = <
 		);
 	}
 
-	const initResult = opts?.initResult;
-
 	// ─── Refs ────────────────────────────────────────────────────────────
 
-	// FIFO queue of `executeAsync` resolvers, aligned with dispatch order: `useActionState` runs
-	// queued actions sequentially, and every dispatch path enqueues exactly one entry (a resolver
-	// for `executeAsync`, `null` for `execute`/`formAction`), so `wrappedAction` settles the right
-	// promise by shifting one entry per invocation. A single slot would be overwritten by
-	// overlapping `executeAsync` calls, leaving the first promise unsettled.
+	// `initResult` is captured once at mount, mirroring React's `useActionState` initialState:
+	// later changes to the option are ignored, and `reset` restores this baseline.
+	const initResultRef = React.useRef<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>(opts?.initResult ?? {});
+
+	// FIFO queue aligned with dispatch order: `useActionState` runs queued actions sequentially,
+	// and every dispatch path enqueues exactly one entry (a resolver for `executeAsync`, `null`
+	// for `execute`/`formAction`), so `wrappedAction` settles the right promise by shifting one
+	// entry per invocation. A single slot would be overwritten by overlapping `executeAsync`
+	// calls, leaving the first promise unsettled. Each entry also records the reset generation
+	// at dispatch time, so dispatches enqueued before a `reset` are detected as stale.
 	const asyncResolversRef = React.useRef<
 		Array<{
-			resolve: (value: unknown) => void;
-			reject: (reason: unknown) => void;
-		} | null>
+			resolver: {
+				resolve: (value: unknown) => void;
+				reject: (reason: unknown) => void;
+			} | null;
+			generation: number;
+		}>
 	>([]);
 	const prevResultOverrideRef = React.useRef<SafeActionResult<ServerError, Schema, ShapedErrors, Data> | null>(null);
+	// Incremented on every `reset`: dispatches carrying an older generation must not clear the
+	// reset state nor consume the reset baseline (`useActionState` dispatches can't be cancelled).
+	const resetGenerationRef = React.useRef(0);
 
 	// ─── State ────────────────────────────────────────────────────────────
 
@@ -179,17 +188,25 @@ export const useStateAction = <
 			prevResult: SafeActionResult<ServerError, Schema, ShapedErrors, Data>,
 			input: InferInputOrDefault<Schema, undefined>
 		): Promise<SafeActionResult<ServerError, Schema, ShapedErrors, Data>> => {
-			setIsIdle(false);
-			setIsReset(false);
-			setClientInput(input as InferInputOrDefault<Schema, void>);
-			setNavigationError(null);
-			setThrownError(null);
-
-			const effectivePrevResult = prevResultOverrideRef.current ?? prevResult;
-			prevResultOverrideRef.current = null;
-
 			// One dispatch = one queue entry, consumed here in dispatch order.
-			const asyncResolver = asyncResolversRef.current.shift() ?? null;
+			const entry = asyncResolversRef.current.shift();
+			const asyncResolver = entry?.resolver ?? null;
+			const dispatchGeneration = entry?.generation ?? resetGenerationRef.current;
+			// Re-evaluated at each use: a `reset` can land while this action is awaited.
+			const staleAfterReset = () => dispatchGeneration !== resetGenerationRef.current;
+
+			if (!staleAfterReset()) {
+				setIsIdle(false);
+				setIsReset(false);
+				setClientInput(input as InferInputOrDefault<Schema, void>);
+				setNavigationError(null);
+				setThrownError(null);
+			}
+
+			const effectivePrevResult = staleAfterReset() ? prevResult : (prevResultOverrideRef.current ?? prevResult);
+			if (!staleAfterReset()) {
+				prevResultOverrideRef.current = null;
+			}
 
 			try {
 				const result = await safeActionFn(effectivePrevResult, input);
@@ -197,12 +214,16 @@ export const useStateAction = <
 				return result;
 			} catch (e) {
 				if (FrameworkErrorHandler.isNavigationError(e)) {
-					setNavigationError(e);
+					if (!staleAfterReset()) {
+						setNavigationError(e);
+					}
 					asyncResolver?.reject(e);
 					return {};
 				}
 
-				setThrownError(e as Error);
+				if (!staleAfterReset()) {
+					setThrownError(e as Error);
+				}
 				asyncResolver?.reject(e);
 				throw e;
 			}
@@ -212,7 +233,7 @@ export const useStateAction = <
 
 	// ─── Core useActionState ──────────────────────────────────────────────
 
-	const [rawResult, dispatcher, isExecuting] = React.useActionState(wrappedAction, initResult ?? {});
+	const [rawResult, dispatcher, isExecuting] = React.useActionState(wrappedAction, initResultRef.current);
 
 	// ─── execute ──────────────────────────────────────────────────────────
 
@@ -228,7 +249,7 @@ export const useStateAction = <
 			setClientInput(input);
 
 			startTransition(() => {
-				asyncResolversRef.current.push(asyncResolver);
+				asyncResolversRef.current.push({ resolver: asyncResolver, generation: resetGenerationRef.current });
 				dispatcher(input as InferInputOrDefault<Schema, undefined>);
 			});
 		},
@@ -262,7 +283,7 @@ export const useStateAction = <
 	// resolver queue aligned with dispatch order when `formAction` and `executeAsync` interleave.
 	const formAction = React.useCallback(
 		(input: InferInputOrDefault<Schema, undefined>) => {
-			asyncResolversRef.current.push(null);
+			asyncResolversRef.current.push({ resolver: null, generation: resetGenerationRef.current });
 			dispatcher(input);
 		},
 		[dispatcher]
@@ -271,22 +292,23 @@ export const useStateAction = <
 	// ─── reset ────────────────────────────────────────────────────────────
 
 	const reset = React.useCallback(() => {
+		// Mark every dispatch enqueued so far as stale (see `resetGenerationRef`).
+		resetGenerationRef.current++;
 		setIsIdle(true);
 		setIsReset(true);
 		setNavigationError(null);
 		setThrownError(null);
 		setClientInput(undefined);
-		prevResultOverrideRef.current = initResult ?? {};
-	}, [initResult]);
+		prevResultOverrideRef.current = initResultRef.current;
+	}, []);
 
 	// ─── Status ───────────────────────────────────────────────────────────
 
-	// On reset, the visible `result` is restored to `initResult` (or `{}` when not provided) so
-	// the idle branch's runtime value matches its declared type in both phases: at mount and
-	// after reset. This is also the intuitive contract for `reset` — return to the initial state.
-	const result = isReset
-		? ((initResult ?? {}) as SafeActionResult<ServerError, Schema, ShapedErrors, Data>)
-		: (rawResult ?? {});
+	// On reset, the visible `result` is restored to the mount-captured `initResult` (or `{}` when
+	// not provided) so the idle branch's runtime value matches its declared type in both phases:
+	// at mount and after reset. This is also the intuitive contract for `reset`: return to the
+	// initial state.
+	const result = isReset ? initResultRef.current : (rawResult ?? {});
 
 	const status = getActionStatus<ServerError, Schema, ShapedErrors, Data>({
 		isExecuting,

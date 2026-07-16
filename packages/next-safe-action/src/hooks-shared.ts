@@ -44,11 +44,13 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 	reset: () => void;
 	shorthandStatus: HookShorthandStatus;
 } {
-	const initResult = opts?.initResult;
+	// `initResult` is captured once at mount, mirroring React's `useActionState` initialState:
+	// later changes to the option are ignored, and `reset` restores this baseline.
+	const initResultRef = React.useRef<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>(opts?.initResult ?? {});
 
 	const [isTransitioning, startTransition] = React.useTransition();
 	const [result, setResult] = React.useState<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>(
-		initResult ?? {}
+		initResultRef.current
 	);
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<Schema, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
@@ -177,11 +179,11 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 		setNavigationError(null);
 		setThrownError(null);
 		setClientInput(undefined);
-		// Restore the initial result (or empty when not provided), matching `useStateAction`'s
-		// contract: `reset` returns to the initial state.
-		setResult(initResult ?? {});
+		// Restore the mount-captured initial result (or empty when not provided), matching
+		// `useStateAction`'s contract: `reset` returns to the initial state.
+		setResult(initResultRef.current);
 		setIsExecuting(false);
-	}, [initResult]);
+	}, []);
 
 	useActionCallbacks({
 		result: result ?? {},

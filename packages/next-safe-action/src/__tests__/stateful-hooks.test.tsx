@@ -459,6 +459,122 @@ describe("useStateAction reset", () => {
 		expect(result.current.result.data).toEqual({ message: "seed" });
 	});
 
+	test("reset restores the initResult captured at mount even if the option changes across renders", async () => {
+		const prevResults: TestResult[] = [];
+		const action = createMockStateAction(async (prevResult) => {
+			prevResults.push(prevResult);
+			return { data: { message: "after-execute" } };
+		});
+
+		const { result, rerender } = renderHook(
+			({ initResult }: { initResult: TestResult }) => useStateAction(action, { initResult }),
+			{ initialProps: { initResult: { data: { message: "mounted" } } as TestResult } }
+		);
+
+		rerender({ initResult: { data: { message: "changed" } } });
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		expect(result.current.result.data).toEqual({ message: "after-execute" });
+
+		act(() => {
+			result.current.reset();
+		});
+
+		expect(result.current.result.data).toEqual({ message: "mounted" });
+
+		// The next execution's prevResult matches the visible reset result.
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		expect(prevResults[1]).toEqual({ data: { message: "mounted" } });
+	});
+
+	test("reset during an in-flight execution wins over the stale result", async () => {
+		let resolveAction: (value: TestResult) => void;
+		const action = createMockStateAction(
+			() =>
+				new Promise<TestResult>((resolve) => {
+					resolveAction = resolve;
+				})
+		);
+		const initResult: TestResult = { data: { message: "seed" } };
+		const { result } = renderHook(() => useStateAction(action, { initResult }));
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		act(() => {
+			result.current.reset();
+		});
+
+		await act(async () => {
+			resolveAction({ data: { message: "stale" } });
+		});
+		await flushHookTimers();
+
+		expect(result.current.status).toBe("idle");
+		expect(result.current.result.data).toEqual({ message: "seed" });
+	});
+
+	test("a dispatch queued before reset does not consume the reset baseline", async () => {
+		const resolvers: Array<(value: TestResult) => void> = [];
+		const prevResults: TestResult[] = [];
+		const action = createMockStateAction((prevResult) => {
+			prevResults.push(prevResult);
+			return new Promise<TestResult>((resolve) => {
+				resolvers.push(resolve);
+			});
+		});
+		const initResult: TestResult = { data: { message: "seed" } };
+		const { result } = renderHook(() => useStateAction(action, { initResult }));
+
+		// First dispatch starts, second queues behind it.
+		act(() => {
+			result.current.execute(undefined);
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+		expect(resolvers).toHaveLength(1);
+
+		act(() => {
+			result.current.reset();
+		});
+
+		// First action settles, then the queued (pre-reset) second dispatch runs.
+		await act(async () => {
+			resolvers[0]({ data: { message: "first" } });
+		});
+		await flushHookTimers();
+		await act(async () => {
+			resolvers[1]({ data: { message: "second" } });
+		});
+		await flushHookTimers();
+
+		// The reset state survives both stale executions.
+		expect(result.current.status).toBe("idle");
+		expect(result.current.result.data).toEqual({ message: "seed" });
+
+		// The first execution after reset still receives initResult as prevResult.
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+		await act(async () => {
+			resolvers[2]({ data: { message: "third" } });
+		});
+		await flushHookTimers();
+
+		expect(prevResults[2]).toEqual({ data: { message: "seed" } });
+	});
+
 	test("reset restores initResult with serverError (regression for non-data seeds)", async () => {
 		// The data-seed reset case is already covered above. This test pins the
 		// same contract for an initResult that only carries a `serverError`,

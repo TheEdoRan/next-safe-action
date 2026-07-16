@@ -31,7 +31,7 @@ const { execute, result, status, ... } = useAction(safeActionFn, callbacks?);
 	}}
 />
 
-`opts.initResult` sets the initial result before the first execution (defaults to `{}`), useful for preloading the hook with data fetched on the server. `reset()` restores it.
+`opts.initResult` sets the initial result before the first execution (defaults to `{}`), useful for preloading the hook with data fetched on the server. It is captured once at mount, like React's `useActionState` initial state: later changes to the option are ignored, and `reset()` restores the mount value.
 
 ### Return object
 
@@ -239,7 +239,7 @@ const { execute, executeAsync, formAction, result, status, reset, ... } = useSta
 	}}
 />
 
-`opts.initResult` sets the initial result before the first execution (defaults to `{}`).
+`opts.initResult` sets the initial result before the first execution (defaults to `{}`). It is captured once at mount: later changes to the option are ignored, and `reset()` restores the mount value.
 
 ### Return object
 
