@@ -159,6 +159,27 @@ test("returnServerError with a non-JSON-serializable payload fails clearly inste
 	expect(handleServerError).toHaveBeenCalledOnce();
 });
 
+test("returnServerError with a payload JSON.stringify drops entirely fails clearly instead of silently", async () => {
+	// `JSON.stringify` returns the value `undefined` (it does not throw) for a top-level
+	// `undefined`, function, or symbol: without a guard, the payload would silently degrade
+	// into a generic unexpected server error instead of failing loudly.
+	const handleServerError = vi.fn((e: Error) => e.message);
+	const client = createSafeActionClient({ handleServerError });
+
+	for (const payload of [undefined, () => {}, Symbol("nope")]) {
+		const action = client.action(async () => {
+			returnServerError(payload);
+		});
+
+		const actualResult = await action();
+
+		expect(actualResult).toStrictEqual({
+			serverError:
+				"The value passed to `returnServerError` must be JSON-serializable (no circular references, BigInts, functions, etc.).",
+		});
+	}
+});
+
 test("payloads with delimiters and special characters survive the digest round-trip", async () => {
 	const payload = { code: "WEIRD;CODE", message: 'quotes " and ; semicolons ; and unicode ✓' };
 

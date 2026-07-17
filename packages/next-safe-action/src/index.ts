@@ -24,7 +24,7 @@ export {
 	formatValidationErrors,
 	returnValidationErrors,
 } from "./validation-errors";
-export { ActionServerError, returnServerError } from "./server-error";
+export { returnServerError } from "./server-error";
 
 export type * from "./index.types";
 export type * from "./validation-errors.types";

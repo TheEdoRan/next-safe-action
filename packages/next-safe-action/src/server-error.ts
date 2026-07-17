@@ -1,3 +1,5 @@
+import { decodeDigestPayload, encodeDigestPayload } from "./utils";
+
 // Marker prefixing the `digest` of an `ActionServerError`. Same transport strategy as
 // `ActionServerValidationError` (see validation-errors.ts): when the error is thrown inside a
 // Next.js `'use cache'` scope, only `message` and `digest` survive the RSC/Flight boundary, so
@@ -6,25 +8,17 @@ const SERVER_ERROR_DIGEST = "NEXT_SAFE_ACTION_SERVER_ERROR";
 
 // This class is internally used to return a typed server error from the action's server code
 // function or middleware, using `returnServerError`.
-export class ActionServerError extends Error {
+class ActionServerError extends Error {
 	public digest: string;
 
 	constructor(serverError: unknown) {
 		super("Server Action server error occurred");
 
-		// The payload is encoded onto the `digest` so it can survive the `'use cache'` RSC boundary,
-		// which means it must be JSON-serializable. Fail loudly with a clear message instead of
-		// letting a raw `TypeError: Converting circular structure to JSON` leak from the constructor.
-		let encoded: string;
-		try {
-			encoded = JSON.stringify(serverError);
-		} catch {
-			throw new TypeError(
-				"The value passed to `returnServerError` must be JSON-serializable (no circular references, BigInts, functions, etc.)."
-			);
-		}
-
-		this.digest = `${SERVER_ERROR_DIGEST};${encoded}`;
+		this.digest = encodeDigestPayload(
+			SERVER_ERROR_DIGEST,
+			serverError,
+			"The value passed to `returnServerError` must be JSON-serializable (no circular references, BigInts, functions, etc.)."
+		);
 	}
 }
 
@@ -34,22 +28,7 @@ export class ActionServerError extends Error {
 // The payload is wrapped in `{ value }` so legitimately falsy payloads are distinguishable from
 // "not a returnServerError error", which returns `undefined`.
 export function extractServerError(e: unknown): { value: unknown } | undefined {
-	if (typeof e === "object" && e !== null && "digest" in e && typeof e.digest === "string") {
-		// Split on the first `;` only, since the JSON payload itself may contain `;`.
-		const sep = e.digest.indexOf(";");
-		if (sep !== -1 && e.digest.slice(0, sep) === SERVER_ERROR_DIGEST) {
-			try {
-				return {
-					value: JSON.parse(e.digest.slice(sep + 1), (key, value) => (key === "__proto__" ? undefined : value)),
-				};
-			} catch {
-				// Malformed payload: fall through to regular server error handling instead of crashing.
-				return undefined;
-			}
-		}
-	}
-
-	return undefined;
+	return decodeDigestPayload(SERVER_ERROR_DIGEST, e);
 }
 
 /**
