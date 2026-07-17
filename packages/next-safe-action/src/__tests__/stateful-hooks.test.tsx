@@ -1090,6 +1090,96 @@ describe("useStateAction callback stability", () => {
 	});
 });
 
+// ─── Overlapping dispatches ─────────────────────────────────────────────────
+
+describe("useStateAction overlapping dispatches", () => {
+	test("visible input reflects the latest dispatch while older queued actions run", async () => {
+		const resolvers: Array<(value: TestResult) => void> = [];
+		const action = createMockStateAction(
+			() =>
+				new Promise<TestResult>((resolve) => {
+					resolvers.push(resolve);
+				})
+		);
+
+		const { result } = renderHook(() => useStateAction(action));
+
+		act(() => {
+			result.current.execute("A" as never);
+		});
+		await flushHookTimers();
+		expect(resolvers).toHaveLength(1);
+
+		// B and C queue behind the in-flight A: the visible input is the latest one.
+		act(() => {
+			result.current.execute("B" as never);
+			result.current.execute("C" as never);
+		});
+		await flushHookTimers();
+		expect(result.current.input).toBe("C");
+
+		// A settles, B's queued turn starts running: input must stay C.
+		await act(async () => {
+			resolvers[0]({ data: { message: "first" } });
+		});
+		await flushHookTimers();
+		expect(result.current.input).toBe("C");
+
+		// B settles, C's turn starts: input must stay C, not flip back to B.
+		await act(async () => {
+			resolvers[1]({ data: { message: "second" } });
+		});
+		await flushHookTimers();
+		expect(result.current.input).toBe("C");
+
+		// C settles: final state reflects the latest dispatch.
+		await act(async () => {
+			resolvers[2]({ data: { message: "third" } });
+		});
+		await flushHookTimers();
+		expect(result.current.input).toBe("C");
+		expect(result.current.result.data).toEqual({ message: "third" });
+	});
+});
+
+// ─── formAction ─────────────────────────────────────────────────────────────
+
+describe("useStateAction formAction", () => {
+	test("formAction dispatch initializes hook state (input, non-idle status)", async () => {
+		let resolveAction!: (value: TestResult) => void;
+		const action = createMockStateAction(
+			() =>
+				new Promise((resolve) => {
+					resolveAction = resolve;
+				})
+		);
+
+		const { result } = renderHook(() => useStateAction(action));
+
+		// Mirror real usage: React invokes form actions inside its own transition context.
+		act(() => {
+			React.startTransition(() => {
+				result.current.formAction("form-input" as never);
+			});
+		});
+		await flushHookTimers();
+
+		expect(result.current.isPending).toBe(true);
+
+		await act(async () => {
+			resolveAction({ data: { message: "done" } });
+		});
+		await flushHookTimers();
+
+		// The dispatch initialized hook state: without it, status would still be
+		// "idle" and input undefined after the action settled.
+		expect(result.current.input).toBe("form-input");
+		expect(result.current.isIdle).toBe(false);
+		expect(result.current.status).toBe("hasSucceeded");
+		expect(result.current.result.data).toEqual({ message: "done" });
+	});
+});
+
 // ─── Edge cases ─────────────────────────────────────────────────────────────
 
 describe("useStateAction edge cases", () => {

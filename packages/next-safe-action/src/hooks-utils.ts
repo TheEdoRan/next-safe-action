@@ -45,7 +45,10 @@ export const getActionShorthandStatusObject = ({
 		isIdle: status === "idle",
 		isExecuting: status === "executing",
 		isTransitioning,
-		isPending: status === "executing" || isTransitioning,
+		// An idle status must never report pending: after a mid-flight `reset` the underlying
+		// React transition can't be cancelled, so `isTransitioning` may stay true while the
+		// status already reads idle. Reset wins, stale work is invisible.
+		isPending: status === "executing" || (isTransitioning && status !== "idle"),
 		hasSucceeded: status === "hasSucceeded",
 		hasErrored: status === "hasErrored",
 		hasNavigated: status === "hasNavigated",

@@ -146,7 +146,7 @@ type HookResultCommon<ServerError, Schema extends StandardSchemaV1 | undefined, 
  * The optional `InitR` generic represents the shape of the `initResult` option. When provided,
  * it narrows the idle branch's `result` to exactly that shape, so seeded fields are typed as
  * required rather than `Data | undefined`. For example, `initResult: { data: { id: 1 } }` gives
- * `result.data` the type `{ id: number }` on the idle branch — matching the runtime value that
+ * `result.data` the type `{ id: number }` on the idle branch, matching the runtime value that
  * is seeded at mount and restored after `reset()`. Defaults to `HookIdleResult` (empty result)
  * when `initResult` is not provided.
  */

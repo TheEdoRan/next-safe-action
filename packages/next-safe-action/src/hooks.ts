@@ -178,8 +178,19 @@ export const useStateAction = <
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<Schema, void>>();
 	const [isTransitioning, startTransition] = React.useTransition();
 
+	// Shared dispatch-time state initialization: every dispatch path (`execute`,
+	// `executeAsync`, `formAction`) runs this before enqueueing its action, so the
+	// visible state always reflects the latest dispatched input.
+	const beginDispatch = React.useCallback((input: InferInputOrDefault<Schema, void>) => {
+		setIsIdle(false);
+		setIsReset(false);
+		setNavigationError(null);
+		setThrownError(null);
+		setClientInput(input);
+	}, []);
+
 	// ─── Wrapper function ─────────────────────────────────────────────────
-	// All state updates inside the wrapper are batched into the transition by React,
+	// State updates inside the wrapper are batched into the transition by React,
 	// so they commit atomically with the result. This prevents the double-fire issue
 	// that would occur if state were synced via a separate effect.
 
@@ -194,14 +205,6 @@ export const useStateAction = <
 			const dispatchGeneration = entry?.generation ?? resetGenerationRef.current;
 			// Re-evaluated at each use: a `reset` can land while this action is awaited.
 			const staleAfterReset = () => dispatchGeneration !== resetGenerationRef.current;
-
-			if (!staleAfterReset()) {
-				setIsIdle(false);
-				setIsReset(false);
-				setClientInput(input as InferInputOrDefault<Schema, void>);
-				setNavigationError(null);
-				setThrownError(null);
-			}
 
 			const effectivePrevResult = staleAfterReset() ? prevResult : (prevResultOverrideRef.current ?? prevResult);
 			if (!staleAfterReset()) {
@@ -242,18 +245,14 @@ export const useStateAction = <
 			input: InferInputOrDefault<Schema, void>,
 			asyncResolver: { resolve: (value: unknown) => void; reject: (reason: unknown) => void } | null
 		) => {
-			setIsIdle(false);
-			setIsReset(false);
-			setNavigationError(null);
-			setThrownError(null);
-			setClientInput(input);
+			beginDispatch(input);
 
 			startTransition(() => {
 				asyncResolversRef.current.push({ resolver: asyncResolver, generation: resetGenerationRef.current });
 				dispatcher(input as InferInputOrDefault<Schema, undefined>);
 			});
 		},
-		[dispatcher]
+		[beginDispatch, dispatcher]
 	);
 
 	const execute = React.useCallback(
@@ -279,14 +278,17 @@ export const useStateAction = <
 
 	// ─── formAction ───────────────────────────────────────────────────────
 
-	// Wraps the dispatcher so form dispatches also enqueue their (null) entry, keeping the
-	// resolver queue aligned with dispatch order when `formAction` and `executeAsync` interleave.
+	// Wraps the dispatcher so form dispatches also initialize state at dispatch time and
+	// enqueue their (null) entry, keeping the resolver queue aligned with dispatch order
+	// when `formAction` and `executeAsync` interleave. Synchronous setState is safe here:
+	// React invokes form actions inside its own event/transition handling.
 	const formAction = React.useCallback(
 		(input: InferInputOrDefault<Schema, undefined>) => {
+			beginDispatch(input as InferInputOrDefault<Schema, void>);
 			asyncResolversRef.current.push({ resolver: null, generation: resetGenerationRef.current });
 			dispatcher(input);
 		},
-		[dispatcher]
+		[beginDispatch, dispatcher]
 	);
 
 	// ─── reset ────────────────────────────────────────────────────────────
@@ -310,10 +312,15 @@ export const useStateAction = <
 	// initial state.
 	const result = isReset ? initResultRef.current : (rawResult ?? {});
 
+	// `useActionState`'s pending flag can't be cancelled: after a mid-flight `reset` it stays
+	// true until the stale dispatch settles. Mask it with `isReset` so the reported status reads
+	// idle immediately; the mask lifts synchronously on the next dispatch (`beginDispatch`).
+	const isExecutingMasked = isExecuting && !isReset;
+
 	const status = getActionStatus<ServerError, Schema, ShapedErrors, Data>({
-		isExecuting,
+		isExecuting: isExecutingMasked,
 		result,
-		isIdle: isIdle && !isExecuting,
+		isIdle: isIdle && !isExecutingMasked,
 		hasNavigated: navigationError !== null,
 		hasThrownError: thrownError !== null,
 	});
