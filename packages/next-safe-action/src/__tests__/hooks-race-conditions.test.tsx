@@ -215,6 +215,51 @@ describe("useAction race condition protections", () => {
 		expect(result.current.isExecuting).toBe(false);
 	});
 
+	test("stale rejection after reset is not re-thrown outside the hook", async () => {
+		const unhandled: unknown[] = [];
+		const listener = (reason: unknown) => unhandled.push(reason);
+		process.on("unhandledRejection", listener);
+
+		try {
+			const resolvers: Array<{ resolve: (value: any) => void; reject: (reason: any) => void }> = [];
+			const action = vi.fn<TestActionFn>().mockImplementation(
+				() =>
+					new Promise((resolve, reject) => {
+						resolvers.push({ resolve, reject });
+					})
+			);
+
+			const { result } = renderHook(() => useAction(action));
+
+			act(() => {
+				result.current.execute(undefined);
+			});
+			await flushHookTimers();
+
+			// Reset mid-flight: the in-flight execution becomes stale.
+			act(() => {
+				result.current.reset();
+			});
+
+			// Reject the pre-reset call: besides not updating state, it must not re-throw
+			// (which would surface a dismissed action's error as an unhandled rejection).
+			await act(async () => {
+				resolvers[0].reject(new Error("stale failure"));
+			});
+			await flushHookTimers();
+
+			// Give the unhandledRejection event a real macrotask to fire.
+			vi.useRealTimers();
+			await new Promise((resolve) => setTimeout(resolve, 20));
+
+			expect(unhandled).toStrictEqual([]);
+			expect(result.current.status).toBe("idle");
+			expect(result.current.hasErrored).toBe(false);
+		} finally {
+			process.removeListener("unhandledRejection", listener);
+		}
+	});
+
 	test("executeAsync settles even on navigation errors", async () => {
 		const redirectError = createRedirectError("/dashboard");
 		const action = vi.fn<TestActionFn>().mockRejectedValue(redirectError);

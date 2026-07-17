@@ -104,9 +104,11 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 							}
 						}
 
-						// Only re-throw non-navigation errors for React error boundary handling.
+						// Only re-throw non-navigation errors for React error boundary handling, and only
+						// for the current request: a stale (reset or superseded) execution must not
+						// surface its error outside the hook, matching its skipped state updates.
 						// Navigation errors are handled via render-phase throw (throwOnNavigation).
-						if (!FrameworkErrorHandler.isNavigationError(e)) {
+						if (thisRequestId === requestIdRef.current && !FrameworkErrorHandler.isNavigationError(e)) {
 							throw e;
 						}
 					})
@@ -155,9 +157,11 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 							// Always reject so the caller's await settles.
 							reject(e);
 
-							// Only re-throw non-navigation errors for React error boundary handling.
+							// Only re-throw non-navigation errors for React error boundary handling, and only
+							// for the current request: a stale (reset or superseded) execution must not
+							// surface its error outside the hook, matching its skipped state updates.
 							// Navigation errors are handled via render-phase throw (throwOnNavigation).
-							if (!FrameworkErrorHandler.isNavigationError(e)) {
+							if (thisRequestId === requestIdRef.current && !FrameworkErrorHandler.isNavigationError(e)) {
 								throw e;
 							}
 						})
