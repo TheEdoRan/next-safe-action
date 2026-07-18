@@ -54,7 +54,7 @@ const { execute, result, status, ... } = useAction(safeActionFn, callbacks?);
 			type: "SafeActionResult<ServerError, Schema, ShapedErrors, Data>",
 		},
 		reset: {
-			description: "Reset the hook state back to idle. Restores result to initResult (or empty) and clears input and status.",
+			description: "Reset the hook state back to idle. Restores result to initResult (or empty), clears input and status, and discards any in-flight execution (its result, errors, and callbacks are ignored when it settles).",
 			type: "() => void",
 		},
 		status: {

@@ -186,8 +186,8 @@ The optional `props` object has the following shape:
 			default: "undefined",
 		},
 		actionProps: {
-			description: "Callbacks passed to the underlying useAction hook (onSuccess, onError, onExecute, onSettled, etc.).",
-			type: "HookCallbacks<ServerError, Schema, ShapedErrors, Data>",
+			description: "Options and callbacks passed to the underlying useAction hook (throwOnNavigation, onSuccess, onError, onExecute, onSettled, etc.).",
+			type: "HookBaseOptions<ServerError, Schema, ShapedErrors, Data>",
 			default: "undefined",
 		},
 		formProps: {

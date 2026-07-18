@@ -97,7 +97,7 @@ A few things to keep in mind:
 
 - Like `returnValidationErrors`, it **throws** internally (it never returns), so the remaining server code doesn't execute. It also works from middleware.
 - The value should conform to the client's `ServerError` type, which is inferred from `handleServerError`'s return type. See [Typing the error payload](#typing-the-error-payload) below.
-- The value must be **JSON-serializable** (no circular references, BigInts, functions, etc.), since it crosses the server/client boundary. This also makes it work inside `"use cache"` scopes when `cacheComponents` is enabled.
+- The value must be **JSON-serializable** (no circular references, BigInts, functions, etc.), since it crosses the server/client boundary. This also makes it work inside `"use cache"` scopes when `cacheComponents` is enabled. Non-serializable payloads fail loudly with a `TypeError` on the server (handled by `handleServerError` like any unexpected error), instead of silently degrading.
 
 #### Typing the error payload
 
