@@ -24,7 +24,7 @@ export async function readAndHighlightFile(appRelativePath: string): Promise<Sou
 	const code = readFileSync(absolutePath, "utf-8");
 
 	const html = await codeToHtml(code, {
-		lang: "typescript",
+		lang: appRelativePath.endsWith(".tsx") ? "tsx" : "typescript",
 		themes: {
 			light: "github-light",
 			dark: "github-dark",
