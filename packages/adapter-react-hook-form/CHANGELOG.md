@@ -1,5 +1,11 @@
 # @next-safe-action/adapter-react-hook-form
 
+## 2.1.0
+
+### Minor Changes
+
+- [#466](https://github.com/next-safe-action/next-safe-action/pull/466) [`f3ff5ba`](https://github.com/next-safe-action/next-safe-action/commit/f3ff5ba8bbd4b3265ed32d609a005719576deed5) Thanks [@TheEdoRan](https://github.com/TheEdoRan)! - `actionProps` in `useHookFormAction`/`useHookFormOptimisticAction` is now typed as `HookBaseOptions` instead of `HookCallbacks`, so hook configuration options like `throwOnNavigation` can be passed through the adapter. Type-only change.
+
 ## 2.0.6
 
 ### Patch Changes
