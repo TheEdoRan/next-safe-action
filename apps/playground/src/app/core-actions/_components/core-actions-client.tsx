@@ -13,6 +13,7 @@ import { directAction } from "../_actions/direct-action";
 import { emptyResponseAction } from "../_actions/empty-response-action";
 import { noArgsAction } from "../_actions/no-args-action";
 import { outputSchemaAction } from "../_actions/output-schema-action";
+import { returnServerErrorAction } from "../_actions/return-server-error-action";
 
 type Props = {
 	sources: {
@@ -22,6 +23,7 @@ type Props = {
 		noArgsAction: SourceCode;
 		emptyResponseAction: SourceCode;
 		outputSchemaAction: SourceCode;
+		returnServerErrorAction: SourceCode;
 	};
 };
 
@@ -32,6 +34,7 @@ export function CoreActionsClient({ sources }: Props) {
 	const [noArgsResult, setNoArgsResult] = useState<unknown>(undefined);
 	const [emptyResult, setEmptyResult] = useState<unknown>(undefined);
 	const [outputResult, setOutputResult] = useState<unknown>(undefined);
+	const [serverErrorResult, setServerErrorResult] = useState<unknown>(undefined);
 
 	return (
 		<div className="space-y-6">
@@ -174,7 +177,7 @@ export function CoreActionsClient({ sources }: Props) {
 
 			<ExampleCard
 				title="Output Schema"
-				description="Using .outputSchema() to validate the return data from the action."
+				description="Using .outputSchema() to validate and transform the return data from the action: the greeting is uppercased by an output transform."
 				source={sources.outputSchemaAction}
 			>
 				<form
@@ -195,6 +198,31 @@ export function CoreActionsClient({ sources }: Props) {
 					<Button type="submit">Execute</Button>
 				</form>
 				<ResultDisplay result={outputResult} />
+			</ExampleCard>
+
+			<ExampleCard
+				title="Expected Server Errors"
+				description='Using returnServerError() to return a typed, expected server error that bypasses handleServerError. Try "out-of-stock" as the product ID.'
+				source={sources.returnServerErrorAction}
+			>
+				<form
+					className="space-y-4"
+					onSubmit={async (e) => {
+						e.preventDefault();
+						const formData = new FormData(e.currentTarget);
+						const res = await returnServerErrorAction({
+							productId: formData.get("productId") as string,
+						});
+						setServerErrorResult(res);
+					}}
+				>
+					<div className="space-y-2">
+						<Label htmlFor="rse-productId">Product ID</Label>
+						<Input id="rse-productId" name="productId" placeholder="out-of-stock" />
+					</div>
+					<Button type="submit">Buy product</Button>
+				</form>
+				<ResultDisplay result={serverErrorResult} />
 			</ExampleCard>
 		</div>
 	);
