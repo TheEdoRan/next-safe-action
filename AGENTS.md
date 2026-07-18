@@ -80,6 +80,7 @@ The library has three entry points: `next-safe-action` (server), `next-safe-acti
 - `deep-merge.ts`: dependency-free `deepmerge()` used to merge middleware context objects (inlined from `deepmerge-ts` to keep the package free of runtime dependencies)
 - `middleware.ts`: `createMiddleware()` for standalone middleware definitions
 - `validation-errors.ts`: error formatting and flattening utilities
+- `server-error.ts`: `returnServerError()` for typed, expected server errors that bypass `handleServerError` (digest-encoded to survive `"use cache"` boundaries)
 - `utils.ts`: utility constants (`DEFAULT_SERVER_ERROR_MESSAGE`) and helpers
 - `standard-schema.ts`: Standard Schema v1 interface definitions and type utilities for schema inference
 - `next/errors/`: `FrameworkErrorHandler` class with handlers for redirect, router, bailout-to-CSR, dynamic-usage, postpone, and HTTP access fallback (404/403/401) errors

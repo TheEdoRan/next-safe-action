@@ -1,5 +1,5 @@
 import type { SafeActionFn } from "next-safe-action";
-import type { HookCallbacks, UseActionHookReturn, UseOptimisticActionHookReturn } from "next-safe-action/hooks";
+import type { HookBaseOptions, UseActionHookReturn, UseOptimisticActionHookReturn } from "next-safe-action/hooks";
 import type { UseFormProps, UseFormReturn } from "react-hook-form";
 import type { ErrorMapperProps } from "./index.types";
 import type { InferInputOrDefault, InferOutputOrDefault, StandardSchemaV1 } from "./standard-schema";
@@ -15,7 +15,7 @@ export type HookProps<
 	FormContext = any,
 > = {
 	errorMapProps?: ErrorMapperProps;
-	actionProps?: HookCallbacks<ServerError, Schema, ShapedErrors, Data>;
+	actionProps?: HookBaseOptions<ServerError, Schema, ShapedErrors, Data>;
 	formProps?: Omit<
 		UseFormProps<InferInputOrDefault<Schema, any>, FormContext, InferOutputOrDefault<Schema, any>>,
 		"resolver"

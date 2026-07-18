@@ -24,13 +24,14 @@ export {
 	formatValidationErrors,
 	returnValidationErrors,
 } from "./validation-errors";
+export { returnServerError } from "./server-error";
 
 export type * from "./index.types";
 export type * from "./validation-errors.types";
 
 /**
  * Create a new safe action client.
- * Note: this client only works with Zod as the validation library.
+ * Works with any validation library implementing the Standard Schema v1 spec (Zod, Valibot, Yup, etc.).
  * @param createOpts Initialization options
  *
  * {@link https://next-safe-action.dev/docs/define-actions/create-the-client#initialization-options See docs for more information}

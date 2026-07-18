@@ -39,7 +39,7 @@ export default function MyComponent() {
 | `result` | `SafeActionResult` | The latest action result |
 | `input` | `Input \| undefined` | The current/last input passed to execute |
 | `status` | `HookActionStatus` | Current status string |
-| `reset` | `() => void` | Reset to initial state |
+| `reset` | `() => void` | Reset to initial state, discarding any in-flight execution |
 | `isIdle` | `boolean` | `true` when no action has been executed |
 | `isExecuting` | `boolean` | `true` while the action is running |
 | `isTransitioning` | `boolean` | `true` during React transition |
@@ -155,6 +155,18 @@ const { execute } = useAction(myAction, {
 	},
 });
 ```
+
+### `initResult`
+
+Seed the hook with a preloaded result (e.g. data fetched on the server), so `result.data` is populated before the first execution:
+
+```tsx
+const { result } = useAction(myAction, {
+	initResult: { data: initialData },
+});
+```
+
+The value is captured **once at mount**, like React's `useActionState` initial state: later changes to the option are ignored, and `reset()` restores the mount value. Available on `useAction`, `useOptimisticAction`, and `useStateAction`. See the [hooks API reference](/docs/api/hooks-api) for details.
 
 ### `throwOnNavigation`
 

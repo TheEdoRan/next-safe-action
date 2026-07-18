@@ -1,6 +1,12 @@
 import { expectTypeOf, test } from "vitest";
 import { z } from "zod";
+import { returnServerError } from "../../server-error";
 import type { ValidationErrors, FlattenedValidationErrors } from "../../validation-errors.types";
+
+test("returnServerError returns never and accepts a typed payload", () => {
+	expectTypeOf(returnServerError<{ code: "NOT_FOUND"; message: string }>).returns.toBeNever();
+	expectTypeOf(returnServerError).parameter(0).toEqualTypeOf<unknown>();
+});
 
 test("ValidationErrors for simple object schema has field-level errors", () => {
 	const schema = z.object({ name: z.string(), age: z.number() });

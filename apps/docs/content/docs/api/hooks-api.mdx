@@ -24,12 +24,14 @@ const { execute, result, status, ... } = useAction(safeActionFn, callbacks?);
 			type: "SingleInputActionFn<ServerError, Schema, ShapedErrors, Data>",
 		},
 		opts: {
-			description: "Optional object with configuration options and lifecycle callbacks.",
-			type: "HookBaseOptions & HookCallbacks<ServerError, Schema, ShapedErrors, Data>",
+			description: "Optional object with initResult, configuration options, and lifecycle callbacks.",
+			type: "{ initResult?: SafeActionResult } & HookBaseOptions & HookCallbacks",
 			default: "undefined",
 		},
 	}}
 />
+
+`opts.initResult` sets the initial result before the first execution (defaults to `{}`), useful for preloading the hook with data fetched on the server. It is captured once at mount, like React's `useActionState` initial state: later changes to the option are ignored, and `reset()` restores the mount value.
 
 ### Return object
 
@@ -52,7 +54,7 @@ const { execute, result, status, ... } = useAction(safeActionFn, callbacks?);
 			type: "SafeActionResult<ServerError, Schema, ShapedErrors, Data>",
 		},
 		reset: {
-			description: "Reset the hook state back to idle. Clears result, input, and status.",
+			description: "Reset the hook state back to idle. Restores result to initResult (or empty), clears input and status, and discards any in-flight execution (its result, errors, and callbacks are ignored when it settles).",
 			type: "() => void",
 		},
 		status: {
@@ -159,6 +161,10 @@ const { execute, optimisticState, ... } = useOptimisticAction(safeActionFn, util
 			description: "Pure function that computes the optimistic state from the current state and the input being sent.",
 			type: "(state: State, input: InferInput<Schema>) => State",
 		},
+		"utils.initResult": {
+			description: "Optional initial result before the first execution (defaults to {}). reset() restores it.",
+			type: "SafeActionResult",
+		},
 	}}
 />
 
@@ -233,7 +239,7 @@ const { execute, executeAsync, formAction, result, status, reset, ... } = useSta
 	}}
 />
 
-`opts.initResult` sets the initial result before the first execution (defaults to `{}`).
+`opts.initResult` sets the initial result before the first execution (defaults to `{}`). It is captured once at mount: later changes to the option are ignored, and `reset()` restores the mount value.
 
 ### Return object
 

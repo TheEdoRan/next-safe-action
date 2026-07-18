@@ -1,5 +1,6 @@
 /* oxlint-disable typescript/no-unsafe-member-access, typescript/no-unsafe-assignment */
 import type { StandardSchemaV1 } from "./standard-schema";
+import { decodeDigestPayload, encodeDigestPayload } from "./utils";
 import type { FlattenedValidationErrors, IssueWithUnionErrors, ValidationErrors } from "./validation-errors.types";
 
 const getKey = (segment: PropertyKey | StandardSchemaV1.PathSegment) =>
@@ -95,16 +96,11 @@ export class ActionServerValidationError<Schema extends StandardSchemaV1> extend
 		// The payload is encoded onto the `digest` so it can survive the `'use cache'` RSC boundary, which
 		// means it must be JSON-serializable. Fail loudly with a clear message instead of letting a raw
 		// `TypeError: Converting circular structure to JSON` leak from the constructor.
-		let encoded: string;
-		try {
-			encoded = JSON.stringify(validationErrors);
-		} catch {
-			throw new TypeError(
-				"The validation errors object passed to `returnValidationErrors` must be JSON-serializable (no circular references, BigInts, functions, etc.)."
-			);
-		}
-
-		this.digest = `${SERVER_VALIDATION_ERROR_DIGEST};${encoded}`;
+		this.digest = encodeDigestPayload(
+			SERVER_VALIDATION_ERROR_DIGEST,
+			validationErrors,
+			"The validation errors object passed to `returnValidationErrors` must be JSON-serializable (no circular references, BigInts, functions, etc.)."
+		);
 	}
 }
 
@@ -116,26 +112,9 @@ export class ActionServerValidationError<Schema extends StandardSchemaV1> extend
 // the behavior identical with and without `cacheComponents` by construction. Returns `undefined` for any
 // other error, so it falls through to regular server error handling. Note: the JSON round-trip is lossy
 // for the uncommon case of symbol or numeric validation keys (the validation shape normally has string
-// keys). The `__proto__` reviver is defense-in-depth: `JSON.parse` already stores `__proto__` as a plain
-// own property (it does not pollute the global prototype), but dropping it keeps a hostile key out of the
-// recovered object entirely.
+// keys).
 export function extractServerValidationErrors(e: unknown): ValidationErrors<any> | undefined {
-	if (typeof e === "object" && e !== null && "digest" in e && typeof e.digest === "string") {
-		// Split on the first `;` only, since the JSON payload itself may contain `;`.
-		const sep = e.digest.indexOf(";");
-		if (sep !== -1 && e.digest.slice(0, sep) === SERVER_VALIDATION_ERROR_DIGEST) {
-			try {
-				return JSON.parse(e.digest.slice(sep + 1), (key, value) =>
-					key === "__proto__" ? undefined : value
-				) as ValidationErrors<any>;
-			} catch {
-				// Malformed payload: fall through to server error handling instead of crashing.
-				return undefined;
-			}
-		}
-	}
-
-	return undefined;
+	return decodeDigestPayload(SERVER_VALIDATION_ERROR_DIGEST, e)?.value as ValidationErrors<any> | undefined;
 }
 
 // This class is internally used to throw validation errors in action's server code function, using

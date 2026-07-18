@@ -244,4 +244,17 @@ describe("getActionShorthandStatusObject", () => {
 		expect(shorthand.isPending).toBe(true);
 		expect(shorthand.isExecuting).toBe(false);
 	});
+
+	test("idle status never reports pending, even while still transitioning", () => {
+		// After a mid-flight reset the underlying React transition can't be cancelled:
+		// status already reads idle while isTransitioning is still true. Reset wins.
+		const shorthand = getActionShorthandStatusObject({
+			status: "idle",
+			isTransitioning: true,
+		});
+
+		expect(shorthand.isIdle).toBe(true);
+		expect(shorthand.isPending).toBe(false);
+		expect(shorthand.isTransitioning).toBe(true);
+	});
 });

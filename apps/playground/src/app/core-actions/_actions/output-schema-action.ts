@@ -7,8 +7,10 @@ const inputSchema = z.object({
 	name: z.string().min(1).max(50),
 });
 
+// Output transforms apply to the returned data, mirroring input validation semantics:
+// the client receives the transformed values, not the raw return.
 const outputSchema = z.object({
-	greeting: z.string(),
+	greeting: z.string().transform((g) => g.toUpperCase()),
 	timestamp: z.number(),
 });
 

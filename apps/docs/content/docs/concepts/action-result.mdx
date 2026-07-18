@@ -115,6 +115,8 @@ const result = await riskyAction();
 By default, the actual error message is **not** sent to the client, only the generic `"Something went wrong"` string. This prevents sensitive information from leaking. Customize this with `handleServerError` in [client options](/docs/api/create-safe-action-client).
 </Callout>
 
+For **expected** business errors ("out of stock", "not found"), you can populate `serverError` with a typed value of your choice using [`returnServerError()`](/docs/concepts/error-handling#expected-server-errors-with-returnservererror), which bypasses `handleServerError` entirely.
+
 ## Reading the result
 
 A typical pattern for handling all cases:

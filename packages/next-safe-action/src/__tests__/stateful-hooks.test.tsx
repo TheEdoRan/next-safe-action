@@ -349,6 +349,67 @@ describe("useStateAction executeAsync", () => {
 
 		expect(rejectedError).toBe(redirectError);
 	});
+
+	test("overlapping executeAsync calls each settle with their own result", async () => {
+		const resolvers: Array<(value: TestResult) => void> = [];
+		const action = createMockStateAction(
+			() =>
+				new Promise<TestResult>((resolve) => {
+					resolvers.push(resolve);
+				})
+		);
+
+		const { result } = renderHook(() => useStateAction(action));
+
+		let firstResult: TestResult | undefined;
+		let secondResult: TestResult | undefined;
+
+		act(() => {
+			void result.current.executeAsync(undefined).then((r) => {
+				firstResult = r;
+			});
+			void result.current.executeAsync(undefined).then((r) => {
+				secondResult = r;
+			});
+		});
+		await flushHookTimers();
+
+		// Dispatches run sequentially: only the first action has started.
+		expect(resolvers).toHaveLength(1);
+
+		await act(async () => {
+			resolvers[0]({ data: { message: "first" } });
+		});
+		await flushHookTimers();
+
+		expect(firstResult).toEqual({ data: { message: "first" } });
+		expect(secondResult).toBeUndefined();
+
+		await act(async () => {
+			resolvers[1]({ data: { message: "second" } });
+		});
+		await flushHookTimers();
+
+		expect(secondResult).toEqual({ data: { message: "second" } });
+	});
+
+	test("execute interleaved with executeAsync keeps resolver alignment", async () => {
+		let calls = 0;
+		const action = createMockStateAction(async () => ({ data: { message: `call-${++calls}` } }));
+
+		const { result } = renderHook(() => useStateAction(action));
+
+		let asyncResult: TestResult | undefined;
+		act(() => {
+			result.current.execute(undefined);
+			void result.current.executeAsync(undefined).then((r) => {
+				asyncResult = r;
+			});
+		});
+		await flushHookTimers();
+
+		expect(asyncResult).toEqual({ data: { message: "call-2" } });
+	});
 });
 
 // ─── reset ──────────────────────────────────────────────────────────────────
@@ -396,6 +457,122 @@ describe("useStateAction reset", () => {
 		expect(result.current.status).toBe("idle");
 		expect(result.current.isIdle).toBe(true);
 		expect(result.current.result.data).toEqual({ message: "seed" });
+	});
+
+	test("reset restores the initResult captured at mount even if the option changes across renders", async () => {
+		const prevResults: TestResult[] = [];
+		const action = createMockStateAction(async (prevResult) => {
+			prevResults.push(prevResult);
+			return { data: { message: "after-execute" } };
+		});
+
+		const { result, rerender } = renderHook(
+			({ initResult }: { initResult: TestResult }) => useStateAction(action, { initResult }),
+			{ initialProps: { initResult: { data: { message: "mounted" } } as TestResult } }
+		);
+
+		rerender({ initResult: { data: { message: "changed" } } });
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		expect(result.current.result.data).toEqual({ message: "after-execute" });
+
+		act(() => {
+			result.current.reset();
+		});
+
+		expect(result.current.result.data).toEqual({ message: "mounted" });
+
+		// The next execution's prevResult matches the visible reset result.
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		expect(prevResults[1]).toEqual({ data: { message: "mounted" } });
+	});
+
+	test("reset during an in-flight execution wins over the stale result", async () => {
+		let resolveAction: (value: TestResult) => void;
+		const action = createMockStateAction(
+			() =>
+				new Promise<TestResult>((resolve) => {
+					resolveAction = resolve;
+				})
+		);
+		const initResult: TestResult = { data: { message: "seed" } };
+		const { result } = renderHook(() => useStateAction(action, { initResult }));
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		act(() => {
+			result.current.reset();
+		});
+
+		await act(async () => {
+			resolveAction({ data: { message: "stale" } });
+		});
+		await flushHookTimers();
+
+		expect(result.current.status).toBe("idle");
+		expect(result.current.result.data).toEqual({ message: "seed" });
+	});
+
+	test("a dispatch queued before reset does not consume the reset baseline", async () => {
+		const resolvers: Array<(value: TestResult) => void> = [];
+		const prevResults: TestResult[] = [];
+		const action = createMockStateAction((prevResult) => {
+			prevResults.push(prevResult);
+			return new Promise<TestResult>((resolve) => {
+				resolvers.push(resolve);
+			});
+		});
+		const initResult: TestResult = { data: { message: "seed" } };
+		const { result } = renderHook(() => useStateAction(action, { initResult }));
+
+		// First dispatch starts, second queues behind it.
+		act(() => {
+			result.current.execute(undefined);
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+		expect(resolvers).toHaveLength(1);
+
+		act(() => {
+			result.current.reset();
+		});
+
+		// First action settles, then the queued (pre-reset) second dispatch runs.
+		await act(async () => {
+			resolvers[0]({ data: { message: "first" } });
+		});
+		await flushHookTimers();
+		await act(async () => {
+			resolvers[1]({ data: { message: "second" } });
+		});
+		await flushHookTimers();
+
+		// The reset state survives both stale executions.
+		expect(result.current.status).toBe("idle");
+		expect(result.current.result.data).toEqual({ message: "seed" });
+
+		// The first execution after reset still receives initResult as prevResult.
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+		await act(async () => {
+			resolvers[2]({ data: { message: "third" } });
+		});
+		await flushHookTimers();
+
+		expect(prevResults[2]).toEqual({ data: { message: "seed" } });
 	});
 
 	test("reset restores initResult with serverError (regression for non-data seeds)", async () => {
@@ -910,6 +1087,96 @@ describe("useStateAction callback stability", () => {
 		await act(async () => {});
 
 		expect(onSuccess2).not.toHaveBeenCalled();
+	});
+});
+
+// ─── Overlapping dispatches ─────────────────────────────────────────────────
+
+describe("useStateAction overlapping dispatches", () => {
+	test("visible input reflects the latest dispatch while older queued actions run", async () => {
+		const resolvers: Array<(value: TestResult) => void> = [];
+		const action = createMockStateAction(
+			() =>
+				new Promise<TestResult>((resolve) => {
+					resolvers.push(resolve);
+				})
+		);
+
+		const { result } = renderHook(() => useStateAction(action));
+
+		act(() => {
+			result.current.execute("A" as never);
+		});
+		await flushHookTimers();
+		expect(resolvers).toHaveLength(1);
+
+		// B and C queue behind the in-flight A: the visible input is the latest one.
+		act(() => {
+			result.current.execute("B" as never);
+			result.current.execute("C" as never);
+		});
+		await flushHookTimers();
+		expect(result.current.input).toBe("C");
+
+		// A settles, B's queued turn starts running: input must stay C.
+		await act(async () => {
+			resolvers[0]({ data: { message: "first" } });
+		});
+		await flushHookTimers();
+		expect(result.current.input).toBe("C");
+
+		// B settles, C's turn starts: input must stay C, not flip back to B.
+		await act(async () => {
+			resolvers[1]({ data: { message: "second" } });
+		});
+		await flushHookTimers();
+		expect(result.current.input).toBe("C");
+
+		// C settles: final state reflects the latest dispatch.
+		await act(async () => {
+			resolvers[2]({ data: { message: "third" } });
+		});
+		await flushHookTimers();
+		expect(result.current.input).toBe("C");
+		expect(result.current.result.data).toEqual({ message: "third" });
+	});
+});
+
+// ─── formAction ─────────────────────────────────────────────────────────────
+
+describe("useStateAction formAction", () => {
+	test("formAction dispatch initializes hook state (input, non-idle status)", async () => {
+		let resolveAction!: (value: TestResult) => void;
+		const action = createMockStateAction(
+			() =>
+				new Promise((resolve) => {
+					resolveAction = resolve;
+				})
+		);
+
+		const { result } = renderHook(() => useStateAction(action));
+
+		// Mirror real usage: React invokes form actions inside its own transition context.
+		act(() => {
+			React.startTransition(() => {
+				result.current.formAction("form-input" as never);
+			});
+		});
+		await flushHookTimers();
+
+		expect(result.current.isPending).toBe(true);
+
+		await act(async () => {
+			resolveAction({ data: { message: "done" } });
+		});
+		await flushHookTimers();
+
+		// The dispatch initialized hook state: without it, status would still be
+		// "idle" and input undefined after the action settled.
+		expect(result.current.input).toBe("form-input");
+		expect(result.current.isIdle).toBe(false);
+		expect(result.current.status).toBe("hasSucceeded");
+		expect(result.current.result.data).toEqual({ message: "done" });
 	});
 });
 

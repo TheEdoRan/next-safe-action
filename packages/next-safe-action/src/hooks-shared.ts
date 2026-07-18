@@ -22,7 +22,11 @@ import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
  */
 export function useActionBase<ServerError, Schema extends StandardSchemaV1 | undefined, ShapedErrors, Data>(
 	safeActionFn: SingleInputActionFn<ServerError, Schema, ShapedErrors, Data>,
-	opts: HookBaseOptions<ServerError, Schema, ShapedErrors, Data> | undefined,
+	opts:
+		| ({
+				initResult?: SafeActionResult<ServerError, Schema, ShapedErrors, Data>;
+		  } & HookBaseOptions<ServerError, Schema, ShapedErrors, Data>)
+		| undefined,
 	onTransitionStart?: (input: InferInputOrDefault<Schema, undefined>) => void
 ): {
 	isTransitioning: boolean;
@@ -40,8 +44,14 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 	reset: () => void;
 	shorthandStatus: HookShorthandStatus;
 } {
+	// `initResult` is captured once at mount, mirroring React's `useActionState` initialState:
+	// later changes to the option are ignored, and `reset` restores this baseline.
+	const initResultRef = React.useRef<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>(opts?.initResult ?? {});
+
 	const [isTransitioning, startTransition] = React.useTransition();
-	const [result, setResult] = React.useState<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>({});
+	const [result, setResult] = React.useState<SafeActionResult<ServerError, Schema, ShapedErrors, Data>>(
+		initResultRef.current
+	);
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<Schema, void>>();
 	const [isExecuting, setIsExecuting] = React.useState(false);
 	const [navigationError, setNavigationError] = React.useState<Error | null>(null);
@@ -94,9 +104,11 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 							}
 						}
 
-						// Only re-throw non-navigation errors for React error boundary handling.
+						// Only re-throw non-navigation errors for React error boundary handling, and only
+						// for the current request: a stale (reset or superseded) execution must not
+						// surface its error outside the hook, matching its skipped state updates.
 						// Navigation errors are handled via render-phase throw (throwOnNavigation).
-						if (!FrameworkErrorHandler.isNavigationError(e)) {
+						if (thisRequestId === requestIdRef.current && !FrameworkErrorHandler.isNavigationError(e)) {
 							throw e;
 						}
 					})
@@ -145,9 +157,11 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 							// Always reject so the caller's await settles.
 							reject(e);
 
-							// Only re-throw non-navigation errors for React error boundary handling.
+							// Only re-throw non-navigation errors for React error boundary handling, and only
+							// for the current request: a stale (reset or superseded) execution must not
+							// surface its error outside the hook, matching its skipped state updates.
 							// Navigation errors are handled via render-phase throw (throwOnNavigation).
-							if (!FrameworkErrorHandler.isNavigationError(e)) {
+							if (thisRequestId === requestIdRef.current && !FrameworkErrorHandler.isNavigationError(e)) {
 								throw e;
 							}
 						})
@@ -162,11 +176,17 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 	);
 
 	const reset = React.useCallback(() => {
+		// Invalidate in-flight requests: their responses must not repopulate state after a reset.
+		// Since stale requests skip their own `setIsExecuting(false)` in `finally`, clear it here.
+		requestIdRef.current++;
 		setIsIdle(true);
 		setNavigationError(null);
 		setThrownError(null);
 		setClientInput(undefined);
-		setResult({});
+		// Restore the mount-captured initial result (or empty when not provided), matching
+		// `useStateAction`'s contract: `reset` returns to the initial state.
+		setResult(initResultRef.current);
+		setIsExecuting(false);
 	}, []);
 
 	useActionCallbacks({
