@@ -13,29 +13,29 @@ next-safe-action is a TypeScript library for type-safe, validated Next.js Server
 - **`packages/adapter-tanstack-query`**: `@next-safe-action/adapter-tanstack-query` adapter for TanStack Query mutation integration
 - **`packages/adapter-better-auth`**: `@next-safe-action/adapter-better-auth` adapter for Better Auth session middleware integration
 - **`apps/playground`**: Next.js app for manual testing (Tailwind v4, shadcn/ui, Shiki code viewer)
-- **`apps/docs`**: Fumadocs documentation site (content in `content/docs/`, MDX + Twoslash)
+- **`apps/docs`**: Fumadocs documentation site (content in `content/docs/`, MDX)
 
 ## Technology Stack
 
 | Category | Technology | Version |
 |---|---|---|
-| Language | TypeScript | ^6.0.2 |
+| Language | TypeScript | ^6.0.3 |
 | Runtime | Node.js | >=18.17 |
-| Package manager | pnpm (with catalogs) | 10.33.0 |
-| Framework | Next.js | ^16 |
+| Package manager | pnpm (with catalogs) | 11.7.0 |
+| Framework | Next.js | ^16.3.0 |
 | UI library | React | ^19 |
-| Monorepo orchestration | Turborepo | ^2.8.21 |
-| Bundler | tsdown (Rolldown + Oxc) | ^0.21.0 |
-| Test framework | Vitest | ^4.1.4 |
-| Formatter | Oxfmt | ^0.42.0 |
-| Linter | Oxlint (type-aware) | ^1.57.0 |
-| Validation | Zod ^4.3.6, Yup ^1.6.1 (Standard Schema v1) | - |
+| Monorepo orchestration | Turborepo | ^2.10.9 |
+| Bundler | tsdown (Rolldown + Oxc) | ^0.22.14 |
+| Test framework | Vitest | ^4.1.10 |
+| Formatter | Oxfmt | ^0.63.0 |
+| Linter | Oxlint (type-aware) | ^1.74.0 |
+| Validation | Zod ^4.4.3, Yup ^1.7.1 (Standard Schema v1) | - |
 | CSS framework | Tailwind CSS v4 | ^4 |
-| Component library | shadcn/ui (Radix UI + CVA) | ^3.8.5 |
-| Docs framework | Fumadocs (core + MDX + UI + Twoslash) | ^16.6.8 |
-| Forms | react-hook-form + @hookform/resolvers | ^7.54.2 / ^5.0.0 |
-| Data fetching | TanStack Query (React Query) | ^5.80.7 |
-| Versioning | Changesets | ^2.30.0 |
+| Component library | shadcn/ui (Radix UI + CVA) | ^4.16.2 |
+| Docs framework | Fumadocs (core + MDX + UI) | ^16.14.3 |
+| Forms | react-hook-form + @hookform/resolvers | ^7.85.0 / ^5.7.1 |
+| Data fetching | TanStack Query (React Query) | ^5.101.4 |
+| Versioning | Changesets | ^2.31.1 |
 
 ## Commands
 
