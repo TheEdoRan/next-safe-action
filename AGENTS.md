@@ -27,7 +27,7 @@ next-safe-action is a TypeScript library for type-safe, validated Next.js Server
 | Monorepo orchestration | Turborepo | ^2.10.9 |
 | Bundler | tsdown (Rolldown + Oxc) | ^0.22.14 |
 | Test framework | Vitest | ^4.1.10 |
-| Formatter | Oxfmt | ^0.63.0 |
+| Formatter | Oxfmt | ^0.62.0 |
 | Linter | Oxlint (type-aware) | ^1.74.0 |
 | Validation | Zod ^4.4.3, Yup ^1.7.1 (Standard Schema v1) | - |
 | CSS framework | Tailwind CSS v4 | ^4 |
@@ -106,6 +106,20 @@ The library has three entry points: `next-safe-action` (server), `next-safe-acti
 - Runtime test files follow `feature-name.test.ts` naming convention (`.test.tsx` for hook tests)
 - Type tests in `src/__tests__/types/` follow `feature-name.test-d.ts` naming convention (Vitest `typecheck` mode)
 - Add regression tests for behavioral or API changes
+
+## Dependency Policy
+
+**Never add entries to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml`. This key must stay absent from the file.**
+
+pnpm 11 applies a default `minimumReleaseAge` of 1440 minutes (24 hours), so a freshly published version cannot be installed until it has been on the registry for a full day. This is the repository's main defense against a compromised release: most malicious npm publishes are detected and unpublished within hours. `minimumReleaseAgeExclude` opts specific versions out of that cooldown and defeats the protection, which is why it is banned here, with no exceptions and no "just this once" entries.
+
+Rules when updating dependencies:
+
+- If a version range cannot resolve because every matching version is younger than 24 hours, **lower the range** to the newest version that is at least 24 hours old (for example `^13.1.0` becomes `^13.0.0`). Do not add an exclude entry, and do not disable or lower `minimumReleaseAge`.
+- Prefer a slightly older, proven version over the newest release. Being one patch behind for a day is the intended trade-off.
+- Never pass `--ignore-scripts=false`, and never widen `allowBuilds` without an explicit request. Packages outside `allowBuilds` must not run install scripts.
+- Keep every dependency resolved from the npm registry. Do not introduce git or direct tarball resolutions, `overrides`, or `patchedDependencies` as a workaround for a blocked version.
+- After a dependency update, run `pnpm audit` and confirm the update does not introduce new advisories.
 
 ## Changesets
 

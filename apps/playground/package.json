@@ -24,7 +24,7 @@
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"react-hook-form": "catalog:",
-		"shiki": "^4.4.3",
+		"shiki": "^4.4.2",
 		"sonner": "^2.0.8",
 		"tailwind-merge": "^3.6.0",
 		"zod": "catalog:",
