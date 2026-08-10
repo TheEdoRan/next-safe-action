@@ -13,29 +13,29 @@ next-safe-action is a TypeScript library for type-safe, validated Next.js Server
 - **`packages/adapter-tanstack-query`**: `@next-safe-action/adapter-tanstack-query` adapter for TanStack Query mutation integration
 - **`packages/adapter-better-auth`**: `@next-safe-action/adapter-better-auth` adapter for Better Auth session middleware integration
 - **`apps/playground`**: Next.js app for manual testing (Tailwind v4, shadcn/ui, Shiki code viewer)
-- **`apps/docs`**: Fumadocs documentation site (content in `content/docs/`, MDX + Twoslash)
+- **`apps/docs`**: Fumadocs documentation site (content in `content/docs/`, MDX)
 
 ## Technology Stack
 
 | Category | Technology | Version |
 |---|---|---|
-| Language | TypeScript | ^6.0.2 |
+| Language | TypeScript | ^6.0.3 |
 | Runtime | Node.js | >=18.17 |
-| Package manager | pnpm (with catalogs) | 10.33.0 |
-| Framework | Next.js | ^16 |
+| Package manager | pnpm (with catalogs) | 11.7.0 |
+| Framework | Next.js | ^16.3.0 |
 | UI library | React | ^19 |
-| Monorepo orchestration | Turborepo | ^2.8.21 |
-| Bundler | tsdown (Rolldown + Oxc) | ^0.21.0 |
-| Test framework | Vitest | ^4.1.4 |
-| Formatter | Oxfmt | ^0.42.0 |
-| Linter | Oxlint (type-aware) | ^1.57.0 |
-| Validation | Zod ^4.3.6, Yup ^1.6.1 (Standard Schema v1) | - |
+| Monorepo orchestration | Turborepo | ^2.10.9 |
+| Bundler | tsdown (Rolldown + Oxc) | ^0.22.14 |
+| Test framework | Vitest | ^4.1.10 |
+| Formatter | Oxfmt | ^0.62.0 |
+| Linter | Oxlint (type-aware) | ^1.74.0 |
+| Validation | Zod ^4.4.3, Yup ^1.7.1 (Standard Schema v1) | - |
 | CSS framework | Tailwind CSS v4 | ^4 |
-| Component library | shadcn/ui (Radix UI + CVA) | ^3.8.5 |
-| Docs framework | Fumadocs (core + MDX + UI + Twoslash) | ^16.6.8 |
-| Forms | react-hook-form + @hookform/resolvers | ^7.54.2 / ^5.0.0 |
-| Data fetching | TanStack Query (React Query) | ^5.80.7 |
-| Versioning | Changesets | ^2.30.0 |
+| Component library | shadcn/ui (Radix UI + CVA) | ^4.16.2 |
+| Docs framework | Fumadocs (core + MDX + UI) | ^16.14.3 |
+| Forms | react-hook-form + @hookform/resolvers | ^7.85.0 / ^5.7.1 |
+| Data fetching | TanStack Query (React Query) | ^5.101.4 |
+| Versioning | Changesets | ^2.31.1 |
 
 ## Commands
 
@@ -106,6 +106,20 @@ The library has three entry points: `next-safe-action` (server), `next-safe-acti
 - Runtime test files follow `feature-name.test.ts` naming convention (`.test.tsx` for hook tests)
 - Type tests in `src/__tests__/types/` follow `feature-name.test-d.ts` naming convention (Vitest `typecheck` mode)
 - Add regression tests for behavioral or API changes
+
+## Dependency Policy
+
+**Never add entries to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml`. This key must stay absent from the file.**
+
+pnpm 11 applies a default `minimumReleaseAge` of 1440 minutes (24 hours), so a freshly published version cannot be installed until it has been on the registry for a full day. This is the repository's main defense against a compromised release: most malicious npm publishes are detected and unpublished within hours. `minimumReleaseAgeExclude` opts specific versions out of that cooldown and defeats the protection, which is why it is banned here, with no exceptions and no "just this once" entries.
+
+Rules when updating dependencies:
+
+- If a version range cannot resolve because every matching version is younger than 24 hours, **lower the range** to the newest version that is at least 24 hours old (for example `^13.1.0` becomes `^13.0.0`). Do not add an exclude entry, and do not disable or lower `minimumReleaseAge`.
+- Prefer a slightly older, proven version over the newest release. Being one patch behind for a day is the intended trade-off.
+- Never pass `--ignore-scripts=false`, and never widen `allowBuilds` without an explicit request. Packages outside `allowBuilds` must not run install scripts.
+- Keep every dependency resolved from the npm registry. Do not introduce git or direct tarball resolutions, `overrides`, or `patchedDependencies` as a workaround for a blocked version.
+- After a dependency update, run `pnpm audit` and confirm the update does not introduce new advisories.
 
 ## Changesets
 

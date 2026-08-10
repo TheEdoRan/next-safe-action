@@ -1,4 +1,3 @@
-import * as Twoslash from "fumadocs-twoslash/ui";
 import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 import { Card, Cards } from "fumadocs-ui/components/card";
 import { Step, Steps } from "fumadocs-ui/components/steps";
@@ -10,7 +9,6 @@ export function useMDXComponents(components: Record<string, any>): Record<string
 	return {
 		...defaultMdxComponents,
 		...TabsComponents,
-		...Twoslash,
 		Accordion,
 		Accordions,
 		Step,
