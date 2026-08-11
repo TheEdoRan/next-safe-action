@@ -6,7 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "tsc --noEmit && oxlint --type-aware ."
+		"lint": "tsc --noEmit && oxlint --type-aware .",
+		"test:e2e": "playwright test"
 	},
 	"author": "Edoardo Ranghieri",
 	"dependencies": {
@@ -31,6 +32,7 @@
 		"zod-form-data": "^3.0.3"
 	},
 	"devDependencies": {
+		"@playwright/test": "1.61.1",
 		"@tailwindcss/postcss": "catalog:",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",

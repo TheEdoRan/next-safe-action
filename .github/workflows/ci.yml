@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "packages/**"
+      - "apps/playground/**"
       - "turbo.json"
       - "package.json"
       - "pnpm-lock.yaml"
@@ -38,8 +39,11 @@ jobs:
           node-version-file: ".node-version"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter=@apps/playground exec playwright install --with-deps chromium
       - run: pnpm run lint:lib
       - run: pnpm run test:lib
+      - run: pnpm run lint:pg
+      - run: pnpm run test:pg
 
   check-changesets:
     if: github.head_ref != 'changeset-release/main'

@@ -11,6 +11,7 @@
 		"build": "turbo run build",
 		"test": "turbo run test",
 		"test:lib": "turbo run test --filter=./packages/*",
+		"test:pg": "pnpm run build:lib && pnpm run build:pg && pnpm --filter=@apps/playground run test:e2e",
 		"lint:lib": "turbo run lint --filter=./packages/*",
 		"build:lib": "turbo run build --filter=./packages/* --force",
 		"docs": "turbo run dev --filter=@apps/docs",
