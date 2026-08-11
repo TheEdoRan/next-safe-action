@@ -12,6 +12,7 @@ import {
 	ShieldAlertIcon,
 	SparklesIcon,
 	SunIcon,
+	WifiOffIcon,
 	ZapIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -72,7 +73,10 @@ const navGroups = [
 	},
 	{
 		label: "Framework",
-		items: [{ title: "Navigation & Framework", href: "/navigation-framework", icon: NavigationIcon }],
+		items: [
+			{ title: "Navigation & Framework", href: "/navigation-framework", icon: NavigationIcon },
+			{ title: "Offline Support", href: "/offline-support", icon: WifiOffIcon },
+		],
 	},
 ];
 

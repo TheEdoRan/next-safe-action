@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
+import { OfflineBar } from "@/components/offline-bar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					<SidebarProvider>
 						<AppSidebar />
 						<SidebarInset>
+							<OfflineBar />
 							<div className="flex h-14 shrink-0 items-center px-4 md:hidden">
 								<SidebarTrigger />
 							</div>
