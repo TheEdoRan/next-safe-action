@@ -7,6 +7,9 @@ export default defineConfig({
 	fullyParallel: false,
 	workers: 1,
 	reporter: "list",
+	forbidOnly: !!process.env.CI,
+	retries: process.env.CI ? 2 : 0,
+	expect: { timeout: 15_000 },
 	use: {
 		baseURL: `http://127.0.0.1:${port}`,
 		trace: "retain-on-failure",
