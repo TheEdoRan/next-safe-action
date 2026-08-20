@@ -43,7 +43,7 @@ export default function MyComponent() {
 | `isIdle` | `boolean` | `true` when no action has been executed |
 | `isExecuting` | `boolean` | `true` while the action is running |
 | `isTransitioning` | `boolean` | `true` during React transition |
-| `isPending` | `boolean` | `true` when executing or transitioning |
+| `isPending` | `boolean` | `true` when executing or transitioning, `false` after a `reset` |
 | `hasSucceeded` | `boolean` | `true` after a successful execution |
 | `hasErrored` | `boolean` | `true` after a failed execution |
 | `hasNavigated` | `boolean` | `true` after a framework navigation (redirect, etc.) |

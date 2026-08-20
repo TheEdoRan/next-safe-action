@@ -57,10 +57,45 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 	const [navigationError, setNavigationError] = React.useState<Error | null>(null);
 	const [thrownError, setThrownError] = React.useState<Error | null>(null);
 	const [isIdle, setIsIdle] = React.useState(true);
+	// Identifies the execution the committed state belongs to; `0` means none yet. Set inside
+	// the dispatch-time batch so it can never advance ahead of the state it describes.
+	const [executionId, setExecutionId] = React.useState(0);
 
 	// Request ordering: only the latest request's response updates UI state.
 	// This prevents stale responses from overwriting fresh state on rapid calls.
 	const requestIdRef = React.useRef(0);
+
+	// Applies dispatch-time state twice, on purpose.
+	//
+	// The synchronous call is what normally commits. When the dispatch happens inside an
+	// ambient React transition it does not: `<form action={execute}>` has React set its
+	// internal current transition before calling the action, so these updates inherit the
+	// transition lane, and Next's router suspends on that same lane while it awaits the RSC
+	// response. A render whose lanes are only transition lanes and that suspends is never
+	// committed, so `status` reads `idle` for the whole request.
+	//
+	// A microtask runs after React restores the current transition in `startTransition`'s
+	// `finally`, so the repeat lands on the default lane and commits right away, exactly like
+	// the `setResult` call in the `.then` handler below already does. Outside a transition the
+	// repeat is an eager bailout: same values, no extra render.
+	const beginExecution = React.useCallback((requestId: number, input: InferInputOrDefault<Schema, void>) => {
+		const apply = () => {
+			setIsIdle(false);
+			setNavigationError(null);
+			setThrownError(null);
+			setClientInput(input);
+			setIsExecuting(true);
+			setExecutionId(requestId);
+		};
+
+		apply();
+
+		queueMicrotask(() => {
+			// A `reset` or a newer execution landed in between: its state must win.
+			if (requestId !== requestIdRef.current) return;
+			apply();
+		});
+	}, []);
 
 	// Stable ref for the transition start callback to avoid destabilizing execute/executeAsync.
 	const onTransitionStartRef = React.useRef(onTransitionStart);
@@ -78,12 +113,7 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 		(input: InferInputOrDefault<Schema, void>) => {
 			const thisRequestId = ++requestIdRef.current;
 
-			// Set state synchronously before starting the transition.
-			setIsIdle(false);
-			setNavigationError(null);
-			setThrownError(null);
-			setClientInput(input);
-			setIsExecuting(true);
+			beginExecution(thisRequestId, input);
 
 			startTransition(() => {
 				onTransitionStartRef.current?.(input as InferInputOrDefault<Schema, undefined>);
@@ -118,7 +148,7 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 					});
 			});
 		},
-		[safeActionFn]
+		[beginExecution, safeActionFn]
 	);
 
 	const executeAsync = React.useCallback(
@@ -126,11 +156,7 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 			return new Promise<Awaited<ReturnType<typeof safeActionFn>>>((resolve, reject) => {
 				const thisRequestId = ++requestIdRef.current;
 
-				setIsIdle(false);
-				setNavigationError(null);
-				setThrownError(null);
-				setClientInput(input);
-				setIsExecuting(true);
+				beginExecution(thisRequestId, input);
 
 				startTransition(() => {
 					onTransitionStartRef.current?.(input as InferInputOrDefault<Schema, undefined>);
@@ -172,27 +198,46 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 				});
 			});
 		},
-		[safeActionFn]
+		[beginExecution, safeActionFn]
 	);
 
 	const reset = React.useCallback(() => {
 		// Invalidate in-flight requests: their responses must not repopulate state after a reset.
 		// Since stale requests skip their own `setIsExecuting(false)` in `finally`, clear it here.
-		requestIdRef.current++;
-		setIsIdle(true);
-		setNavigationError(null);
-		setThrownError(null);
-		setClientInput(undefined);
-		// Restore the mount-captured initial result (or empty when not provided), matching
-		// `useStateAction`'s contract: `reset` returns to the initial state.
-		setResult(initResultRef.current);
-		setIsExecuting(false);
+		const thisRequestId = ++requestIdRef.current;
+
+		const apply = () => {
+			setIsIdle(true);
+			setNavigationError(null);
+			setThrownError(null);
+			setClientInput(undefined);
+			// Restore the mount-captured initial result (or empty when not provided), matching
+			// `useStateAction`'s contract: `reset` returns to the initial state.
+			setResult(initResultRef.current);
+			setIsExecuting(false);
+			// `executionId` is deliberately left alone. The `onExecute` arm only fires on an
+			// `executing` status, which a reset never produces, and `execute` always allocates a
+			// higher id from the same counter. Advancing it here would only defeat React's bailout
+			// and make `reset` on an already-idle hook re-render for nothing. Leaving it also keeps
+			// a stale, still-frozen dispatch from re-announcing itself if its lane commits later.
+		};
+
+		// Same two-step dispatch as `beginExecution`: a `reset` called from inside an ambient
+		// transition would otherwise be withheld for as long as an execution is.
+		apply();
+
+		queueMicrotask(() => {
+			// A newer execution landed in between: its state must win.
+			if (thisRequestId !== requestIdRef.current) return;
+			apply();
+		});
 	}, []);
 
 	useActionCallbacks({
 		result: result ?? {},
 		input: clientInput as InferInputOrDefault<Schema, undefined>,
 		status,
+		executionId,
 		throwOnNavigation: opts?.throwOnNavigation === true,
 		navigationError,
 		thrownError,

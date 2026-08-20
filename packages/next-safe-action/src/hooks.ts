@@ -168,6 +168,8 @@ export const useStateAction = <
 	// Incremented on every `reset`: dispatches carrying an older generation must not clear the
 	// reset state nor consume the reset baseline (`useActionState` dispatches can't be cancelled).
 	const resetGenerationRef = React.useRef(0);
+	// Bumped once per dispatch, so each dispatch can be told apart from the commits it produces.
+	const dispatchIdRef = React.useRef(0);
 
 	// ─── State ────────────────────────────────────────────────────────────
 
@@ -175,18 +177,46 @@ export const useStateAction = <
 	const [thrownError, setThrownError] = React.useState<Error | null>(null);
 	const [isIdle, setIsIdle] = React.useState(true);
 	const [isReset, setIsReset] = React.useState(false);
+	// Identifies the dispatch the committed state belongs to; `0` means none yet. Set inside the
+	// dispatch-time batch so it can never advance ahead of the state it describes.
+	const [executionId, setExecutionId] = React.useState(0);
 	const [clientInput, setClientInput] = React.useState<InferInputOrDefault<Schema, void>>();
 	const [isTransitioning, startTransition] = React.useTransition();
 
 	// Shared dispatch-time state initialization: every dispatch path (`execute`,
 	// `executeAsync`, `formAction`) runs this before enqueueing its action, so the
 	// visible state always reflects the latest dispatched input.
+	//
+	// Applied twice, on purpose. The synchronous call is what normally commits. A dispatch
+	// made inside an ambient React transition (`<form action={formAction}>`, where React sets
+	// its internal current transition before calling the action) puts these updates on the
+	// transition lane instead, and Next's router suspends on that same lane while it awaits
+	// the RSC response: nothing commits until the action settles. `isReset` staying true then
+	// keeps `isExecutingMasked` false, so the whole dispatch after a `reset` reports idle.
+	//
+	// A microtask runs after React restores the current transition in `startTransition`'s
+	// `finally`, so the repeat lands on the default lane and commits right away. Outside a
+	// transition it is an eager bailout: same values, no extra render.
 	const beginDispatch = React.useCallback((input: InferInputOrDefault<Schema, void>) => {
-		setIsIdle(false);
-		setIsReset(false);
-		setNavigationError(null);
-		setThrownError(null);
-		setClientInput(input);
+		const generation = resetGenerationRef.current;
+		const dispatchId = ++dispatchIdRef.current;
+
+		const apply = () => {
+			setIsIdle(false);
+			setIsReset(false);
+			setNavigationError(null);
+			setThrownError(null);
+			setClientInput(input);
+			setExecutionId(dispatchId);
+		};
+
+		apply();
+
+		queueMicrotask(() => {
+			// A `reset` landed in between: its state must win.
+			if (generation !== resetGenerationRef.current) return;
+			apply();
+		});
 	}, []);
 
 	// ─── Wrapper function ─────────────────────────────────────────────────
@@ -212,7 +242,11 @@ export const useStateAction = <
 			}
 
 			try {
-				const result = await safeActionFn(effectivePrevResult, input);
+				// Never store `undefined`, mirroring `useActionBase`'s `setResult(res ?? {})`. The
+				// render-time `rawResult ?? {}` below would otherwise allocate a fresh object on every
+				// render, and `useActionCallbacks` compares result identity to tell a new execution
+				// from a replay, so `onSuccess`/`onSettled` would re-fire on every unrelated re-render.
+				const result = (await safeActionFn(effectivePrevResult, input)) ?? {};
 				asyncResolver?.resolve(result);
 				return result;
 			} catch (e) {
@@ -280,8 +314,8 @@ export const useStateAction = <
 
 	// Wraps the dispatcher so form dispatches also initialize state at dispatch time and
 	// enqueue their (null) entry, keeping the resolver queue aligned with dispatch order
-	// when `formAction` and `executeAsync` interleave. Synchronous setState is safe here:
-	// React invokes form actions inside its own event/transition handling.
+	// when `formAction` and `executeAsync` interleave. React invokes form actions inside its
+	// own transition, which is exactly the case `beginDispatch`'s microtask repeat covers.
 	const formAction = React.useCallback(
 		(input: InferInputOrDefault<Schema, undefined>) => {
 			beginDispatch(input as InferInputOrDefault<Schema, void>);
@@ -295,13 +329,27 @@ export const useStateAction = <
 
 	const reset = React.useCallback(() => {
 		// Mark every dispatch enqueued so far as stale (see `resetGenerationRef`).
-		resetGenerationRef.current++;
-		setIsIdle(true);
-		setIsReset(true);
-		setNavigationError(null);
-		setThrownError(null);
-		setClientInput(undefined);
+		const generation = ++resetGenerationRef.current;
 		prevResultOverrideRef.current = initResultRef.current;
+
+		const apply = () => {
+			setIsIdle(true);
+			setIsReset(true);
+			setNavigationError(null);
+			setThrownError(null);
+			setClientInput(undefined);
+		};
+
+		// Same two-step dispatch as `beginDispatch`: a `reset` called from inside an ambient
+		// transition would otherwise be withheld for as long as a dispatch is.
+		apply();
+
+		queueMicrotask(() => {
+			// A newer `reset` landed in between: its state must win. A dispatch enqueued after
+			// this reset keeps the same generation, and its own microtask runs after this one.
+			if (generation !== resetGenerationRef.current) return;
+			apply();
+		});
 	}, []);
 
 	// ─── Status ───────────────────────────────────────────────────────────
@@ -314,7 +362,7 @@ export const useStateAction = <
 
 	// `useActionState`'s pending flag can't be cancelled: after a mid-flight `reset` it stays
 	// true until the stale dispatch settles. Mask it with `isReset` so the reported status reads
-	// idle immediately; the mask lifts synchronously on the next dispatch (`beginDispatch`).
+	// idle immediately; the mask lifts on the next dispatch (`beginDispatch`).
 	const isExecutingMasked = isExecuting && !isReset;
 
 	const status = getActionStatus<ServerError, Schema, ShapedErrors, Data>({
@@ -331,6 +379,7 @@ export const useStateAction = <
 		result,
 		input: clientInput as InferInputOrDefault<Schema, undefined>,
 		status,
+		executionId,
 		cb: opts as HookCallbacks<ServerError, Schema, ShapedErrors, Data> | undefined,
 		throwOnNavigation: opts?.throwOnNavigation === true,
 		navigationError,
