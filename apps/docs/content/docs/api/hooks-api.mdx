@@ -74,7 +74,8 @@ const { execute, result, status, ... } = useAction(safeActionFn, callbacks?);
 			type: "boolean",
 		},
 		isPending: {
-			description: "True when either isExecuting or isTransitioning is true.",
+			description:
+				"True when isExecuting or isTransitioning is true, except after a reset: a reset reports idle immediately, even while the uncancellable transition it interrupted is still settling.",
 			type: "boolean",
 		},
 		hasSucceeded: {
@@ -367,7 +368,7 @@ type HookShorthandStatus = {
 	isIdle: boolean;
 	isExecuting: boolean;
 	isTransitioning: boolean;
-	isPending: boolean;       // isExecuting || isTransitioning
+	isPending: boolean;       // isExecuting || isTransitioning, unless reset
 	hasSucceeded: boolean;
 	hasErrored: boolean;
 	hasNavigated: boolean;

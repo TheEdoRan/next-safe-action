@@ -71,6 +71,7 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 	result,
 	input,
 	status,
+	executionId,
 	cb,
 	throwOnNavigation,
 	navigationError,
@@ -79,6 +80,11 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 	result: SafeActionResult<ServerError, Schema, ShapedErrors, Data>;
 	input: InferInputOrDefault<Schema, undefined>;
 	status: HookActionStatus;
+	/**
+	 * Identifies the execution the currently reported state belongs to. Advances only together
+	 * with the dispatch-time state itself, never before it, and starts at `0` (no execution yet).
+	 */
+	executionId: number;
 	cb?: HookCallbacks<ServerError, Schema, ShapedErrors, Data>;
 	throwOnNavigation: boolean;
 	navigationError: Error | null;
@@ -105,6 +111,14 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 		thrownError: Error | null;
 	} | null>(null);
 
+	// `onExecute` announces a dispatch, so it must fire once per dispatch, not once per commit
+	// that happens to read `executing`. A single dispatch can produce two such commits: React
+	// flips `useActionState`'s pending flag at sync priority, which can land a commit before the
+	// dispatch state (`clientInput` and friends) does. Those two commits carry different inputs,
+	// so the snapshot guard above does not cover them. `executionId` advances only with the
+	// dispatch state, so the first commit carrying a new one is also the first with the real input.
+	const lastExecutionIdRef = React.useRef(0);
+
 	// Execute hook callbacks as non-visual side effects.
 	React.useEffect(() => {
 		const last = lastHandledRef.current;
@@ -127,6 +141,12 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 		const executeCallbacks = async () => {
 			switch (status) {
 				case "executing":
+					// Once per dispatch (see `lastExecutionIdRef`), never for the initial `0`.
+					if (executionId === lastExecutionIdRef.current) {
+						break;
+					}
+
+					lastExecutionIdRef.current = executionId;
 					await Promise.resolve(onExecute?.({ input })).then(() => {});
 					break;
 				case "hasSucceeded":
@@ -204,6 +224,7 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 	}, [
 		input,
 		status,
+		executionId,
 		result,
 		throwOnNavigation,
 		navigationError,
