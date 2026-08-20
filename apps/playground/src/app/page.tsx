@@ -7,6 +7,7 @@ import {
 	NavigationIcon,
 	ShieldAlertIcon,
 	SparklesIcon,
+	WifiOffIcon,
 	ZapIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -66,6 +67,12 @@ const pages = [
 		description: "Redirects, notFound, forbidden, unauthorized",
 		href: "/navigation-framework",
 		icon: NavigationIcon,
+	},
+	{
+		title: "Offline Support",
+		description: "Automatic retry for actions and prefetched navigation",
+		href: "/offline-support",
+		icon: WifiOffIcon,
 	},
 ];
 
