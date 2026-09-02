@@ -3,6 +3,7 @@ import {
 	CircuitBoardIcon,
 	FileTextIcon,
 	LayersIcon,
+	ListTodoIcon,
 	MousePointerClickIcon,
 	NavigationIcon,
 	ShieldAlertIcon,
@@ -49,6 +50,12 @@ const pages = [
 		description: "useOptimisticStateAction queues overlapping writes",
 		href: "/coordinated-mutations",
 		icon: SparklesIcon,
+	},
+	{
+		title: "Pending Changes",
+		description: "A shared pending list folded over server data by sibling components",
+		href: "/pending-changes",
+		icon: ListTodoIcon,
 	},
 	{
 		title: "Form Integration",
