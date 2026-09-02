@@ -1,6 +1,6 @@
 ---
 title: Hooks API
-description: API reference for useAction, useOptimisticAction, and useStateAction hooks.
+description: API reference for useAction, useOptimisticAction, useStateAction, and useOptimisticStateAction hooks.
 ---
 
 next-safe-action provides React hooks for executing server actions from client components. All hooks are imported from `next-safe-action/hooks`.
@@ -313,7 +313,7 @@ const { execute, optimisticState, ... } = useOptimisticStateAction(safeActionFn,
 		},
 		"utils.currentState": {
 			description:
-				"The confirmed base state. Compared by identity, so it must be a stable reference. A fresh value (a revalidated Server Component payload) supersedes the client-side fold.",
+				"The confirmed base state. Compared by identity, so it must be a stable reference: a derived value such as items.filter(...) is a new identity on every render and is read as newer server data. A fresh value (a revalidated Server Component payload) supersedes the client-side fold.",
 			type: "State",
 		},
 		"utils.updateFn": {
@@ -347,11 +347,17 @@ Same as [`useStateAction`](#return-object-2) plus:
 
 Confirmed state is the more recent of the action's successful `data` and the `currentState` option. An action that returns the full next state owns the confirmed value; an action that returns nothing leaves `currentState` authoritative.
 
+This is enforced at the type level: when the action returns data, that data must be assignable to `State`, because the hook adopts it as the confirmed value and hands it to the next queued dispatch. An action that returns some other shape (a `{ ok: true }` acknowledgement, say) is a compile error. Actions that return nothing are exempt, which is what the pending-changes-list shape relies on.
+
+If a fresh `currentState` commits while a dispatch is in flight, that dispatch's return value is discarded as stale: it was computed from a revision the server has already moved past, so the revalidated payload stays authoritative for everything queued behind it.
+
 `prevResult` handed to the server always carries a `data` branch: when a dispatch fails, the hook substitutes the last confirmed state, so one rejected write cannot leave the rest of the queue without a base.
 
 ### Callbacks
 
 React withholds `useActionState`'s commit until the whole queue drains, so `result` and `status` cannot report intermediate results. Callbacks are therefore delivered **per dispatch**, from the dispatch itself rather than from a render effect, and fire just before React commits rather than after.
+
+Because of that, a failed dispatch reports its error while its change is still on screen: the rollback only becomes visible once the queue drains.
 
 ### Example
 
@@ -385,7 +391,7 @@ See the [Coordinating mutations](/docs/guides/coordinating-mutations) guide for 
 
 ## `HookBaseOptions`
 
-Configuration and lifecycle callbacks for `useAction`, `useOptimisticAction`, and `useStateAction`. The available callbacks depend on the `throwOnNavigation` value:
+Configuration and lifecycle callbacks for `useAction`, `useOptimisticAction`, `useStateAction`, and `useOptimisticStateAction`. The available callbacks depend on the `throwOnNavigation` value:
 
 <TypeTable
 	type={{

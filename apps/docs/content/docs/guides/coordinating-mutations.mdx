@@ -40,6 +40,17 @@ confirmed value. An action that returns nothing leaves `currentState` authoritat
 Server Component revalidates, the fresh `currentState` beats a stale client-side fold, which is
 what you want: the server is the source of truth.
 
+<Callout type="warn">
+Recency is measured by **arrival**: any new `currentState` identity supersedes the committed result.
+So **every action that writes the state the page renders must revalidate it**, even one that already
+returns the next state.
+
+If one action revalidates and another does not, the newest payload the page receives can be a
+snapshot taken before the newest write, and it still wins. The saved change then disappears from the
+UI while the server keeps it. The tell is `result.data` and `optimisticState` disagreeing after a
+save settles.
+</Callout>
+
 ## Reduced state
 
 The action returns the full next state, and the same reducer runs on the client and the server.
@@ -149,20 +160,41 @@ The action returns nothing, so confirmed state stays at the constant base and th
 queue settles. No explicit rollback is needed: discarding the temporary state *is* the rollback.
 
 <Callout type="warn">
+Because the action returns no data, **the server data must be revalidated**, with `revalidatePath`
+or `revalidateTag`. A fresh `currentState` is the only thing that can move confirmed state in this
+shape. Without it the pending list drains onto unchanged data and every saved change visibly
+reverts.
+</Callout>
+
+<Callout type="warn">
 This variant still needs `.stateAction()`, even though it ignores `prevResult`. Queueing comes from
 `useActionState`, which the stateful path uses.
+
+`prevResult.data` here carries the constant base, not real domain state, so actions in this shape
+should ignore it.
 </Callout>
 
 ## `currentState` is compared by identity
 
-Pass a stable reference. An inline literal (`currentState={[]}`) is a new value on every render, so
-confirmed state can never advance past it and the fold drains on every commit. Hoist it, or take it
-from props.
+Pass a stable reference. A value with a new identity on every render means confirmed state can never
+advance past it, so the fold drains on every commit and the change appears to revert.
+
+An inline literal is the obvious case, but a **derived** value breaks in exactly the same way, and
+looks safe because it comes from props:
 
 ```tsx
-const NO_PENDING: EventChange[] = [];        // hoisted, stable
-// not: currentState={[]}
+const NO_PENDING: EventChange[] = [];              // hoisted, stable
+
+useOptimisticStateAction(saveLayout, {
+	currentState: groups,                            // fine: the prop identity is stable
+	// currentState: [],                             // new array every render
+	// currentState: groups.filter(g => g.visible),  // also new every render
+	updateFn: layoutReducer,
+});
 ```
+
+Filter or sort **before** passing the value in, or memoise it. A fresh identity is read as "the
+server sent newer data", so an unstable one says that on every render.
 
 ## Callbacks fire per dispatch
 
@@ -182,6 +214,21 @@ useOptimisticStateAction(saveLayout, {
 The trade-off: these fire just **before** React commits, where the other hooks' callbacks fire
 after. Read state from the callback argument rather than from the previous render.
 
+One consequence is worth designing around: a failed dispatch reports its error **immediately**,
+while the failed change stays on screen until the whole queue drains. So an error toast can appear
+seconds before the user sees the change roll back. If that reads as broken in your UI, mark the
+affected rows as failed from `onError` instead of relying on the rollback alone.
+
+## Queueing costs one round trip per change
+
+Serialization is the point of this hook, and it has a price: N changes are N sequential requests. It
+is the right trade when changes build on each other, and the wrong one when they are independent.
+
+Splitting into one hook per entity gives each entity its own `prevResult` chain, but it does **not**
+buy network parallelism: Next.js runs Server Actions through a single global queue in the App
+Router, so requests still go one at a time. If round trips are the bottleneck, batch or coalesce
+compatible changes into one action instead.
+
 ## When to reach for a data library instead
 
 This pattern assumes confirmed data lives in Server Components and the optimistic layer disappears
@@ -193,3 +240,20 @@ arriving over a socket, use TanStack Query or SWR instead.
 A rejected dispatch reverts the UI. It does not prove the server changed nothing: output validation
 runs after your server code returns, so a write can land and still surface an error. Durable
 correctness still needs transactions, idempotency keys, or authoritative revalidation.
+
+## What's next?
+
+<Cards>
+	<Card href="/docs/guides/optimistic-updates" title="Optimistic updates">
+		The last-write-wins hook, for changes that replace rather than accumulate.
+	</Card>
+	<Card href="/docs/api/hooks-api" title="Hooks API">
+		Full parameter and return reference for every hook.
+	</Card>
+	<Card href="https://playground.next-safe-action.dev/coordinated-mutations" title="Playground: queued reordering">
+		The reduced-state shape, with overlapping writes you can trigger by hand.
+	</Card>
+	<Card href="https://playground.next-safe-action.dev/pending-changes" title="Playground: pending changes">
+		The list shape, with two sibling components folding one shared pending list.
+	</Card>
+</Cards>
