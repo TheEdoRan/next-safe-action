@@ -310,10 +310,21 @@ const useStateActionInternal = <
 			// Re-evaluated at each use: a `reset` can land while this action is awaited.
 			const staleAfterReset = () => dispatchGeneration !== resetGenerationRef.current;
 
-			const basePrevResult = staleAfterReset() ? prevResult : (prevResultOverrideRef.current ?? prevResult);
-			if (!staleAfterReset()) {
-				prevResultOverrideRef.current = null;
+			// A `reset` landed while this dispatch was still queued behind another one, so it has
+			// not reached the server yet. React cannot cancel an enqueued `useActionState` action,
+			// but nothing has been sent, so the write can still be skipped -- and must be. The hook
+			// already discards a stale dispatch's result, callbacks and errors, so running it would
+			// perform a mutation the user asked to discard and that the hook then hides: the write
+			// lands, and a `revalidatePath` inside it later overwrites the reset baseline with an
+			// order the user never saw. Only the dispatch that had already reached the server when
+			// the `reset` ran survives it, because that one genuinely cannot be recalled.
+			if (staleAfterReset()) {
+				asyncResolver?.resolve({});
+				return {};
 			}
+
+			const basePrevResult = prevResultOverrideRef.current ?? prevResult;
+			prevResultOverrideRef.current = null;
 
 			// Applied after the reset override so a `reset` still wins: the override carries the
 			// mount baseline, which is already the confirmed state the strategy would substitute.

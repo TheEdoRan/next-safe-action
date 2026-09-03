@@ -241,6 +241,21 @@ A rejected dispatch reverts the UI. It does not prove the server changed nothing
 runs after your server code returns, so a write can land and still surface an error. Durable
 correctness still needs transactions, idempotency keys, or authoritative revalidation.
 
+## `reset` drops the queue, but not the dispatch already in flight
+
+`reset()` returns the hook to its mount-time baseline and marks every dispatch made before it as
+discarded. For the queued hooks that also means the writes themselves:
+
+- The dispatch that is already talking to the server **completes**. It cannot be recalled, so its
+  write lands, and a `revalidatePath` inside it can still push a fresh `currentState`.
+- Every dispatch still waiting its turn in the queue is **skipped**. Nothing was sent for it yet,
+  so the action never runs and no write happens. Its `executeAsync` promise resolves with `{}`, and
+  none of its callbacks fire.
+
+Skipping them is what keeps a reset stable. If they ran, each one would write and revalidate, and
+those payloads would arrive *after* the reset and pull the confirmed state into an order the user
+had already discarded.
+
 ## What's next?
 
 <Cards>

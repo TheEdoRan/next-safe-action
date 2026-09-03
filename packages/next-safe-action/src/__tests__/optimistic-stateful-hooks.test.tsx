@@ -403,6 +403,54 @@ describe("useOptimisticStateAction reset", () => {
 		expect(result.current.optimisticState).toEqual(["a"]);
 	});
 
+	/**
+	 * `reset` cannot recall the dispatch that is already talking to the server, but a dispatch
+	 * still waiting its turn in the queue has sent nothing yet, so its write must be skipped.
+	 * Running it performs a mutation the user asked to discard, whose result, callbacks and errors
+	 * this hook then throws away -- and whose revalidation later drags the confirmed state into an
+	 * order that was never on screen.
+	 */
+	test("a dispatch still queued when reset runs never reaches the server", async () => {
+		const g1 = deferred<void>();
+		// Only reached if the skipped dispatch runs after all. Pre-resolved so that failure shows up
+		// as this test's assertions failing, instead of a hung action queue every later test inherits.
+		const g2 = deferred<void>();
+		g2.resolve();
+		const action = createAppendAction([g1, g2]);
+		const onSuccess = vi.fn();
+		const { result } = renderHook(() =>
+			useOptimisticStateAction(action, { currentState: seedA, updateFn: appendFn, onSuccess })
+		);
+
+		// "x" starts, "y" queues behind it.
+		let queued!: Promise<unknown>;
+		await act(async () => {
+			result.current.execute("x");
+			queued = result.current.executeAsync("y");
+		});
+		expect(action).toHaveBeenCalledTimes(1);
+		expect(result.current.optimisticState).toEqual(["a", "x", "y"]);
+
+		await act(async () => {
+			result.current.reset();
+		});
+		await flushHookTimers();
+
+		// "x" settles, which is where "y" would take its turn.
+		await act(async () => {
+			g1.resolve();
+			await g1.promise;
+		});
+		await flushHookTimers();
+
+		expect(action).toHaveBeenCalledTimes(1);
+		// The skipped dispatch still settles its promise, and reports nothing.
+		await expect(queued).resolves.toEqual({});
+		expect(onSuccess).not.toHaveBeenCalled();
+		expect(result.current.optimisticState).toEqual(["a"]);
+		expect(result.current.status).toBe("idle");
+	});
+
 	// Needs a real component, not `renderHook`: two `reset()` calls only land in the same batch
 	// inside a discrete event handler. Under `act` alone React re-renders between them, which hides
 	// the bug. And it must be read mid-flight, because once the action settles the committed result
