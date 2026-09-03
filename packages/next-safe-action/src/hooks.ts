@@ -149,8 +149,12 @@ type ActionDataFitsState<Data, State> = [Data] extends [State | void] ? unknown 
  * exported `useStateAction` never passes them.
  */
 type StateActionStrategies<ServerError, Schema extends StandardSchemaV1 | undefined, ShapedErrors, Data> = {
-	/** Runs inside the dispatch transition, before `dispatcher`. Used to apply the optimistic update. */
-	onTransitionStart?: (input: InferInputOrDefault<Schema, undefined>, generation: number) => void;
+	/**
+	 * Runs inside the dispatch transition, before `dispatcher`. Used to apply the optimistic update.
+	 * `dispatchId` identifies this dispatch among the ones the queue is holding, so a consumer can
+	 * tell an optimistic payload apart from the payloads around it in the queue.
+	 */
+	onTransitionStart?: (input: InferInputOrDefault<Schema, undefined>, generation: number, dispatchId: number) => void;
 	/**
 	 * Substitutes the `prevResult` handed to the server action. Lets the optimistic hook replace an
 	 * error envelope with the last confirmed domain state, so one failed dispatch can't poison the
@@ -170,7 +174,8 @@ type StateActionStrategies<ServerError, Schema extends StandardSchemaV1 | undefi
 			navigationError?: Error;
 			thrownError?: Error;
 		},
-		input: InferInputOrDefault<Schema, undefined>
+		input: InferInputOrDefault<Schema, undefined>,
+		dispatchId: number
 	) => void;
 	/**
 	 * Runs synchronously inside `reset`, before the state updates are applied. Receives the reset
@@ -231,6 +236,7 @@ const useStateActionInternal = <
 				reject: (reason: unknown) => void;
 			} | null;
 			generation: number;
+			dispatchId: number;
 		}>
 	>([]);
 	const prevResultOverrideRef = React.useRef<SafeActionResult<ServerError, Schema, ShapedErrors, Data> | null>(null);
@@ -307,6 +313,7 @@ const useStateActionInternal = <
 			const entry = asyncResolversRef.current.shift();
 			const asyncResolver = entry?.resolver ?? null;
 			const dispatchGeneration = entry?.generation ?? resetGenerationRef.current;
+			const dispatchId = entry?.dispatchId ?? dispatchIdRef.current;
 			// Re-evaluated at each use: a `reset` can land while this action is awaited.
 			const staleAfterReset = () => dispatchGeneration !== resetGenerationRef.current;
 
@@ -337,7 +344,7 @@ const useStateActionInternal = <
 				// from a replay, so `onSuccess`/`onSettled` would re-fire on every unrelated re-render.
 				const result = (await safeActionFn(effectivePrevResult, input)) ?? {};
 				if (!staleAfterReset()) {
-					strategiesRef.current?.onDispatchSettled?.({ result }, input);
+					strategiesRef.current?.onDispatchSettled?.({ result }, input, dispatchId);
 				}
 				asyncResolver?.resolve(result);
 				return result;
@@ -345,7 +352,7 @@ const useStateActionInternal = <
 				if (FrameworkErrorHandler.isNavigationError(e)) {
 					if (!staleAfterReset()) {
 						setNavigationError(e);
-						strategiesRef.current?.onDispatchSettled?.({ navigationError: e }, input);
+						strategiesRef.current?.onDispatchSettled?.({ navigationError: e }, input, dispatchId);
 					}
 					asyncResolver?.reject(e);
 					return {};
@@ -362,7 +369,7 @@ const useStateActionInternal = <
 				}
 
 				setThrownError(e as Error);
-				strategiesRef.current?.onDispatchSettled?.({ thrownError: e as Error }, input);
+				strategiesRef.current?.onDispatchSettled?.({ thrownError: e as Error }, input, dispatchId);
 
 				// This throw reaches an error boundary, and React drops every action still queued
 				// behind it without ever invoking `wrappedAction` for them. Their `executeAsync`
@@ -395,9 +402,14 @@ const useStateActionInternal = <
 				// as the Action that scheduled it is pending.
 				strategiesRef.current?.onTransitionStart?.(
 					input as InferInputOrDefault<Schema, undefined>,
-					resetGenerationRef.current
+					resetGenerationRef.current,
+					dispatchIdRef.current
 				);
-				asyncResolversRef.current.push({ resolver: asyncResolver, generation: resetGenerationRef.current });
+				asyncResolversRef.current.push({
+					resolver: asyncResolver,
+					generation: resetGenerationRef.current,
+					dispatchId: dispatchIdRef.current,
+				});
 				dispatcher(input as InferInputOrDefault<Schema, undefined>);
 			});
 		},
@@ -435,8 +447,12 @@ const useStateActionInternal = <
 		(input: InferInputOrDefault<Schema, undefined>) => {
 			beginDispatch(input as InferInputOrDefault<Schema, void>);
 			// React already supplies the transition on this path, so the seam is called directly.
-			strategiesRef.current?.onTransitionStart?.(input, resetGenerationRef.current);
-			asyncResolversRef.current.push({ resolver: null, generation: resetGenerationRef.current });
+			strategiesRef.current?.onTransitionStart?.(input, resetGenerationRef.current, dispatchIdRef.current);
+			asyncResolversRef.current.push({
+				resolver: null,
+				generation: resetGenerationRef.current,
+				dispatchId: dispatchIdRef.current,
+			});
 			dispatcher(input);
 		},
 		[beginDispatch, dispatcher]
@@ -634,6 +650,16 @@ export const useOptimisticStateAction = <
 	// The epoch the currently running action started from. Dispatches are strictly serialized by
 	// `useActionState`, so exactly one action is in flight and a scalar is enough.
 	const actionStartEpochRef = React.useRef(0);
+	// Id of the last dispatch that settled, and the cut the current frame folds above. A payload
+	// may only be folded while its dispatch is still pending, which is React's own rule for
+	// `useOptimistic`. The hook keeps payloads alive across the whole queue because the visible
+	// base normally does not advance until the queue drains, which makes re-folding a settled
+	// payload harmless. A `currentState` that commits mid-queue breaks that: it advances the base
+	// while every payload is still attached, and the settled ones then apply a second time on top
+	// of a base that already accounts for them. Raising the cut to whatever had settled when the
+	// prop arrived keeps the payload set consistent with the base it folds over.
+	const settledIdRef = React.useRef(0);
+	const ackedThroughRef = React.useRef(0);
 	// Set by `reset`, cleared once a fresh post-reset dispatch settles. Between those two points
 	// `useActionState` still holds the cancelled dispatch's raw result, and the next dispatch clears
 	// the `isReset` mask that was hiding it, so without this the UI would briefly fold the new
@@ -644,7 +670,8 @@ export const useOptimisticStateAction = <
 	// runs, while `useStateActionInternal` needs the optimistic dispatcher up front. A ref breaks
 	// the cycle: the seam is only ever called at dispatch time, long after the first render.
 	const addOptimisticRef = React.useRef<
-		((payload: { generation: number; input: InferInputOrDefault<Schema, undefined> }) => void) | null
+		| ((payload: { generation: number; dispatchId: number; input: InferInputOrDefault<Schema, undefined> }) => void)
+		| null
 	>(null);
 
 	// ─── Callbacks ────────────────────────────────────────────────────────
@@ -660,8 +687,8 @@ export const useOptimisticStateAction = <
 		() => ({
 			suppressCallbacks: true,
 
-			onTransitionStart: (input, dispatchGeneration) => {
-				addOptimisticRef.current?.({ generation: dispatchGeneration, input });
+			onTransitionStart: (input, dispatchGeneration, dispatchId) => {
+				addOptimisticRef.current?.({ generation: dispatchGeneration, dispatchId, input });
 				fireCallback((utilsRef.current as HookCallbacks<ServerError, Schema, ShapedErrors, Data>).onExecute, {
 					input,
 				});
@@ -688,8 +715,12 @@ export const useOptimisticStateAction = <
 				>;
 			},
 
-			onDispatchSettled: (outcome, input) => {
+			onDispatchSettled: (outcome, input, dispatchId) => {
 				const cb = utilsRef.current as HookCallbacks<ServerError, Schema, ShapedErrors, Data>;
+
+				// Every outcome counts, not just a success: a dispatch that failed or navigated is
+				// just as finished, and its payload must stop folding once the base moves past it.
+				settledIdRef.current = dispatchId;
 
 				if (outcome.navigationError) {
 					if (utilsRef.current.throwOnNavigation === true) return;
@@ -781,6 +812,10 @@ export const useOptimisticStateAction = <
 			? committedData
 			: lastConfirmedRef.current;
 
+	// Derived, never assigned during render, for the same reason as `confirmed`: an abandoned
+	// concurrent render must not leave a cut behind that no commit ever agreed to.
+	const acked = propChanged ? settledIdRef.current : ackedThroughRef.current;
+
 	React.useLayoutEffect(() => {
 		if (propChanged) {
 			lastPropRef.current = utils.currentState;
@@ -794,6 +829,7 @@ export const useOptimisticStateAction = <
 		}
 
 		lastConfirmedRef.current = confirmed;
+		ackedThroughRef.current = acked;
 		// Read at dispatch time by the callback seams, which run from event handlers, so a
 		// post-commit assignment is always early enough.
 		utilsRef.current = utils;
@@ -802,12 +838,13 @@ export const useOptimisticStateAction = <
 	// ─── Optimistic state ─────────────────────────────────────────────────
 
 	const [frame, addOptimistic] = React.useOptimistic<
-		{ generation: number; state: State },
-		{ generation: number; input: InferInputOrDefault<Schema, undefined> }
-	>({ generation, state: confirmed }, (current, payload) =>
-		payload.generation === current.generation
+		{ generation: number; acked: number; state: State },
+		{ generation: number; dispatchId: number; input: InferInputOrDefault<Schema, undefined> }
+	>({ generation, acked, state: confirmed }, (current, payload) =>
+		payload.generation === current.generation && payload.dispatchId > current.acked
 			? {
 					generation: current.generation,
+					acked: current.acked,
 					state: utils.updateFn(current.state, payload.input as InferInputOrDefault<Schema, void>),
 				}
 			: current

@@ -241,6 +241,23 @@ A rejected dispatch reverts the UI. It does not prove the server changed nothing
 runs after your server code returns, so a write can land and still surface an error. Durable
 correctness still needs transactions, idempotency keys, or authoritative revalidation.
 
+## A `currentState` that arrives mid-queue
+
+React holds an optimistic payload only while its own dispatch is pending. This hook keeps every
+payload alive for the whole queue instead, which is what lets three overlapping moves stay on
+screen together. That works because the confirmed base does not normally advance until the queue
+drains: in Next, the RSC payload of a completed write commits on the same suspended lane the queue
+is waiting on, so it lands with everything else.
+
+A `currentState` that commits **while the queue still has work** is the exception. An urgent update
+does this: a socket push, a `router.refresh()` outside a transition, or a parent that re-renders
+with a new value. The base then moves under payloads that are still attached, and the ones whose
+dispatch has already settled are already accounted for in the new base.
+
+Those payloads stop folding at that point. The pending ones keep folding, so the change the user is
+still waiting on stays visible. You do not have to do anything for this, but it explains why an
+external revision arriving mid-queue does not double-count the writes it already carries.
+
 ## `reset` drops the queue, but not the dispatch already in flight
 
 `reset()` returns the hook to its mount-time baseline and marks every dispatch made before it as
