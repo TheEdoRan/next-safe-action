@@ -258,6 +258,31 @@ A rejected dispatch reverts the UI. It does not prove the server changed nothing
 runs after your server code returns, so a write can land and still surface an error. Durable
 correctness still needs transactions, idempotency keys, or authoritative revalidation.
 
+## The queue assumes you are the only writer
+
+Every dispatch sends the client's confirmed state as `prevResult`, and your action writes the next
+state from it. That is last-write-wins by construction, and it is fine while the user is the only
+person changing this data.
+
+It is not fine with a second writer, for example another tab, another user, or a background job.
+Say an external change lands while one of your dispatches is in flight:
+
+- The page **shows** it, because a new `currentState` always supersedes the committed result.
+- The next queued dispatch does **not** build on it. It builds on what the running action returned,
+  which is what the server held after that write, and the external change was already overwritten
+  there.
+
+So the client does not invent a conflict, it reports one that the server already resolved in favour
+of the later write. If losing that change is not acceptable, the resolution has to happen on the
+server: write a delta instead of the whole state, or guard the write with a version column, an
+`updatedAt` check, or a transaction. No client-side base can fix it, because the client cannot know
+what reached the server first.
+
+<Callout type="warn">
+If data changes independently of the user often enough to matter, this hook is the wrong tool. See
+[When to reach for a data library instead](#when-to-reach-for-a-data-library-instead).
+</Callout>
+
 ## A `currentState` that arrives mid-queue
 
 React holds an optimistic payload only while its own dispatch is pending. This hook keeps every

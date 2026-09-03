@@ -1539,6 +1539,55 @@ describe("useOptimisticStateAction revalidation ordering", () => {
 	});
 
 	/**
+	 * CANARY. Not a property of this hook: a property of React that this hook is built on.
+	 *
+	 * `useOptimistic` holds every payload for as long as the action queue has work, and this hook
+	 * relies on that to keep overlapping changes on screen. That is only safe because React also
+	 * withholds the `useActionState` commit until the queue drains, so the base the payloads fold
+	 * over cannot move underneath them. The one thing that can move it is an urgent update, which
+	 * is exactly what the `acked` cut below exists to handle.
+	 *
+	 * If React ever starts committing each action's result as it settles, the base would advance
+	 * mid-queue through `result` instead of through a prop, the settled payloads would fold a
+	 * second time, and nothing in this hook would notice. This test fails first in that case, and
+	 * points at the assumption instead of at a mysteriously doubled list.
+	 */
+	test("React withholds the committed result until the whole queue drains", async () => {
+		const g1 = deferred<void>();
+		const g2 = deferred<void>();
+		const action = createAppendAction([g1, g2]);
+		const { result } = renderHook(() =>
+			useOptimisticStateAction(action, { currentState: emptyState, updateFn: appendFn })
+		);
+
+		await act(async () => {
+			result.current.execute("x");
+			result.current.execute("y");
+		});
+
+		// "x" has returned `{ data: ["x"] }` by now, and "y" is running.
+		await act(async () => {
+			g1.resolve();
+			await g1.promise;
+		});
+		await flushHookTimers();
+
+		// Read now, assert after the queue has drained, so a failure cannot leave "y" gated forever
+		// and hang every test that follows in this file.
+		const midQueue = result.current.result;
+
+		await act(async () => {
+			g2.resolve();
+			await g2.promise;
+		});
+		await flushHookTimers();
+
+		// Still the initial envelope: "x"'s result exists, but React has not committed it.
+		expect(midQueue).toEqual({});
+		expect(result.current.result.data).toEqual(["x", "y"]);
+	});
+
+	/**
 	 * The dangerous case is a `currentState` that commits while the queue is STILL draining, which
 	 * is what an urgent prop update does (a socket push, a `router.refresh()` outside a transition,
 	 * a parent re-render). React holds every optimistic payload for as long as the queue has work,
