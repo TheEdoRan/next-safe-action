@@ -12,7 +12,7 @@ before the first save finishes, the second write must build on the result of the
 response there loses information.
 
 `useOptimisticStateAction` is the optimistic hook for [stateful
-actions](/docs/define-actions/instance-methods#action--stateaction). It is built on React's
+actions](/docs/api/safe-action-client#stateaction). It is built on React's
 `useActionState`, so dispatches are **queued**: each one waits for the previous to settle and
 receives its result as `prevResult`.
 

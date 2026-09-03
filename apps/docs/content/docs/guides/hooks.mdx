@@ -97,7 +97,7 @@ if (hasSucceeded) {
 }
 ```
 
-This applies to all hooks: `useAction`, `useOptimisticAction`, and `useStateAction`. The `result` field itself is also a discriminated union (see [Action result](/docs/concepts/action-result)), so you get two layers of narrowing: status-level and result-level.
+This applies to all hooks: `useAction`, `useOptimisticAction`, `useStateAction`, and `useOptimisticStateAction`. The `result` field itself is also a discriminated union (see [Action result](/docs/concepts/action-result)), so you get two layers of narrowing: status-level and result-level.
 
 ## `execute` vs `executeAsync`
 
@@ -166,7 +166,7 @@ const { result } = useAction(myAction, {
 });
 ```
 
-The value is captured **once at mount**, like React's `useActionState` initial state: later changes to the option are ignored, and `reset()` restores the mount value. Available on `useAction`, `useOptimisticAction`, and `useStateAction`. See the [hooks API reference](/docs/api/hooks-api) for details.
+The value is captured **once at mount**, like React's `useActionState` initial state: later changes to the option are ignored, and `reset()` restores the mount value. Available on `useAction`, `useOptimisticAction`, `useStateAction`, and `useOptimisticStateAction`. See the [hooks API reference](/docs/api/hooks-api) for details.
 
 ### `throwOnNavigation`
 

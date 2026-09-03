@@ -152,7 +152,7 @@ if (serverError) {
 
 ### In hooks
 
-With the `useAction` hook (and `useOptimisticAction`, `useStateAction`), the return object is itself a **discriminated union keyed on `status`** and shorthand booleans. Checking any discriminant narrows `result` to the matching branch:
+With the `useAction` hook (and `useOptimisticAction`, `useStateAction`, `useOptimisticStateAction`), the return object is itself a **discriminated union keyed on `status`** and shorthand booleans. Checking any discriminant narrows `result` to the matching branch:
 
 ```ts
 const action = useAction(myAction);
