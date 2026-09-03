@@ -174,6 +174,23 @@ This variant still needs `.stateAction()`, even though it ignores `prevResult`. 
 should ignore it.
 </Callout>
 
+## What counts as "more recent"
+
+Confirmed state is the more recent of the action's `data` and `currentState`, and the hook answers
+"more recent" differently for the two things it feeds:
+
+- **What you render** goes by arrival. Any new `currentState` identity supersedes the committed
+  result. A payload that was rendered before the newest write still wins, which is why every action
+  that writes the state you render has to revalidate it.
+- **The base the next queued dispatch sends to the server** goes by write order. A `currentState`
+  that commits while an action is still running was rendered before that action wrote, so the
+  action's own `data` wins when it settles. A `currentState` that arrives once nothing is in flight
+  wins instead.
+
+The second rule matters when a payload arrives mid-queue: it usually acknowledges the dispatch
+*before* the running one, and treating it as newer would drop the running dispatch's write and let
+the dispatch after it overwrite the change.
+
 ## `currentState` is compared by identity
 
 Pass a stable reference. A value with a new identity on every render means confirmed state can never

@@ -321,7 +321,14 @@ describe("useOptimisticStateAction confirmed state", () => {
 		expect(result.current.optimisticState).toEqual(["a"]);
 	});
 
-	test("a currentState that commits mid-flight becomes the base for the next queued dispatch", async () => {
+	/**
+	 * Newest WRITE wins for the base the server receives, which is not the same question as what
+	 * the user sees. A payload that commits while an action is running was rendered by the server
+	 * before that action wrote, so it is the older value however new its identity is. Adopting it
+	 * as the base would hand the next queued dispatch a state the server has already moved past,
+	 * and that dispatch's write would then discard the one before it.
+	 */
+	test("a currentState that commits mid-flight loses to the write that action then makes", async () => {
 		const gate = deferred<void>();
 		const action = createAppendAction([gate]);
 		const { result, rerender } = renderHook(
@@ -334,8 +341,8 @@ describe("useOptimisticStateAction confirmed state", () => {
 			result.current.execute("x");
 		});
 
-		// A revalidated Server Component payload lands while "x" is still in flight, so "x" was
-		// computed from a revision the server has already moved past.
+		// An unrelated payload lands while "x" is still in flight. It was rendered before "x"
+		// wrote, so "x" then overwrote it on the server.
 		await act(async () => {
 			rerender({ currentState: serverTruth });
 		});
@@ -350,10 +357,62 @@ describe("useOptimisticStateAction confirmed state", () => {
 		});
 		await flushHookTimers();
 
-		// "y" must build on the revalidated payload, not on ["a", "x"]. Without this the guide's
-		// documented rule (a fresh `currentState` beats a stale client fold) silently does not hold
-		// as soon as a dispatch overlaps the revalidation.
-		expect(action.mock.calls[1]?.[0]).toEqual({ data: serverTruth });
+		// What the server holds after "x" is ["a", "x"], so that is what "y" has to build on.
+		expect(action.mock.calls[1]?.[0]).toEqual({ data: ["a", "x"] });
+	});
+
+	/**
+	 * The same rule, in the case that actually loses data: the payload is the acknowledgement of
+	 * the dispatch BEFORE the running one. Rejecting the running action's result here dropped its
+	 * write from the chain, and the dispatch after it silently overwrote that write.
+	 */
+	test("an acknowledging currentState does not discard the write still in flight", async () => {
+		const g1 = deferred<void>();
+		const g2 = deferred<void>();
+		const g3 = deferred<void>();
+		const action = createAppendAction([g1, g2, g3]);
+		const { result, rerender } = renderHook(
+			({ currentState }: { currentState: Item[] }) =>
+				useOptimisticStateAction(action, { currentState, updateFn: appendFn }),
+			{ initialProps: { currentState: emptyState } }
+		);
+
+		await act(async () => {
+			result.current.execute("x");
+			result.current.execute("y");
+			result.current.execute("z");
+		});
+
+		// "x" settles and "y" takes its turn.
+		await act(async () => {
+			g1.resolve();
+			await g1.promise;
+		});
+		await flushHookTimers();
+
+		// The revalidation of "x"'s own write commits while "y" is running. It carries "x" and
+		// nothing else, because "y" had not written yet when the server rendered it.
+		await act(async () => {
+			rerender({ currentState: ackX });
+		});
+		await flushHookTimers();
+
+		await act(async () => {
+			g2.resolve();
+			await g2.promise;
+		});
+		await flushHookTimers();
+
+		// Not { data: ["x"] }: that would drop "y" and let "z" overwrite it.
+		expect(action.mock.calls[2]?.[0]).toEqual({ data: ["x", "y"] });
+
+		await act(async () => {
+			g3.resolve();
+			await g3.promise;
+		});
+		await flushHookTimers();
+
+		expect(result.current.optimisticState).toEqual(["x", "y", "z"]);
 	});
 
 	test("a stable currentState prop leaves the action's data authoritative", async () => {
@@ -1436,11 +1495,15 @@ describe("useOptimisticStateAction initResult and lifecycle", () => {
 // ─── Revalidation ordering ───────────────────────────────────────────────────
 
 /**
- * The confirmed value is "the more recent of the action's `data` and `currentState`", and the hook
- * uses ARRIVAL order as its proxy for recency: any new `currentState` identity supersedes the
- * committed result. That proxy only holds while every action that writes the rendered state also
- * revalidates it. When one action revalidates and another does not, the newest payload the page
- * receives can be a snapshot that predates the newest write, and it still wins.
+ * The VISIBLE confirmed value is "the more recent of the action's `data` and `currentState`", and
+ * the hook uses ARRIVAL order as its proxy for recency: any new `currentState` identity supersedes
+ * the committed result. That proxy only holds while every action that writes the rendered state
+ * also revalidates it. When one action revalidates and another does not, the newest payload the
+ * page receives can be a snapshot that predates the newest write, and it still wins.
+ *
+ * The base handed to the server follows a different rule, pinned in the "confirmed state" block
+ * above: newest WRITE wins there, because a payload that arrives while an action runs predates
+ * that action's write. The two can therefore disagree, which the first test below makes explicit.
  *
  * These tests pin both halves of that, because the trap is not obvious from the rule alone. It cost
  * a real bug in the playground: `resetItems` revalidated, `moveItem` did not, so `Down -> Reset ->

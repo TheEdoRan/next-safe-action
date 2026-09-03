@@ -588,6 +588,11 @@ export const useStateAction = <
  * that returns nothing leaves `currentState` authoritative, and a revalidated `currentState`
  * always beats a stale client-side fold.
  *
+ * "More recent" is judged by arrival for the value you render, and by write order for the base the
+ * next queued dispatch sends to the server. A `currentState` that commits while an action is still
+ * running was rendered before that action wrote, so it is the older value for the server base even
+ * though its identity is newer.
+ *
  * Requires React 19+ (Next.js 15+). On older versions, a runtime error is thrown with guidance.
  *
  * @param safeActionFn The stateful action function created with `.stateAction()`.
@@ -642,14 +647,6 @@ export const useOptimisticStateAction = <
 	// is handed in by `onReset` rather than derived from the rendered one, so it cannot fall behind
 	// the internal counter when two resets are batched into a single render.
 	const [generation, setGeneration] = React.useState(0);
-	// Monotonic counter over *committed prop identities*. A dispatch snapshots it when the action
-	// starts, so a `currentState` that lands mid-flight can be told apart from the state that
-	// action was built on: the server is the source of truth, but only for the revision the client
-	// actually started from.
-	const propEpochRef = React.useRef(0);
-	// The epoch the currently running action started from. Dispatches are strictly serialized by
-	// `useActionState`, so exactly one action is in flight and a scalar is enough.
-	const actionStartEpochRef = React.useRef(0);
 	// Id of the last dispatch that settled, and the cut the current frame folds above. A payload
 	// may only be folded while its dispatch is still pending, which is React's own rule for
 	// `useOptimistic`. The hook keeps payloads alive across the whole queue because the visible
@@ -695,25 +692,11 @@ export const useOptimisticStateAction = <
 			},
 
 			// Runs when the queued action actually starts. The server always receives the last
-			// confirmed domain state, never the raw `prevResult` React threads through:
-			//
-			//   - an error envelope carries no `data` at all, so one failed dispatch would otherwise
-			//     leave the rest of the queue without a base to build on;
-			//   - a `currentState` that committed while the previous action was in flight is newer
-			//     than that action's return value, and must win over it.
-			//
-			// `lastServerDataRef` already answers both, because `onDispatchSettled` refuses to
-			// overwrite it with data computed from a superseded revision.
-			resolvePrevResult: () => {
-				actionStartEpochRef.current = propEpochRef.current;
-
-				return { data: lastServerDataRef.current } as unknown as SafeActionResult<
-					ServerError,
-					Schema,
-					ShapedErrors,
-					Data
-				>;
-			},
+			// confirmed domain state, never the raw `prevResult` React threads through: an error
+			// envelope carries no `data` at all, so one failed dispatch would otherwise leave the
+			// rest of the queue without a base to build on.
+			resolvePrevResult: () =>
+				({ data: lastServerDataRef.current }) as unknown as SafeActionResult<ServerError, Schema, ShapedErrors, Data>,
 
 			onDispatchSettled: (outcome, input, dispatchId) => {
 				const cb = utilsRef.current as HookCallbacks<ServerError, Schema, ShapedErrors, Data>;
@@ -747,11 +730,14 @@ export const useOptimisticStateAction = <
 				// `ActionDataFitsState` constrains the call site: when the action returns data, that
 				// data IS the full next `State`.
 				//
-				// Skipped when a fresher `currentState` committed while this action was running: the
-				// result was computed from a revision the server has already moved past, so adopting
-				// it would hand the next queued dispatch a base that is older than what the page
-				// already shows.
-				if (typeof result.data !== "undefined" && actionStartEpochRef.current === propEpochRef.current) {
+				// Newest write wins, and arrival order decides it on its own. A `currentState` that
+				// committed while this action was running was rendered by the server BEFORE this
+				// action wrote, so it is the older value and this assignment correctly overwrites
+				// the one the layout effect made. A `currentState` that arrives after this line runs
+				// is the newer value, and the layout effect correctly overwrites this. That holds
+				// whether the payload acknowledges the previous dispatch or carries an unrelated
+				// write: either way the server ends up holding what this action just wrote.
+				if (typeof result.data !== "undefined") {
 					lastServerDataRef.current = result.data as unknown as State;
 				}
 
@@ -823,9 +809,6 @@ export const useOptimisticStateAction = <
 			// A revalidated Server Component payload is newer than anything the client folded, so it
 			// wins over the result that is currently committed, once.
 			supersededResultRef.current = base.result;
-			// Marks every action already in flight as built on a superseded revision, so its return
-			// value cannot overwrite this fresher state when it settles.
-			propEpochRef.current += 1;
 		}
 
 		lastConfirmedRef.current = confirmed;
