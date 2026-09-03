@@ -174,6 +174,23 @@ This variant still needs `.stateAction()`, even though it ignores `prevResult`. 
 should ignore it.
 </Callout>
 
+## What counts as "more recent"
+
+Confirmed state is the more recent of the action's `data` and `currentState`, and the hook answers
+"more recent" differently for the two things it feeds:
+
+- **What you render** goes by arrival. Any new `currentState` identity supersedes the committed
+  result. A payload that was rendered before the newest write still wins, which is why every action
+  that writes the state you render has to revalidate it.
+- **The base the next queued dispatch sends to the server** goes by write order. A `currentState`
+  that commits while an action is still running was rendered before that action wrote, so the
+  action's own `data` wins when it settles. A `currentState` that arrives once nothing is in flight
+  wins instead.
+
+The second rule matters when a payload arrives mid-queue: it usually acknowledges the dispatch
+*before* the running one, and treating it as newer would drop the running dispatch's write and let
+the dispatch after it overwrite the change.
+
 ## `currentState` is compared by identity
 
 Pass a stable reference. A value with a new identity on every render means confirmed state can never
@@ -240,6 +257,63 @@ arriving over a socket, use TanStack Query or SWR instead.
 A rejected dispatch reverts the UI. It does not prove the server changed nothing: output validation
 runs after your server code returns, so a write can land and still surface an error. Durable
 correctness still needs transactions, idempotency keys, or authoritative revalidation.
+
+## The queue assumes you are the only writer
+
+Every dispatch sends the client's confirmed state as `prevResult`, and your action writes the next
+state from it. That is last-write-wins by construction, and it is fine while the user is the only
+person changing this data.
+
+It is not fine with a second writer, for example another tab, another user, or a background job.
+Say an external change lands while one of your dispatches is in flight:
+
+- The page **shows** it, because a new `currentState` always supersedes the committed result.
+- The next queued dispatch does **not** build on it. It builds on what the running action returned,
+  which is what the server held after that write, and the external change was already overwritten
+  there.
+
+So the client does not invent a conflict, it reports one that the server already resolved in favour
+of the later write. If losing that change is not acceptable, the resolution has to happen on the
+server: write a delta instead of the whole state, or guard the write with a version column, an
+`updatedAt` check, or a transaction. No client-side base can fix it, because the client cannot know
+what reached the server first.
+
+<Callout type="warn">
+If data changes independently of the user often enough to matter, this hook is the wrong tool. See
+[When to reach for a data library instead](#when-to-reach-for-a-data-library-instead).
+</Callout>
+
+## A `currentState` that arrives mid-queue
+
+React holds an optimistic payload only while its own dispatch is pending. This hook keeps every
+payload alive for the whole queue instead, which is what lets three overlapping moves stay on
+screen together. That works because the confirmed base does not normally advance until the queue
+drains: in Next, the RSC payload of a completed write commits on the same suspended lane the queue
+is waiting on, so it lands with everything else.
+
+A `currentState` that commits **while the queue still has work** is the exception. An urgent update
+does this: a socket push, a `router.refresh()` outside a transition, or a parent that re-renders
+with a new value. The base then moves under payloads that are still attached, and the ones whose
+dispatch has already settled are already accounted for in the new base.
+
+Those payloads stop folding at that point. The pending ones keep folding, so the change the user is
+still waiting on stays visible. You do not have to do anything for this, but it explains why an
+external revision arriving mid-queue does not double-count the writes it already carries.
+
+## `reset` drops the queue, but not the dispatch already in flight
+
+`reset()` returns the hook to its mount-time baseline and marks every dispatch made before it as
+discarded. For the queued hooks that also means the writes themselves:
+
+- The dispatch that is already talking to the server **completes**. It cannot be recalled, so its
+  write lands, and a `revalidatePath` inside it can still push a fresh `currentState`.
+- Every dispatch still waiting its turn in the queue is **skipped**. Nothing was sent for it yet,
+  so the action never runs and no write happens. Its `executeAsync` promise resolves with `{}`, and
+  none of its callbacks fire.
+
+Skipping them is what keeps a reset stable. If they ran, each one would write and revalidate, and
+those payloads would arrive *after* the reset and pull the confirmed state into an order the user
+had already discarded.
 
 ## What's next?
 

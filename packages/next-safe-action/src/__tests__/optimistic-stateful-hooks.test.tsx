@@ -39,6 +39,8 @@ const seedA: Item[] = ["a"];
 const seedOne: Item[] = ["seed"];
 const emptyState: Item[] = [];
 const serverTruth: Item[] = ["server"];
+/** What the revalidation of a write of "x" carries back: the write itself, nothing more. */
+const ackX: Item[] = ["x"];
 
 /** The optimistic reducer under test: append. Non-idempotent, so a double-apply is visible. */
 const appendFn = (state: Item[], input: Item): Item[] => [...state, input];
@@ -319,7 +321,14 @@ describe("useOptimisticStateAction confirmed state", () => {
 		expect(result.current.optimisticState).toEqual(["a"]);
 	});
 
-	test("a currentState that commits mid-flight becomes the base for the next queued dispatch", async () => {
+	/**
+	 * Newest WRITE wins for the base the server receives, which is not the same question as what
+	 * the user sees. A payload that commits while an action is running was rendered by the server
+	 * before that action wrote, so it is the older value however new its identity is. Adopting it
+	 * as the base would hand the next queued dispatch a state the server has already moved past,
+	 * and that dispatch's write would then discard the one before it.
+	 */
+	test("a currentState that commits mid-flight loses to the write that action then makes", async () => {
 		const gate = deferred<void>();
 		const action = createAppendAction([gate]);
 		const { result, rerender } = renderHook(
@@ -332,8 +341,8 @@ describe("useOptimisticStateAction confirmed state", () => {
 			result.current.execute("x");
 		});
 
-		// A revalidated Server Component payload lands while "x" is still in flight, so "x" was
-		// computed from a revision the server has already moved past.
+		// An unrelated payload lands while "x" is still in flight. It was rendered before "x"
+		// wrote, so "x" then overwrote it on the server.
 		await act(async () => {
 			rerender({ currentState: serverTruth });
 		});
@@ -348,10 +357,62 @@ describe("useOptimisticStateAction confirmed state", () => {
 		});
 		await flushHookTimers();
 
-		// "y" must build on the revalidated payload, not on ["a", "x"]. Without this the guide's
-		// documented rule (a fresh `currentState` beats a stale client fold) silently does not hold
-		// as soon as a dispatch overlaps the revalidation.
-		expect(action.mock.calls[1]?.[0]).toEqual({ data: serverTruth });
+		// What the server holds after "x" is ["a", "x"], so that is what "y" has to build on.
+		expect(action.mock.calls[1]?.[0]).toEqual({ data: ["a", "x"] });
+	});
+
+	/**
+	 * The same rule, in the case that actually loses data: the payload is the acknowledgement of
+	 * the dispatch BEFORE the running one. Rejecting the running action's result here dropped its
+	 * write from the chain, and the dispatch after it silently overwrote that write.
+	 */
+	test("an acknowledging currentState does not discard the write still in flight", async () => {
+		const g1 = deferred<void>();
+		const g2 = deferred<void>();
+		const g3 = deferred<void>();
+		const action = createAppendAction([g1, g2, g3]);
+		const { result, rerender } = renderHook(
+			({ currentState }: { currentState: Item[] }) =>
+				useOptimisticStateAction(action, { currentState, updateFn: appendFn }),
+			{ initialProps: { currentState: emptyState } }
+		);
+
+		await act(async () => {
+			result.current.execute("x");
+			result.current.execute("y");
+			result.current.execute("z");
+		});
+
+		// "x" settles and "y" takes its turn.
+		await act(async () => {
+			g1.resolve();
+			await g1.promise;
+		});
+		await flushHookTimers();
+
+		// The revalidation of "x"'s own write commits while "y" is running. It carries "x" and
+		// nothing else, because "y" had not written yet when the server rendered it.
+		await act(async () => {
+			rerender({ currentState: ackX });
+		});
+		await flushHookTimers();
+
+		await act(async () => {
+			g2.resolve();
+			await g2.promise;
+		});
+		await flushHookTimers();
+
+		// Not { data: ["x"] }: that would drop "y" and let "z" overwrite it.
+		expect(action.mock.calls[2]?.[0]).toEqual({ data: ["x", "y"] });
+
+		await act(async () => {
+			g3.resolve();
+			await g3.promise;
+		});
+		await flushHookTimers();
+
+		expect(result.current.optimisticState).toEqual(["x", "y", "z"]);
 	});
 
 	test("a stable currentState prop leaves the action's data authoritative", async () => {
@@ -401,6 +462,54 @@ describe("useOptimisticStateAction reset", () => {
 		await flushHookTimers();
 
 		expect(result.current.optimisticState).toEqual(["a"]);
+	});
+
+	/**
+	 * `reset` cannot recall the dispatch that is already talking to the server, but a dispatch
+	 * still waiting its turn in the queue has sent nothing yet, so its write must be skipped.
+	 * Running it performs a mutation the user asked to discard, whose result, callbacks and errors
+	 * this hook then throws away -- and whose revalidation later drags the confirmed state into an
+	 * order that was never on screen.
+	 */
+	test("a dispatch still queued when reset runs never reaches the server", async () => {
+		const g1 = deferred<void>();
+		// Only reached if the skipped dispatch runs after all. Pre-resolved so that failure shows up
+		// as this test's assertions failing, instead of a hung action queue every later test inherits.
+		const g2 = deferred<void>();
+		g2.resolve();
+		const action = createAppendAction([g1, g2]);
+		const onSuccess = vi.fn();
+		const { result } = renderHook(() =>
+			useOptimisticStateAction(action, { currentState: seedA, updateFn: appendFn, onSuccess })
+		);
+
+		// "x" starts, "y" queues behind it.
+		let queued!: Promise<unknown>;
+		await act(async () => {
+			result.current.execute("x");
+			queued = result.current.executeAsync("y");
+		});
+		expect(action).toHaveBeenCalledTimes(1);
+		expect(result.current.optimisticState).toEqual(["a", "x", "y"]);
+
+		await act(async () => {
+			result.current.reset();
+		});
+		await flushHookTimers();
+
+		// "x" settles, which is where "y" would take its turn.
+		await act(async () => {
+			g1.resolve();
+			await g1.promise;
+		});
+		await flushHookTimers();
+
+		expect(action).toHaveBeenCalledTimes(1);
+		// The skipped dispatch still settles its promise, and reports nothing.
+		await expect(queued).resolves.toEqual({});
+		expect(onSuccess).not.toHaveBeenCalled();
+		expect(result.current.optimisticState).toEqual(["a"]);
+		expect(result.current.status).toBe("idle");
 	});
 
 	// Needs a real component, not `renderHook`: two `reset()` calls only land in the same batch
@@ -1386,11 +1495,15 @@ describe("useOptimisticStateAction initResult and lifecycle", () => {
 // ─── Revalidation ordering ───────────────────────────────────────────────────
 
 /**
- * The confirmed value is "the more recent of the action's `data` and `currentState`", and the hook
- * uses ARRIVAL order as its proxy for recency: any new `currentState` identity supersedes the
- * committed result. That proxy only holds while every action that writes the rendered state also
- * revalidates it. When one action revalidates and another does not, the newest payload the page
- * receives can be a snapshot that predates the newest write, and it still wins.
+ * The VISIBLE confirmed value is "the more recent of the action's `data` and `currentState`", and
+ * the hook uses ARRIVAL order as its proxy for recency: any new `currentState` identity supersedes
+ * the committed result. That proxy only holds while every action that writes the rendered state
+ * also revalidates it. When one action revalidates and another does not, the newest payload the
+ * page receives can be a snapshot that predates the newest write, and it still wins.
+ *
+ * The base handed to the server follows a different rule, pinned in the "confirmed state" block
+ * above: newest WRITE wins there, because a payload that arrives while an action runs predates
+ * that action's write. The two can therefore disagree, which the first test below makes explicit.
  *
  * These tests pin both halves of that, because the trap is not obvious from the rule alone. It cost
  * a real bug in the playground: `resetItems` revalidated, `moveItem` did not, so `Down -> Reset ->
@@ -1423,6 +1536,111 @@ describe("useOptimisticStateAction revalidation ordering", () => {
 		// The envelope still reports what the server actually returned, so the two disagree. That
 		// divergence is the symptom to look for when a saved change appears to revert.
 		expect(result.current.result.data).toEqual(["a", "b"]);
+	});
+
+	/**
+	 * CANARY. Not a property of this hook: a property of React that this hook is built on.
+	 *
+	 * `useOptimistic` holds every payload for as long as the action queue has work, and this hook
+	 * relies on that to keep overlapping changes on screen. That is only safe because React also
+	 * withholds the `useActionState` commit until the queue drains, so the base the payloads fold
+	 * over cannot move underneath them. The one thing that can move it is an urgent update, which
+	 * is exactly what the `acked` cut below exists to handle.
+	 *
+	 * If React ever starts committing each action's result as it settles, the base would advance
+	 * mid-queue through `result` instead of through a prop, the settled payloads would fold a
+	 * second time, and nothing in this hook would notice. This test fails first in that case, and
+	 * points at the assumption instead of at a mysteriously doubled list.
+	 */
+	test("React withholds the committed result until the whole queue drains", async () => {
+		const g1 = deferred<void>();
+		const g2 = deferred<void>();
+		const action = createAppendAction([g1, g2]);
+		const { result } = renderHook(() =>
+			useOptimisticStateAction(action, { currentState: emptyState, updateFn: appendFn })
+		);
+
+		await act(async () => {
+			result.current.execute("x");
+			result.current.execute("y");
+		});
+
+		// "x" has returned `{ data: ["x"] }` by now, and "y" is running.
+		await act(async () => {
+			g1.resolve();
+			await g1.promise;
+		});
+		await flushHookTimers();
+
+		// Read now, assert after the queue has drained, so a failure cannot leave "y" gated forever
+		// and hang every test that follows in this file.
+		const midQueue = result.current.result;
+
+		await act(async () => {
+			g2.resolve();
+			await g2.promise;
+		});
+		await flushHookTimers();
+
+		// Still the initial envelope: "x"'s result exists, but React has not committed it.
+		expect(midQueue).toEqual({});
+		expect(result.current.result.data).toEqual(["x", "y"]);
+	});
+
+	/**
+	 * The dangerous case is a `currentState` that commits while the queue is STILL draining, which
+	 * is what an urgent prop update does (a socket push, a `router.refresh()` outside a transition,
+	 * a parent re-render). React holds every optimistic payload for as long as the queue has work,
+	 * so advancing the base mid-queue leaves the settled payloads attached on top of a base that
+	 * already accounts for them, and they apply a second time.
+	 *
+	 * The payloads of settled dispatches are cut when the base moves. The pending ones must
+	 * survive, or the change the user is still waiting on would disappear from the screen.
+	 */
+	test("a currentState that commits mid-queue does not re-apply what it already carries", async () => {
+		const g1 = deferred<void>();
+		const g2 = deferred<void>();
+		const action = createAppendAction([g1, g2]);
+		const { result, rerender } = renderHook(
+			({ currentState }: { currentState: Item[] }) =>
+				useOptimisticStateAction(action, { currentState, updateFn: appendFn }),
+			{ initialProps: { currentState: emptyState } }
+		);
+
+		await act(async () => {
+			result.current.execute("x");
+			result.current.execute("y");
+		});
+		expect(result.current.optimisticState).toEqual(["x", "y"]);
+
+		// "x" settles and "y" takes its turn. Both payloads are still attached: React withholds the
+		// `useActionState` commit until the whole queue drains.
+		await act(async () => {
+			g1.resolve();
+			await g1.promise;
+		});
+		await flushHookTimers();
+		expect(result.current.optimisticState).toEqual(["x", "y"]);
+
+		// The revalidation of "x"'s own write commits while "y" is still running.
+		await act(async () => {
+			rerender({ currentState: ackX });
+		});
+		await flushHookTimers();
+
+		// Read now, assert after the queue has drained, so a failure here cannot leave "y" gated
+		// forever and hang every test that follows in this file.
+		const midQueue = result.current.optimisticState;
+
+		await act(async () => {
+			g2.resolve();
+			await g2.promise;
+		});
+		await flushHookTimers();
+
+		// Not ["x", "x", "y"]: the base carries "x", so only the pending "y" folds over it.
+		expect(midQueue).toEqual(["x", "y"]);
+		expect(result.current.optimisticState).toEqual(["x", "y"]);
 	});
 
 	test("a revalidated currentState that carries the write keeps it", async () => {

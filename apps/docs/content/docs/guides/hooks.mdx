@@ -39,7 +39,7 @@ export default function MyComponent() {
 | `result` | `SafeActionResult` | The latest action result |
 | `input` | `Input \| undefined` | The current/last input passed to execute |
 | `status` | `HookActionStatus` | Current status string |
-| `reset` | `() => void` | Reset to initial state, discarding any in-flight execution |
+| `reset` | `() => void` | Reset to initial state, discarding any in-flight execution. On the queued hooks it also skips the dispatches still waiting in the queue, so their writes never run |
 | `isIdle` | `boolean` | `true` when no action has been executed |
 | `isExecuting` | `boolean` | `true` while the action is running |
 | `isTransitioning` | `boolean` | `true` during React transition |

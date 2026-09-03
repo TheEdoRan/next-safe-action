@@ -242,6 +242,8 @@ const { execute, executeAsync, formAction, result, status, reset, ... } = useSta
 
 `opts.initResult` sets the initial result before the first execution (defaults to `{}`). It is captured once at mount: later changes to the option are ignored, and `reset()` restores the mount value.
 
+`reset()` also drops every dispatch still queued behind the one in flight: they never reached the server, so their action never runs and no write happens. The dispatch already in flight cannot be recalled and still completes, with its result and callbacks ignored.
+
 ### Return object
 
 Same as [`useAction`](#return-object) plus:

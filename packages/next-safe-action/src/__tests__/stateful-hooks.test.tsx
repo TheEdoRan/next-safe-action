@@ -524,7 +524,7 @@ describe("useStateAction reset", () => {
 		expect(result.current.result.data).toEqual({ message: "seed" });
 	});
 
-	test("a dispatch queued before reset does not consume the reset baseline", async () => {
+	test("a dispatch still queued when reset runs never reaches the action", async () => {
 		const resolvers: Array<(value: TestResult) => void> = [];
 		const prevResults: TestResult[] = [];
 		const action = createMockStateAction((prevResult) => {
@@ -548,17 +548,17 @@ describe("useStateAction reset", () => {
 			result.current.reset();
 		});
 
-		// First action settles, then the queued (pre-reset) second dispatch runs.
+		// The already-running first action settles, which is where the queued one would take its
+		// turn. It must be dropped instead: it never reached the server, so its side effects can
+		// still be avoided, and the hook would discard its result, callbacks and errors anyway.
 		await act(async () => {
 			resolvers[0]({ data: { message: "first" } });
 		});
 		await flushHookTimers();
-		await act(async () => {
-			resolvers[1]({ data: { message: "second" } });
-		});
-		await flushHookTimers();
+		expect(resolvers).toHaveLength(1);
+		expect(prevResults).toHaveLength(1);
 
-		// The reset state survives both stale executions.
+		// The reset state survives the stale execution that could not be recalled.
 		expect(result.current.status).toBe("idle");
 		expect(result.current.result.data).toEqual({ message: "seed" });
 
@@ -568,11 +568,12 @@ describe("useStateAction reset", () => {
 		});
 		await flushHookTimers();
 		await act(async () => {
-			resolvers[2]({ data: { message: "third" } });
+			resolvers[1]({ data: { message: "third" } });
 		});
 		await flushHookTimers();
 
-		expect(prevResults[2]).toEqual({ data: { message: "seed" } });
+		expect(prevResults[1]).toEqual({ data: { message: "seed" } });
+		expect(result.current.result.data).toEqual({ message: "third" });
 	});
 
 	test("reset restores initResult with serverError (regression for non-data seeds)", async () => {
