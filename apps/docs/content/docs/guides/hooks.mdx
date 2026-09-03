@@ -97,7 +97,7 @@ if (hasSucceeded) {
 }
 ```
 
-This applies to all hooks: `useAction`, `useOptimisticAction`, and `useStateAction`. The `result` field itself is also a discriminated union (see [Action result](/docs/concepts/action-result)), so you get two layers of narrowing: status-level and result-level.
+This applies to all hooks: `useAction`, `useOptimisticAction`, `useStateAction`, and `useOptimisticStateAction`. The `result` field itself is also a discriminated union (see [Action result](/docs/concepts/action-result)), so you get two layers of narrowing: status-level and result-level.
 
 ## `execute` vs `executeAsync`
 
@@ -166,7 +166,7 @@ const { result } = useAction(myAction, {
 });
 ```
 
-The value is captured **once at mount**, like React's `useActionState` initial state: later changes to the option are ignored, and `reset()` restores the mount value. Available on `useAction`, `useOptimisticAction`, and `useStateAction`. See the [hooks API reference](/docs/api/hooks-api) for details.
+The value is captured **once at mount**, like React's `useActionState` initial state: later changes to the option are ignored, and `reset()` restores the mount value. Available on `useAction`, `useOptimisticAction`, `useStateAction`, and `useOptimisticStateAction`. See the [hooks API reference](/docs/api/hooks-api) for details.
 
 ### `throwOnNavigation`
 
@@ -194,6 +194,8 @@ When `throwOnNavigation` is `true`, `onNavigation` and `onSettled` are not avail
 ## `useStateAction`
 
 Use `useStateAction` for stateful actions (defined with `.stateAction()`) that need full lifecycle control. It provides everything `useAction` offers, plus `formAction` for `<form action={formAction}>` integration and automatic `prevResult` management.
+
+Forms are the most common use, but not the defining one. `useStateAction` is built on React's `useActionState`, which **queues** dispatches: each waits for the previous to settle and receives its result. That makes it the right tool whenever writes must not overtake each other, forms or not. For the optimistic version of that, see [`useOptimisticStateAction`](/docs/guides/coordinating-mutations).
 
 ### Basic usage
 
@@ -244,7 +246,7 @@ Same as [`useAction`](#return-object) plus:
 | Triggers | `execute(input)` (programmatic) | `execute(input)`, `formAction`, or `executeAsync(input)` |
 | Best for | Interactive UI, buttons, events | Forms with state, multi-step wizards |
 
-Use `useAction` when you don't need previous result access and triggers are programmatic. Use `useStateAction` when you need `prevResult` in server code, want `<form action={formAction}>`, or are building multi-step forms.
+Use `useAction` when you don't need previous result access and triggers are programmatic. Use `useStateAction` when you need `prevResult` in server code, want `<form action={formAction}>`, are building multi-step forms, or need overlapping writes to be serialized rather than raced.
 
 <Callout type="info">
 `useStateAction` does not support no-JS progressive enhancement. The hook wraps the action to enable error tracking and callbacks, which requires JavaScript. For forms that must work without JavaScript, use React's `useActionState` directly. See the [form actions guide](/docs/guides/form-actions) for a comparison.

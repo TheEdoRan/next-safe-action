@@ -93,7 +93,7 @@ export function CreateUserForm() {
 
 ## Hooks vs. adapter
 
-next-safe-action provides two ways to call server actions from client components: the **built-in hooks** (`useAction`, `useOptimisticAction`, `useStateAction`) from `next-safe-action/hooks`, and this **TanStack Query adapter** (`mutationOptions`) from `@next-safe-action/adapter-tanstack-query`. Both give you type-safe action execution, but they use fundamentally different mechanisms under the hood and shine in different scenarios.
+next-safe-action provides two ways to call server actions from client components: the **built-in hooks** (`useAction`, `useOptimisticAction`, `useStateAction`, `useOptimisticStateAction`) from `next-safe-action/hooks`, and this **TanStack Query adapter** (`mutationOptions`) from `@next-safe-action/adapter-tanstack-query`. Both give you type-safe action execution, but they use fundamentally different mechanisms under the hood and shine in different scenarios.
 
 ### How they differ
 
@@ -108,6 +108,7 @@ The TanStack Query adapter delegates all state management to TanStack Query's `u
 | New Next.js project without TanStack Query | Built-in hooks |
 | Simple form submissions and button actions | Built-in hooks |
 | You want instant optimistic UI via React's `useOptimistic` | Built-in hooks (`useOptimisticAction`) |
+| You want optimistic writes that queue instead of racing | Built-in hooks (`useOptimisticStateAction`) |
 | You want zero additional dependencies | Built-in hooks |
 | Already using TanStack Query for data fetching | Adapter |
 | Already using tRPC + TanStack Query | Adapter |
@@ -122,6 +123,7 @@ The TanStack Query adapter delegates all state management to TanStack Query's `u
 |---|---|---|
 | React Transitions | Yes, actions run inside `startTransition` | No |
 | Optimistic updates | `useOptimisticAction` via React's `useOptimistic` | Manual via `onMutate` + query cache |
+| Serialized writes | Yes, `useStateAction` / `useOptimisticStateAction` queue dispatches | Yes, with a shared mutation `scope` |
 | Automatic retries | No | Yes, `retry` option with backoff |
 | Server cache invalidation | Yes, `revalidatePath()` / `revalidateTag()` inside server actions | Yes, same Next.js APIs inside server actions |
 | Client query cache invalidation | No (not applicable) | Yes, `queryClient.invalidateQueries()` in `onSuccess` |

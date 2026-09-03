@@ -199,12 +199,11 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 			const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
 
 			if (navigationKind === "redirect" || status === "hasNavigated") {
-				const actualNavigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
 				await Promise.all([
 					Promise.resolve(
 						onNavigation?.({
 							input,
-							navigationKind: actualNavigationKind,
+							navigationKind,
 						})
 					),
 					Promise.resolve(
@@ -213,7 +212,7 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 								SafeActionResult<ServerError, Schema, ShapedErrors, Data>
 							>,
 							input,
-							navigationKind: actualNavigationKind,
+							navigationKind,
 						})
 					),
 				]);

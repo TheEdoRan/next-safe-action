@@ -6,6 +6,7 @@ import {
 	FileTextIcon,
 	HomeIcon,
 	LayersIcon,
+	ListTodoIcon,
 	MoonIcon,
 	MousePointerClickIcon,
 	NavigationIcon,
@@ -61,6 +62,8 @@ const navGroups = [
 		items: [
 			{ title: "React Hooks", href: "/hooks", icon: MousePointerClickIcon },
 			{ title: "Optimistic Updates", href: "/optimistic-updates", icon: SparklesIcon },
+			{ title: "Coordinating Mutations", href: "/coordinated-mutations", icon: SparklesIcon },
+			{ title: "Pending Changes", href: "/pending-changes", icon: ListTodoIcon },
 		],
 	},
 	{
