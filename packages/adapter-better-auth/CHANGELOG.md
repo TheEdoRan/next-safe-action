@@ -1,5 +1,11 @@
 # @next-safe-action/adapter-better-auth
 
+## 0.1.7
+
+### Patch Changes
+
+- [#477](https://github.com/next-safe-action/next-safe-action/pull/477) [`5086911`](https://github.com/next-safe-action/next-safe-action/commit/50869117f98e5f0d27a2514ab2907153a84d6137) Thanks [@frectonz](https://github.com/frectonz)! - Stop tsdown from adding a `.js` extension to `next/navigation`. Importing `next/navigation.js` breaks Next.js builds for Route Handlers that use actions that use the better-auth adapter.
+
 ## 0.1.6
 
 ### Patch Changes
