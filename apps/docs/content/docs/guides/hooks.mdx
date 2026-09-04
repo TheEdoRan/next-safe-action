@@ -245,6 +245,7 @@ Same as [`useAction`](#return-object) plus:
 | Form action | Not supported | `formAction` for `<form action={...}>` |
 | Triggers | `execute(input)` (programmatic) | `execute(input)`, `formAction`, or `executeAsync(input)` |
 | Best for | Interactive UI, buttons, events | Forms with state, multi-step wizards |
+| Optimistic variant | [`useOptimisticAction`](/docs/guides/optimistic-updates) | [`useOptimisticStateAction`](/docs/guides/coordinating-mutations) |
 
 Use `useAction` when you don't need previous result access and triggers are programmatic. Use `useStateAction` when you need `prevResult` in server code, want `<form action={formAction}>`, are building multi-step forms, or need overlapping writes to be serialized rather than raced.
 
@@ -260,6 +261,9 @@ Use `useAction` when you don't need previous result access and triggers are prog
 	</Card>
 	<Card href="/docs/guides/optimistic-updates" title="Optimistic updates">
 		Use useOptimisticAction to update the UI instantly while the server processes.
+	</Card>
+	<Card href="/docs/guides/coordinating-mutations" title="Coordinating mutations">
+		Use useOptimisticStateAction to queue overlapping writes instead of racing them.
 	</Card>
 	<Card href="/docs/api/hooks-api" title="Hooks API reference">
 		Full type signatures for all hooks.
