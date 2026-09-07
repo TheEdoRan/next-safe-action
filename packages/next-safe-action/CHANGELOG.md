@@ -1,5 +1,11 @@
 # next-safe-action
 
+## 8.7.2
+
+### Patch Changes
+
+- [#483](https://github.com/next-safe-action/next-safe-action/pull/483) [`95a982e`](https://github.com/next-safe-action/next-safe-action/commit/95a982eb855d60f4f27c2034ba6a8f0492b3e991) Thanks [@TheEdoRan](https://github.com/TheEdoRan)! - fix(hooks): stop `useAction` and `useOptimisticAction` from leaking an unhandled promise rejection when the action call itself rejects (offline client, stale bundle after a deploy). The error still reaches the caller through `status`, `onError` with `thrownError`, and the `executeAsync` rejection. Closes [#482](https://github.com/next-safe-action/next-safe-action/issues/482).
+
 ## 8.7.1
 
 ### Patch Changes
