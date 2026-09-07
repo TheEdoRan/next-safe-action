@@ -1,5 +1,11 @@
 # next-safe-action
 
+## 8.7.3
+
+### Patch Changes
+
+- [#485](https://github.com/next-safe-action/next-safe-action/pull/485) [`03661cb`](https://github.com/next-safe-action/next-safe-action/commit/03661cbeb4171d1d3267c3565a2560ebab451a8f) Thanks [@TheEdoRan](https://github.com/TheEdoRan)! - Fix `onNavigation` and `onSettled` firing twice for a single `redirect` in `useAction`, `useOptimisticAction` and `useStateAction`. The redirect is delivered on the first commit that carries it, before the status reaches `hasNavigated`, and the later `hasNavigated` commit re-fired the same navigation. Each navigation now fires the callbacks exactly once.
+
 ## 8.7.2
 
 ### Patch Changes
