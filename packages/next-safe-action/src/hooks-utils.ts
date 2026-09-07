@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { HookActionStatus, HookCallbacks, HookShorthandStatus } from "./hooks.types";
-import type { NormalizeActionResult, SafeActionResult } from "./index.types";
+import type { NavigationKind, NormalizeActionResult, SafeActionResult } from "./index.types";
 import { FrameworkErrorHandler } from "./next/errors";
 import type { InferInputOrDefault, StandardSchemaV1 } from "./standard-schema";
 
@@ -119,6 +119,19 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 	// dispatch state, so the first commit carrying a new one is also the first with the real input.
 	const lastExecutionIdRef = React.useRef(0);
 
+	// The navigation callbacks fire on the first commit that carries a redirect, before the status
+	// reaches `hasNavigated` (see the navigation flow below). Both hooks land the navigation error
+	// and the end of the `executing` status in two separate commits, so the same redirect is seen
+	// twice with a different `status`, and the snapshot guard above lets both through. Remember the
+	// navigation already delivered as the pair (error, execution): the error identity alone is not
+	// enough, a test can reject two executions with one error object, and the execution alone is
+	// not enough either, since `executionId` names the latest dispatched execution while a queued
+	// `useStateAction` dispatch can still surface the navigation error of the one before it.
+	// Decided and recorded synchronously in the effect, never after an awaited user callback: a
+	// delayed older continuation would otherwise overwrite the record of a newer navigation and
+	// let its `hasNavigated` commit fire it again.
+	const lastNavigationRef = React.useRef<{ error: Error; executionId: number } | null>(null);
+
 	// Execute hook callbacks as non-visual side effects.
 	React.useEffect(() => {
 		const last = lastHandledRef.current;
@@ -137,6 +150,25 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 		}
 
 		lastHandledRef.current = { status, result, input, navigationError, thrownError };
+
+		// Navigation flow.
+		// Skip navigation callbacks when throwOnNavigation is true: the render-phase throw
+		// is the primary guard, but this explicit check prevents race conditions and protects
+		// against edge cases in concurrent mode or JavaScript usage without TypeScript.
+		// A redirect is delivered as soon as its error commits, while the status may still read
+		// `executing`: in Next.js the redirect navigates on its own, so waiting for `hasNavigated`
+		// could unmount this component first. The other kinds wait for `hasNavigated`.
+		let navigationKind: NavigationKind | null = null;
+		if (!throwOnNavigation && navigationError) {
+			const kind = FrameworkErrorHandler.getNavigationKind(navigationError);
+			const delivered = lastNavigationRef.current;
+			const alreadyDelivered = delivered?.error === navigationError && delivered.executionId === executionId;
+
+			if ((kind === "redirect" || status === "hasNavigated") && !alreadyDelivered) {
+				lastNavigationRef.current = { error: navigationError, executionId };
+				navigationKind = kind;
+			}
+		}
 
 		const executeCallbacks = async () => {
 			switch (status) {
@@ -191,32 +223,25 @@ export const useActionCallbacks = <ServerError, Schema extends StandardSchemaV1 
 					break;
 			}
 
-			// Navigation flow.
-			// Skip navigation callbacks when throwOnNavigation is true: the render-phase throw
-			// is the primary guard, but this explicit check prevents race conditions and protects
-			// against edge cases in concurrent mode or JavaScript usage without TypeScript.
-			if (throwOnNavigation || !navigationError) return;
-			const navigationKind = FrameworkErrorHandler.getNavigationKind(navigationError);
+			if (navigationKind === null) return;
 
-			if (navigationKind === "redirect" || status === "hasNavigated") {
-				await Promise.all([
-					Promise.resolve(
-						onNavigation?.({
-							input,
-							navigationKind,
-						})
-					),
-					Promise.resolve(
-						onSettled?.({
-							result: result as unknown as NormalizeActionResult<
-								SafeActionResult<ServerError, Schema, ShapedErrors, Data>
-							>,
-							input,
-							navigationKind,
-						})
-					),
-				]);
-			}
+			await Promise.all([
+				Promise.resolve(
+					onNavigation?.({
+						input,
+						navigationKind,
+					})
+				),
+				Promise.resolve(
+					onSettled?.({
+						result: result as unknown as NormalizeActionResult<
+							SafeActionResult<ServerError, Schema, ShapedErrors, Data>
+						>,
+						input,
+						navigationKind,
+					})
+				),
+			]);
 		};
 
 		executeCallbacks().catch(console.error);

@@ -300,9 +300,10 @@ const useStateActionInternal = <
 	}, []);
 
 	// ─── Wrapper function ─────────────────────────────────────────────────
-	// State updates inside the wrapper are batched into the transition by React,
-	// so they commit atomically with the result. This prevents the double-fire issue
-	// that would occur if state were synced via a separate effect.
+	// State updates inside the wrapper run after an `await`, so React does not treat them as part
+	// of the transition: they commit on the default lane right away, before `useActionState`
+	// commits the result and clears its pending flag. `useActionCallbacks` dedupes the navigation
+	// callbacks across those two commits.
 
 	const wrappedAction = React.useCallback(
 		async (

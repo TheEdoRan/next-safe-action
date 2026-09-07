@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { useAction } from "../hooks";
+import { useAction, useOptimisticAction } from "../hooks";
 import type { HookCallbacks, SingleInputActionFn } from "../hooks.types";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -284,6 +284,92 @@ describe("onNavigation", () => {
 			input: undefined,
 			navigationKind: "notFound",
 		});
+	});
+
+	// A redirect is delivered on the first commit that carries it, while the status still reads
+	// `executing`, and the status only reaches `hasNavigated` in a later commit. Both commits must
+	// not each fire the navigation callbacks.
+	test("fires onNavigation and onSettled once per redirect (execute)", async () => {
+		const action = vi.fn<TestActionFn>().mockRejectedValue(createRedirectError("/home"));
+		const onNavigation = vi.fn();
+		const onSettled = vi.fn();
+
+		const { result } = renderHook(() => useAction(action, { onNavigation, onSettled }));
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+
+		await flushHookTimers();
+
+		expect(result.current.status).toBe("hasNavigated");
+		expect(onNavigation).toHaveBeenCalledTimes(1);
+		expect(onSettled).toHaveBeenCalledTimes(1);
+	});
+
+	test("fires onNavigation and onSettled once per redirect (executeAsync)", async () => {
+		const action = vi.fn<TestActionFn>().mockRejectedValue(createRedirectError("/home"));
+		const onNavigation = vi.fn();
+		const onSettled = vi.fn();
+
+		const { result } = renderHook(() => useAction(action, { onNavigation, onSettled }));
+
+		// Not awaited inside `act`: awaiting there would batch the rejection and the end of the
+		// execution into one commit and hide the two-commit shape this test guards.
+		act(() => {
+			void result.current.executeAsync(undefined).catch(() => {});
+		});
+
+		await flushHookTimers();
+
+		expect(result.current.status).toBe("hasNavigated");
+		expect(onNavigation).toHaveBeenCalledTimes(1);
+		expect(onSettled).toHaveBeenCalledTimes(1);
+	});
+
+	test("fires onNavigation and onSettled once per redirect (useOptimisticAction)", async () => {
+		const action = vi.fn<TestActionFn>().mockRejectedValue(createRedirectError("/home"));
+		const onNavigation = vi.fn();
+		const onSettled = vi.fn();
+
+		const { result } = renderHook(() =>
+			useOptimisticAction(action, {
+				currentState: 0,
+				updateFn: (state: number) => state,
+				onNavigation,
+				onSettled,
+			})
+		);
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+
+		await flushHookTimers();
+
+		expect(result.current.status).toBe("hasNavigated");
+		expect(onNavigation).toHaveBeenCalledTimes(1);
+		expect(onSettled).toHaveBeenCalledTimes(1);
+	});
+
+	test("fires onNavigation again when a new execution rejects with the same error object", async () => {
+		const redirectError = createRedirectError("/home");
+		const action = vi.fn<TestActionFn>().mockRejectedValue(redirectError);
+		const onNavigation = vi.fn();
+
+		const { result } = renderHook(() => useAction(action, { onNavigation }));
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		expect(onNavigation).toHaveBeenCalledTimes(2);
 	});
 });
 
