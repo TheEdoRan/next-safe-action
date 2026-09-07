@@ -1059,6 +1059,139 @@ describe("useStateAction callbacks", () => {
 			})
 		);
 	});
+
+	// `setNavigationError` runs after an `await` inside the action, so it commits before
+	// `useActionState` clears its pending flag: the redirect is seen while the status still reads
+	// `executing`, and again once it reads `hasNavigated`. Only one delivery is allowed.
+	test("fires onNavigation and onSettled once per redirect", async () => {
+		const action = createMockStateAction(async () => {
+			throw createRedirectError("/home");
+		});
+		const onNavigation = vi.fn();
+		const onSettled = vi.fn();
+
+		const { result } = renderHook(() => useStateAction(action, { onNavigation, onSettled }));
+
+		act(() => {
+			result.current.execute(undefined);
+		});
+		await flushHookTimers();
+
+		expect(result.current.status).toBe("hasNavigated");
+		expect(onNavigation).toHaveBeenCalledTimes(1);
+		expect(onSettled).toHaveBeenCalledTimes(1);
+	});
+
+	test("delivers the navigation of each queued dispatch once", async () => {
+		const rejecters: Array<(error: Error) => void> = [];
+		const action = createMockStateAction(
+			() =>
+				new Promise<TestResult>((_, reject) => {
+					rejecters.push(reject);
+				})
+		);
+		const onNavigation = vi.fn();
+
+		const { result } = renderHook(() => useStateAction(action, { onNavigation }));
+
+		// B queues behind the in-flight A, so `executionId` already names B when A redirects.
+		act(() => {
+			result.current.execute("A" as never);
+		});
+		await flushHookTimers();
+		act(() => {
+			result.current.execute("B" as never);
+		});
+		await flushHookTimers();
+		expect(rejecters).toHaveLength(1);
+
+		await act(async () => {
+			rejecters[0](createRedirectError("/a"));
+		});
+		await flushHookTimers();
+		expect(onNavigation).toHaveBeenCalledTimes(1);
+
+		// B's own redirect is a distinct navigation and must still be delivered, exactly once.
+		expect(rejecters).toHaveLength(2);
+		await act(async () => {
+			rejecters[1](createRedirectError("/b"));
+		});
+		await flushHookTimers();
+		expect(onNavigation).toHaveBeenCalledTimes(2);
+	});
+
+	test("a delayed older navigation does not let a newer one fire twice", async () => {
+		const rejecters: Array<(error: Error) => void> = [];
+		const action = createMockStateAction(
+			() =>
+				new Promise<TestResult>((_, reject) => {
+					rejecters.push(reject);
+				})
+		);
+		// An async `onExecute` delays the navigation callbacks of the same effect run.
+		const onExecuteResolvers: Array<() => void> = [];
+		const onExecute = vi.fn(
+			() =>
+				new Promise<void>((resolve) => {
+					onExecuteResolvers.push(resolve);
+				})
+		);
+		const onNavigation = vi.fn();
+		const onSettled = vi.fn();
+
+		const { result } = renderHook(() => useStateAction(action, { onExecute, onNavigation, onSettled }));
+
+		act(() => {
+			result.current.execute("A" as never);
+		});
+		await flushHookTimers();
+		onExecuteResolvers[0]();
+		await flushHookTimers();
+		expect(rejecters).toHaveLength(1);
+
+		// B is dispatched inside an async transition that stays pending, so React withholds B's
+		// `useActionState` result commit until it settles. In the same batch A rejects: the commit
+		// carries B's dispatch state and A's redirect together, and A's navigation callbacks wait
+		// behind B's pending `onExecute`.
+		let finishOuterTransition!: () => void;
+		await act(async () => {
+			React.startTransition(async () => {
+				result.current.execute("B" as never);
+				await new Promise<void>((resolve) => {
+					finishOuterTransition = resolve;
+				});
+			});
+			rejecters[0](createRedirectError("/a"));
+		});
+		await flushHookTimers();
+		expect(onExecute).toHaveBeenCalledTimes(2);
+		expect(onNavigation).not.toHaveBeenCalled();
+		expect(rejecters).toHaveLength(2);
+
+		// B redirects: its navigation is delivered right away.
+		await act(async () => {
+			rejecters[1](createRedirectError("/b"));
+		});
+		await flushHookTimers();
+		expect(onNavigation).toHaveBeenCalledTimes(1);
+		expect(onNavigation.mock.calls[0]?.[0].input).toBe("B");
+
+		// A's delayed callbacks now run: one more delivery, for A.
+		await act(async () => {
+			onExecuteResolvers[1]();
+		});
+		await flushHookTimers();
+		expect(onNavigation).toHaveBeenCalledTimes(2);
+
+		// B's withheld `hasNavigated` commit lands: B was already delivered, nothing new fires.
+		await act(async () => {
+			finishOuterTransition();
+		});
+		await flushHookTimers();
+		expect(result.current.status).toBe("hasNavigated");
+		expect(onNavigation).toHaveBeenCalledTimes(2);
+		expect(onSettled).toHaveBeenCalledTimes(2);
+	});
 });
 
 // ─── Callback stability ────────────────────────────────────────────────────
