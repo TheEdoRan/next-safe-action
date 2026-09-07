@@ -109,6 +109,12 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 		hasThrownError: thrownError !== null,
 	});
 
+	// The transition callbacks below deliberately do not return the promise chain. React only
+	// takes ownership of a promise the callback returns, and it would then keep `isTransitioning`
+	// on until the request settles, pin the optimistic value to that lifetime, and throw a rejected
+	// request during render into the nearest error boundary. Errors reach the caller through hook
+	// state, the callbacks, and the `executeAsync` rejection instead, so the chain must also never
+	// end in a rejection nobody owns: a re-throw inside `.catch` did exactly that (#482).
 	const execute = React.useCallback(
 		(input: InferInputOrDefault<Schema, void>) => {
 			const thisRequestId = ++requestIdRef.current;
@@ -124,22 +130,17 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 						setResult(res ?? {});
 					})
 					.catch((e) => {
-						if (thisRequestId === requestIdRef.current) {
-							setResult({});
+						// The error is delivered through hook state only: `thrownError` feeds `status` and
+						// `onError({ error: { thrownError } })`, a navigation error feeds `hasNavigated` or the
+						// render-phase throw behind `throwOnNavigation`. Nothing is re-thrown here (#482).
+						if (thisRequestId !== requestIdRef.current) return;
 
-							if (FrameworkErrorHandler.isNavigationError(e)) {
-								setNavigationError(e);
-							} else {
-								setThrownError(e as Error);
-							}
-						}
+						setResult({});
 
-						// Only re-throw non-navigation errors for React error boundary handling, and only
-						// for the current request: a stale (reset or superseded) execution must not
-						// surface its error outside the hook, matching its skipped state updates.
-						// Navigation errors are handled via render-phase throw (throwOnNavigation).
-						if (thisRequestId === requestIdRef.current && !FrameworkErrorHandler.isNavigationError(e)) {
-							throw e;
+						if (FrameworkErrorHandler.isNavigationError(e)) {
+							setNavigationError(e);
+						} else {
+							setThrownError(e as Error);
 						}
 					})
 					.finally(() => {
@@ -180,16 +181,9 @@ export function useActionBase<ServerError, Schema extends StandardSchemaV1 | und
 								}
 							}
 
-							// Always reject so the caller's await settles.
+							// Always reject so the caller's await settles. This rejection and the hook state
+							// are the only two channels for the error: nothing is re-thrown here (#482).
 							reject(e);
-
-							// Only re-throw non-navigation errors for React error boundary handling, and only
-							// for the current request: a stale (reset or superseded) execution must not
-							// surface its error outside the hook, matching its skipped state updates.
-							// Navigation errors are handled via render-phase throw (throwOnNavigation).
-							if (thisRequestId === requestIdRef.current && !FrameworkErrorHandler.isNavigationError(e)) {
-								throw e;
-							}
 						})
 						.finally(() => {
 							if (thisRequestId !== requestIdRef.current) return;

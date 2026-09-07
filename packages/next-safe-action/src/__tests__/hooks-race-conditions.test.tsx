@@ -260,6 +260,52 @@ describe("useAction race condition protections", () => {
 		}
 	});
 
+	test("current rejection reaches hook state and executeAsync only, never an unhandled rejection", async () => {
+		// Regression test for #482: the transition callback used to re-throw the error after
+		// delivering it, and that re-throw rejected a promise nobody owned. Vitest stops reporting
+		// unhandled rejections while a listener is attached, so the assertion must be explicit.
+		const unhandled: unknown[] = [];
+		const listener = (reason: unknown) => unhandled.push(reason);
+		process.on("unhandledRejection", listener);
+
+		try {
+			const error = new Error("offline");
+			const action = vi.fn<TestActionFn>().mockRejectedValue(error);
+			const onError = vi.fn();
+
+			const { result } = renderHook(() => useAction(action, { onError }));
+
+			act(() => {
+				result.current.execute(undefined);
+			});
+			await flushHookTimers();
+
+			expect(result.current.status).toBe("hasErrored");
+			expect(onError).toHaveBeenCalledWith(expect.objectContaining({ error: { thrownError: error } }));
+
+			// Attach the caller's handler before the action settles, so the caller promise itself
+			// cannot count as a leak.
+			let rejectedError: unknown;
+			act(() => {
+				void result.current.executeAsync(undefined).catch((e: unknown) => {
+					rejectedError = e;
+				});
+			});
+			await flushHookTimers();
+
+			expect(rejectedError).toBe(error);
+			expect(result.current.status).toBe("hasErrored");
+
+			// Give the unhandledRejection event a real macrotask to fire.
+			vi.useRealTimers();
+			await new Promise((resolve) => setTimeout(resolve, 20));
+
+			expect(unhandled).toStrictEqual([]);
+		} finally {
+			process.removeListener("unhandledRejection", listener);
+		}
+	});
+
 	test("executeAsync settles even on navigation errors", async () => {
 		const redirectError = createRedirectError("/dashboard");
 		const action = vi.fn<TestActionFn>().mockRejectedValue(redirectError);
