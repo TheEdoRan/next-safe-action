@@ -12,16 +12,16 @@ catalog:
   "@types/react": ^19.3.0
   "@types/react-dom": ^19.3.0
   jsdom: ^30.1.2
-  next: ^16.3.8
+  next: ^16.4.0
   oxfmt: ^0.72.0
   # oxlint-tsgolint 7.x is the TypeScript 7 line, required by oxlint 1.75.0+.
   oxlint: 1.87.0
-  oxlint-tsgolint: ^7.0.2003
+  oxlint-tsgolint: ^7.0.2004
   react: ^19.3.0
   react-dom: ^19.3.0
   react-hook-form: ^7.89.0
   tailwindcss: ^4
-  tsdown: ^0.23.0
+  tsdown: ^0.23.1
   # TypeScript uses a tilde range on purpose: tsdown's dts generator (rolldown-plugin-dts) only uses the
   # native TypeScript 7 compiler for 7.0.x (peer ~7.0.0). Widen once it supports 7.1.
   typescript: ~7.0.2

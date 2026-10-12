@@ -23,18 +23,18 @@ next-safe-action is a TypeScript library for type-safe, validated Next.js Server
 | Language | TypeScript (native `tsgo` compiler, no JS API or tsserver) | ~7.0.2 |
 | Runtime | Node.js | >=18.18 for the published packages; ^22.18.0, ^24.11.0 or >=26 for development (`.node-version`: 24) |
 | Package manager | pnpm (with catalogs) | 11.28.5 |
-| Framework | Next.js | ^16.3.8 |
+| Framework | Next.js | ^16.4.0 |
 | UI library | React | ^19.3.0 |
 | Monorepo orchestration | Turborepo | ^2.11.7 |
-| Bundler | tsdown (Rolldown + Oxc) | ^0.23.0 |
+| Bundler | tsdown (Rolldown + Oxc) | ^0.23.1 |
 | Test framework | Vitest | ^5.0.3 |
-| Browser test framework | Playwright (Chromium) | 1.63.0 |
+| Browser test framework | Playwright (Chromium) | 1.64.0 |
 | Formatter | Oxfmt | ^0.72.0 |
-| Linter | Oxlint (type-aware, oxlint-tsgolint ^7.0.2003) | 1.87.0 |
+| Linter | Oxlint (type-aware, oxlint-tsgolint ^7.0.2004) | 1.87.0 |
 | Validation | Zod ^4.6.5, Yup ^1.7.1 (Standard Schema v1) | - |
 | CSS framework | Tailwind CSS v4 | ^4 |
-| Component library | shadcn/ui (Radix UI + CVA) | ^4.21.3 |
-| Docs framework | Fumadocs (core + UI / MDX) | ^16.16.2 / ^15.4.6 |
+| Component library | shadcn/ui (Radix UI + CVA) | ^4.21.4 |
+| Docs framework | Fumadocs (core + UI / MDX) | ^16.17.1 / ^15.4.7 |
 | Forms | react-hook-form + @hookform/resolvers | ^7.89.0 / ^5.9.1 |
 | Data fetching | TanStack Query (React Query) | ^5.104.1 |
 | Versioning | Changesets (CLI, `changesets/action` v2 in the release workflow) | ^3.0.3 |
